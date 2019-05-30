@@ -1,0 +1,7 @@
+interface plain where {
+data MyList a = MyNil | MyCons a (MyList a);
+data Nat = Zero | Succ Nat;
+half 1 :: Nat -> Nat;
+main 0 :: (Nat, MyList Nat);
+myappend 2 :: MyList a -> MyList a -> MyList a
+}

@@ -1,0 +1,7 @@
+interface builtin-equal where {
+import Prelude;
+data Unit = Unit;
+f 2 :: Unit -> Unit -> Prelude.Bool;
+g 2 :: Unit -> Unit -> Prelude.Bool;
+hiding data Prelude.Bool
+}

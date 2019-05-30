@@ -1,0 +1,1 @@
+Prog "ifchoice" ["Prelude"] [] [Func ("ifchoice","sign") 4 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Ord") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Num") [TVar 1]) (FuncType (TVar 0) (TVar 1))))) (Rule [] (Var 0))] []

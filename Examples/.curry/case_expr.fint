@@ -1,0 +1,1 @@
+Prog "case_expr" ["Prelude"] [] [Func ("case_expr","coin") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0)),Func ("case_expr","f") 1 Public (FuncType (TCons ("Prelude","Int") []) (TCons ("Prelude","Int") [])) (Rule [] (Var 0))] []

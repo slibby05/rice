@@ -1,0 +1,1 @@
+Prog "equal" ["Prelude"] [] [Func ("equal","main") 0 Public (TCons ("Prelude","Bool") []) (Rule [] (Comb FuncCall ("Prelude","_impl#==#Prelude.Eq#Prelude.Int") [Comb FuncCall ("Prelude","_impl#+#Prelude.Num#Prelude.Int") [Lit (Intc 2),Lit (Intc 2)],Comb FuncCall ("Prelude","_impl#+#Prelude.Num#Prelude.Int") [Lit (Intc 3),Lit (Intc 1)]]))] []

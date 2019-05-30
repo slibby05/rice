@@ -1,0 +1,7 @@
+interface odd_even where {
+data Nat = Zero | Succ Nat;
+data Pair a b = Pair a b;
+even 1 :: Nat -> Nat;
+main 0 :: Nat;
+odd 1 :: Nat -> Nat
+}

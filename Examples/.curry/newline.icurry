@@ -1,0 +1,6 @@
+interface newline where {
+import Prelude;
+f 1 :: Prelude.Char -> [Prelude.Char];
+main 0 :: [[Prelude.Char]];
+hiding data Prelude.Char
+}

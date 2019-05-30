@@ -1,0 +1,305 @@
+interface Graph where {
+import Data.Map;
+import Prelude;
+type Edge = (Prelude.Int, Prelude.Int);
+type Forrest a = [Tree a];
+type Graph = Data.Map.Map Prelude.Int [Prelude.Int];
+type Set a = Data.Map.Map a ();
+type Table a = Data.Map.Map Prelude.Int a;
+data Tree a = Node a [Tree a];
+type Vertex = Prelude.Int;
+(!)
+2
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> Prelude.Int ->
+[Prelude.Int];
+buildG
+1
+::
+[(Prelude.Int, Prelude.Int)] ->
+Data.Map.Map Prelude.Int [Prelude.Int];
+chop
+2
+::
+Data.Map.Map Prelude.Int () -> [Tree Prelude.Int] ->
+(Data.Map.Map Prelude.Int (), [Tree Prelude.Int]);
+components
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Tree Prelude.Int];
+dff
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Tree Prelude.Int];
+dfs
+2
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Prelude.Int] ->
+[Tree Prelude.Int];
+edges
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+[(Prelude.Int, Prelude.Int)];
+flatten 1 :: (Tree a -> [a]) -> [Tree a] -> [a];
+generate
+2
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> Prelude.Int ->
+Tree Prelude.Int;
+indegree
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+Data.Map.Map Prelude.Int Prelude.Int;
+mapT
+0
+::
+(Prelude.Int -> a -> b) -> Data.Map.Map Prelude.Int a ->
+Data.Map.Map Prelude.Int b;
+outdegree
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+Data.Map.Map Prelude.Int Prelude.Int;
+path
+3
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> Prelude.Int ->
+Prelude.Int -> Prelude.Bool;
+postOrd
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Prelude.Int];
+postorder 1 :: Tree a -> [a];
+preArr
+1
+::
+[Tree Prelude.Int] -> Data.Map.Map Prelude.Int Prelude.Int;
+preOrd
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Prelude.Int];
+preorder 1 :: Tree a -> [a];
+prune 0 :: [Tree Prelude.Int] -> [Tree Prelude.Int];
+reachable
+2
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> Prelude.Int ->
+[Prelude.Int];
+reverseE
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+[(Prelude.Int, Prelude.Int)];
+scc
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Tree Prelude.Int];
+topSort
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Prelude.Int];
+transposeG
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+Data.Map.Map Prelude.Int [Prelude.Int];
+undirected
+1
+::
+Data.Map.Map Prelude.Int [Prelude.Int] ->
+Data.Map.Map Prelude.Int [Prelude.Int];
+vertices
+0
+::
+Data.Map.Map Prelude.Int [Prelude.Int] -> [Prelude.Int];
+hiding data Prelude.Int;
+hiding data Data.Map.Map a b;
+hiding data Prelude.Bool;
+instance (Prelude.Eq a, Prelude.Eq b) => Prelude.Eq (Data.Map.Map a
+                                                                  b) {
+  (==) 2
+} {-# MODULE Data.Map #-};
+instance (Prelude.Read a,
+          Prelude.Read b) => Prelude.Read (Data.Map.Map a b) {
+  readsPrec 2
+} {-# MODULE Data.Map #-};
+instance (Prelude.Show a,
+          Prelude.Show b) => Prelude.Show (Data.Map.Map a b) {
+  showsPrec 2
+} {-# MODULE Data.Map #-};
+hiding class Prelude.Eq a;
+hiding class Prelude.Read a;
+hiding class Prelude.Show a;
+instance Prelude.Eq () {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b) => Prelude.Eq (a, b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b,
+          Prelude.Eq c) => Prelude.Eq (a, b, c) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c,
+          Prelude.Eq d) => Prelude.Eq (a, b, c, d) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e) => Prelude.Eq (a, b, c, d, e) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f) => Prelude.Eq (a, b, c, d, e, f) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f, Prelude.Eq g) => Prelude.Eq (a, b, c,
+                                                                   d, e, f, g) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq [a] {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Bool {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Char {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a,
+          Prelude.Eq b) => Prelude.Eq (Prelude.Either a b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Float {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.IOError {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Int {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq (Prelude.Maybe a) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Ordering {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read () {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b) => Prelude.Read (a, b) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b,
+          Prelude.Read c) => Prelude.Read (a, b, c) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d) => Prelude.Read (a, b, c, d) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d, Prelude.Read e) => Prelude.Read (a, b, c, d, e) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read a => Prelude.Read [a] {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Bool {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Char {
+  readList 1;
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a,
+          Prelude.Read b) => Prelude.Read (Prelude.Either a b) {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Float {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.IOError {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Int {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read a => Prelude.Read (Prelude.Maybe a) {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Ordering {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show () {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b) => Prelude.Show (a, b) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b,
+          Prelude.Show c) => Prelude.Show (a, b, c) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d) => Prelude.Show (a, b, c, d) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e) => Prelude.Show (a, b, c, d, e) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f) => Prelude.Show (a,
+                                                                           b, c, d, e, f) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f,
+          Prelude.Show g) => Prelude.Show (a, b, c, d, e, f, g) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f, Prelude.Show g,
+          Prelude.Show h) => Prelude.Show (a, b, c, d, e, f, g, h) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show a => Prelude.Show [a] {
+  showsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Bool {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Char {
+  showList 1;
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a,
+          Prelude.Show b) => Prelude.Show (Prelude.Either a b) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Float {
+  showsPrec 0
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.IOError {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Int {
+  showsPrec 0
+} {-# MODULE Prelude #-};
+instance Prelude.Show a => Prelude.Show (Prelude.Maybe a) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Ordering {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+hiding data Prelude.Char;
+hiding data Prelude.Either a b;
+hiding data Prelude.Float;
+hiding data Prelude.IOError;
+hiding data Prelude.Maybe a;
+hiding data Prelude.Ordering
+}

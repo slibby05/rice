@@ -1,0 +1,1 @@
+Prog "order_case" ["Prelude"] [] [Func ("order_case","f") 2 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","(,)") [TCons ("Prelude","[]") [TVar 1],TCons ("Prelude","[]") [TVar 2]]) (TVar 0))) (Rule [] (Var 0)),Func ("order_case","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

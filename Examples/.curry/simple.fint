@@ -1,0 +1,1 @@
+Prog "simple" ["Prelude"] [] [Func ("simple","myTrue") 0 Public (TCons ("Prelude","Bool") []) (Rule [] (Var 0)),Func ("simple","myOr") 2 Public (FuncType (TCons ("Prelude","Bool") []) (FuncType (TCons ("Prelude","Bool") []) (TCons ("Prelude","Bool") []))) (Rule [] (Var 0)),Func ("simple","main") 0 Public (TCons ("Prelude","Bool") []) (Rule [] (Var 0))] []

@@ -1,0 +1,4 @@
+interface deep-bind where {
+data Xint = Zero | Succ Xint | Pred Xint | Pair Xint Xint;
+main 0 :: Xint
+}

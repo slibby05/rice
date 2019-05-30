@@ -1,0 +1,12 @@
+{- AbstractCurry 2.0 -}
+CurryProg "Util"
+["Prelude"]
+Nothing
+ []
+ [CInstance ("Prelude","Functor") (CContext []) (CTCons ("Prelude","Maybe")) [CFunc ("","fmap") 2 Public (CQualType (CContext []) (CTCons ("Prelude","untyped"))) [CRule [CPVar (0,"_"),CPComb ("Prelude","Nothing") []] (CSimpleRhs (CSymbol ("Prelude","Nothing")) []),CRule [CPVar (1,"f"),CPComb ("Prelude","Just") [CPVar (2,"x")]] (CSimpleRhs (CApply (CSymbol ("Prelude","Just")) (CApply (CVar (1,"f")) (CVar (2,"x")))) [])]],
+  CInstance ("Prelude","Functor") (CContext []) (CTCons ("Prelude","IO")) [CFunc ("","fmap") 1 Public (CQualType (CContext []) (CTCons ("Prelude","untyped"))) [CRule [CPVar (0,"f")] (CSimpleRhs (CApply (CApply (CSymbol ("Prelude","flip")) (CSymbol ("Prelude",">>="))) (CApply (CApply (CSymbol ("Prelude",".")) (CSymbol ("Prelude","return"))) (CVar (0,"f")))) [])]]]
+ []
+ [CFunc ("Util","fork") 3 Public (CQualType (CContext []) (CFuncType (CFuncType (CTVar (0,"a")) (CTVar (1,"c"))) (CFuncType (CFuncType (CTVar (2,"b")) (CTVar (3,"d"))) (CFuncType (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (0,"a"))) (CTVar (2,"b"))) (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (1,"c"))) (CTVar (3,"d"))))))) [CRule [CPVar (0,"f"),CPVar (1,"g"),CPComb ("Prelude","(,)") [CPVar (2,"x"),CPVar (3,"y")]] (CSimpleRhs (CApply (CApply (CSymbol ("Prelude","(,)")) (CApply (CVar (0,"f")) (CVar (2,"x")))) (CApply (CVar (1,"g")) (CVar (3,"y")))) [])],
+  CFunc ("Util","mapFst") 1 Public (CQualType (CContext []) (CFuncType (CFuncType (CTVar (0,"a")) (CTVar (1,"c"))) (CFuncType (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (0,"a"))) (CTVar (2,"b"))) (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (1,"c"))) (CTVar (2,"b")))))) [CRule [CPVar (0,"f")] (CSimpleRhs (CApply (CApply (CSymbol ("Util","fork")) (CVar (0,"f"))) (CSymbol ("Prelude","id"))) [])],
+  CFunc ("Util","mapSnd") 1 Public (CQualType (CContext []) (CFuncType (CFuncType (CTVar (0,"b")) (CTVar (1,"d"))) (CFuncType (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (2,"a"))) (CTVar (0,"b"))) (CTApply (CTApply (CTCons ("Prelude","(,)")) (CTVar (2,"a"))) (CTVar (1,"d")))))) [CRule [CPVar (0,"g")] (CSimpleRhs (CApply (CApply (CSymbol ("Util","fork")) (CSymbol ("Prelude","id"))) (CVar (0,"g"))) [])]]
+ []

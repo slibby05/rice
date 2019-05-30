@@ -1,0 +1,21 @@
+{
+  "name": "rice",
+  "version": "0.0.1",
+  "author": "YOUR NAME <YOUR EMAIL ADDRESS>",
+  "synopsis": "PLEASE PROVIDE A ONE-LINE SUMMARY ABOUT THE PACKAGE",
+  "category": [ "Programming" ],
+  "license": "BSD-3-Clause",
+  "licenseFile": "LICENSE",
+  "dependencies": {
+        "flatcurry"          : ">= 2.0.0",
+        "setfunctions"       : ">= 0.0.1",
+        "wl-pprint"          : ">= 0.0.1",
+        "opt-parse"          : ">= 0.0.3",
+        "finite-map"         : ">= 0.0.1",
+        "currypp"            : ">= 2.0.0"
+  },
+    "executable": {
+        "name": "rice",
+        "main": "Main"
+    }
+}

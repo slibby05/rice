@@ -1,0 +1,6 @@
+interface or where {
+data color = Red | Green | Blue;
+main 0 :: (color, color);
+pick_l 0 :: color;
+pick_r 0 :: color
+}

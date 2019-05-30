@@ -1,0 +1,7 @@
+interface eqskel where {
+import Prelude;
+eqbool 2 :: Prelude.Bool -> Prelude.Bool -> Prelude.Bool;
+eqlist 2 :: [Prelude.Bool] -> [Prelude.Bool] -> Prelude.Bool;
+main 0 :: Prelude.Bool;
+hiding data Prelude.Bool
+}

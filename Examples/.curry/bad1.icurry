@@ -1,0 +1,5 @@
+interface bad1 where {
+import Prelude;
+f 1 :: Prelude.Int -> Prelude.Int;
+hiding data Prelude.Int
+}

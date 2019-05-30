@@ -1,0 +1,1 @@
+Prog "lean" ["Prelude"] [] [Func ("lean","t") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TCons ("Prelude","[]") [TVar 0])) (Rule [] (Var 0))] []

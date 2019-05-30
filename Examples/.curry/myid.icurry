@@ -1,0 +1,6 @@
+interface myid where {
+import Prelude;
+main 0 :: Prelude.Char;
+myid 1 :: a -> a;
+hiding data Prelude.Char
+}

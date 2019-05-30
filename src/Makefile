@@ -1,0 +1,3 @@
+
+all:
+	cypm install -x

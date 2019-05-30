@@ -1,0 +1,7 @@
+interface oper where {
+import Prelude;
+(!!!) 2 :: [a] -> Prelude.Int -> a;
+indexOf 2 :: [a] -> a -> Prelude.Int;
+main 0 :: Prelude.Int;
+hiding data Prelude.Int
+}

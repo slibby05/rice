@@ -1,0 +1,1 @@
+Prog "list_builder" ["Prelude"] [] [Func ("list_builder","build") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","[]") [TVar 1]) (FuncType (TCons ("Prelude","[]") [TVar 2]) (TVar 0)))) (Rule [] (Var 0))] []

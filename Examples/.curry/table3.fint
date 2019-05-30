@@ -1,0 +1,1 @@
+Prog "table3" ["Prelude"] [] [Func ("table3","g") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

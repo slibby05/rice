@@ -1,0 +1,1 @@
+Prog "lean" ["Prelude"] [] [Func ("lean","t") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TCons ("Prelude","[]") [TVar 0])) (Rule [1] (Let [(2,Comb ConsCall ("Prelude",":") [Comb FuncCall ("Prelude","apply") [Comb FuncCall ("Prelude","fromInt") [Var 1],Lit (Intc 2)],Comb ConsCall ("Prelude","[]") []])] (Comb FuncCall ("Prelude","++") [Var 2,Var 2])))] []

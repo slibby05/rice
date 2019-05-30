@@ -1,0 +1,1 @@
+Prog "triple" ["Prelude"] [Type ("triple","Color") Public [] [Cons ("triple","Red") 0 Public [],Cons ("triple","Green") 0 Public [],Cons ("triple","Blue") 0 Public []],Type ("triple","Pixel") Public [0,1,2] [Cons ("triple","Pixel") 3 Public [TVar 0,TVar 1,TVar 2]]] [] []

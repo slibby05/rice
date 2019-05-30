@@ -1,0 +1,30 @@
+interface variables where {
+import Prelude;
+fa 3 :: a -> a -> [b] -> (a, a);
+fb 3 :: a -> b -> [b] -> (a, b);
+main
+0
+::
+(Prelude.Num a, Prelude.Num b, Prelude.Num c) => ((a, a), (b, c));
+hiding class Prelude.Num a;
+instance Prelude.Num Prelude.Float {
+  fromInt 1;
+  signum 1;
+  abs 1;
+  negate 1;
+  (*) 2;
+  (-) 2;
+  (+) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Num Prelude.Int {
+  fromInt 1;
+  signum 1;
+  abs 1;
+  negate 1;
+  (*) 2;
+  (-) 2;
+  (+) 2
+} {-# MODULE Prelude #-};
+hiding data Prelude.Float;
+hiding data Prelude.Int
+}

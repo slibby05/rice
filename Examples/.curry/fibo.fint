@@ -1,0 +1,1 @@
+Prog "fibo" ["Prelude"] [] [Func ("fibo","fib") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Ord") [TVar 0]) (FuncType (TVar 0) (TVar 0)))) (Rule [] (Var 0)),Func ("fibo","main") 2 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Ord") [TVar 0]) (TVar 0))) (Rule [] (Var 0))] []

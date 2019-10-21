@@ -1,5 +1,0 @@
-interface use_prelude where {
-data Color = Red | Green | Blue;
-main 0 :: [Color];
-swap_by_two 1 :: [a] -> [a]
-}

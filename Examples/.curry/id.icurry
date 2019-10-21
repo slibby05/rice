@@ -1,3 +1,0 @@
-interface id where {
-id 1 :: a -> a
-}

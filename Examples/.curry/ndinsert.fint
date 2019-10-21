@@ -1,1 +1,0 @@
-Prog "ndinsert" ["Prelude"] [] [Func ("ndinsert","insert") 2 Public (FuncType (TVar 0) (FuncType (TCons ("Prelude","[]") [TVar 0]) (TCons ("Prelude","[]") [TVar 0]))) (Rule [] (Var 0))] []

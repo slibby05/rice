@@ -1,3 +1,0 @@
-interface ndinsert where {
-insert 2 :: a -> [a] -> [a]
-}

@@ -1,1 +1,0 @@
-Prog "nest-let-rec" ["Prelude"] [] [Func ("nest-let-rec","f") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TVar 0) (FuncType (TVar 0) (TVar 0)))) (Rule [] (Var 0)),Func ("nest-let-rec","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

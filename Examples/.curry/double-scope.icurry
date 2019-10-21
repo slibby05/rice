@@ -1,6 +1,0 @@
-interface double-scope where {
-import Prelude;
-f 1 :: [Prelude.Int] -> [Prelude.Int];
-main 0 :: [Prelude.Int];
-hiding data Prelude.Int
-}

@@ -1,6 +1,0 @@
-interface forshow where {
-import Prelude;
-forshow 2 :: [Prelude.Char] -> [[Prelude.Char]] -> [Prelude.Char];
-main 0 :: [Prelude.Char];
-hiding data Prelude.Char
-}

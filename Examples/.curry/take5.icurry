@@ -1,6 +1,0 @@
-interface take5 where {
-import Prelude;
-main 0 :: [Prelude.Char];
-take5 1 :: [a] -> [a];
-hiding data Prelude.Char
-}

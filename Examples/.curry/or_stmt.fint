@@ -1,1 +1,0 @@
-Prog "or_stmt" ["Prelude"] [] [Func ("or_stmt","f") 1 Public (FuncType (TCons ("Prelude","Int") []) (TCons ("Prelude","Int") [])) (Rule [] (Var 0)),Func ("or_stmt","main") 0 Public (TCons ("Prelude","Int") []) (Rule [] (Var 0))] []

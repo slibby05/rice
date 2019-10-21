@@ -1,7 +1,0 @@
-interface collapse where {
-import Prelude;
-fst 1 :: (a, b) -> a;
-main 0 :: (Prelude.Char, Prelude.Char);
-snd 1 :: (a, b) -> b;
-hiding data Prelude.Char
-}

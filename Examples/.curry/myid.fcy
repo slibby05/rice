@@ -1,1 +1,0 @@
-Prog "myid" ["Prelude"] [] [Func ("myid","myid") 1 Public (FuncType (TVar 0) (TVar 0)) (Rule [1] (Var 1)),Func ("myid","main") 0 Public (TCons ("Prelude","Char") []) (Rule [] (Comb FuncCall ("myid","myid") [Lit (Charc '\n')]))] []

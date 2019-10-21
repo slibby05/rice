@@ -1,8 +1,0 @@
-interface forjson where {
-import Prelude;
-data AB = A | B Prelude.Int;
-f 2 :: Prelude.Int -> AB -> Prelude.Int;
-g 1 :: AB -> Prelude.Int;
-main 0 :: Prelude.Int;
-hiding data Prelude.Int
-}

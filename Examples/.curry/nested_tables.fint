@@ -1,1 +1,0 @@
-Prog "nested_tables" ["Prelude"] [] [Func ("nested_tables","problem1") 4 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Ord") [TVar 0]) (FuncType (TCons ("Prelude","[]") [TVar 0]) (FuncType (TVar 0) (TCons ("Prelude","[]") [TVar 0]))))) (Rule [] (Var 0))] []

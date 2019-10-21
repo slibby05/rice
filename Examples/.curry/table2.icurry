@@ -1,3 +1,0 @@
-interface table2 where {
-g 0 :: [a]
-}

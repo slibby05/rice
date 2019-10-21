@@ -1,4 +1,0 @@
-interface triple where {
-data Color = Red | Green | Blue;
-data Pixel a b c = Pixel a b c
-}

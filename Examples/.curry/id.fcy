@@ -1,1 +1,0 @@
-Prog "id" ["Prelude"] [] [Func ("id","id") 1 Public (FuncType (TVar 0) (TVar 0)) (Rule [1] (Var 1))] []

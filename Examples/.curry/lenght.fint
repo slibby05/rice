@@ -1,1 +1,0 @@
-Prog "lenght" ["Prelude"] [] [Func ("lenght","length") 2 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","[]") [TVar 1]) (TVar 0))) (Rule [] (Var 0))] []

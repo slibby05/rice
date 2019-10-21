@@ -1,1 +1,0 @@
-Prog "selector_case" ["Prelude"] [] [Func ("selector_case","adder") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","Int") []) (FuncType (TCons ("Prelude","Int") []) (TVar 0)))) (Rule [] (Var 0)),Func ("selector_case","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

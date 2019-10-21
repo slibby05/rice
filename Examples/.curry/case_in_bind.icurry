@@ -1,6 +1,0 @@
-interface case_in_bind where {
-import Prelude;
-f 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
-main 0 :: Prelude.Int;
-hiding data Prelude.Int
-}

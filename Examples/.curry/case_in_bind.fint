@@ -1,1 +1,0 @@
-Prog "case_in_bind" ["Prelude"] [] [Func ("case_in_bind","f") 2 Public (FuncType (TCons ("Prelude","Int") []) (FuncType (TCons ("Prelude","Int") []) (TCons ("Prelude","Int") []))) (Rule [] (Var 0)),Func ("case_in_bind","main") 0 Public (TCons ("Prelude","Int") []) (Rule [] (Var 0))] []

@@ -1,1 +1,0 @@
-Prog "double-scope" ["Prelude"] [] [Func ("double-scope","f") 1 Public (FuncType (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (TCons ("Prelude","[]") [TCons ("Prelude","Int") []])) (Rule [] (Var 0)),Func ("double-scope","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Var 0))] []

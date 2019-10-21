@@ -1,1 +1,0 @@
-Prog "case" ["Prelude"] [] [Func ("case","break") 4 Public (FuncType (TCons ("Prelude","_Dict#Eq") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","_Dict#Num") [TVar 1]) (FuncType (TVar 0) (TVar 1))))) (Rule [] (Var 0)),Func ("case","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

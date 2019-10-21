@@ -1,1 +1,0 @@
-Prog "table-arg5" ["Prelude"] [] [Func ("table-arg5","g") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","[]") [TCons ("Prelude","Bool") []]) (FuncType (TCons ("Prelude","[]") [TCons ("Prelude","Bool") []]) (TVar 0)))) (Rule [] (Var 0))] []

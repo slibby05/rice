@@ -1,1 +1,0 @@
-Prog "table2-1" ["Prelude"] [] [Func ("table2-1","g") 2 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TCons ("Prelude","[]") [TVar 0]) (TCons ("Prelude","[]") [TVar 0]))) (Rule [] (Var 0)),Func ("table2-1","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TCons ("Prelude","[]") [TVar 0])) (Rule [] (Var 0))] []

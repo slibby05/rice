@@ -1,1 +1,0 @@
-Prog "bad5" ["Prelude"] [] [Func ("bad5","f") 3 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (FuncType (TVar 0) (FuncType (TCons ("Prelude","Bool") []) (TVar 0)))) (Rule [] (Var 0)),Func ("bad5","main") 1 Public (FuncType (TCons ("Prelude","_Dict#Num") [TVar 0]) (TVar 0)) (Rule [] (Var 0))] []

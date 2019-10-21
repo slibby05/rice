@@ -1,7 +1,0 @@
-interface nest where {
-data Color = Black | White | Gray;
-data List a = Nil | Cons a (List a);
-data Pair a b = Pair a b;
-main 0 :: List Color;
-nest 1 :: Pair a (List Color) -> List Color
-}

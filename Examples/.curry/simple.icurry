@@ -1,7 +1,0 @@
-interface simple where {
-import Prelude;
-main 0 :: Prelude.Bool;
-myOr 2 :: Prelude.Bool -> Prelude.Bool -> Prelude.Bool;
-myTrue 0 :: Prelude.Bool;
-hiding data Prelude.Bool
-}

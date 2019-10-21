@@ -12,8 +12,7 @@
         "wl-pprint"          : ">= 0.0.1",
         "opt-parse"          : ">= 0.0.3",
         "finite-map"         : ">= 0.0.1",
-        "currypp"            : ">= 2.0.0",
-        "icurry"             : ">= 2.0.0"
+        "currypp"            : ">= 2.0.0"
   },
     "executable": {
         "name": "rice",

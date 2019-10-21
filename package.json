@@ -1,9 +1,9 @@
 {
   "name": "rice",
   "version": "0.0.1",
-  "author": "YOUR NAME <YOUR EMAIL ADDRESS>",
+  "author": "Steven Libby <slibby@pdx.edu>",
   "synopsis": "PLEASE PROVIDE A ONE-LINE SUMMARY ABOUT THE PACKAGE",
-  "category": [ "Programming" ],
+  "category": [ "Compilers" ],
   "license": "BSD-3-Clause",
   "licenseFile": "LICENSE",
   "dependencies": {
@@ -12,7 +12,8 @@
         "wl-pprint"          : ">= 0.0.1",
         "opt-parse"          : ">= 0.0.3",
         "finite-map"         : ">= 0.0.1",
-        "currypp"            : ">= 2.0.0"
+        "currypp"            : ">= 2.0.0",
+        "icurry"             : ">= 2.0.0"
   },
     "executable": {
         "name": "rice",

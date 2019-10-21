@@ -18,10 +18,7 @@ type Edge    = (Vertex,Vertex)
 type Table a = Map Vertex a
 type Graph   = Table [Vertex]
 
--- Get the set of edges from the graph
--- I'm returning failed if v isn't in the graph
--- This seems like it will play better with functional logic code
--- (i.e. we can construct multiple graphs, and pick the right one)
+-- Get the neighborhood for the vertex v
 (!) :: Graph -> Vertex -> [Vertex]
 g ! v = findWithDefault [] v g
 

@@ -1,4 +1,8 @@
 
+
+appTest x = (f x) (g x)
+ where f x y = x
+       g x = x
 --test :: Int -> Int ->Int
 --test x = (x +)
 --q :: Int
@@ -28,7 +32,8 @@ loop = let a = b
            d = c
            e = f
            f = e
-       in a + c + e
+       in let g = a
+          in a + c + e + g
 
 data Color = Red | Green | Blue | Purple
  deriving (Eq,Show)
@@ -55,6 +60,10 @@ u x = case x of
            Green -> 2
            Blue -> 3
 
+w :: Color -> Int
+w x = case x of
+           Red -> 1
+           Green -> 2
 
 f :: a -> a
 f x = x
@@ -63,3 +72,28 @@ g = f True
 
 app :: (a -> b) -> a -> b
 app f x = f x
+
+
+caseAF x = fcase x of
+            Red    -> 1
+            Green  -> 2
+            Blue   -> 3
+            Purple -> 4
+
+caseAR x = case x of
+            Red    -> 1
+            Green  -> 2
+            Blue   -> 3
+            Purple -> 4
+
+caseLF x = fcase x of
+            1 -> Red   
+            2 -> Green 
+            3 -> Blue  
+            4 -> Purple
+
+caseLR x = case x of
+            1 -> Red   
+            2 -> Green 
+            3 -> Blue  
+            4 -> Purple

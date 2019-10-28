@@ -1,0 +1,96 @@
+module test
+
+import Prelude
+
+data test.BOOL
+  = test.TRUE 0
+  | test.FALSE 0
+
+data test.LIST
+  = test.NIL 0
+  | test.CONS 2
+
+function test.eqbool
+  param v1
+  param v2
+  v1 := ROOT[0]
+  v2 := ROOT[1]
+  case v1 of
+    test.TRUE -> case v2 of
+                   test.TRUE -> return NODE (TRUE)
+                   test.FALSE -> return NODE (FALSE)
+    test.FALSE -> case v2 of
+                    test.TRUE -> return NODE (FALSE)
+                    test.FALSE -> return NODE (TRUE)
+
+function test.eqlist
+  param v1
+  param v2
+  v1 := ROOT[0]
+  v2 := ROOT[1]
+  case v1 of
+    test.NIL -> case v2 of
+                  test.NIL -> return NODE (TRUE)
+                  test.CONS -> param v3
+                               param v4
+                               v3 := v2[0]
+                               v4 := v2[1]
+                               return NODE (FALSE)
+    test.CONS -> param v5
+                 param v6
+                 v5 := v1[0]
+                 v6 := v1[1]
+                 case v2 of
+                   test.NIL -> return NODE (FALSE)
+                   test.CONS -> param v7
+                                param v8
+                                v7 := v2[0]
+                                v8 := v2[1]
+                                return NODE (test.ifte
+                                            ,NODE (test.eqbool,v5,v7)
+                                            ,NODE (test.eqlist,v6,v8)
+                                            ,NODE (FALSE))
+
+function test.append
+  param v1
+  param v2
+  v1 := ROOT[0]
+  v2 := ROOT[1]
+  case v1 of
+    test.NIL -> return v2
+    test.CONS -> param v3
+                 param v4
+                 v3 := v1[0]
+                 v4 := v1[1]
+                 return NODE (CONS,v3,NODE (test.append,v4,v2))
+
+function test.ifte
+  param v1
+  param v2
+  param v3
+  v1 := ROOT[0]
+  v2 := ROOT[1]
+  v3 := ROOT[2]
+  case v1 of
+    test.TRUE -> return v2
+    test.FALSE -> return v3
+
+function test.ift
+  param v1
+  param v2
+  v1 := ROOT[0]
+  v2 := ROOT[1]
+  case v1 of
+    test.TRUE -> return v2
+    test.FALSE -> return NODE (EXEMPT)
+
+function test.last
+  param v1
+  free v2
+  free v3
+  v1 := ROOT[0]
+  return NODE (test.ift
+              ,NODE (test.eqlist
+                    ,v1
+                    ,NODE (test.append,v3,NODE (CONS,v2,NODE (NIL))))
+              ,v2)

@@ -16,7 +16,7 @@ typedef struct Table
     Symbol* symbols;
 } Table;
 
-Talbe* new_table()
+Table* new_table()
 {
     Table* sym_tab = (Table*)malloc(sizeof(Table));
     sym_tab->size = 0;
@@ -25,19 +25,20 @@ Talbe* new_table()
     return sym_tab;
 }
 
-void add_symbol(Table* symtab, const char* name, int arity, int* constant)
+void add_symbol(Table* symtab, const char* name, int arity, unsigned char* constant)
 {
     if(symtab->size == symtab->capacity)
     {
-        Symbol* new_symbols = (Symbol*)malloc(2*s->capacity*sizeof(Symbol));
+        Symbol* new_symbols = (Symbol*)malloc(2*symtab->capacity*sizeof(Symbol));
         memcpy(new_symbols, symtab->symbols, symtab->capacity*sizeof(Symbol));
         symtab->capacity *= 2;
+        free(symtab->symbols);
         symtab->symbols = new_symbols;
     }
-    constant = symtab->size;
+    *constant = symtab->size;
+    symtab->symbols[symtab->size].name = name;
+    symtab->symbols[symtab->size].arity = arity;
     symtab->size++;
-    symtab->symbols[s->size].name = name;
-    symtab->symbols[s->size].arity = arity;
 }
 
 #endif // SYMTAB_H

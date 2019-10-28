@@ -1,29 +1,20 @@
 #ifndef RUNTIME_H
 #define RUNTIME_H
-#include<memory.h>
+
 #include<stdbool.h>
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
+#include "node.h"
 #include "stack.h"
 #include "symtab.h"
 
-typedef unsigned char tag;
-
-typedef struct Node
-{
-    tag tag;
-    bool nondet;
-    unsigned char arity;
-    unsigned char index;
-    Node*[3] children;
-    void (*hnf)(Node*);
-} Node;
-
-const tag FAIL     = 0;
-const tag FUNCTION = 1;
-const tag FORWARD  = 2;
-const tag CHOICE   = 3;
-const tag FREE     = 4;
+const unsigned char FAIL     = 0;
+const unsigned char FUNCTION = 1;
+const unsigned char FORWARD  = 2;
+const unsigned char CHOICE   = 3;
+const unsigned char FREE     = 4;
 
 
 unsigned char FAIL_SYMBOL;
@@ -34,11 +25,11 @@ bool RUNTIME_SYMBOLS = false;
 
 
 
-void fail(Node* node);
+void fail(Node* node)
 {
     node->tag = FAIL;
     node->arity = 0;
-    node->index = FAIL_SYMBOL;
+    node->symbol = FAIL_SYMBOL;
     node->children[0] = NULL;
     node->children[1] = NULL;
     node->children[2] = NULL;
@@ -50,12 +41,12 @@ void set_node(Node* root, Node* rep)
     memcpy(root,rep,sizeof(Node));
 }
 
-void forward(Node* root, Node* n);
+void forward(Node* root, Node* n)
 {
     root->tag = FORWARD;
     root->nondet = true;
     root->arity = 0;
-    root->index = FORWARD_SYMBOL;
+    root->symbol = FORWARD_SYMBOL;
     root->children[0] = n;
     root->children[1] = NULL;
     root->children[2] = NULL;
@@ -65,7 +56,7 @@ void forward(Node* root, Node* n);
 void set_choice(Node* root, Node* left, Node* right)
 {
     root->tag = CHOICE;
-    root->index = CHOICE_SYMBOL;
+    root->symbol = CHOICE_SYMBOL;
     root->children[0] = left;
     root->children[1] = right;
     root->children[3] = NULL;
@@ -76,7 +67,7 @@ Node* make_choice(Node* left, Node* right)
 {
     Node* n = (Node*)malloc(sizeof(Node));
     n->tag = CHOICE;
-    n->index = CHOICE_SYMBOL;
+    n->symbol = CHOICE_SYMBOL;
     n->children[0] = left;
     n->children[1] = right;
     n->children[3] = NULL;
@@ -88,7 +79,7 @@ Node* free_var()
 {
     Node* n = (Node*)malloc(sizeof(Node));
     n->tag = FREE;
-    n->index = FREE_SYMBOL;
+    n->symbol = FREE_SYMBOL;
     n->children[0] = NULL;
     n->children[1] = NULL;
     n->children[3] = NULL;
@@ -131,13 +122,13 @@ void push_choice(Node* left, Node* right)
 // Then we recompute the nodes with the new choice.
 void undo()
 {
-    while(!bt_stack->top()->choice)
+    NodePair* frame = pop(bt_stack);
+    while(!frame->choice)
     {
-        NodePair* frame = bt_stack->pop();
-        memcpy(fram->left, fram->right, sizeof(Node));
+        memcpy(frame->lhs, frame->rhs, sizeof(Node));
+        frame = pop(bt_stack);
     }
-    NodePair* frame = bt_stack->pop();
-    memcpy(fram->left, fram->right, sizeof(Node));
+    memcpy(frame->lhs, frame->rhs, sizeof(Node));
 }
 
 
@@ -147,26 +138,53 @@ void undo()
 
 void add_runtime_symbols(Table* sym_tab)
 {
-    if(!RUNTIME_SYMBOLS) return;
+    if(RUNTIME_SYMBOLS) return;
 
-    add_symbol(symtab, "FAIL",    0, &FAIL_SYMBOL);
-    add_symbol(symtab, "forward", 1, &FORWARD_SYMBOL);
-    add_symbol(symtab, "?",       2, &CHOICE_SYMBOL);
-    add_symbol(symtab, "free",    0, &FREE_SYMBOL);
+    add_symbol(sym_tab, "FAIL",    0, &FAIL_SYMBOL);
+    add_symbol(sym_tab, "forward", 1, &FORWARD_SYMBOL);
+    add_symbol(sym_tab, "?",       2, &CHOICE_SYMBOL);
+    add_symbol(sym_tab, "free",    0, &FREE_SYMBOL);
 
     RUNTIME_SYMBOLS = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-void nf(Node* expr)
+
+int num_children(Node* n, Table* sym_tab)
 {
-    expr->hnf();
-    for(int i = 0; i < children(expr); i++)
+    return sym_tab->symbols[n->symbol].arity;
+}
+
+void print_expr(Node* n, Table* sym_tab)
+{
+    int num_c = num_children(n, sym_tab);
+    printf("%s", sym_tab->symbols[n->symbol].name);
+    if(num_c > 0)
+    {
+        printf("(");
+        for(int i = num_c-1; i >= 0; i--)
+        {
+            print_expr(n->children[i], sym_tab);
+            printf(", ");
+        }
+        print_expr(n->children[num_c-1], sym_tab);
+        printf(")");
+    }
+}
+
+void nf(Node* expr, Table* sym_tab)
+{
+    // if we're a constructor, then we don't ned to put ourselves in head normal form
+    if(expr->hnf)
+    {
+        expr->hnf(expr);
+    }
+    for(int i = num_children(expr, sym_tab)-1; i >= 0; i--)
     {
         if(expr->children[i])
         {
-            nf(expr->children[i]);
+            nf(expr->children[i], sym_tab);
             if(expr->children[i]->tag == FAIL)
             {
                 fail(expr);
@@ -178,41 +196,18 @@ void nf(Node* expr)
 void nf_all(Node* expr, Table* sym_tab)
 {
     bool solution = false;
-    nf(expr);
-    while(!empty(bt_stack))
+    nf(expr, sym_tab);
+    while(bt_stack->size > 0)
     {
         if(expr->tag != FAIL)
-        else
         {
-            print_expr(expr);
+            print_expr(expr, sym_tab);
             printf("\n");
         }
         undo();
     }
     if(!solution);
     printf("No solutions found\n");
-}
-
-int num_children(Node* n, Table* sym_tab)
-{
-    return sym_tab[n->index]->arity;
-}
-
-void print_expr(Node* n, Table* sym_tab)
-{
-    int num_c = num_children(n);
-    printf("\s", sym_tab[n->index]->name);
-    if(num_c > 0)
-    {
-        printf("(");
-        for(int i = 0; i < num_c; i++)
-        {
-            print_expr(n->children[i]);
-            print(", ");
-        }
-        print_expr(n->children[num_c-1]);
-        printf(")");
-    }
 }
 
 #endif //RUNTIME_H

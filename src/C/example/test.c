@@ -24,8 +24,8 @@
 //                    test.FALSE -> return NODE (TRUE)
 void eqbool_hnf(Node* root)
 {
-    Node* v1 = node();
-    Node* v2 = node();
+    Node* v1;
+    Node* v2;
     v1 = root->children[1];
     v2 = root->children[0];
 
@@ -33,7 +33,7 @@ void eqbool_hnf(Node* root)
                             &&FUN, 
                             &&FORWARD, 
                             &&CHOICE, 
-                            &&VAR, 
+                            &&FREE, 
                             &&TRUE, 
                             &&FALSE};
     goto *table[v1->tag];
@@ -67,47 +67,47 @@ void eqbool_hnf(Node* root)
 
     TRUE:
     {
-        static void* table[] = {&&FAIL, 
-                                &&FUN, 
-                                &&FORWARD, 
-                                &&CHOICE, 
-                                &&VAR, 
-                                &&TRUE, 
-                                &&FALSE};
+        static void* table_0[] = {&&FAIL_0, 
+                                  &&FUN_0, 
+                                  &&FORWARD_0, 
+                                  &&CHOICE_0, 
+                                  &&FREE_0, 
+                                  &&TRUE_0, 
+                                  &&FALSE_0};
         goto *table[v1->tag];
 
-        FAIL:
+        FAIL_0:
         fail(root);
         return;
 
-        FUN:
+        FUN_0:
         v2->hnf(v2);
         if(v2->nondet)
         {
             save(root);
         }
-        goto *table[v2->tag];
+        goto *table_0[v2->tag];
 
-        FORWARD:
+        FORWARD_0:
         while(v2->children[0]->tag == FORWARD)
             v2->children[0] = v1->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table[v2->tag];
+        goto *table_0[v2->tag];
 
-        CHOICE:
+        CHOICE_0:
         push_choice(v2, v2->children[1]);
-        set_node(v2->children[0]);
-        goto *table[v2->tag];
+        set_node(v2, v2->children[0]);
+        goto *table_0[v2->tag];
 
-        FREE:
+        FREE_0:
         push_choice(v2, make_FALSE());
         set_TRUE(v2);
 
-        TRUE:
+        TRUE_0:
         set_TRUE(root);
         return;
 
-        FALSE:
+        FALSE_0:
         set_FALSE(root);
         return;
     }
@@ -119,10 +119,10 @@ void eqbool_hnf(Node* root)
                                   &&FUN_1, 
                                   &&FORWARD_1, 
                                   &&CHOICE_1, 
-                                  &&VAR_1, 
+                                  &&FREE_1, 
                                   &&TRUE_1, 
                                   &&FALSE_1};
-        goto table_1[*v2->tag];
+        goto *table_1[v2->tag];
         FAIL_1:
         fail(root);
         return;
@@ -133,13 +133,13 @@ void eqbool_hnf(Node* root)
         {
             save(root);
         }
-        goto table_2[*v2->tag];
+        goto *table_1[v2->tag];
 
-        FORWARD:
+        FORWARD_1:
         while(v2->children[0]->tag == FORWARD)
             v2->children[0] = v1->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table[v2->tag];
+        goto *table_1[v2->tag];
 
         CHOICE_1:
         push_choice(v2, v2->children[1]);
@@ -191,16 +191,16 @@ void eqbool_hnf(Node* root)
 
 void eqlist_hnf(Node* root)
 {
-    Node* v1 = node();
-    Node* v2 = node();
-    v1 = root->chilren[1];
-    v2 = root->chilren[0];
+    Node* v1;
+    Node* v2;
+    v1 = root->children[1];
+    v2 = root->children[0];
 
     static void* table[] = {&&FAIL, 
                             &&FUN, 
                             &&FORWARD, 
                             &&CHOICE, 
-                            &&VAR, 
+                            &&FREE, 
                             &&NIL, 
                             &&CONS};
     goto *table[v1->tag];
@@ -239,7 +239,7 @@ void eqlist_hnf(Node* root)
                                   &&FUN_0,
                                   &&FORWARD_0,
                                   &&CHOICE_0,
-                                  &&VAR_0,
+                                  &&FREE_0,
                                   &&NIL_0,
                                   &&CONS_0};
         goto *table_0[v2->tag];
@@ -277,19 +277,21 @@ void eqlist_hnf(Node* root)
         return;
 
         CONS_0:
-        Node* v3 = node();
-        Node* v4 = node();
-        v3 = v2->children[1];
-        v4 = v2->children[0];
-        set_FALSE(root);
-        return;
+        {
+            Node* v3;
+            Node* v4;
+            v3 = v2->children[1];
+            v4 = v2->children[0];
+            set_FALSE(root);
+            return;
+        }
     }
 
 
     CONS:
     {
-        Node* v5 = node();
-        Node* v6 = node();
+        Node* v5;
+        Node* v6;
         v5 = v1->children[1];
         v6 = v1->children[0];
 
@@ -297,7 +299,7 @@ void eqlist_hnf(Node* root)
                                   &&FUN_1,
                                   &&FORWARD_1,
                                   &&CHOICE_1,
-                                  &&VAR_1,
+                                  &&FREE_1,
                                   &&NIL_1,
                                   &&CONS_1};
         goto *table_1[v2->tag];
@@ -335,14 +337,16 @@ void eqlist_hnf(Node* root)
         return;
 
         CONS_1:
-        Node* v7 = node();
-        Node* v8 = node();
-        v7 = v2->children[1];
-        v9 = v2->children[0];
-        set_ifte(root, make_eqbool(v5,v7),
-                       make_eqlist(v6,v8),
-                       make_FALSE());
-        return;
+        {
+            Node* v7;
+            Node* v8;
+            v7 = v2->children[1];
+            v8 = v2->children[0];
+            set_ifte(root, make_eqbool(v5,v7),
+                           make_eqlist(v6,v8),
+                           make_FALSE());
+            return;
+        }
     }
 }
 
@@ -373,16 +377,16 @@ void eqlist_hnf(Node* root)
 
 void append_hnf(Node* root)
 {
-    Node* v1 = node();
-    Node* v2 = node();
-    v1 = root->chilren[1];
-    v2 = root->chilren[0];
+    Node* v1;
+    Node* v2;
+    v1 = root->children[1];
+    v2 = root->children[0];
 
     static void* table[] = {&&FAIL, 
                             &&FUN, 
                             &&FORWARD, 
                             &&CHOICE, 
-                            &&VAR, 
+                            &&FREE, 
                             &&NIL, 
                             &&CONS};
     goto *table[v1->tag];
@@ -432,11 +436,11 @@ void append_hnf(Node* root)
             
     CONS:
     {
-        Node* v3 = node();
-        Node* v4 = node();
+        Node* v3;
+        Node* v4;
         v3 = v1->children[1];
         v4 = v1->children[0];
-        set_CONS(v3, make_append(v4, v2));
+        set_CONS(root, v3, make_append(v4, v2));
         return;
     }
 }
@@ -454,9 +458,9 @@ void append_hnf(Node* root)
 //    test.FALSE -> return v3
 void ifte_hnf(Node* root)
 {
-    Node* v1 = node();
-    Node* v2 = node();
-    Node* v3 = node();
+    Node* v1;
+    Node* v2;
+    Node* v3;
     v1 = root->children[2];
     v2 = root->children[1];
     v3 = root->children[0];
@@ -465,7 +469,7 @@ void ifte_hnf(Node* root)
                             &&FUN, 
                             &&FORWARD, 
                             &&CHOICE, 
-                            &&VAR, 
+                            &&FREE, 
                             &&TRUE, 
                             &&FALSE};
     goto *table[v1->tag];
@@ -547,7 +551,7 @@ void ift_hnf(Node* root)
                             &&FUN, 
                             &&FORWARD, 
                             &&CHOICE, 
-                            &&VAR, 
+                            &&FREE, 
                             &&TRUE, 
                             &&FALSE};
     goto *table[v1->tag];
@@ -596,7 +600,7 @@ void ift_hnf(Node* root)
 
     FALSE:
     {
-        set_failed(root);
+        fail(root);
     }
 }
 
@@ -613,13 +617,13 @@ void ift_hnf(Node* root)
 
 void last_hnf(Node* root)
 {
-    Node* v1 = node();
+    Node* v1;
     Node* v2 = free_var();
     Node* v3 = free_var();
 
     v1 = root->children[0];
 
-    set_ift(root, make_eqlist(v1, make_append(v3, make_CONS(v2, make_NIL()))));
+    set_ift(root, make_eqlist(v1, make_append(v3, make_CONS(v2, make_NIL()))), v2);
 }
 
 
@@ -628,40 +632,45 @@ void last_hnf(Node* root)
 //////////////////////////////////////////////////////////////////////////
 
 
-Table* make_sym_tab()
-{
-    Table* sym_tab = 
 
-
-void add_runtime_symbols(Table* sym_tab)
+void add_test_symbols(Table* sym_tab)
 {
     if(test_SYMBOLS) return;
 
     add_runtime_symbols(sym_tab);
 
-    add_symbol(symtab, "TRUE",   0, &TRUE_SYMBOL);
-    add_symbol(symtab, "FALSE",  0, &FALSE_SYMBOL);
-    add_symbol(symtab, "NIL",    0, &NIL_SYMBOL);
-    add_symbol(symtab, "CONS",   2, &CONS_SYMBOL);
-    add_symbol(symtab, "eqbool", 2, &eqbool_SYMBOL);
-    add_symbol(symtab, "eqlist", 2, &eqlist_SYMBOL);
-    add_symbol(symtab, "append", 2, &append_SYMBOL);
-    add_symbol(symtab, "ifte",   3, &ifte_SYMBOL);
-    add_symbol(symtab, "ift",    2, &ift_SYMBOL);
-    add_symbol(symtab, "last",   1, &last_SYMBOL);
+    add_symbol(sym_tab, "TRUE",   0, &TRUE_SYMBOL);
+    add_symbol(sym_tab, "FALSE",  0, &FALSE_SYMBOL);
+    add_symbol(sym_tab, "NIL",    0, &NIL_SYMBOL);
+    add_symbol(sym_tab, "CONS",   2, &CONS_SYMBOL);
+    add_symbol(sym_tab, "eqbool", 2, &eqbool_SYMBOL);
+    add_symbol(sym_tab, "eqlist", 2, &eqlist_SYMBOL);
+    add_symbol(sym_tab, "append", 2, &append_SYMBOL);
+    add_symbol(sym_tab, "ifte",   3, &ifte_SYMBOL);
+    add_symbol(sym_tab, "ift",    2, &ift_SYMBOL);
+    add_symbol(sym_tab, "last",   1, &last_SYMBOL);
     test_SYMBOLS = true;
 }
 
 int main()
 {
-    init_stack(bt_stack);
-    // last [True,True,True,False] should be False
-    expr = make_last(make_CONS(make_TRUE(), 
-                      make_CONS(make_TRUE(),
-                       make_CONS(make_TRUE(),
-                        make_CONS(make_FALSE(),
-                         make_NIL())))));
-    nf_all(expr);
+    bt_stack = new_stack();
+    Table* sym_tab = new_table();
+    add_test_symbols(sym_tab);
+    for(int i = 0; i < sym_tab->size; i++)
+    {
+        printf("%s\n", sym_tab->symbols[i].name);
+    }
+
+    //// last [True,True,True,False] should be False
+    //Node* expr = make_last(make_CONS(make_TRUE(), 
+    //                        make_CONS(make_TRUE(),
+    //                         make_CONS(make_TRUE(),
+    //                          make_CONS(make_FALSE(),
+    //                           make_NIL())))));
+    Node* expr = make_append(make_CONS(make_TRUE(), make_NIL()), 
+                             make_CONS(make_FALSE(), make_NIL()));
+    nf_all(expr, sym_tab);
 
     return 0;
 }

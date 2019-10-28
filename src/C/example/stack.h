@@ -1,8 +1,12 @@
 #ifndef STACK_H
 #define STACK_H
+
 #include<stddef.h>
 #include<stdbool.h>
-#include<memory.h>
+#include<stdlib.h>
+#include<string.h>
+
+#include "node.h"
 
 #define INIT_CAPACITY 20
 
@@ -13,7 +17,7 @@ typedef struct NodePair
     Node* rhs;
 } NodePair;
 
-typedef struct Stack;
+typedef struct
 {
     NodePair* array;
     size_t size;
@@ -37,7 +41,8 @@ void stack_push(Stack* s, Node* from, Node* rep, bool choice)
         NodePair* new_array = (NodePair*)malloc(2*s->capacity*sizeof(NodePair));
         memcpy(new_array, s->array, s->capacity*sizeof(NodePair));
         s->capacity *= 2;
-        a->array = new_array;
+        free(s->array);
+        s->array = new_array;
     }
     s->size++;
     s->array[s->size].choice = choice;

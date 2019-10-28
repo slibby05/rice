@@ -35,9 +35,9 @@ void set_TRUE(Node* node)
     node->tag = TRUE;
     node->arity = 0;
     node->symbol = TRUE_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
 }
 
@@ -48,9 +48,9 @@ Node* make_TRUE()
     node->nondet = false;
     node->arity = 0;
     node->symbol = TRUE_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
     return node;
 }
@@ -61,9 +61,9 @@ void set_FALSE(Node* node)
     node->tag = FALSE;
     node->arity = 0;
     node->symbol = FALSE_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
 }
 Node* make_FALSE()
@@ -73,9 +73,9 @@ Node* make_FALSE()
     node->nondet = false;
     node->arity = 0;
     node->symbol = FALSE_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
     return node;
 }
@@ -93,9 +93,9 @@ void set_NIL(Node* node)
     node->tag = NIL;
     node->arity = 0;
     node->symbol = NIL_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
 }
 Node* make_NIL()
@@ -105,9 +105,9 @@ Node* make_NIL()
     node->nondet = false;
     node->arity = 0;
     node->symbol = NIL_SYMBOL;
-    node->children[0] == NULL;
-    node->children[1] == NULL;
-    node->children[2] == NULL;
+    node->children[0] = NULL;
+    node->children[1] = NULL;
+    node->children[2] = NULL;
     node->hnf = NULL;
     return node;
 }
@@ -117,21 +117,21 @@ void set_CONS(Node* node, Node* v1, Node* v2)
     node->tag = CONS;
     node->arity = 0;
     node->symbol = CONS_SYMBOL;
-    node->children[0] == v2;
-    node->children[1] == v1;
-    node->children[2] == NULL;
+    node->children[0] = v2;
+    node->children[1] = v1;
+    node->children[2] = NULL;
     node->hnf = NULL;
 }
-Node* make_CONS(Node* v0, Node* v1)
+Node* make_CONS(Node* v1, Node* v2)
 {
     Node* node = (Node*)malloc(sizeof(Node));
     node->tag = CONS;
     node->nondet = false;
     node->arity = 0;
     node->symbol = CONS_SYMBOL;
-    node->children[0] == v0;
-    node->children[1] == v1;
-    node->children[2] == NULL;
+    node->children[0] = v2;
+    node->children[1] = v1;
+    node->children[2] = NULL;
     node->hnf = NULL;
     return node;
 }
@@ -258,6 +258,7 @@ Node* make_append(Node* v1, Node* v2)
     n->nondet = false;
     n->arity = 0;
     n->tag = FUNCTION;
+    n->symbol = append_SYMBOL;
     n->children[0] = v2;
     n->children[1] = v1;
     n->children[2] = NULL;
@@ -270,6 +271,7 @@ Node* make_eqlist(Node* v1, Node* v2)
     n->nondet = false;
     n->arity = 0;
     n->tag = FUNCTION;
+    n->symbol = eqlist_SYMBOL;
     n->children[0] = v2;
     n->children[1] = v1;
     n->children[2] = NULL;
@@ -282,6 +284,7 @@ Node* make_eqbool(Node* v1, Node* v2)
     n->nondet = false;
     n->arity = 0;
     n->tag = FUNCTION;
+    n->symbol = eqbool_SYMBOL;
     n->children[0] = v2;
     n->children[1] = v1;
     n->children[2] = NULL;

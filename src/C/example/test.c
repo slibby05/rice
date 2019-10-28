@@ -382,12 +382,12 @@ void append_hnf(Node* root)
     v1 = root->children[1];
     v2 = root->children[0];
 
-    static void* table[] = {&&FAIL, 
-                            &&FUN, 
-                            &&FORWARD, 
-                            &&CHOICE, 
-                            &&FREE, 
-                            &&NIL, 
+    static void* table[] = {&&FAIL,
+                            &&FUN,
+                            &&FORWARD,
+                            &&CHOICE,
+                            &&FREE,
+                            &&NIL,
                             &&CONS};
     goto *table[v1->tag];
 
@@ -421,7 +421,10 @@ void append_hnf(Node* root)
 
     NIL:
     {
-        v2->hnf(v2);
+        if(v2->tag == FUNCTION)
+        {
+            v2->hnf(v2);
+        }
         if(v2->nondet)
         {
             save(root);
@@ -503,7 +506,10 @@ void ifte_hnf(Node* root)
 
     TRUE:
     {
-        v2->hnf(v2);
+        if(v2->tag == FUNCTION)
+        {
+            v2->hnf(v2);
+        }
         if(v2->nondet)
         {
             save(root);
@@ -518,7 +524,10 @@ void ifte_hnf(Node* root)
 
     FALSE:
     {
-        v3->hnf(v3);
+        if(v3->tag == FUNCTION)
+        {
+            v3->hnf(v3);
+        }
         if(v3->nondet)
         {
             save(root);
@@ -585,7 +594,10 @@ void ift_hnf(Node* root)
 
     TRUE:
     {
-        v2->hnf(v2);
+        if(v2->tag == FUNCTION)
+        {
+            v2->hnf(v2);
+        }
         if(v2->nondet)
         {
             save(root);
@@ -657,10 +669,6 @@ int main()
     bt_stack = new_stack();
     Table* sym_tab = new_table();
     add_test_symbols(sym_tab);
-    for(int i = 0; i < sym_tab->size; i++)
-    {
-        printf("%s\n", sym_tab->symbols[i].name);
-    }
 
     //// last [True,True,True,False] should be False
     //Node* expr = make_last(make_CONS(make_TRUE(), 

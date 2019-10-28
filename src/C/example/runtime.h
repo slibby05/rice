@@ -122,6 +122,7 @@ void push_choice(Node* left, Node* right)
 // Then we recompute the nodes with the new choice.
 void undo()
 {
+    if(bt_stack->size == 0) return;
     NodePair* frame = pop(bt_stack);
     while(!frame->choice)
     {
@@ -163,12 +164,12 @@ void print_expr(Node* n, Table* sym_tab)
     if(num_c > 0)
     {
         printf("(");
-        for(int i = num_c-1; i >= 0; i--)
+        for(int i = num_c-1; i > 0; i--)
         {
             print_expr(n->children[i], sym_tab);
             printf(", ");
         }
-        print_expr(n->children[num_c-1], sym_tab);
+        print_expr(n->children[0], sym_tab);
         printf(")");
     }
 }
@@ -196,18 +197,20 @@ void nf(Node* expr, Table* sym_tab)
 void nf_all(Node* expr, Table* sym_tab)
 {
     bool solution = false;
-    nf(expr, sym_tab);
-    while(bt_stack->size > 0)
-    {
+    do {
+        nf(expr, sym_tab);
         if(expr->tag != FAIL)
         {
             print_expr(expr, sym_tab);
             printf("\n");
+            solution = true;
         }
         undo();
+    } while(bt_stack->size > 0);
+    if(!solution)
+    {
+        printf("No solutions found\n");
     }
-    if(!solution);
-    printf("No solutions found\n");
 }
 
 #endif //RUNTIME_H

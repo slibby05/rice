@@ -44,10 +44,10 @@ void stack_push(Stack* s, Node* from, Node* rep, bool choice)
         free(s->array);
         s->array = new_array;
     }
-    s->size++;
     s->array[s->size].choice = choice;
     s->array[s->size].lhs = from;
     s->array[s->size].rhs = rep;
+    s->size++;
 }
 
 NodePair* pop(Stack* s)

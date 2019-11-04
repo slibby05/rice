@@ -1,16 +1,39 @@
 #include "test.h"
+#include "debug.h"
 
-#include<stdio.h>
+#include <stdio.h>
 
 #include "runtime.h"
-#include "symtab.h"
+
+// rules for Non-determinism:
+// If all arguments in a case (needed nodes) are deterministic,
+// then I can just reduce
+// If any argument is non-deterministic (found by evaluating it)
+// then I mark this node as non-deterministic
+// If this node is deterministc, then the last thing I do vefore I update the
+// node is save it and a copy to the stack. This has to be the very last thing I
+// do.
+//
+// Suppose I were to save the node when the argument is evaluated
+// then we coudl have the function
+// solve2 True True = True
+//
+// ifI call (solve2 (False ? True) (False ? True)
+// Then I need to produce the single True answer.
+// Since both of the arguments are needed, and non-deterministic,
+// I need to be careful to not push solve2 onto the backtracking stack twice.
+// If I push after I've evaluated one of the arguments, then I will end up
+// pushing it twice.
+//
+// This means that I need to push after all of the arguments have been
+// evaluated.
 
 // eqbool TRUE  TRUE  = TRUE
 // eqbool TRUE  FALSE = FALSE
 // eqbool FALSE TRUE  = FALSE
 // eqbool FALSE FALSE = TRUE
 //
-//function test.eqbool
+// function test.eqbool
 //  param v1
 //  param v2
 //  v1 := ROOT[0]
@@ -24,89 +47,98 @@
 //                    test.FALSE -> return NODE (TRUE)
 void eqbool_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2;
     v1 = root->children[1];
     v2 = root->children[0];
 
     static void* table[] = {&&FAIL, 
-                            &&FUN, 
+                            &&FUN,  
                             &&FORWARD, 
-                            &&CHOICE, 
+                            &&CHOICE,
                             &&FREE, 
                             &&TRUE, 
-                            &&FALSE};
-    goto *table[v1->tag];
+                            &&FALSE };
+    goto* table[v1->symbol->tag];
 
     FAIL:
     fail(root);
     return;
 
     FUN:
-    v1->hnf(v1);
+    v1->symbol->hnf(v1);
     if(v1->nondet)
-    {
         save(root);
-    }
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FORWARD:
-    while(v1->children[0]->tag == FORWARD)
+    while(v1->children[0]->symbol->tag == FORWARD_TAG)
         v1->children[0] = v1->children[0]->children[0];
     v1 = v1->children[0];
-    goto *table[v1->tag];
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     CHOICE:
-    push_choice(v1, v1->children[1]);
-    set_node(v1, v1->children[0]);
-    goto *table[v1->tag];
+    choose(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     FREE:
     push_choice(v1, make_FALSE());
     set_TRUE(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     TRUE:
     {
         static void* table_0[] = {&&FAIL_0, 
                                   &&FUN_0, 
                                   &&FORWARD_0, 
-                                  &&CHOICE_0, 
+                                  &&CHOICE_0,
                                   &&FREE_0, 
                                   &&TRUE_0, 
                                   &&FALSE_0};
-        goto *table[v1->tag];
-
+        goto* table_0[v2->symbol->tag];
+    
         FAIL_0:
         fail(root);
         return;
-
+    
         FUN_0:
-        v2->hnf(v2);
+        v2->symbol->hnf(v2);
         if(v2->nondet)
-        {
             save(root);
-        }
-        goto *table_0[v2->tag];
-
+        goto* table_0[v2->symbol->tag];
+    
         FORWARD_0:
-        while(v2->children[0]->tag == FORWARD)
+        while(v2->children[0]->symbol->tag == FORWARD_TAG)
             v2->children[0] = v1->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table_0[v2->tag];
-
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
+    
         CHOICE_0:
-        push_choice(v2, v2->children[1]);
-        set_node(v2, v2->children[0]);
-        goto *table_0[v2->tag];
-
+        choose(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
+    
         FREE_0:
         push_choice(v2, make_FALSE());
         set_TRUE(v2);
-
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
+    
         TRUE_0:
         set_TRUE(root);
         return;
-
+    
         FALSE_0:
         set_FALSE(root);
         return;
@@ -114,41 +146,45 @@ void eqbool_hnf(Node* root)
 
     FALSE:
     {
-
         static void* table_1[] = {&&FAIL_1, 
                                   &&FUN_1, 
                                   &&FORWARD_1, 
                                   &&CHOICE_1, 
                                   &&FREE_1, 
                                   &&TRUE_1, 
-                                  &&FALSE_1};
-        goto *table_1[v2->tag];
+                                  &&FALSE_1 };
+        goto* table_1[v2->symbol->tag];
+
         FAIL_1:
         fail(root);
         return;
 
         FUN_1:
-        v2->hnf(v2);
+        v2->symbol->hnf(v2);
         if(v2->nondet)
-        {
             save(root);
-        }
-        goto *table_1[v2->tag];
+        goto* table_1[v2->symbol->tag];
 
         FORWARD_1:
-        while(v2->children[0]->tag == FORWARD)
+        while(v2->children[0]->symbol->tag == FORWARD_TAG)
             v2->children[0] = v1->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table_1[v2->tag];
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         CHOICE_1:
-        push_choice(v2, v2->children[1]);
-        set_node(v2, v2->children[0]);
-        goto *table_1[v2->tag];
+        choose(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         FREE_1:
         push_choice(v2, make_FALSE());
         set_TRUE(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         TRUE_1:
         set_FALSE(root);
@@ -160,8 +196,7 @@ void eqbool_hnf(Node* root)
     }
 }
 
-
-//function test.eqlist
+// function test.eqlist
 //  param v1
 //  param v2
 //  v1 := ROOT[0]
@@ -191,6 +226,7 @@ void eqbool_hnf(Node* root)
 
 void eqlist_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2;
     v1 = root->children[1];
@@ -198,85 +234,87 @@ void eqlist_hnf(Node* root)
 
     static void* table[] = {&&FAIL, 
                             &&FUN, 
-                            &&FORWARD, 
-                            &&CHOICE, 
-                            &&FREE, 
-                            &&NIL, 
+                            &&FORWARD,
+                            &&CHOICE,
+                            &&FREE,
+                            &&NIL,
                             &&CONS};
-    goto *table[v1->tag];
+
+    goto* table[v1->symbol->tag];
 
     FAIL:
     fail(root);
     return;
 
     FUN:
-    v1->hnf(v1);
+    v1->symbol->hnf(v1);
     if(v1->nondet)
-    {
         save(root);
-    }
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FORWARD:
-    while(v1->children[0]->tag == FORWARD)
+    while(v1->children[0]->symbol->tag == FORWARD_TAG)
         v1->children[0] = v1->children[0]->children[0];
     v1 = v1->children[0];
-    goto *table[v1->tag];
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     CHOICE:
-    push_choice(v1, v1->children[1]);
-    set_node(v1, v1->children[0]);
-    goto *table[v1->tag];
+    choose(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     FREE:
     push_choice(v1, make_CONS(free_var(), free_var()));
-    set_node(v1, make_NIL());
-    goto *table[v1->tag];
+    set_NIL(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     NIL:
     {
-        static void* table_0[] = {&&FAIL_0,
-                                  &&FUN_0,
-                                  &&FORWARD_0,
-                                  &&CHOICE_0,
-                                  &&FREE_0,
-                                  &&NIL_0,
-                                  &&CONS_0};
-        goto *table_0[v2->tag];
+        static void* table_0[] = { &&FAIL_0, &&FUN_0, &&FORWARD_0, &&CHOICE_0,
+            &&FREE_0, &&NIL_0, &&CONS_0 };
+        goto* table_0[v2->symbol->tag];
 
         FAIL_0:
         fail(root);
         return;
 
         FUN_0:
-        v2->hnf(v2);
+        v2->symbol->hnf(v2);
         if(v2->nondet)
-        {
             save(root);
-        }
-        goto *table[v2->tag];
+        goto* table_0[v2->symbol->tag];
 
         FORWARD_0:
-        while(v2->children[0]->tag == FORWARD)
+        while(v2->children[0]->symbol->tag == FORWARD_TAG)
             v2->children[0] = v2->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table[v2->tag];
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
 
         CHOICE_0:
-        push_choice(v2, v2->children[1]);
-        set_node(v2, v2->children[0]);
-        goto *table[v2->tag];
+        choose(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
 
         FREE_0:
         push_choice(v2, make_CONS(free_var(), free_var()));
         set_NIL(v2);
-        goto *table[v2->tag];
+        if(v2->nondet)
+            save(root);
+        goto* table_0[v2->symbol->tag];
 
         NIL_0:
         set_TRUE(root);
         return;
 
-        CONS_0:
+        CONS_0 : 
         {
             Node* v3;
             Node* v4;
@@ -287,7 +325,6 @@ void eqlist_hnf(Node* root)
         }
     }
 
-
     CONS:
     {
         Node* v5;
@@ -295,42 +332,40 @@ void eqlist_hnf(Node* root)
         v5 = v1->children[1];
         v6 = v1->children[0];
 
-        static void* table_1[] = {&&FAIL_1,
-                                  &&FUN_1,
-                                  &&FORWARD_1,
-                                  &&CHOICE_1,
-                                  &&FREE_1,
-                                  &&NIL_1,
-                                  &&CONS_1};
-        goto *table_1[v2->tag];
-
+        static void* table_1[] = { &&FAIL_1, &&FUN_1, &&FORWARD_1, &&CHOICE_1,
+            &&FREE_1, &&NIL_1, &&CONS_1 };
+        goto* table_1[v2->symbol->tag];
 
         FAIL_1:
         fail(root);
         return;
 
         FUN_1:
-        v2->hnf(v2);
+        v2->symbol->hnf(v2);
         if(v2->nondet)
-        {
             save(root);
-        }
-        goto *table[v2->tag];
+        goto* table_1[v2->symbol->tag];
 
         FORWARD_1:
-        while(v2->children[0]->tag == FORWARD)
+        while(v2->children[0]->symbol->tag == FORWARD_TAG)
             v2->children[0] = v2->children[0]->children[0];
         v2 = v2->children[0];
-        goto *table[v2->tag];
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         CHOICE_1:
-        push_choice(v2, v2->children[1]);
-        set_node(v2, v2->children[0]);
-        goto *table[v2->tag];
+        choose(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         FREE_1:
-        set_NIL(v2);
         push_choice(v2, make_CONS(free_var(), free_var()));
+        set_NIL(v2);
+        if(v2->nondet)
+            save(root);
+        goto* table_1[v2->symbol->tag];
 
         NIL_1:
         set_FALSE(root);
@@ -342,9 +377,7 @@ void eqlist_hnf(Node* root)
             Node* v8;
             v7 = v2->children[1];
             v8 = v2->children[0];
-            set_ifte(root, make_eqbool(v5,v7),
-                           make_eqlist(v6,v8),
-                           make_FALSE());
+            set_ifte(root, make_eqbool(v5, v7), make_eqlist(v6, v8), make_FALSE());
             return;
         }
     }
@@ -377,66 +410,67 @@ void eqlist_hnf(Node* root)
 
 void append_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2;
     v1 = root->children[1];
     v2 = root->children[0];
 
-    static void* table[] = {&&FAIL,
-                            &&FUN,
-                            &&FORWARD,
-                            &&CHOICE,
-                            &&FREE,
-                            &&NIL,
+    static void* table[] = {&&FAIL, 
+                            &&FUN, 
+                            &&FORWARD, 
+                            &&CHOICE, 
+                            &&FREE, 
+                            &&NIL, 
                             &&CONS};
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FAIL:
     fail(root);
     return;
 
     FUN:
-    v1->hnf(v1);
+    v1->symbol->hnf(v1);
     if(v1->nondet)
-    {
         save(root);
-    }
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FORWARD:
-    while(v1->children[0]->tag == FORWARD)
+    while(v1->children[0]->symbol->tag == FORWARD_TAG)
         v1->children[0] = v1->children[0]->children[0];
     v1 = v1->children[0];
-    goto *table[v1->tag];
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     CHOICE:
-    push_choice(v1, v1->children[1]);
-    set_node(v1, v1->children[0]);
-    goto *table[v1->tag];
+    choose(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     FREE:
     push_choice(v1, make_CONS(free_var(), free_var()));
-    set_node(v1, make_NIL());
-    goto *table[v1->tag];
+    set_NIL(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     NIL:
     {
-        if(v2->tag == FUNCTION)
-        {
-            v2->hnf(v2);
-        }
+        v2->symbol->hnf(v2);
         if(v2->nondet)
         {
             save(root);
-            forward(root,v2);
+            forward(root, v2);
         }
         else
         {
-            set_node(root,v2);
+            set_node(root, v2);
         }
         return;
     }
-            
+
     CONS:
     {
         Node* v3;
@@ -448,8 +482,7 @@ void append_hnf(Node* root)
     }
 }
 
-
-//function test.ifte
+// function test.ifte
 //  param v1
 //  param v2
 //  param v3
@@ -461,6 +494,7 @@ void append_hnf(Node* root)
 //    test.FALSE -> return v3
 void ifte_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2;
     Node* v3;
@@ -471,77 +505,76 @@ void ifte_hnf(Node* root)
     static void* table[] = {&&FAIL, 
                             &&FUN, 
                             &&FORWARD, 
-                            &&CHOICE, 
-                            &&FREE, 
-                            &&TRUE, 
+                            &&CHOICE,
+                            &&FREE,
+                            &&TRUE,
                             &&FALSE};
-    goto *table[v1->tag];
+
+    goto* table[v1->symbol->tag];
 
     FAIL:
     fail(root);
     return;
 
     FUN:
-    v1->hnf(v1);
+    v1->symbol->hnf(v1);
     if(v1->nondet)
-    {
         save(root);
-    }
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FORWARD:
-    while(v1->children[0]->tag == FORWARD)
+    while(v1->children[0]->symbol->tag == FORWARD_TAG)
         v1->children[0] = v1->children[0]->children[0];
     v1 = v1->children[0];
-    goto *table[v1->tag];
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     CHOICE:
-    push_choice(v1, v1->children[1]);
-    set_node(v1, v1->children[0]);
-    goto *table[v1->tag];
+    choose(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     FREE:
     push_choice(v1, make_FALSE());
     set_TRUE(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     TRUE:
     {
-        if(v2->tag == FUNCTION)
-        {
-            v2->hnf(v2);
-        }
+        v2->symbol->hnf(v2);
         if(v2->nondet)
         {
             save(root);
-            forward(root,v2);
+            forward(root, v2);
         }
         else
         {
-            set_node(root,v2);
+            set_node(root, v2);
         }
         return;
     }
 
     FALSE:
     {
-        if(v3->tag == FUNCTION)
-        {
-            v3->hnf(v3);
-        }
+        v3->symbol->hnf(v3);
         if(v3->nondet)
         {
             save(root);
-            forward(root,v3);
+            forward(root, v3);
         }
         else
         {
-            set_node(root,v3);
+            set_node(root, v3);
         }
         return;
     }
 }
 
-//function test.ift
+// function test.ift
 //  param v1
 //  param v2
 //  v1 := ROOT[0]
@@ -551,61 +584,64 @@ void ifte_hnf(Node* root)
 //    test.FALSE -> return NODE (EXEMPT)
 void ift_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2;
     v1 = root->children[1];
     v2 = root->children[0];
 
-    static void* table[] = {&&FAIL, 
-                            &&FUN, 
-                            &&FORWARD, 
-                            &&CHOICE, 
-                            &&FREE, 
-                            &&TRUE, 
+    static void* table[] = {&&FAIL,
+                            &&FUN,
+                            &&FORWARD,
+                            &&CHOICE,
+                            &&FREE,
+                            &&TRUE,
                             &&FALSE};
-    goto *table[v1->tag];
+
+    goto* table[v1->symbol->tag];
 
     FAIL:
     fail(root);
     return;
 
     FUN:
-    v1->hnf(v1);
+    v1->symbol->hnf(v1);
     if(v1->nondet)
-    {
         save(root);
-    }
-    goto *table[v1->tag];
+    goto* table[v1->symbol->tag];
 
     FORWARD:
-    while(v1->children[0]->tag == FORWARD)
+    while(v1->children[0]->symbol->tag == FORWARD_TAG)
         v1->children[0] = v1->children[0]->children[0];
     v1 = v1->children[0];
-    goto *table[v1->tag];
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     CHOICE:
-    push_choice(v1, v1->children[1]);
-    set_node(v1, v1->children[0]);
-    goto *table[v1->tag];
+    choose(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     FREE:
     push_choice(v1, make_FALSE());
     set_TRUE(v1);
+    if(v1->nondet)
+        save(root);
+    goto* table[v1->symbol->tag];
 
     TRUE:
     {
-        if(v2->tag == FUNCTION)
-        {
-            v2->hnf(v2);
-        }
+        v2->symbol->hnf(v2);
         if(v2->nondet)
         {
             save(root);
-            forward(root,v2);
+            forward(root, v2);
         }
         else
         {
-            set_node(root,v2);
+            set_node(root, v2);
         }
         return;
     }
@@ -616,7 +652,7 @@ void ift_hnf(Node* root)
     }
 }
 
-//function test.last
+// function test.last
 //  param v1
 //  free v2
 //  free v3
@@ -629,6 +665,7 @@ void ift_hnf(Node* root)
 
 void last_hnf(Node* root)
 {
+    debug_expr(LOW, root);
     Node* v1;
     Node* v2 = free_var();
     Node* v3 = free_var();
@@ -636,49 +673,25 @@ void last_hnf(Node* root)
     v1 = root->children[0];
 
     set_ift(root, make_eqlist(v1, make_append(v3, make_CONS(v2, make_NIL()))), v2);
+    root->symbol->hnf(root);
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // Runtime code
 //////////////////////////////////////////////////////////////////////////
 
-
-
-void add_test_symbols(Table* sym_tab)
-{
-    if(test_SYMBOLS) return;
-
-    add_runtime_symbols(sym_tab);
-
-    add_symbol(sym_tab, "TRUE",   0, &TRUE_SYMBOL);
-    add_symbol(sym_tab, "FALSE",  0, &FALSE_SYMBOL);
-    add_symbol(sym_tab, "NIL",    0, &NIL_SYMBOL);
-    add_symbol(sym_tab, "CONS",   2, &CONS_SYMBOL);
-    add_symbol(sym_tab, "eqbool", 2, &eqbool_SYMBOL);
-    add_symbol(sym_tab, "eqlist", 2, &eqlist_SYMBOL);
-    add_symbol(sym_tab, "append", 2, &append_SYMBOL);
-    add_symbol(sym_tab, "ifte",   3, &ifte_SYMBOL);
-    add_symbol(sym_tab, "ift",    2, &ift_SYMBOL);
-    add_symbol(sym_tab, "last",   1, &last_SYMBOL);
-    test_SYMBOLS = true;
-}
-
 int main()
 {
     bt_stack = new_stack();
-    Table* sym_tab = new_table();
-    add_test_symbols(sym_tab);
 
-    //// last [True,True,True,False] should be False
-    //Node* expr = make_last(make_CONS(make_TRUE(), 
-    //                        make_CONS(make_TRUE(),
-    //                         make_CONS(make_TRUE(),
-    //                          make_CONS(make_FALSE(),
-    //                           make_NIL())))));
-    Node* expr = make_append(make_CONS(make_TRUE(), make_NIL()), 
-                             make_CONS(make_FALSE(), make_NIL()));
-    nf_all(expr, sym_tab);
+    // last [True,True,True,False] should be False
+    Node* expr = make_last(make_CONS(make_TRUE(),
+                           make_CONS(make_TRUE(),
+                           make_CONS(make_TRUE(), 
+                           make_CONS(make_FALSE(), make_NIL())))));
+    //Node* expr = make_append(make_CONS(make_TRUE(), make_NIL()),
+    //                         make_CONS(make_FALSE(), make_NIL()));
+    nf_all(expr);
 
     return 0;
 }

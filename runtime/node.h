@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include<stdbool.h>
+
 struct Node;
 
 typedef struct

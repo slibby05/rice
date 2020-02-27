@@ -1,0 +1,296 @@
+\documentclass{article}
+\usepackage{qtree}
+\usepackage{amsmath}
+
+\begin{document}
+
+\section{Unboxing}
+Unboxing is a useful transformation that lets us deal with primitive values, 
+such as integers, characters, and floating point numbers in a more efficient manner.
+In a naive functional language implementation these operations are usually much too slow.
+To see what the problem is consider the following curry code:
+
+\begin{verbatim}
+1 + 2 + 3 + 4 + 5
+\end{verbatim}
+
+This seems harmless, and it should be relatively easy to evaluate.
+It's just adding five integers.
+However, This turns into the code:
+
+\begin{verbatim}
+(((1 +$ 2) +$ 3) +$ 4) +$ 5
+x +$ y = (prim_Int_plus $# v2) $# v1
+\end{verbatim}
+
+Why are there three layers of indirection?
+What are \texttt{prim\_Int\_plus}, and \texttt{\$\#}?
+This should be simple primitive addition.
+
+The problem is that an \texttt{Int} in Curry isn't really a primitive type.
+Because of lazy evaluation the expression \texttt{x + y} can't guarantee that
+\texttt x and \texttt y will be integer values.  They may be unevaluated expressions.
+Furthermore any value in Curry could be a failure.
+
+For these reasons a Curry \texttt{Int} is really a boxed type.
+That is, an \texttt{Int} is a \texttt{Node} whose tag is \texttt{Int}, and first child is the value of the integer.
+So, every time we use an integer, we're allocating memory on the heap.
+This is convenient for writing the compiler, because primitive types behave like every other type,
+but as we've seen it's inefficient.
+
+\begin{verbatim}
+x +$ y = (prim_Int_plus $# v2) $# v1
+\end{verbatim}
+
+The first function \texttt{+\$} is the implementation of the \texttt{+} operator for integer types.
+It takes two Integer expressions, and adds them together.
+The function \texttt{\$\#} evaluates it's argument to head normal form.
+Since the only head normal form for an integer is the integer value itself, this fully evaluates the argument.
+Finally \texttt{prim\_int\_plus} unboxes both of it's arguments, performs the primitive addition,
+and puts the result in a new box.
+
+The goal of the unboxing transformation is to remove these operations, 
+and replace them with primitive addition as much as possible.
+In the case of \texttt{1 +\$ 2}, we may be able to replace this with \texttt{prim\_Int\_plus 1 2},
+but this solution won't handle more general cases.
+Instead we are going to take advantage of another optimization.
+
+\subsection{Inlining}
+
+Inlining is crucial to getting good performance out of functional programs. \cite{inlining}
+In fact it subsumes several optimizations found in traditional compilers \cite{inlining, appelComp, appelCont}.
+The optimizations of constant folding, copy propagation, dead code elimination, and jump elimination are all
+no longer needed.
+
+While the concept of inlining is not very complicated, we simply replace call to a function with it's body,
+it's implementation tends to be tricky. \cite{inlining}
+It is helpful to distinguish a few different types of inlining.
+\begin{itemize}
+    \item function inlining:\\
+        $f\ x = b$\\
+        $... f\ e ...$\\
+        $\Rightarrow$\\
+        $\text{let } y = e \text{ in } ... b[x \to y] ...$\\
+        We replace a function call with it's body.
+        But we first bind the argument to a variable.
+    \item Case cancelling:\\
+        $\text{case } C x \text{ of }$\\
+        $\ \ ...$\\
+        $\ \ C y \rightarrow b$\\
+        $\ \ ...$\\
+        $\Rightarrow$\\
+        $\text{let } y = x \text{ in } b$\\
+        If we ever have a case applied to a constructor,
+        we can completely remove the case, and replace it with the correct branch.
+    \item Dead code elimination:\\
+        $\text{let } y = x \text{ in } ...$\\
+        $\Rightarrow$\\
+        $...$\\
+        If a let bound variable doesn't occur in an expression, then we can remove it entirely.
+    \item Variable inlining:\\
+        $\text{let } x = e_1 \text{ in } e_2 \Rightarrow e_2[x \to e_1]$
+        We can replace a let bound variable with its definition.
+\end{itemize}
+
+All of these optimizations are valid in a lazy functional language.
+However, this isn't true for a functional logic language.
+To see the problem consider the code:
+
+\begin{verbatim}
+double x = x + x
+double (0 ? 1)
+\end{verbatim}
+
+We can use function inlining to get:
+\begin{verbatim}
+double x = x + x
+let x = (0 ? 1) in x + x
+\end{verbatim}
+
+Dead code elimination can further shorten this to:
+\begin{verbatim}
+let x = (0 ? 1) in x + x
+\end{verbatim}
+
+This is still valid, however is we try to apply variable inlining we get
+\begin{verbatim}
+let x = (0 ? 1) in (0 ? 1) + (0 ? 1)
+\end{verbatim}
+
+This is not the same expression.
+We need to establish when these transformations are valid in Curry,
+and furthermore when they are useful.
+The problem is not entirely unique to function logic programming.
+While it's be valid, it would still be a bad idea to inline:
+\begin{verbatim}
+let x = ack 4 3
+in x + x
+\end{verbatim}
+
+First let's focus on when inlining is a valid transformation.
+It turns out that the only time inlining is invalid is if 
+the inlined expression is non-deterministic and has more than one parent.
+If an inlined expression is deterministic, then there is clearly no problems with inlining.
+If an inlined expression is non-deterministic, but has a single parent, then inlining is still valid.
+Since the node has one parent, it's not shared and safe to inline.
+
+An immediate consequence of this is that function inlining, case cancelling, and dead code elimination
+are always valid.  Both function inlining and case cancelling, the inlined node only has one parent,
+and dead code elimination was always valid.
+
+This means that the only possible problem comes from variable inlining.
+However, it's now easy to check if a variable can be inlined.
+If the expression defining the variable is deterministic, or the variable only occurs once,
+then it can be safely inlined.  This matches the results found by \cite{Inlining}
+
+\subsection*{case canceling}
+While inlining function can give some efficiency gains, it is more useful to expose other optimizations.
+In particular inlining makes it much easier to apply case canceling.
+Consider the following reductions
+
+\begin{verbatim}
+nonempty = not . null
+=> expand
+nonempty x = (not . null) x
+=> inline .
+nonempty x = let f = not 
+                 g = null
+             in f (g x)
+=> inline f, g
+nonempty x = let f = not 
+                 g = null
+             in not (null x)
+=> eliminate
+nonempty x = not (null x)
+=> inline null
+nonempty x = not (case x of
+                       [] -> True
+                       (_:_) -> False)
+=> inline not
+nonempty x = let y = (case x of
+                           [] -> True
+                           (_:_) -> False)
+             in case y of
+                     True -> False
+                     False -> True
+=> inline y
+nonempty x = let y = (case x of
+                           [] -> True
+                           (_:_) -> False)
+             in case (case x of
+                           [] -> True
+                           (_:_) -> False)
+                     True -> False
+                     False -> True
+=> eliminate y
+nonempty x = case (case x of
+                        [] -> True
+                        (_:_) -> False)
+                  True -> False
+                  False -> True
+=> case-in-case
+nonempty x = case x of
+                  [] -> case True of
+                             True -> False
+                             False -> True
+                  (_:_) -> case False of
+                             True -> False
+                             False -> True
+=> Case Cancelling
+nonempty x = case x of
+                  [] -> False
+                  (_:_) -> True
+\end{verbatim}
+
+This can take a long time, but eventually we got the code that we want for \texttt{nonempty}.
+However, It's important to note that the intermediate steps doesn't really save much time.
+It's not until we can actually cancel a case statement out that we save time.
+
+\subsection*{Unboxing as Case Canceling}
+
+Now that we have a mechanism for inlining and case canceling,
+it would be nice to apply it to inlining.
+This idea was proposed by Jones and Launchbury \cite{unboxing},
+and is pretty standard in lazy functional languages.
+
+As discussed previously the problem with unboxing is that boxed values are entirely implicit.
+The goal is to make the box explicit, and use case canceling to eliminate it.
+We achieve this by making a new type
+\begin{verbatim}
+data Int = Int Int#
+\end{verbatim}
+New \texttt{Int} is a boxed integer and \texttt{Int\#} is an unboxed integer.
+We can rewrite the integer addition from before using explicit case statements.
+\begin{verbatim}
+x +$ y = case x of
+              Int x# -> case y of
+                             Int y# -> Int (prim_int_plus x y)
+\end{verbatim}
+
+Now the variables \texttt x and \texttt y are boxed integers,
+and the variables \texttt{x\#} and \texttt{y\#} are unboxed integers.
+Aside from possible optimizations, this representation is useful for code generation.
+We don't have to worry about evaluating \texttt x or \texttt y to normal form.
+That's enforced by the case itself.
+The function \texttt{prim\_int\_plus} can now be replaced with normal integer addition in the generated C code.
+
+This works for primitive addition, but what about pattern matching.
+Well, literal patterns are handled in exactly the same way.
+Suppose we have the function:
+\begin{verbatim}
+f x = case x of
+           1 -> True
+           2 -> False
+           3 -> True
+\end{verbatim}
+
+This function is replaced by 
+\begin{verbatim}
+f x = case x of
+           Int x' -> case x' of
+                          1 -> True
+                          2 -> False
+                          3 -> True
+\end{verbatim}
+
+This transformation is easy to implement, and again helps in generating code.
+We've just made this explicit at the FlatCurry stage.
+
+So we have a transformation that works, and simplifies generating code, but how does it help with unboxing.
+Lets consider our original expression we were trying to optimize.
+
+
+\begin{verbatim}
+1 + 2 + 3 + 4 + 5
+\end{verbatim}
+the boxed version of this program is
+\begin{verbatim}
+(Int 1) + (Int 2) + (Int 3) + (Int 4) + (Int 5)
+\end{verbatim}
+after applying inlining we end up with
+\begin{verbatim}
+case (Int 1) of
+        (Int x1) -> case (Int 2) of
+           (Int x2) -> case (Int 3) of
+              (Int x3) -> case (Int 4) of
+                 (Int x4) -> case (Int 5) of
+                    (Int x5) -> Int 
+                                 (prim_int_add x1 
+                                  (prim_int_add x2
+                                   (prim_int_add x3
+                                    (prim_int_add x4 x5))))
+\end{verbatim}
+
+Now the case canceling becomes obvious,
+and we end up with:
+\begin{verbatim}
+Int (prim_int_add 1 (prim_int_add 2 (prim_int_add 3 (prim_int_add 4 5))))
+\end{verbatim}
+
+Even better, at this point we can apply constant folding and get:
+\begin{verbatim}
+15
+\end{verbatim}
+
+\end{document}
+

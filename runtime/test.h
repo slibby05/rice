@@ -39,7 +39,6 @@ static Symbol last_symbol   = { .tag = FUNCTION_TAG, .arity = 1, .name = "last",
 __attribute__((always_inline)) 
 static inline void set_TRUE(Node* root)
 {
-    root->missing = 0;
     root->symbol = &TRUE_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -49,7 +48,6 @@ static inline void set_TRUE(Node* root)
 __attribute__((always_inline)) 
 static inline void set_FALSE(Node* root)
 {
-    root->missing = 0;
     root->symbol = &FALSE_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -59,7 +57,6 @@ static inline void set_FALSE(Node* root)
 __attribute__((always_inline)) 
 static inline void set_NIL(Node* root)
 {
-    root->missing = 0;
     root->symbol = &NIL_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -69,7 +66,6 @@ static inline void set_NIL(Node* root)
 __attribute__((always_inline)) 
 static inline void set_CONS(Node* root, Node* v1, Node* v2)
 {
-    root->missing = 0;
     root->symbol = &CONS_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -79,7 +75,6 @@ static inline void set_CONS(Node* root, Node* v1, Node* v2)
 __attribute__((always_inline)) 
 static inline void set_eqbool(Node* root, Node* v1, Node* v2)
 {
-    root->missing = 0;
     root->symbol = &eqbool_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -89,7 +84,6 @@ static inline void set_eqbool(Node* root, Node* v1, Node* v2)
 __attribute__((always_inline)) 
 static inline void set_eqlist(Node* root, Node* v1, Node* v2)
 {
-    root->missing = 0;
     root->symbol = &eqlist_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -99,7 +93,6 @@ static inline void set_eqlist(Node* root, Node* v1, Node* v2)
 __attribute__((always_inline)) 
 static inline void set_append(Node* root, Node* v1, Node* v2)
 {
-    root->missing = 0;
     root->symbol = &append_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -109,7 +102,6 @@ static inline void set_append(Node* root, Node* v1, Node* v2)
 __attribute__((always_inline)) 
 static inline void set_ifte(Node* root, Node* v1, Node* v2, Node* v3)
 {
-    root->missing = 0;
     root->symbol = &ifte_symbol;
     root->children[0] = v3;
     root->children[1] = v2;
@@ -119,7 +111,6 @@ static inline void set_ifte(Node* root, Node* v1, Node* v2, Node* v3)
 __attribute__((always_inline)) 
 static inline void set_ift(Node* root, Node* v1, Node* v2)
 {
-    root->missing = 0;
     root->symbol = &ift_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -129,7 +120,6 @@ static inline void set_ift(Node* root, Node* v1, Node* v2)
 __attribute__((always_inline)) 
 static inline void set_last(Node* root, Node* v1)
 {
-    root->missing = 0;
     root->symbol = &last_symbol;
     root->children[0] = v1;
     root->children[1] = NULL;
@@ -145,7 +135,6 @@ static inline Node* make_TRUE()
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &TRUE_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -158,7 +147,6 @@ static inline Node* make_FALSE()
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &FALSE_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -171,7 +159,6 @@ static inline Node* make_NIL()
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &NIL_symbol;
     root->children[0] = NULL;
     root->children[1] = NULL;
@@ -184,7 +171,6 @@ static inline Node* make_CONS(Node* v1, Node* v2)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &CONS_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -197,7 +183,6 @@ static inline Node* make_eqbool(Node* v1, Node* v2)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &eqbool_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -210,7 +195,6 @@ static inline Node* make_eqlist(Node* v1, Node* v2)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &eqlist_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -223,7 +207,6 @@ static inline Node* make_append(Node* v1, Node* v2)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &append_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -236,7 +219,6 @@ static inline Node* make_ifte(Node* v1, Node* v2, Node* v3)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &ifte_symbol;
     root->children[0] = v3;
     root->children[1] = v2;
@@ -249,7 +231,6 @@ static inline Node* make_ift(Node* v1, Node* v2)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &ift_symbol;
     root->children[0] = v2;
     root->children[1] = v1;
@@ -262,7 +243,6 @@ static inline Node* make_last(Node* v1)
 {
     Node* root = (Node*)malloc(sizeof(Node));
     root->nondet = false;
-    root->missing = 0;
     root->symbol = &last_symbol;
     root->children[0] = v1;
     root->children[1] = NULL;

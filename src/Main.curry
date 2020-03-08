@@ -15,11 +15,14 @@ import Control.SetFunctions
 import FlatUtils.Normalize
 import FlatUtils.DataTable as DT
 
+import Optimize.Unboxing
+
 import Text.Pretty
 
-import ICurry.Types
+import Compile.ToICurry
+import Compile.ToC
+import Compile.ToH
 import ICurry.Pretty as IP
-import ICurry.ToICurry
 
 -- This does the same thing as main, it just lets me run it from Pakcs
 run :: String -> IO ()
@@ -30,7 +33,11 @@ run file = do (fcys,ofcys) <- readfcy_opt_imports file
               putStrLn (DT.showTable dt)
               putStrLn $ pPrint $ FP.ppProg FP.defaultOptions $ last fcys
 
-              let c_fcy = transform dt (last fcys)
+              let u_fcy = boxProg (last fcys)
+              print u_fcy
+              putStrLn "\n\nUNBOXED FLAT CURRY\n\n"
+              putStrLn $ pPrint $ FP.ppProg FP.defaultOptions u_fcy
+              let c_fcy = transform dt u_fcy
               putStrLn "\n\nTRANSFORMED FLAT CURRY\n\n"
               putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
 
@@ -54,14 +61,22 @@ main = do
         writeOpt SFlat opts (FP.ppProg FP.defaultOptions) (last fcys)
         --mapM_ (writeOpt SFlat opts (FP.ppProg defaultOptions)) fcys
 
-        let c_fcy = transform dt (last fcys)
+        let u_fcy = boxProg (last fcys)
+        print u_fcy
+        putStrLn "\n\nUNBOXED FLAT CURRY\n\n"
+        putStrLn $ pPrint $ FP.ppProg FP.defaultOptions u_fcy
+        let c_fcy = transform dt u_fcy
         putStrLn "\n\nTRANSFORMED FLAT CURRY\n\n"
         writeOpt STransformed opts (FP.ppProg FP.defaultOptions) c_fcy
 
         let icurry = toICurry c_fcy
         putStrLn "\n\nICURRY\n\n"
         --print icurry
-        writeOpt SICurry opts (IP.ppProg IP.defaultOptions) icurry
+        writeOpt SICurry opts ppIProg icurry
+
+        putStrLn "\n\nC\n\n"
+        writeCOpt opts toHeader (iname icurry ++".h") icurry
+        writeCOpt opts toSource (iname icurry ++".c") icurry
  where 
   writeOpt :: (Show a) => FileType -> [(Maybe String, FileType)] -> (a -> Doc) -> a -> IO ()
   writeOpt opt opts human prog = 
@@ -69,6 +84,12 @@ main = do
            Nothing             -> return ()
            (Just (Nothing, _)) -> putStrLn (pPrint (human prog))
            (Just (Just y, _))  -> writeFile y (pPrint (human prog))
+  writeCOpt :: [(Maybe String, FileType)] -> (IProg -> (String -> IO ()) -> (String -> IO ()) -> IO ()) -> String -> IProg -> IO ()
+  writeCOpt opts writer name prog = 
+      case find ((==SC) . snd) opts of
+           Nothing             -> return ()
+           (Just (Nothing, _)) -> writer prog putStr putStr
+           (Just (Just y, _))  -> writer prog (writeFile name) (appendFile name)
 
 --------------------------------------------------------------------
 -- Code for reading files

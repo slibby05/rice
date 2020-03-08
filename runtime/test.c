@@ -283,10 +283,12 @@ void eqlist_hnf(Node* root)
         goto* table_0[v2->symbol->tag];
 
         NIL_0:
-        if(v2->nondet)
-            save(root);
-        set_TRUE(root);
-        return;
+        {
+            if(v2->nondet)
+                save(root);
+            set_TRUE(root);
+            return;
+        }
 
         CONS_0 : 
         {
@@ -345,10 +347,12 @@ void eqlist_hnf(Node* root)
         goto* table_1[v2->symbol->tag];
 
         NIL_1:
-        if(v2->nondet)
-            save(root);
-        set_FALSE(root);
-        return;
+        {
+            if(v2->nondet)
+                save(root);
+            set_FALSE(root);
+            return;
+        }
 
         CONS_1:
         {

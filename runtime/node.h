@@ -16,9 +16,8 @@ typedef struct
 typedef struct Node
 {
     bool nondet;
-    unsigned char missing;
     Symbol* symbol;
-    struct Node* children[3];
+    struct Node* children[4];
 } Node;
 
 #endif // NODE_H

@@ -42,7 +42,7 @@ transform dt (Prog n is d fs ops) = Prog n is d fs' ops
 -- f x = let b = x
 --       in e1
 --
--- But this would be really innefficient, so we don't do that.
+-- But this would be really inefficient, so we don't do that.
 -- Instead we handle each transformation individually.
 -- The convection I'm using is
 -- Rule name:
@@ -193,7 +193,7 @@ rules body = (body,l) |=> fixAlias l
         l = Let (_++[(x, Var y)]++_) _
 rules body = (body, Case ct e bs) |=> Let [(x,e)] (Case ct (Var x) bs)
   where e = ccomb ? clit ? cor
-        x = (foldr max 0 (allVars body)) + 1
+        x = foldr max 0 (allVars body) + 1
         ct,bs free
 rules body = Nothing
 
@@ -277,7 +277,7 @@ fixAlias (Let (as++[(v,Var y)]++bs) e)
 --              y -> e2)
 -- =>
 -- case r of x -> f e1
---           y = f e2
+--           y -> f e2
 --
 -- let a = case r of x -> y
 --     in e

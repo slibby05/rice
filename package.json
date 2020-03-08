@@ -7,12 +7,13 @@
   "license": "BSD-3-Clause",
   "licenseFile": "LICENSE",
   "dependencies": {
+        "currypp"            : ">= 2.1.0",
         "flatcurry"          : ">= 2.0.0",
         "setfunctions"       : ">= 0.0.1",
         "wl-pprint"          : ">= 0.0.1",
         "opt-parse"          : ">= 0.0.3",
-        "finite-map"         : ">= 0.0.1",
-        "currypp"            : ">= 2.0.0"
+        "icurry"             : ">= 3.0.0",
+        "finite-map"         : ">= 0.0.1"
   },
     "executable": {
         "name": "rice",

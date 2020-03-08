@@ -1,6 +1,6 @@
 module FlatUtils.FlatRewrite (replace, subexpr, arbitrary, 
                               Path, fix, step, 
-                              allVars, freeVars, 
+                              allVars, allVarPaths, freeVars, 
                               sub, (@>), idSub) where
 
 import Control.SetFunctions
@@ -36,7 +36,7 @@ subexpr (Case _ _ (bs++[Branch _ e]++_)) = mapFst (length bs:) $ subexpr e
 -- replace takes an expression e, path p, and new expression w, and computes e[w]_p
 -- or it replaces the expression e at position p, with the expression w
 replace :: Expr -> Path -> Expr -> Expr
-replace _                []      w = w
+replace _             []      w = w
 replace (Free vs e)   ( 0:ps) w = Free vs (replace e ps w)
 replace (Or e1 e2)    ( 0:ps) w = Or (replace e1 ps w) e2
 replace (Or e1 e2)    ( 1:ps) w = Or e1 (replace e2 ps w)
@@ -144,6 +144,14 @@ allDecls = nub . sortValues . set1 declVar
 
 allVars :: Expr -> [VarIndex]
 allVars = nub . sortValues . set1 isVar
+
+isVarPath :: Expr -> (VarIndex, Path)
+isVarPath e
+ | subexpr e =:= (p, Var v) = (v, p)
+  where v, p free
+
+allVarPaths :: Expr -> [(VarIndex, Path)]
+allVarPaths = nub . sortValues . set1 isVarPath
 
 
 freeVars :: Expr -> [VarIndex]

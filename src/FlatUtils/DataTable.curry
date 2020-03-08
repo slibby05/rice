@@ -36,7 +36,15 @@ empty :: DataTable
 empty = (M.empty,M.empty)
 
 fillTable :: Prog -> DataTable -> DataTable
-fillTable (Prog _ _ ts _ _) dt = foldr addType dt ts
+fillTable (Prog _ _ ts _ _) dt = addPrimitives $ foldr addType dt ts
+
+addPrimitives :: DataTable -> DataTable
+addPrimitives (tmap, cmap) = (M.insert ("Prelude","Int") [("","int")] $
+                              M.insert ("Prelude","Char") [("","char")] $
+                              M.insert ("Prelude","Float") [("","flaot")] tmap,
+                              M.insert ("","int") ("Prelude","Int") $
+                              M.insert ("","char") ("Prelude","Char") $
+                              M.insert ("","float") ("Prelude","Float") cmap)
 
 addType :: TypeDecl -> DataTable -> DataTable
 addType (TypeSyn _ _ _ _) dt             = dt

@@ -6,7 +6,7 @@ import FlatUtils.FlatRewrite (allVarPaths)
 import FlatUtils.DataTable (exempt)
 import ICurry.Types
 import List
-
+import Sort (sort)
 
 
 -- Prog:
@@ -22,7 +22,7 @@ toICurry (Prog name imports types functions _) = IProg name imports itypes ifuns
        ifuns  = map toIFunction functions
 
 toIType :: TypeDecl -> Int -> IDataType
-toIType (Type (mn,tn) _ _ ctrs) i = IDataType (mn,tn,i) (zipWith toCtr ctrs [0..])
+toIType (Type (mn,tn) _ _ ctrs) i = IDataType (mn,tn,i) (zipWith toCtr (sort ctrs) [0..])
  where
   toCtr (Cons (m,c) a _ _) x = ((m,c,x),a)
 
@@ -114,7 +114,7 @@ toRet e
 
 toCase :: CaseType -> Expr -> [BranchExpr] -> IStatement
 toCase _ (Var v) bs
- | isADTBranch bs = ICaseCons v (zipWith toADTBranch bs [0..])
+ | isADTBranch bs = ICaseCons v (zipWith toADTBranch (sort bs) [0..])
  | otherwise      = ICaseLit  v (map toLitBranch bs)
  where
   isADTBranch = isConsPattern . branchPattern . head

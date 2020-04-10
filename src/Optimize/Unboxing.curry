@@ -76,3 +76,4 @@ litType :: Literal -> QName
 litType (Intc i)   = ("","int")
 litType (Charc c)  = ("","char")
 litType (Floatc f) = ("","float")
+

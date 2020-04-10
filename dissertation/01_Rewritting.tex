@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\def\N{\mathbb{N}}
+
+\begin{document}
+
+It's well know that when cooking It's very important to follow the rules.
+You don't need to stick to an exact recipe, 
+but you do need to know the how ingredients will react to temperature
+and how different combinations will taste.
+Otherwise you might get some unexpected reactions.
+
+Similarly There isn't a single way to compile Curry programs,
+however we do need to know the rules of the game.
+Throughout this compiler, I'll be transforming Curry programs
+in many different ways, and it's important to make sure that all
+of these transformations respect the rules of Curry.
+
+As we'll see, If we break these rules, 
+then we may get some unexpected results.
+
+\section{Rewriting}
+The semantics of Curry are generally given in terms of rewriting.
+\cite{?}
+While there are other semantics \cite{?}, 
+rewriting is generally a good fit for Curry.
+We'll give a general definition of a rewrite system,
+then we'll look at two distinct types of rewrite systems.
+A Term Rewrite System, which is used to implement transformations and optimizations
+on the Curry syntax trees;
+and a Graph Rewrite System, which defines the operational semantics for Curry programs.
+This will be mathematical foundation will help us justify the correctness of our transformations
+even in the presence of laziness, non-determinism, and free variables.
+
+An Abstract Rewrite System (ARS) is a set $A$ along with a relation $\rightarrow$.
+we write $a \rightarrow b$ instead of $(a,b) \in \rightarrow$, and we have several modifiers on our relation.
+\begin{itemize}
+    \item $a \rightarrow^n b$ iff $a = x_0 \rightarrow x_1 \rightarrow \ldots x_n = b$.
+    \item $a \rightarrow^{\le n} b$ iff $a \rightarrow^i b$ and $i \leq n$.
+    \item reflexive closure: $a \rightarrow^= b$ iff $a = b$ or $a \rightarrow b$.
+    \item symmetric closure: $a \leftrightarrow b$ iff $a \rightarrow b$ or $b \rightarrow a$.
+    \item transitive closure: $a \rightarrow^+ b$ iff $\exists n\in \N. a \rightarrow^n b$.
+    \item reflexive transitive closure: $a \rightarrow^* b$ iff $a \rightarrow^= b$ or $a \rightarrow^+ b$.
+\end{itemize}
+
+A rewrite system is meant to invoke the feeling of algebra.
+In fact, rewrite system are much more general, but the can still retain the feeling.
+If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the following reduction
+$(x\cdot x + 1)(2 + x) \rightarrow$ by commutativity of addition\\
+$(x\cdot x + 1)(x + 2) \rightarrow$ by definition of $x^2$\\
+$(x^2 + 1)(x + 2) \rightarrow$ by FOIL\\
+$x^2\cdot x + 2\cdot x^2 + 1\cdot x + 1 \cdot 2 \rightarrow$ by identity of multiplication\\
+$x^2\cdot x + 2x^2 + x + 2 \rightarrow$ by definition of $x^3$\\
+$x^3 + 2x^2 + x + 2$ \\
+
+So, we can conclude that $(x\cdot x + 1)(x + 2) \rightarrow^+ x^3 + 2x^2 + x + 2$.
+This idea of rewriting invokes the feel of algebraic rules.
+The mechanical process by rewriting allows for a straightforward implementation on a computer.
+So, it shouldn't be surprising that most systems have a pretty direct translation to rewrite systems.
+
+It's worth understanding the properties and limitations of these rewrite systems.
+Traditionally there are two important questions to answer about any rewrite system.
+Is it \textit{confluent}? Is it \textit{terminating}?
+A confluent system is a system where the order or the rewrites doesn't change the final result.
+For example consider the distributive rule.
+When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.\\
+$3\cdot(4 + 5) \rightarrow 3\cdot 4 + 3\cdot 5 \rightarrow 12 + 15 \rightarrow 27$\\
+$3\cdot(4 + 5) \rightarrow 3\cdot 9 \rightarrow 27$\\
+Both of these reductions arrived at the same answer.
+A terminating system will always
+
+\subsection{Term Rewriting}
+\subsection{Graph Rewriting}
+\end{document}

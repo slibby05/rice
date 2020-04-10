@@ -10,10 +10,10 @@ int main()
 {
     bt_stack = new_stack();
 
-    Node* expr = make_last(make_CONS(make_TRUE(),
-                           make_CONS(make_TRUE(),
-                           make_CONS(make_TRUE(),
-                           make_CONS(make_FALSE(), make_NIL())))));
+    Node* expr = make_test_last(make_test_CONS(make_test_TRUE(0),
+                                make_test_CONS(make_test_TRUE(0),
+                                make_test_CONS(make_test_TRUE(0),
+                                make_test_CONS(make_test_FALSE(0), make_test_NIL(0),0),0),0),0),0);
     nf_all(expr);
 
     return 0;

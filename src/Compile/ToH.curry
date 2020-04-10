@@ -4,14 +4,17 @@ module Compile.ToH (toHeader) where
 import ICurry.Types
 import List
 import Compile.C
+import FlatUtils.ReplacePrim (ignoredPrimOps)
+import Data.Map as M
 
 ----------------------------------------------------
 -- .h file
 ----------------------------------------------------
 
 toHeader :: IProg -> (String -> IO ()) -> (String -> IO ()) -> IO ()
-toHeader (IProg name imps types funs) write append
- = do makeIntro write name imps funs
+toHeader (IProg name imps types allFuns) write append
+ = do let funs = [fs | fs <- allFuns, not (iname fs `elem` ignoredPrimOps)]
+      makeIntro write name imps funs
       mapM_ (makeTags append) types 
       writeSymbols append types funs
       mapM_ (setType append) types 
@@ -21,6 +24,7 @@ toHeader (IProg name imps types funs) write append
       mapM_ (setTypeFree append) types 
       mapM_ (makeTypeFree append) types 
       append $ "#endif //"++name++"_H"
+ where iname (IFunction name _ _ _ _) = name
 
 makeIntro :: (String -> IO ()) -> String -> [String] -> [IFunction] -> IO ()
 makeIntro write name imps funs = write $ unlines $
@@ -59,9 +63,11 @@ writeSymbols append types funs = append $ unlines $
 
 set :: (IQName, Int) -> CStmt
 set (name,arity) 
- = unlines $ hfunDefn "void" ("set_"++mangle name) ((nodePtr, "root") : makeArgs [1..arity]) ++
+ = unlines $ [comment (uninstance name)] ++
+             hfunDefn "void" ("set_"++mangle name) ((nodePtr, "root") : makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
                [symbol "root" .= ("&"++mangle name++"_symbol") ++ ";"] ++
+               [missing "root" .= "missing" ++ ";"] ++
                makeArray True arity ++
                zipWith (\x y -> children "root" [x] .= var y ++ ";") [0..] (reverse [1 .. arity]) ++
                map (\x -> children "root" [x] .= "NULL;") [arity..2]
@@ -76,10 +82,12 @@ setFun append (IFunction name arity _ _ _) = append $ set (name,arity)
 
 make :: (IQName, Int) -> String
 make (name,arity) 
- = unlines $ hfunDefn nodePtr ("make_"++mangle name) (makeArgs [1..arity]) ++
+ = unlines $ [comment (uninstance name)] ++
+             hfunDefn nodePtr ("make_"++mangle name) (makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
-                 [(nodePtr ++ " root") .= ("("++nodePtr++") " ++ calloc 1) ++ ";",
-                  symbol "root" .= ("&"++ mangle name ++ "_symbol;")] ++
+                 [(nodePtr ++ " root") .= calloc_n 1 ++ ";",
+                  symbol "root" .= ("&"++ mangle name ++ "_symbol;"),
+                  missing "root" .= "missing" ++ ";"] ++
                  makeArray False arity ++
                  zipWith (\x y -> children "root" [x] .= var y ++ ";") [0..] (reverse [1..arity]) ++
                  ["return root;"]
@@ -99,7 +107,8 @@ setConFree :: (IQName, IArity) -> [CStmt]
 setConFree (n, a) = hfunDefn "void" ("set_"++mangle n++"_free") [(nodePtr, "root")] ++
                     cblock 
                     (
-                        [symbol "root" .= "&"++mangle n++"_symbol;"] ++
+                        [symbol "root" .= "&"++mangle n++"_symbol;",
+                         missing "root" .= "0" ++ ";"] ++
                         makeArray True a ++
                         map (\x -> children "root" [x] .= "free_var();") [0..a-1]
                     ) ++
@@ -112,8 +121,9 @@ makeConFree :: (IQName, IArity) -> [CStmt]
 makeConFree (n, a) = hfunDefn nodePtr ("make_"++mangle n++"_free") [] ++
                      cblock 
                      (
-                         ["Node* root" .= (calloc 1) ++ ";",
-                          symbol "root" .= "&"++mangle n++"_symbol;"] ++
+                         ["Node* root" .= calloc_n 1 ++ ";",
+                          symbol "root" .= "&"++mangle n++"_symbol;",
+                          missing "root" .= "0" ++ ";"] ++
                          makeArray False a ++
                          map (\x -> children "root" [x] .= "free_var();") [0..a-1] ++
                          ["return root;"]
@@ -129,7 +139,7 @@ makeArgs = map (\v -> (nodePtr, var v))
 
 makeArray :: Bool -> Int -> [String]
 makeArray nullable arity
- | arity > 4 = ["root->children[3]" .= calloc (arity - 3) ++ ";"]
- | nullable  = ["root->children[3]" .= "NULL;"]
+ | arity > 3 = ["root->children[3].a" .= calloc_f (arity - 3) ++ ";"]
+ | nullable  = ["root->children[3].a" .= "NULL;"]
  | otherwise = []
 

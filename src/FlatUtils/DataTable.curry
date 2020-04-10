@@ -41,7 +41,7 @@ fillTable (Prog _ _ ts _ _) dt = addPrimitives $ foldr addType dt ts
 addPrimitives :: DataTable -> DataTable
 addPrimitives (tmap, cmap) = (M.insert ("Prelude","Int") [("","int")] $
                               M.insert ("Prelude","Char") [("","char")] $
-                              M.insert ("Prelude","Float") [("","flaot")] tmap,
+                              M.insert ("Prelude","Float") [("","float")] tmap,
                               M.insert ("","int") ("Prelude","Int") $
                               M.insert ("","char") ("Prelude","Char") $
                               M.insert ("","float") ("Prelude","Float") cmap)
@@ -64,6 +64,16 @@ getCons dtype (tmap,cmap) = M.findWithDefault cerror dtype tmap
 fillCons :: QName -> DataTable -> [QName]
 fillCons cons cmap = getCons (getType cons cmap) cmap
 
+
 showTable :: DataTable -> String
-showTable (tmap,cmap) = "DATA TYPES:\n"   ++ show (M.toList tmap) ++ "\n" ++
-                        "CONSTRUCTORS:\n" ++ show (M.toList cmap) ++ "\n"
+showTable (tmap,_) = concatMap showType (M.toList tmap)
+
+showType :: (QName,[QName]) -> String
+showType (t,[]) = "data " ++ showQ t ++ "\n\n"
+showType (t,(c:cs)) = datat ++ "= " ++ showQ c ++ "\n" ++ 
+                      concatMap (\x -> indent ++ "| " ++ showQ x ++ "\n") cs ++ "\n"
+ where datat = "data " ++ showQ t ++ " "
+       indent = map (const ' ') datat
+       
+showQ :: QName -> String
+showQ (m,d) = m++"."++d

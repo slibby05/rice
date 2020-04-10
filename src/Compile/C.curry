@@ -1,7 +1,7 @@
 module Compile.C where
 
 import ICurry.Types 
-import List (intercalate)
+import List (intercalate, isPrefixOf, splitOn)
 
 
 type CType = String
@@ -76,15 +76,24 @@ cinclude file = "#include \"" ++ file ++ ".h\""
 cdefine :: CName -> Int -> CStmt
 cdefine name val = "#define " ++ name ++ " " ++ show val
 
-children :: CName -> [Int] -> CStmt
+children :: CName -> [Int] -> CExpr
 children node xs = foldl childAt node xs
- where childAt x y
-        | y < 3 =  x ++ "->children[" ++ show y ++ "]"
-        | otherwise = ("((Node**)(" ++ x ++ "->children[3]))[" ++ show (y-3) ++ "]")
+ where childAt x y = "child_at_n("++x++", "++show y++")"
+
+child_t :: CType -> CName -> CExpr
+child_t "int" node   = "child_at_i("++node++",0)"
+child_t "char" node  = "child_at_c("++node++",0)"
+child_t "float" node = "child_at_f("++node++",0)"
 
 -------------------------------------------------------------------------
 -- statements
 -------------------------------------------------------------------------
+
+comment :: String -> CStmt
+comment str = "// " ++ str
+
+big_comment :: [String] -> [CStmt]
+big_comment strs = ["/*"] ++ map (" * "++) strs ++ [" */"]
 
 call :: CName -> [CExpr] -> CExpr
 call name es = name ++ cargs es
@@ -92,8 +101,10 @@ call name es = name ++ cargs es
 scall :: CName -> [CExpr] -> CStmt
 scall name es = name ++ cargs es ++ ";"
 
-calloc :: Int -> CExpr
-calloc num = "(Node*)calloc("++show num++", sizeof(Node))"
+calloc_n :: Int -> CExpr
+calloc_n num = "(Node*)calloc("++show num++", sizeof(Node))"
+calloc_f :: Int -> CExpr
+calloc_f num = "(field*)calloc("++show num++", sizeof(field))"
 
 
 creturn :: CStmt
@@ -161,7 +172,9 @@ carray :: [CExpr] -> CExpr
 carray xs = "{" ++ list xs ++ "}"
 
 ccast :: CType -> CExpr -> CExpr
-ccast ctype e = "("++ctype++")"++e
+ccast "int" e = "(long)"++e
+ccast "char" e = "(char)"++e
+ccast "float" e = "*(double*)&"++e
 
 ---------------------------------------------------
 -- curry specific
@@ -196,6 +209,9 @@ symarity v = v ++ "->symbol->arity"
 
 nondet :: CExpr -> CExpr
 nondet v = v ++ "->nondet"
+
+missing :: CExpr -> CExpr
+missing v = v ++ "->missing"
 
 ----------------------------------------------------
 -- Name mangling
@@ -250,3 +266,14 @@ nameMangle = concatMap mangleChar
 
 mangle :: IQName -> String
 mangle (q,n,_) = nameMangle q ++ "_" ++ nameMangle n
+
+uninstance :: IQName -> String
+uninstance (_,n,_)
+ | isPrefixOf "_inst" n = "instance of " ++ unclass (ps!!1) ++ " for " ++ unclass (ps!!2)
+ | isPrefixOf "_impl" n = "implementation of " ++ (ps!!1) ++ " in " ++ unclass (ps!!2) ++ " for " ++ unclass (ps!!3)
+ | isPrefixOf "_def" n  = "default for " ++ unclass (ps!!1) ++ " in " ++ unclass (ps!!2)
+ | otherwise            = n
+  where ps = splitOn "#" n
+        unclass s
+         | '.' `elem` s = tail (dropWhile (/='.') s)
+         | otherwise    = s

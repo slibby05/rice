@@ -1,6 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include <stdio.h>
 #define LOW  1
 #define MED  2
 #define HIGH 3

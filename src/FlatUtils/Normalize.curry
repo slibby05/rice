@@ -193,8 +193,11 @@ rules body = (body,l) |=> fixAlias l
         l = Let (_++[(x, Var y)]++_) _
 rules body = (body, Case ct e bs) |=> Let [(x,e)] (Case ct (Var x) bs)
   where e = ccomb ? clit ? cor
-        x = foldr max 0 (allVars body) + 1
+        x = foldr max 0 (allNames body) + 1
         ct,bs free
+rules body = (body, Comb ct ("Prelude","apply") (Comb _ ("Prelude","apply") as : bs)) |=> 
+                    (Comb ct ("Prelude","apply") (as++bs))
+  where ct,n,as,bs,vs,e free
 rules body = Nothing
 
 -- Case in Case:

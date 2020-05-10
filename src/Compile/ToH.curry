@@ -32,7 +32,7 @@ makeIntro write name imps funs = write $ unlines $
                                      "#define "++name++"_H",
                                      "",
                                      cinclude "runtime"] ++
-                                     map cinclude (filter (/="Prelude") imps) ++
+                                     map cinclude imps ++
                                      nl ++
                                      map declareFun funs ++
                                      nl

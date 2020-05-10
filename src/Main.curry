@@ -46,6 +46,7 @@ main = do
 compileAll :: String -> [FileType] -> IO ()
 compileAll file args = 
   do fcys <- readfcy_opt_imports file
+     home <- getEnviron "HOME"
      print (length fcys)
      mapM_ (\(p,b) -> putStrLn ((getMod p) ++ ": " ++ show b)) fcys
      let dt = foldr DT.fillTable DT.empty (map fst fcys)
@@ -55,6 +56,12 @@ compileAll file args =
          else return ()
      mapM_ (compileOpt dt)       [opt | (opt,False) <- fcys]
      mapM_ (compileFlat dt args) [fcy | (fcy,True) <- fcys]
+     writeMain (home++"/.rice/main.c") file
+     let inc = home++"/.rice/" 
+     let files = [inc++x++".c" | x <- ((map (getMod . fst) fcys) ++ ["main", "runtime", "stack", "external"])]
+     putStrLn $ "gcc -I"++inc++" " ++ unwords files ++ " -o " ++ file
+     system $ "gcc -I"++inc++" " ++ unwords files ++ " -o " ++ file
+     return ()
 
 
 compileOpt :: DT.DataTable -> Prog -> IO ()

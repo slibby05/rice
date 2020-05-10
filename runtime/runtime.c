@@ -34,8 +34,6 @@ void apply_hnf(Node* root)
 {
     debug(LOW, "apply ");
     Node* f = child_at_n(root,0);
-    // number of arguments that we're applying
-    int nargs = root->missing;
 
     static void* table[] = {&&FAIL, &&FUNCTION, &&FORWARD, &&CHOICE, &&FREE};
     
@@ -95,6 +93,12 @@ void apply_hnf(Node* root)
             save(root);
         }
 
+        // number of arguments that we're applying
+        int nargs = -root->missing;
+        debug(LOW, "apply: ");
+        debug_expr(LOW, f);
+        debug(LOW, "/%d\n", nargs);
+
         //the actual function to apply
         int arity = f->symbol->arity;
 
@@ -112,11 +116,11 @@ void apply_hnf(Node* root)
             field* array = root->children[3].a;
             if(arity > 3)
             {
-                root->children[3].n = (Node*)calloc(arity-3, sizeof(Node*));
+                root->children[3].a = (field*)calloc(arity-3, sizeof(field));
             }
             else
             {
-                root->children[3].n = NULL;
+                root->children[3].a = NULL;
             }
 
             for(int i = arity-1; i >= missing; i--)
@@ -135,9 +139,9 @@ void apply_hnf(Node* root)
             }
             //missing has to be at least 1, otherwise there'd be no apply node
             set_child_at(root,missing-1, child_at(root,1));
-            debug_expr(LOW, child_at(root,1).n);
-            printf("%d\n", missing);
             missing--;
+            debug_expr(LOW, child_at(root,1).n);
+            debug(LOW, "%d\n", missing);
             root->symbol = f->symbol;
             root->nondet = root->nondet | f->nondet;
             root->missing = missing;
@@ -154,7 +158,7 @@ void apply_hnf(Node* root)
             field* array = root->children[3].a;
             if(arity > 3)
             {
-                root->children[3].n = (Node*)calloc(arity-3, sizeof(Node*));
+                root->children[3].a = (field*)calloc(arity-3, sizeof(field));
             }
             else
             {
@@ -163,7 +167,7 @@ void apply_hnf(Node* root)
             
             child_at(root,0) = child_at(root,1);
             child_at(root,1) = child_at(root,2);
-            for(int i = 2; i <= nargs; i++)
+            for(int i = 2; i < nargs; i++)
             {
                 set_child_at(root,i, array[i-2]);
             }
@@ -174,7 +178,7 @@ void apply_hnf(Node* root)
             }
             root->symbol = f->symbol;
             root->nondet = root->nondet | f->nondet;
-            root->missing = missing;
+            root->missing = 0;
             root->symbol->hnf(root);
             return;
         }
@@ -210,6 +214,7 @@ void apply_hnf(Node* root)
             newf->missing = 0;
             newf->symbol->hnf(newf);
             child_at_n(root,0) = newf;
+            root->missing = -nargs;
             f = newf;
             debug(LOW, "end too many args (%d/%d)\n", f->missing, nargs);
             debug_expr(LOW, f);
@@ -236,7 +241,6 @@ void save(Node* n)
     debug_frame(MED, n, saved);
 
     stack_push(bt_stack, n, saved, false);
-    n->nondet = true;
 }
 
 //push a choice onto the backtrack stack
@@ -252,51 +256,84 @@ void choose(Node* root)
     Node* left  = child_at_n(root,0);
     Node* right = child_at_n(root,1);
 
-    left->symbol->hnf(left);
+    if(child_at_i(root,2) == 0)
+    {
+        printf("l1: ");
+        print_expr(left);
+        printf("\n");
+        left->symbol->hnf(left);
+        printf("left: ");
+        print_expr(left);
+        printf("\n");
+        Node* saved = (Node*)malloc(sizeof(Node));
+        memcpy(saved, root, sizeof(Node));
+        forward(root,left);
+        child_at_i(saved,2) = 1;
+        stack_push(bt_stack, root, saved, true);
+        root->nondet = true;
+    }
+    else
+    {
+        right->symbol->hnf(right);
+        Node* saved = (Node*)malloc(sizeof(Node));
+        memcpy(saved, root, sizeof(Node));
+        forward(root,right);
+        child_at_i(saved,2) = 0;
+        stack_push(bt_stack, root, saved, false);
+        root->nondet = false;
+    }
 
-    debug(MED, "pushing ?");
-    debug_frame(MED, left, right);
-
-    memcpy(root, left, sizeof(Node));
-    root->nondet = true;
-    stack_push(bt_stack, root, right, true);
+    print_stack(bt_stack);
 }
 
 // backtrack until we find a choice.
 // We overwrite all of the node in the stack
 // with their saved values.
 // Then we recompute the nodes with the new choice.
-void undo()
+bool undo()
 {
     if(bt_stack->size == 0)
-        return;
+        return false;
 
-    NodePair* frame = pop(bt_stack);
-    debug(MED, "UNDOING ");
-    debug_frame(MED, frame->lhs, frame->rhs);
-    while(!frame->choice)
+    NodePair* frame;
+    do 
     {
+        frame = pop(bt_stack);
         memcpy(frame->lhs, frame->rhs, sizeof(Node));
         //frame->lhs->nondet = false;
-        frame = pop(bt_stack);
-        debug(MED, "UNDOING ");
-        debug_frame(MED, frame->lhs, frame->rhs);
-    }
-    memcpy(frame->lhs, frame->rhs, sizeof(Node));
-    //frame->lhs->nondet = false;
+        //printf("popping\n");
+        //print_frame(frame);
+        //printf("\n");
+        //debug(MED, "UNDOING ");
+        //debug_frame(MED, frame->lhs, frame->rhs);
+    } while(!frame->choice && !empty(bt_stack));
+    return !empty(bt_stack);
+}
+
+void print_frame(NodePair* f)
+{
+    printf("%p:", f->lhs);
+    print_expr(f->lhs);
+    if(f->choice)
+        printf(" T-> ");
+    else
+        printf(" F-> ");
+
+    printf("%p:", f->rhs);
+    print_expr(f->rhs);
 }
 
 void print_stack(Stack* s)
 {
-    for(int i = s->size-1; i >= 0; i--)
+    printf("[\n");
+    for(int i = 0; i < bt_stack->size-1; i++)
     {
-        if(s->array[i].choice) printf("?");
-        printf("<"); 
-        print_expr(s->array[i].lhs);
-        printf(", "); 
-        print_expr(s->array[i].rhs);
-        printf(">\n");
+        print_frame(&bt_stack->array[i]);
+        printf(", \n");
     }
+    print_frame(&bt_stack->array[bt_stack->size-1]);
+    printf("\n]\n");
+    printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
 }
 
 void print_expr(Node* n)
@@ -308,19 +345,20 @@ void print_expr(Node* n)
         printf("?");
         fflush(stdout);
     }
-    if(n->symbol == &apply_symbol)
+    if(n->missing < 0) // this is only ever true in an apply symbol
     {
         printf("(");
         fflush(stdout);
-        print_expr(child_at_n(n,1));
+        print_expr(child_at_n(n,0));
+        printf(": ");
         fflush(stdout);
-        for(int i = 1; i < n->missing; i++)
+        for(int i = n->missing; i > 1; i--)
         {
             print_expr(child_at_v(n,i).n);
             printf(", ");
             fflush(stdout);
         }
-        print_expr(child_at_v(n,n->missing-1).n);
+        print_expr(child_at_n(n,1));
         printf(")");
         fflush(stdout);
     }
@@ -328,65 +366,87 @@ void print_expr(Node* n)
     {
         printf("(");
         fflush(stdout);
-        for(int i = n->symbol->arity-1; i > 0; i--)
+        if(child_at_i(n,1) == INT_CTR)
         {
-            if(i >= n->missing)
-            {
-                print_expr(child_at_v(n,i).n);
-                printf(", ");
-                fflush(stdout);
-            }
-            else
-            {
-                printf("*, ");
-                fflush(stdout);
-            }
+            printf("%ld", child_at_i(n,0));
         }
-        if(n->missing == 0)
-            print_expr(child_at_v(n,0).n);
+        else if(child_at_i(n,1) == CHAR_CTR)
+        {
+            printf("%c", child_at_c(n,0));
+        }
+        else if(child_at_i(n,1) == FLOAT_CTR)
+        {
+            printf("%lf", child_at_f(n,0));
+        }
         else
-            printf("*");
+        {
+            for(int i = n->symbol->arity-1; i > 0; i--)
+            {
+                if(i >= n->missing)
+                {
+                    print_expr(child_at_v(n,i).n);
+                    printf(", ");
+                    fflush(stdout);
+                }
+                else
+                {
+                    printf("*, ");
+                    fflush(stdout);
+                }
+            }
+            if(n->missing == 0)
+                print_expr(child_at_v(n,0).n);
+            else
+                printf("*");
+        }
         printf(")");
         fflush(stdout);
     }
 }
 
-void display_expr(Node* n)
+void print_final(Node* n)
 {
-    printf("%s", n->symbol->name);
-    if(n->symbol == &apply_symbol)
+    if(n->symbol->tag == FORWARD_TAG)
     {
-        printf("(");
-        display_expr(child_at_n(n,1));
-        for(int i = 1; i < n->missing; i++)
-        {
-            display_expr(child_at_v(n,i).n);
-            printf(", ");
-        }
-        display_expr(child_at_v(n,n->missing-1).n);
-        printf(")");
+        print_final(child_at_n(n,0));
+        return;
     }
-    else if(n->symbol->arity)
+    printf("%s", n->symbol->name);
+    if(n->symbol->arity)
     {
         printf("(");
-        for(int i = n->symbol->arity-1; i > 0; i--)
+        if(child_at_i(n,1) == INT_CTR)
         {
-            if(i >= n->missing)
-            {
-                display_expr(child_at_v(n,i).n);
-                printf(", ");
-            }
-            else
-            {
-                printf("*, ");
-            }
+            printf("%ld", child_at_i(n,0));
         }
-        if(n->missing == 0)
-            display_expr(child_at_v(n,0).n);
+        else if(child_at_i(n,1) == CHAR_CTR)
+        {
+            printf("%c", child_at_c(n,0));
+        }
+        else if(child_at_i(n,1) == FLOAT_CTR)
+        {
+            printf("%lf", child_at_f(n,0));
+        }
         else
-            printf("*");
+        {
+            for(int i = n->symbol->arity-1; i > 0; i--)
+            {
+                if(i >= n->missing)
+                {
+                    print_final(child_at_v(n,i).n);
+                    printf(", ");
+                }
+                else
+                {
+                    printf("*, ");
+                }
+            }
+            if(n->missing == 0)
+                print_final(child_at_v(n,0).n);
+            else
+                printf("*");
+        }
         printf(")");
-        fflush(stdout);
     }
 }
 
@@ -408,12 +468,21 @@ void ground_nf(Node* expr)
         return;
     }
     // if we're a constructor, then we don't ned to put ourselves in head normal form
-    if(expr->symbol->tag <= 4 && expr->missing == 0)
+    if(expr->symbol->tag <= 4 && expr->missing <= 0)
     {
         expr->symbol->hnf(expr);
     }
     debug(LOW, "HNF: ");
     debug_expr(LOW, expr);
+    // If we're a primative value, then we're already in normal form.
+    // int/float/char can't hold unevaluated expressions.
+    if(child_at_i(expr,1) == INT_CTR ||
+       child_at_i(expr,1) == CHAR_CTR ||
+       child_at_i(expr,1) == FLOAT_CTR)
+    {
+        return;
+    }
+    
     for(int i = 0; i < expr->symbol->arity; i++)
     {
         if(child_at_v(expr,i).n)
@@ -433,13 +502,23 @@ void nf(Node* expr)
 {
     debug(LOW, "solving: ");
     debug_expr(LOW, expr);
-    // if we're a constructor, then we don't ned to put ourselves in head normal form
-    if(expr->missing == 0)
+    // if we're a constructor, then we don't need to put ourselves in head normal form
+    if(expr->missing <= 0)
     {
         expr->symbol->hnf(expr);
     }
     debug(LOW, "HNF: ");
     debug_expr(LOW, expr);
+
+    // If we're a primative value, then we're already in normal form.
+    // int/float/char can't hold unevaluated expressions.
+    if(child_at_i(expr,1) == INT_CTR ||
+       child_at_i(expr,1) == CHAR_CTR ||
+       child_at_i(expr,1) == FLOAT_CTR)
+    {
+        return;
+    }
+    
     for(int i = expr->symbol->arity-1; i >= 0 ; i--)
     {
         Node* e = child_at_v(expr,i).n;
@@ -458,18 +537,19 @@ void nf_all(Node* expr)
     debug_stack(MED);
     if(expr->symbol->tag != FAIL_TAG)
     {
-        print_expr(expr);
+        printf("SOLUTION: ");
+        print_final(expr);
         printf("\n");
         solution = true;
     }
-    while(bt_stack->size > 0)
+    while(undo())
     {
-        undo();
         nf(expr);
         debug_stack(MED);
         if(expr->symbol->tag != FAIL_TAG)
         {
-            display_expr(expr);
+            printf("SOLUTION: ");
+            print_final(expr);
             printf("\n");
             solution = true;
         }

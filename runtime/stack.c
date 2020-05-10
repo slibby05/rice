@@ -38,3 +38,7 @@ NodePair* pop(Stack* s)
     return &s->array[s->size];
 }
 
+bool empty(Stack* s)
+{
+    return s->size == 0;
+}

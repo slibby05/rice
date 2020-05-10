@@ -27,5 +27,6 @@ typedef struct
 Stack* new_stack();
 void stack_push(Stack* s, Node* from, Node* rep, bool choice);
 NodePair* pop(Stack* s);
+bool empty(Stack* s);
 
 #endif

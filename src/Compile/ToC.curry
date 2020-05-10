@@ -1,5 +1,5 @@
 
-module Compile.ToC (toSource, CWriter, iname) where
+module Compile.ToC (toSource, CWriter, iname, writeMain) where
 
 import FlatUtils.FlatRewrite (Path)
 import FlatUtils.ReplacePrim (primOps)
@@ -7,6 +7,7 @@ import ICurry.Types
 import List
 import Compile.C
 import Data.Map as M
+import Control.SetFunctions (mapValues, set0)
 
 iname :: IProg -> String
 iname (IProg name _ _ _) = name
@@ -14,30 +15,62 @@ iname (IProg name _ _ _) = name
 type CWriter = IProg -> (String -> IO ()) -> (String -> IO ()) -> IO ()
 
 ----------------------------------------------------
+-- main.c file
+----------------------------------------------------
+
+writeMain :: String -> String -> IO ()
+writeMain file name 
+ = writeFile file $ unlines $
+     ["#include <stdio.h>",
+      cinclude "node",
+      cinclude "stack",
+      cinclude "runtime",
+      cinclude name,
+      "",
+      cfunDefn "int" "main" []] ++
+      (cblock 
+        ["bt_stack = new_stack();",
+         "",
+         "Node* expr = make_"++(nameMangle name)++"_main(0);",
+         "nf_all(expr);",
+         "return 0;"])
+
+
+----------------------------------------------------
 -- .c file
 ----------------------------------------------------
 
 toSource :: IProg -> (String -> IO ()) -> (String -> IO ()) -> IO ()
 toSource (IProg name imps types funs) write append
- = do write $ unlines [cinclude name,
-                                cinclude "debug",
-                                cinclude "runtime",
-                                ""]
+ = do write $ unlines $ [cinclude name,
+                         cinclude "debug",
+                         cinclude "runtime"] ++
+                        map cinclude imps ++
+                        nl
       mapM_ (funSource append) funs
 
 
 funSource :: (String -> IO ()) -> IFunction -> IO ()
 funSource append (IFunction name arity _ _ body) 
- | isExternal body =  return ()
- | otherwise = append $ unlines $
-                 [comment (uninstance name),
-                  cfunDefn "void" (hnf name) [(nodePtr, "root")]] ++
-                 showBody body ++
-                 nl
+ | isExternal body = append $ unlines $
+                       ([comment (uninstance name),
+                         cfunDefn "void" (hnf name) [(nodePtr, "root")]] ++
+                        showBody body ++
+                        nl)
+ | otherwise       = return ()
+
+
+--funSources :: (String -> IO ()) -> IFunction -> IO ()
+--funSources append f = mapValues (append . unlines) (set0 (funSource f))
+
+
+--                    ?
+--                    (
+--                    )
 
 isExternal :: IFuncBody -> Bool
-isExternal (IExternal _) = True
-isExternal (IFuncBody _) = False
+isExternal (IExternal _) = False
+isExternal (IFuncBody _) = True
 
 showBody :: IFuncBody -> [String]
 showBody (IExternal x) = cblock [scall x ["root"]]
@@ -120,10 +153,10 @@ freeLitBlock v pos goto ctype (b:bs) = ["FREE"++pos++":"] ++
                                        cblock
                                        (
                                            map pushLit bs ++
-                                           [scall ("set_"++ctype) [var v, showLit b],
+                                           [scall ("set_"++ctype) [var v, showLit b, "0"],
                                             goto]
                                        )
- where pushLit l = scall "push_choice" [var v, call ("make_"++ctype) [showLit l]]
+ where pushLit l = scall "push_choice" [var v, call ("make_"++ctype) [showLit l, "0"]]
        showLit (IInt i)   = show i
        showLit (IChar c)  = [c]
        showLit (IFloat f) = show f
@@ -181,7 +214,7 @@ showConsBranch p v (IConsBranch c _ b) = [mangle c ++ pathName p ++ ":"] ++
 showLitCase :: Path -> IVarIndex -> [ILitBranch] -> [String]
 showLitCase p v bs = cifCase (zipWith caseCond bs [1..]) [scall "fail" ["root"], creturn]
  where btype = litBranchType (head bs)
-       caseCond b i = ((child_t btype (var v)) .== litBranchValue b,
+       caseCond b i = ((conv_t btype (var v)) .== litBranchValue b,
                        showBlock (p++[i]) (litBlock b))
 
 isPrimitive :: [IConsBranch] -> Bool
@@ -215,7 +248,8 @@ save v = cif (nondet (var v))
          ]
 
 setCollapse :: IExpr -> [String]
-setCollapse v = cif ("FUNCTION_TAG" .<= symtag (getVar v) .&& symtag (getVar v) .<= "CHOICE_TAG")
+setCollapse v = cif ("FUNCTION_TAG" .<= symtag (getVar v) .&& symtag (getVar v) .<= "CHOICE_TAG" 
+                                                          .&& missing (getVar v) .== "0")
                 [
                     symhnf (getVar v) ++ ";"
                 ] ++
@@ -236,7 +270,8 @@ setExpr v@(IVarAccess _ _)  = setCollapse v
 setExpr (ILit (IInt   v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
 setExpr (ILit (IChar  v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
 setExpr (ILit (IFloat v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
-setExpr (IOr e1 e2)         = [scall "set_choice" ["root", showExpr e1, showExpr e2]]
+setExpr (IOr e1 e2)         = [scall "set_choice" ["root", showExpr e1, showExpr e2],
+                               symhnf "root" ++ ";"]
 setExpr (IFCall f es)       = case M.lookup f primOps of
                                    Just (make,set) -> set (map showExpr es)
                                    Nothing         -> setComb f es ++ [symhnf "root" ++ ";"]

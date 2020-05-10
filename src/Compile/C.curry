@@ -85,6 +85,11 @@ child_t "int" node   = "child_at_i("++node++",0)"
 child_t "char" node  = "child_at_c("++node++",0)"
 child_t "float" node = "child_at_f("++node++",0)"
 
+conv_t :: CType -> CName -> CExpr
+conv_t "int" node   = "((field)"++node++").i"
+conv_t "char" node  = "((field)"++node++").c"
+conv_t "float" node = "((field)"++node++").f"
+
 -------------------------------------------------------------------------
 -- statements
 -------------------------------------------------------------------------

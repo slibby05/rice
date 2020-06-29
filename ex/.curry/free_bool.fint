@@ -1,0 +1,1 @@
+Prog "free_bool" ["Prelude"] [] [Func ("free_bool","f") 1 Public (FuncType (TVar 0) (TCons ("Prelude","[]") [TVar 0])) (Rule [] (Var 0)),Func ("free_bool","main") 0 Public (TCons ("Prelude","Int") []) (Rule [] (Var 0))] []

@@ -1,6 +1,6 @@
 module FlatUtils.FlatRewrite (replace, subexpr, arbitrary, 
                               Path, fix, step, 
-                              allVars, allNames, allVarPaths, freeVars, 
+                              allVars, allNames, allVarPaths, freeVars, allInvPaths,
                               sub, (@>), idSub) where
 
 import Control.SetFunctions
@@ -159,4 +159,12 @@ allVarPaths = nub . sortValues . set1 isVarPath
 
 freeVars :: Expr -> [VarIndex]
 freeVars expr = allVars expr \\ allDecls expr
+
+
+allInvPaths :: Expr -> [(Int,Path)]
+allInvPaths = nub . sortValues . set1 invPath
+invPath :: Expr -> (Int,Path)
+invPath (Var v)                 = (v,[])
+invPath (Or l r)                = (mapSnd (0:) (invPath l)) ? (mapSnd (1:) (invPath r))
+invPath (Comb _ _ (_++[e]++es)) = mapSnd (length es:) (invPath e)
 

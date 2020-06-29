@@ -1,0 +1,6 @@
+interface chrOrd where {
+import Prelude;
+main 0 :: [Prelude.Char];
+strange 0 :: [Prelude.Char];
+hiding data Prelude.Char
+}

@@ -1,0 +1,6 @@
+interface indexOf where {
+import Prelude;
+indexOf 2 :: [a] -> a -> Prelude.Int;
+main 0 :: Prelude.Int;
+hiding data Prelude.Int
+}

@@ -1,7 +1,8 @@
 module Compile.C where
 
+import FlatUtils.FlatRewrite (Path)
 import ICurry.Types 
-import List (intercalate, isPrefixOf, splitOn)
+import List (intercalate, isPrefixOf, splitOn, intersect)
 
 
 type CType = String
@@ -218,6 +219,76 @@ nondet v = v ++ "->nondet"
 missing :: CExpr -> CExpr
 missing v = v ++ "->missing"
 
+----------------------------------------------------------
+-- get path
+-- nondeterministically get's the path to a case block.
+----------------------------------------------------------
+
+getPathName :: IQName -> Path -> String
+getPathName n p = mangle n ++ "_" ++ (concatMap (('_':) . show) p)
+
+pathList :: IFuncBody -> [(Path, [IVarIndex], IStatement)]
+pathList (IExternal _) = []
+pathList (IFuncBody b) = getPath [] [] b
+
+getPath :: Path -> [IVarIndex] -> IBlock -> [(Path, [IVarIndex], IStatement)]
+getPath _    _    (IBlock _  _   IExempt)        = []
+getPath _    _    (IBlock _  _   (ICaseLit _ _)) = []
+getPath path vars (IBlock ds _ c@(ICaseCons _ bs))
+    = (reverse path, usedVars , c)
+    : concat [getPath (i:path) (vars++ds') b | (IConsBranch (_,_,i) _ b) <- bs]
+ where ds' = map varFromDecl ds
+       usedVars = (vars++ds') `intersect` (varsInStmt c)
+
+-- because collapsing rules need to save at their current statew
+getPath path vars (IBlock ds _ ret@(IReturn e))
+ | isVar e   = [(reverse path, usedVars, ret)] 
+ | otherwise = []
+  where isVar (IVar _)           = True
+        isVar (IVarAccess _ _)   = True
+        isVar (ILit _)           = False
+        isVar (IOr _ _)          = False
+        isVar (IFCall _ _)       = False
+        isVar (ICCall _ _)       = False
+        isVar (IFPCall _ _ _)    = False
+        isVar (ICPCall _ _ _)    = False
+        ds' = map varFromDecl ds
+        usedVars = (vars++ds') `intersect` (varsInStmt ret)
+-- I don't think I need this, because a literal cannot be a choice.
+--getPath path vars (IBlock ds _ c@(ICaseLit _ bs)) 
+--    = (reverse path, vars, c)
+--    : concat [getPath (i:path) (vars++ds') b | (i, ILitBranch _ b) <- zip [0..] bs]
+-- where ds' = map varFromDecl ds
+
+
+varFromDecl :: IVarDecl -> IVarIndex
+varFromDecl (IVarDecl  v) = v
+varFromDecl (IFreeDecl v) = v
+
+varsInStmt :: IStatement -> [IVarIndex]
+varsInStmt IExempt          = []
+varsInStmt (IReturn e)      = varsInExpr e
+varsInStmt (ICaseLit  v bs) = v : concatMap varsInLit bs
+ where varsInLit (ILitBranch _ b) = varsInBlock b
+varsInStmt (ICaseCons v bs) = v : concatMap varsInCons bs
+ where varsInCons (IConsBranch _ _ b) = varsInBlock b
+
+varsInExpr :: IExpr -> [IVarIndex]
+varsInExpr (IVar        v)      = [v]
+varsInExpr (IVarAccess  v _)    = [v]
+varsInExpr (ILit        _)      = []
+varsInExpr (IFCall      _ es)   = concatMap varsInExpr es
+varsInExpr (ICCall      _ es)   = concatMap varsInExpr es
+varsInExpr (IFPCall     _ _ es) = concatMap varsInExpr es
+varsInExpr (ICPCall     _ _ es) = concatMap varsInExpr es
+varsInExpr (IOr         e1 e2)  = varsInExpr e1 ++ varsInExpr e2
+
+varsInBlock :: IBlock -> [IVarIndex]
+varsInBlock (IBlock _ as s) = concatMap varsInAssign as ++ 
+                              varsInStmt s
+ where varsInAssign (IVarAssign _ e)    = varsInExpr e
+       varsInAssign (INodeAssign _ _ e) = varsInExpr e
+
 ----------------------------------------------------
 -- Name mangling
 ----------------------------------------------------
@@ -225,8 +296,9 @@ missing v = v ++ "->missing"
 getTag :: IQName -> Int
 getTag (_,_,t) = t
 
-nameStr :: IQName -> String
-nameStr (m,f,_) = "\"" ++ m ++ "." ++ f ++ "\""
+nameStr :: IQName -> Maybe Path -> String
+nameStr (m,f,_) Nothing = "\"" ++ m ++ "." ++ f ++ "\""
+nameStr (m,f,_) (Just p) = "\"" ++ m ++ "." ++ f ++ "@" ++ show p ++ "\""
 
 -- there's a lot of characters that aren't valid in C
 -- We can't to have a consistent way of dealing with them

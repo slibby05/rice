@@ -1,0 +1,1 @@
+Prog "indexOf" ["Prelude"] [] [Func ("indexOf","indexOf") 2 Public (FuncType (TCons ("Prelude","[]") [TVar 0]) (FuncType (TVar 0) (TCons ("Prelude","Int") []))) (Rule [] (Var 0)),Func ("indexOf","main") 0 Public (TCons ("Prelude","Int") []) (Rule [] (Var 0))] []

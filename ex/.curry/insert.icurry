@@ -1,0 +1,6 @@
+interface insert where {
+import Prelude;
+insert 2 :: a -> [a] -> [a];
+main 0 :: [Prelude.Int];
+hiding data Prelude.Int
+}

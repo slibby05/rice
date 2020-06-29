@@ -1,0 +1,1 @@
+Prog "imp" ["Prelude","mod"] [] [Func ("imp","main") 0 Public (TCons ("Prelude","Float") []) (Rule [] (Comb FuncCall ("mod","average") [Lit (Floatc 7.0),Lit (Floatc 8.0),Lit (Floatc 9.0)]))] []

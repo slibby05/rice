@@ -5,14 +5,24 @@ import FlatUtils.FlatRewrite (Path)
 import FlatUtils.ReplacePrim (primOps)
 import ICurry.Types
 import List
+import Sort (sort)
 import Compile.C
 import Data.Map as M
-import Control.SetFunctions (mapValues, set0)
+import Debug (trace)
 
 iname :: IProg -> String
 iname (IProg name _ _ _) = name
 
 type CWriter = IProg -> (String -> IO ()) -> (String -> IO ()) -> IO ()
+
+type FunPos = (Path, [IVarIndex], IQName)
+
+updateVars :: [IVarDecl] -> IStatement -> FunPos -> FunPos
+updateVars xs s (p, vs, n) = (p, newVars, n)
+ where newVars = sort $ ((map varFromDecl xs)++vs) `intersect` varsInStmt s
+
+descend :: Int -> FunPos -> FunPos
+descend b (p, vs, n) = (p++[b],vs,n)
 
 ----------------------------------------------------
 -- main.c file
@@ -47,66 +57,79 @@ toSource (IProg name imps types funs) write append
                          cinclude "runtime"] ++
                         map cinclude imps ++
                         nl
-      mapM_ (funSource append) funs
+      mapM_ (funSources append) funs
 
 
-funSource :: (String -> IO ()) -> IFunction -> IO ()
-funSource append (IFunction name arity _ _ body) 
- | isExternal body = append $ unlines $
-                       ([comment (uninstance name),
-                         cfunDefn "void" (hnf name) [(nodePtr, "root")]] ++
-                        showBody body ++
-                        nl)
- | otherwise       = return ()
+funSources :: (String -> IO ()) -> IFunction -> IO ()
+funSources append = append . unlines . funSource
+
+funSource :: IFunction -> [String]
+funSource (IFunction name _ _ _ body)
+ | isExternal body = trace (show name) []
+ | otherwise       = trace (show name) $ funSource_base name body ++
+                                         funSource_cases name body
+
+funSource_base :: IQName -> IFuncBody -> [String]
+funSource_base name body = [comment (uninstance name),
+                            cfunDefn "void" (hnf name) [(nodePtr, "root")]] ++
+                           showBody name body ++
+                           nl
+
+funSource_cases :: IQName -> IFuncBody -> [String]
+funSource_cases name body = concatMap (funSource_case name) (getPath [] [] block)
+ where (IFuncBody block) = body
 
 
---funSources :: (String -> IO ()) -> IFunction -> IO ()
---funSources append f = mapValues (append . unlines) (set0 (funSource f))
-
-
---                    ?
---                    (
---                    )
+funSource_case :: IQName -> ([Int], [IVarIndex], IStatement) -> [String]
+funSource_case name (path,vars,start)
+   = [comment (uninstance name) ++ " at " ++ show path,
+      cfunDefn "void" hnf_p [(nodePtr, "root")]] ++
+      cblock 
+      (
+        [scall "debug_expr" ["LOW", "root"]] ++ 
+        showBlock (path, [], name) (IBlock decls asgns start)
+      )
+ where hnf_p = getPathName name path ++ "_hnf"
+       asgns = [IVarAssign v (IVarAccess 0 [i]) | (v,i) <- zip (reverse vars) [0..]]
+       decls = map IVarDecl vars
 
 isExternal :: IFuncBody -> Bool
-isExternal (IExternal _) = False
-isExternal (IFuncBody _) = True
+isExternal (IExternal _) = True
+isExternal (IFuncBody _) = False
 
-showBody :: IFuncBody -> [String]
-showBody (IExternal x) = cblock [scall x ["root"]]
-showBody (IFuncBody block) = cblock ([scall "debug_expr" ["LOW", "root"]] ++ 
-                                     showBlock [] block)
+showBody :: IQName -> IFuncBody -> [String]
+showBody _ (IExternal x) = cblock [scall x ["root"]]
+showBody n (IFuncBody block) = cblock ([scall "debug_expr" ["LOW", "root"]] ++ 
+                                       showBlock ([],[],n) block)
 
-showBlock :: Path -> IBlock -> [String]
-showBlock path (IBlock decls asgns stmt) = map showDecl decls ++
-                                           map showAsgn asgns ++
-                                           showStmt path stmt
+showBlock :: FunPos -> IBlock -> [String]
+showBlock pos (IBlock decls asgns stmt) = map showDecl decls ++
+                                          map showAsgn asgns ++
+                                          showStmt (updateVars decls stmt pos) stmt
 
 showDecl :: IVarDecl -> String
 showDecl (IVarDecl  v) = "Node* " ++ var v ++ ";"
 showDecl (IFreeDecl v) = (("Node* " ++ var v) .= "free_var()") ++ ";"
 
 showAsgn :: IAssign -> String
-showAsgn (IVarAssign  v e) = (var v .= showExpr e) ++ ";"
+showAsgn (IVarAssign  v e)     = (var v .= showExpr e) ++ ";"
 showAsgn (INodeAssign v ixs e) = (children (var v) ixs .= showExpr e) ++ ";"
 
-showStmt :: Path -> IStatement -> [CStmt]
-showStmt _ IExempt          = [scall "fail" ["root"], 
-                               creturn]
-showStmt _ (IReturn e)      = setExpr e ++
-                              [creturn]
-showStmt p (ICaseCons v bs) = showConsCase p v bs
-showStmt p (ICaseLit  v bs) = showLitCase p v bs
+showStmt :: FunPos -> IStatement -> [CStmt]
+showStmt _   IExempt          = [scall "fail" ["root"], creturn]
+showStmt pos (IReturn e)      = setExpr pos e ++ [creturn]
+showStmt pos (ICaseCons v bs) = showConsCase pos v bs
+showStmt pos (ICaseLit  v bs) = showLitCase  pos v bs
 
 
-failBlock :: IVarIndex -> String -> [CStmt]
-failBlock v pos = ["FAIL"++pos++":"] ++
-              cblock 
-              (
-                  save v ++
-                  [scall "fail" ["root"],
-                   creturn]
-              )
+failBlock :: FunPos -> IVarIndex -> String -> [CStmt]
+failBlock fpos v pos = ["FAIL"++pos++":"] ++
+                       cblock 
+                       (
+                           save fpos (var v) ++
+                           [scall "fail" ["root"],
+                            creturn]
+                       )
 
 funBlock :: IVarIndex -> String -> String -> [CStmt]
 funBlock v pos goto = ["FUNCTION"++pos++":"] ++
@@ -116,17 +139,6 @@ funBlock v pos goto = ["FUNCTION"++pos++":"] ++
                           goto
                       ]
 
-forwardBlock :: IVarIndex -> String -> String -> [CStmt]
-forwardBlock v pos goto = ["FORWARD"++pos++":"] ++
-                          cblock 
-                          (
-                              cwhile (symtag (children (var v) [0]) .== "FORWARD_TAG")
-                              [
-                                  (children (var v) [0] .= children (var v) [0,0]) ++ ";"
-                              ] ++
-                              [(var v .= children (var v) [0]) ++ ";",
-                               goto]
-                          )
 
 choiceBlock :: IVarIndex -> String -> String -> [CStmt]
 choiceBlock v pos goto = ["CHOICE"++pos++":"] ++
@@ -162,60 +174,63 @@ freeLitBlock v pos goto ctype (b:bs) = ["FREE"++pos++":"] ++
        showLit (IFloat f) = show f
 
 
-jumpTable :: String -> IVarIndex -> [IQName] -> CStmt -> [CStmt]
-jumpTable pos v bs goto = [(("static void* " ++ tableName ++ "[]") .= carray table) ++ ";"] ++
-                          nl ++
-                          [goto] ++
-                          nl ++
-                          failBlock v pos ++
-                          nl ++
-                          funBlock v pos goto ++
-                          nl ++
-                          forwardBlock v pos goto ++
-                          nl ++
-                          choiceBlock v pos goto ++
-                          nl
+jumpTable :: FunPos -> String -> IVarIndex -> [IQName] -> (CExpr -> CStmt) -> [CStmt]
+jumpTable fpos pos v bs goto = [(("static void* " ++ tableName ++ "[]") .= carray table) ++ ";"] ++
+                               nl ++
+                               [gotov] ++
+                               nl ++
+                               failBlock fpos v pos ++
+                               nl ++
+                               funBlock v pos gotov ++
+                               nl ++
+                               choiceBlock v pos gotov ++
+                               nl
  where tableName = "table" ++ pos
-       table = map label (["FAIL", "FUNCTION", "FORWARD", "CHOICE", "FREE"] ++ cons)
+       table = map label (["FAIL", "FUNCTION", "CHOICE", "FREE"] ++ cons)
        label x = "&&" ++ x ++ pos
        cons = map mangle bs
+       gotov = goto (var v)
 
 
 pathName :: Path -> String
 pathName = intercalate "_" . map show 
 
-showConsCase :: Path -> IVarIndex -> [IConsBranch] -> [String]
-showConsCase p v bs = jumpTable pos v (map conName bs') goto ++
-                      freeB ++
-                      nl ++
-                      concatMap (showConsBranch p v) bs'
+showConsCase :: FunPos -> IVarIndex -> [IConsBranch] -> [String]
+showConsCase fpos v bs = jumpTable fpos pos v (map conName bs') goto ++
+                         freeB ++
+                         nl ++
+                         concatMap (showConsBranch fpos v) bs'
  where conName (IConsBranch c _ _) = c
+       (p,_,_) = fpos
        pos = pathName p
        tableName = "table" ++ pos
-       goto = "goto* "++tableName++"[" ++ symtag (var v) ++ "];"
+       goto v = "goto* "++tableName++"[" ++ symtag v ++ "];"
+       gotov = goto (var v)
        cons = map (mangle . conName) bs'
        freeB = if   isPrimitive bs
-               then freeLitBlock v pos goto btype (litPatterns bs)
-               else freeBlock v pos goto cons
+               then freeLitBlock v pos gotov btype (litPatterns bs)
+               else freeBlock v pos gotov cons
        bs' = filter (\(IConsBranch (m,c,_) _ _) -> (m++c) /= "") bs
        btype = case bs of (IConsBranch ("",c,_) _ _ : _) -> "_"++c
        
        
 
 
-showConsBranch :: Path -> IVarIndex -> IConsBranch -> [String]
-showConsBranch p v (IConsBranch c _ b) = [mangle c ++ pathName p ++ ":"] ++
-                                         cblock 
-                                         (
-                                             save v ++
-                                             showBlock (p++[getTag c]) b
-                                         )
+showConsBranch :: FunPos -> IVarIndex -> IConsBranch -> [String]
+showConsBranch pos v (IConsBranch c _ b) = [mangle c ++ pathName p ++ ":"] ++
+                                            cblock 
+                                            (
+                                                save pos (var v) ++
+                                                showBlock (descend tag pos) b
+                                            )
+ where tag  = getTag c
+       (p, _, _) = pos
 
-showLitCase :: Path -> IVarIndex -> [ILitBranch] -> [String]
-showLitCase p v bs = cifCase (zipWith caseCond bs [1..]) [scall "fail" ["root"], creturn]
+showLitCase :: FunPos -> IVarIndex -> [ILitBranch] -> [String]
+showLitCase pos v bs = cifCase (zipWith caseCond bs [1..]) [scall "fail" ["root"], creturn]
  where btype = litBranchType (head bs)
        caseCond b i = ((conv_t btype (var v)) .== litBranchValue b,
-                       showBlock (p++[i]) (litBlock b))
+                       showBlock (descend i pos) (litBlock b))
 
 isPrimitive :: [IConsBranch] -> Bool
 isPrimitive [] = False
@@ -241,43 +256,40 @@ litBlock :: ILitBranch -> IBlock
 litBlock (ILitBranch _ b)  = b
 
 
-save :: IVarIndex -> [CStmt]
-save v = cif (nondet (var v))
-         [
-            scall "save" ["root"]
-         ]
+save :: FunPos -> String -> [CStmt]
+save (p,vs,n) v = cif (nondet v)
+                  [
+                     scall "save" ["root", makePart n p vs]
+                  ]
 
-setCollapse :: IExpr -> [String]
-setCollapse v = cif ("FUNCTION_TAG" .<= symtag (getVar v) .&& symtag (getVar v) .<= "CHOICE_TAG" 
-                                                          .&& missing (getVar v) .== "0")
-                [
-                    symhnf (getVar v) ++ ";"
-                ] ++
-                cifElse (nondet (getVar v))
-                [
-                    scall "save" ["root"],
-                    scall "forward" ["root", getVar v]
-                ]
-                [
-                    scall "set_node" ["root", getVar v]
-                ]
+makePart :: IQName -> Path -> [IVarIndex] -> CExpr
+makePart n p vs = call ("make_"++getPathName n p) (["v"++show v | v <- vs] ++ ["0"])
+
+setCollapse :: FunPos -> IExpr -> [String]
+setCollapse fpos v = cif ("FUNCTION_TAG" .<= symtag (getVar v) .&& symtag (getVar v) .<= "CHOICE_TAG" 
+                                                               .&& missing (getVar v) .<= "0")
+                     [
+                         symhnf (getVar v) ++ ";"
+                     ] ++
+                     save fpos (getVar v) ++
+                     [scall "set_node" ["root", getVar v]]
  where getVar (IVar x) = var x
        getVar (IVarAccess x ixs) = children (var x) ixs
 
-setExpr :: IExpr -> [CStmt]
-setExpr v@(IVar _)          = setCollapse v
-setExpr v@(IVarAccess _ _)  = setCollapse v
-setExpr (ILit (IInt   v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
-setExpr (ILit (IChar  v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
-setExpr (ILit (IFloat v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
-setExpr (IOr e1 e2)         = [scall "set_choice" ["root", showExpr e1, showExpr e2],
-                               symhnf "root" ++ ";"]
-setExpr (IFCall f es)       = case M.lookup f primOps of
-                                   Just (make,set) -> set (map showExpr es)
-                                   Nothing         -> setComb f es ++ [symhnf "root" ++ ";"]
-setExpr (ICCall c es)       = setComb c es
-setExpr (IFPCall f n es)    = setPartComb f n es
-setExpr (ICPCall c n es)    = setPartComb c n es
+setExpr :: FunPos -> IExpr -> [CStmt]
+setExpr pos v@(IVar _)          = setCollapse pos v
+setExpr pos v@(IVarAccess _ _)  = setCollapse pos v
+setExpr _   (ILit (IInt   v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
+setExpr _   (ILit (IChar  v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
+setExpr _   (ILit (IFloat v))   = ["root" .= ("(Node*)" ++ show v) ++ ";"]
+setExpr _   (IOr e1 e2)         = [scall "set_choice" ["root", showExpr e1, showExpr e2],
+                                   symhnf "root" ++ ";"]
+setExpr _   (IFCall f es)       = case M.lookup f primOps of
+                                       Just (make,set) -> set (map showExpr es)
+                                       Nothing         -> setComb f es ++ [symhnf "root" ++ ";"]
+setExpr _   (ICCall c es)       = setComb c es
+setExpr _   (IFPCall f n es)    = setPartComb f n es
+setExpr _   (ICPCall c n es)    = setPartComb c n es
 
 isApply :: IQName -> Bool
 isApply (m,n,_) = m == "Prelude" && n == "apply"
@@ -304,6 +316,5 @@ setPartComb f m es = [scall ("set_"++mangle f) ("root" : map showExpr es ++ repl
 
 showPart :: IQName -> Int -> [IExpr] -> CExpr
 showPart f m es = call ("make_"++mangle f) (map showExpr es ++ replicate m "NULL" ++ [show m])
-                  
  where l = length es
 

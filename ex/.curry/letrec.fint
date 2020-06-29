@@ -1,0 +1,1 @@
+Prog "letrec" ["Prelude"] [] [Func ("letrec","t") 1 Public (FuncType (TCons ("Prelude","Int") []) (TCons ("Prelude","[]") [TCons ("Prelude","Int") []])) (Rule [] (Var 0)),Func ("letrec","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Var 0))] []

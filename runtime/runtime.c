@@ -20,30 +20,26 @@ void choice_hnf(Node* root)
     choose(root);
 }
 
-void FORWARD_hnf(Node* root)
-{
-    debug_expr(LOW, root);
-    while(child_at_n(root,0)->symbol->tag == FORWARD_TAG)
-    {
-        debug_expr(LOW, root);
-        child_at_n(root,0) = child_at_n(child_at_n(root,0), 0);
-    }
-}
-
 void apply_hnf(Node* root)
 {
-    debug(LOW, "apply ");
+    debug(LOW, "apply\n");
+    debug(HIGH, "apply high\n");
     Node* f = child_at_n(root,0);
 
-    static void* table[] = {&&FAIL, &&FUNCTION, &&FORWARD, &&CHOICE, &&FREE};
+    if(f->missing > 0)
+    {
+        goto PART;
+    }
     
+    static void* table[] = {&&FAIL, &&FUNCTION, &&CHOICE, &&FREE};
     goto* table[f->symbol->tag];
     
     FAIL:
     {
+        debug(HIGH, "apply FAIL\n");
         if(f->nondet)
         {
-            save(root);
+            save_copy(root);
         }
         fail(root);
         return;
@@ -51,6 +47,7 @@ void apply_hnf(Node* root)
     
     FUNCTION:
     {
+        debug(HIGH, "apply FUNCTION\n");
         if(f->missing > 0)
         {
             goto PART;
@@ -58,28 +55,28 @@ void apply_hnf(Node* root)
         else
         {
             f->symbol->hnf(f);
+            //if(f->missing > 0)
+            //{
+            //    goto PART;
+            //}
             goto* table[f->symbol->tag];
         }
     }
     
-    FORWARD:
-    {
-        while (child_at_n(f,0)->symbol->tag == FORWARD_TAG)
-        {
-            child_at_n(f,0) = child_at_n(child_at_n(f, 0), 0);
-        }
-        f = child_at_n(f, 0);
-        goto* table[f->symbol->tag];
-    }
-    
     CHOICE:
     {
+        debug(HIGH, "apply CHOICE\n");
         choose(f);
+        //if(f->missing > 0)
+        //{
+        //    goto PART;
+        //}
         goto* table[f->symbol->tag];
     }
     
     FREE:
     {
+        debug(HIGH, "apply FREE\n");
         // we can't actually apply a free variable
         // because we don't know what function to make it.
         fprintf(stderr, "Cannot apply free variable!\n");
@@ -88,9 +85,10 @@ void apply_hnf(Node* root)
     
     PART:
     {
+        debug(HIGH, "apply PART\n");
         if(f->nondet)
         {
-            save(root);
+            save_copy(root);
         }
 
         // number of arguments that we're applying
@@ -179,7 +177,16 @@ void apply_hnf(Node* root)
             root->symbol = f->symbol;
             root->nondet = root->nondet | f->nondet;
             root->missing = 0;
-            root->symbol->hnf(root);
+            debug(LOW, "BEG_OUT: ");
+            debug_expr(LOW, root);
+            debug(LOW, "\n");
+            if(root->symbol->tag < FREE_TAG)
+            {
+                root->symbol->hnf(root);
+            }
+            debug(LOW, "END_OUT: ");
+            debug_expr(LOW, root);
+            debug(LOW, "\n");
             return;
         }
         else
@@ -212,7 +219,10 @@ void apply_hnf(Node* root)
             debug_expr(LOW, newf);
 
             newf->missing = 0;
-            newf->symbol->hnf(newf);
+            if(newf->symbol->tag < FREE_TAG)
+            {
+                newf->symbol->hnf(newf);
+            }
             child_at_n(root,0) = newf;
             root->missing = -nargs;
             f = newf;
@@ -231,10 +241,19 @@ void apply_hnf(Node* root)
 // If we ever backtrack, I'll over write the current contents
 // of n with it's saved copy.
 // This will let me redo a computation.
-void save(Node* n)
+void save_copy(Node* n)
 {
     Node* saved = (Node*)malloc(sizeof(Node));
     memcpy(saved, n, sizeof(Node));
+    n->nondet = true;
+
+    debug(MED, "pushing ");
+    debug_frame(MED, n, saved);
+
+    stack_push(bt_stack, n, saved, false);
+}
+void save(Node* n, Node* saved)
+{
     n->nondet = true;
 
     debug(MED, "pushing ");
@@ -258,16 +277,10 @@ void choose(Node* root)
 
     if(child_at_i(root,2) == 0)
     {
-        printf("l1: ");
-        print_expr(left);
-        printf("\n");
         left->symbol->hnf(left);
-        printf("left: ");
-        print_expr(left);
-        printf("\n");
         Node* saved = (Node*)malloc(sizeof(Node));
         memcpy(saved, root, sizeof(Node));
-        forward(root,left);
+        set_node(root,left);
         child_at_i(saved,2) = 1;
         stack_push(bt_stack, root, saved, true);
         root->nondet = true;
@@ -277,13 +290,14 @@ void choose(Node* root)
         right->symbol->hnf(right);
         Node* saved = (Node*)malloc(sizeof(Node));
         memcpy(saved, root, sizeof(Node));
-        forward(root,right);
+        set_node(root,right);
         child_at_i(saved,2) = 0;
         stack_push(bt_stack, root, saved, false);
-        root->nondet = false;
+        root->nondet = true;
     }
 
-    print_stack(bt_stack);
+    //print_stack(bt_stack);
+    //printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
 }
 
 // backtrack until we find a choice.
@@ -300,14 +314,9 @@ bool undo()
     {
         frame = pop(bt_stack);
         memcpy(frame->lhs, frame->rhs, sizeof(Node));
-        //frame->lhs->nondet = false;
-        //printf("popping\n");
-        //print_frame(frame);
-        //printf("\n");
-        //debug(MED, "UNDOING ");
-        //debug_frame(MED, frame->lhs, frame->rhs);
     } while(!frame->choice && !empty(bt_stack));
-    return !empty(bt_stack);
+
+    return frame->choice;
 }
 
 void print_frame(NodePair* f)
@@ -325,14 +334,17 @@ void print_frame(NodePair* f)
 
 void print_stack(Stack* s)
 {
-    printf("[\n");
+    if(bt_stack->size == 0)
+    {
+        printf("[]\n");
+        return;
+    }
     for(int i = 0; i < bt_stack->size-1; i++)
     {
         print_frame(&bt_stack->array[i]);
         printf(", \n");
     }
     print_frame(&bt_stack->array[bt_stack->size-1]);
-    printf("\n]\n");
     printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
 }
 
@@ -352,7 +364,7 @@ void print_expr(Node* n)
         print_expr(child_at_n(n,0));
         printf(": ");
         fflush(stdout);
-        for(int i = n->missing; i > 1; i--)
+        for(int i = -n->missing; i > 1; i--)
         {
             print_expr(child_at_v(n,i).n);
             printf(", ");
@@ -406,11 +418,6 @@ void print_expr(Node* n)
 
 void print_final(Node* n)
 {
-    if(n->symbol->tag == FORWARD_TAG)
-    {
-        print_final(child_at_n(n,0));
-        return;
-    }
     printf("%s", n->symbol->name);
     if(n->symbol->arity)
     {

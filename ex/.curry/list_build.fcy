@@ -1,0 +1,1 @@
+Prog "list_build" ["Prelude"] [] [Func ("list_build","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Comb FuncCall ("Prelude","apply") [Comb FuncCall ("Prelude","apply") [Comb FuncCall ("Prelude","_impl#enumFromTo#Prelude.Enum#Prelude.Int") [],Comb FuncCall ("Prelude","_impl#negate#Prelude.Num#Prelude.Int") [Lit (Intc 2)]],Lit (Intc 2)]))] []

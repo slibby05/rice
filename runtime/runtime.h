@@ -8,12 +8,11 @@
 
 #define FAIL_TAG     0
 #define FUNCTION_TAG 1
-#define FORWARD_TAG  2
-#define CHOICE_TAG   3
-#define FREE_TAG     4
-#define INT_TAG      5
-#define FLOAT_TAG    5
-#define CHAR_TAG     5
+#define CHOICE_TAG   2
+#define FREE_TAG     3
+#define INT_TAG      4
+#define FLOAT_TAG    4
+#define CHAR_TAG     4
 
 
 #define INT_CTR      -1
@@ -40,21 +39,55 @@
 #define child_at_12(r) r->children[3].a[9]
 #define child_at_13(r) r->children[3].a[10]
 #define child_at_14(r) r->children[3].a[11]
-#define child_at_15(r) r->children[3].a[12]
+#define child_at_15(r) r->children[3].a[13]
+#define child_at_16(r) r->children[3].a[14]
+#define child_at_17(r) r->children[3].a[15]
+#define child_at_18(r) r->children[3].a[16]
+#define child_at_19(r) r->children[3].a[17]
+#define child_at_20(r) r->children[3].a[18]
+#define child_at_21(r) r->children[3].a[19]
+#define child_at_22(r) r->children[3].a[20]
+#define child_at_23(r) r->children[3].a[21]
+#define child_at_24(r) r->children[3].a[22]
+#define child_at_25(r) r->children[3].a[23]
+#define child_at_26(r) r->children[3].a[24]
+#define child_at_27(r) r->children[3].a[25]
+#define child_at_28(r) r->children[3].a[26]
+#define child_at_29(r) r->children[3].a[27]
+#define child_at_30(r) r->children[3].a[28]
+#define child_at_31(r) r->children[3].a[29]
+#define child_at_32(r) r->children[3].a[30]
+#define child_at_33(r) r->children[3].a[31]
+#define child_at_34(r) r->children[3].a[32]
+#define child_at_35(r) r->children[3].a[33]
+#define child_at_36(r) r->children[3].a[34]
+#define child_at_37(r) r->children[3].a[35]
+#define child_at_38(r) r->children[3].a[36]
+#define child_at_39(r) r->children[3].a[37]
+#define child_at_40(r) r->children[3].a[38]
+#define child_at_41(r) r->children[3].a[39]
+#define child_at_42(r) r->children[3].a[40]
+#define child_at_43(r) r->children[3].a[41]
+#define child_at_44(r) r->children[3].a[42]
+#define child_at_45(r) r->children[3].a[43]
+#define child_at_46(r) r->children[3].a[44]
+#define child_at_47(r) r->children[3].a[45]
+#define child_at_48(r) r->children[3].a[46]
+#define child_at_49(r) r->children[3].a[47]
 
 #define child_at_v(n, i) (i < 3 ? n->children[i] : n->children[3].a[i-3])
 #define set_child_at(n, i, v) if(i < 3) {n->children[i] = v;} else {n->children[3].a[i-3] = v;}
 
 #define tochar(n) ((field)n).c
 #define toint(n) ((field)n).i
-#define tofloat(n) ((field)n).i
+#define tofloat(n) ((field)n).f
 #define tonode(n) ((field)n).n
 
 void CTR_hnf(Node* root);
 void choice_hnf(Node* root);
-void FORWARD_hnf(Node* root);
 void apply_hnf(Node* root);
-void save(Node* n);
+void save_copy(Node* n);
+void save(Node* n, Node* saved);
 void push_choice(Node* left, Node* right);
 void choose(Node* root);
 bool undo();
@@ -68,7 +101,6 @@ void nf_all(Node* expr);
 void error(char* msg, Node* expr);
 
 static Symbol fail_symbol    = { .tag = FAIL_TAG,     .arity = 0, .name = "FAIL",    .hnf = &CTR_hnf};
-static Symbol forward_symbol = { .tag = FORWARD_TAG,  .arity = 1, .name = "FORWARD", .hnf = &FORWARD_hnf};
 static Symbol choice_symbol  = { .tag = CHOICE_TAG,   .arity = 2, .name = "?",       .hnf = &choice_hnf};
 static Symbol free_symbol    = { .tag = FREE_TAG,     .arity = 0, .name = "free",    .hnf = &CTR_hnf};
 static Symbol int_symbol     = { .tag = INT_TAG,      .arity = 1, .name = "int",     .hnf = &CTR_hnf};
@@ -101,18 +133,6 @@ static inline void set_node(Node* root, Node* rep)
     bool nondet = root->nondet;
     memcpy(root,rep,sizeof(Node));
     root->nondet |= nondet;
-}
-
-__attribute__((always_inline)) 
-static inline void forward(Node* root, Node* n)
-{
-    root->nondet = true;
-    root->missing = 0;
-    root->symbol = &forward_symbol;
-    child_at_n(root, 0) = n;
-    child_at_n(root, 1) = NULL;
-    child_at_n(root, 2) = NULL;
-    root->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 

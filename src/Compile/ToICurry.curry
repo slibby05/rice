@@ -2,7 +2,7 @@ module Compile.ToICurry (toICurry) where
 
 import FlatCurry.Types
 import FlatCurry.Goodies
-import FlatUtils.FlatRewrite (allVarPaths)
+import FlatUtils.FlatRewrite (allInvPaths)
 import FlatUtils.DataTable (exempt)
 import ICurry.Types
 import List
@@ -22,7 +22,7 @@ toICurry (Prog name imports types functions _) = IProg name imports itypes ifuns
        ifuns  = map toIFunction functions
 
 toIType :: TypeDecl -> Int -> IDataType
-toIType (Type (mn,tn) _ _ ctrs) i = IDataType (mn,tn,i) (zipWith toCtr (sort ctrs) [0..])
+toIType (Type (mn,tn) _ _ ctrs) i = IDataType (mn,tn,i) (zipWith toCtr (reverse (sort ctrs)) [0..])
  where
   toCtr (Cons (m,c) a _ _) x = ((m,c,x),a)
 
@@ -96,7 +96,7 @@ fill (Free _ e)   = fill e
 fill (Let vs e)   = concatMap (fillVar (map fst vs)) vs ++ fill e
 
 fillVar :: [VarIndex] -> (VarIndex,Expr) -> [IAssign]
-fillVar ds (v,e) = [INodeAssign v p (IVar x) | (x,p) <- allVarPaths e, x `elem` ds]
+fillVar ds (v,e) = [INodeAssign v p (IVar x) | (x,p) <- allInvPaths e, x `elem` ds]
 
 
 toStmt :: Expr -> IStatement
@@ -114,7 +114,7 @@ toRet e
 
 toCase :: CaseType -> Expr -> [BranchExpr] -> IStatement
 toCase _ (Var v) bs
- | isADTBranch bs = ICaseCons v (zipWith toADTBranch (sort bs) [0..])
+ | isADTBranch bs = ICaseCons v (zipWith toADTBranch (reverse (sort bs)) [0..])
  | otherwise      = ICaseLit  v (map toLitBranch bs)
  where
   isADTBranch = isConsPattern . branchPattern . head

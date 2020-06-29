@@ -1,0 +1,1 @@
+Prog "mod" ["Prelude"] [] [Func ("mod","average") 3 Public (FuncType (TCons ("Prelude","Float") []) (FuncType (TCons ("Prelude","Float") []) (FuncType (TCons ("Prelude","Float") []) (TCons ("Prelude","Float") [])))) (Rule [] (Var 0))] []

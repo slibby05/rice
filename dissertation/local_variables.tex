@@ -1,0 +1,219 @@
+
+There is a problem with local variables.
+Consider the function
+
+\begin{verbatim}
+main = let x = True ? False
+       in case x of
+               True -> 1
+               False -> 0
+\end{verbatim}
+
+When we go to evaluate this function we would expect to produce two answers, 0 and 1.
+Unfortunately that's not what happens.
+We'll generate the following code.
+\begin{verbatim}
+main_hnf(Node* root)
+    Node* x = make_choice(make_True(), make_False());
+    static void* table[] = {&&FAIL, &&FUNCTION, &&FORWARD, 
+                            &&CHOICE, &&FREE, &&TRUE, &&FALSE};
+    
+    goto* table[x->symbol->tag];
+  
+    FAIL:
+    {
+        if(x->nondet)
+        {
+            save(root);
+        }
+        fail(root);
+        return;
+    }
+ 
+    ...
+  
+    CHOICE:
+    {
+        choose(x);
+        goto* table[x->symbol->tag];
+    }
+    ...
+  
+    TRUE:
+    {
+
+        if(x->nondet)
+        {
+            save(root);
+        }
+        set_1(root);
+        return;
+    }
+    FALSE:
+    {
+
+        if(x->nondet)
+        {
+            save(root);
+        }
+        set_0(root);
+        return;
+    }
+}
+\end{verbatim}
+
+First we create the local variable \texttt{x = ?(True,False)}.
+Then we evaluate \texttt{x} to be \texttt{True}, and match the first case, 
+push \texttt{root} on the backtracking stack, and reduce \texttt{root} to \texttt 1.
+So for this is fine, but what happens when we backtrack?
+Our stack contains two rules \texttt{[1 -> main, x -> ?(0, 1)}.
+Notice that the variable we made a choice on, \texttt x, isn't mentioned in the first rule.
+
+This is where the problem arises.  We undo our rewrite, and replace the node \texttt 1 with \texttt{main}.
+Now when we evaluate \texttt{main} we follow the same proceedure,
+but this time we create a new local variable \texttt{x}.
+This will again cause \texttt{main} to reduce to \texttt 1.
+This process will repreat, continually growing our backtracking stack.
+
+At this point we could reasonably ask how this problem could arise?
+The semantics of Curry, and graph rewriting in general, have already been established.
+Surely, this problem must be accounted for.
+The answer is surprisingly simple, and completely worthless to this project.
+Graph rewriting doesn't allow for local variables, so this issue can't crop up.
+Furthermore, prior implementations of Curry avoid this issue by transforming their
+source programs into graph rewrite systems.
+
+The above program would become:
+\begin{verbatim}
+main = let x = True ? False
+       in main1 x
+
+main1 x = case x of
+               True  -> 1
+               False -> 0
+\end{verbatim}
+
+This transformation is consistent, easy to implement, complete, and innefficient.
+Furthermore, this explicitly undoes a lot of the work accomplished by the optimizations.
+So, we need a new way to handle local variables.
+
+While this solution isn't viable for this compiler, maybe we can play around with this idea.
+The problem we have is that we may decide to backtrack at several different points in the function.
+Really, we need a way to save the current function we're reducing, along with it's current state.
+One possible way would be to store the function we're reducing, all currently defined local variables,
+and a pointer to the position in code where we pushed this rule on the stack.
+This would store all of the relavant information, but it is also difficult to understand and implement correctly.
+
+Fortunately there's a simpler solution.
+Instead of compiling a single function, we compile a set of functions.
+This is easiest to see with an example.
+
+Consider the function choose3:
+\begin{verbatim}
+choose3 = let x = 0 ? 1
+          in case x of 
+                  0 -> let y = 0 ? 1
+                  in case y of
+                          0 -> let z = 0 ? 1
+                               in case z of
+                                       0 -> 0
+                                       1 -> 1
+                          1 -> 2
+                  1 -> 3
+\end{verbatim}
+
+We will turn this into 3 different function.
+
+\begin{verbatim}
+choose3 = let x = 0 ? 1
+          in case x of 
+                  0 -> let y = 0 ? 1
+                  in case y of
+                          0 -> let z = 0 ? 1
+                               in case z of
+                                       0 -> 0
+                                       1 -> 1
+                          1 -> 2
+                  1 -> 3
+
+choose3_ x = case x of 
+                  0 -> let y = 0 ? 1
+                  in case y of
+                          0 -> let z = 0 ? 1
+                               in case z of
+                                       0 -> 0
+                                       1 -> 1
+                          1 -> 2
+                  1 -> 3
+
+
+choose3_0 x y = in case y of
+                        0 -> let z = 0 ? 1
+                             in case z of
+                                     0 -> 0
+                                     1 -> 1
+                        1 -> 2
+
+choose3_0_0 x y z = case z of
+                         0 -> 0
+                         1 -> 1
+\end{verbatim}
+
+Each function contains a path up to the most recent choice,
+and the parameters are the local variables of the function.
+Now, when we push a rule onto the backtracking stack we pick the function corresponding to the most recent
+case that was evaluated.  This is similar, but not equivalent to the current position in the definitional tree.
+mostly because a definitional tree can't have a local variables, and a rewrite decision can't be made on
+a local variable.  they must come from the parameters.
+
+Formally we can define this transformation in ICurry.
+This allows us full generality, while keeping the amount of syntax to a minimum.
+The ICurry for the origonal \texttt{choose3} function is:
+\begin{verbatim}
+choose3 = declare x
+          x = 0 ? 1
+          case x of 
+               0 -> declare y
+                    y = 0 ? 1
+                    case y of
+                         0 -> declare z
+                              z = 0 ? 1
+                              case z of
+                                   0 -> return 0
+                                   1 -> return 1
+                         1 -> return 2
+                    1 -> return 3
+\end{verbatim}
+
+A \textit{path} in an ICurry function that uniquely determines the location of a statment.
+Since Each block in ICurry has a single statement, the only information required for a path
+is the branches that have been taken.
+Therefore, a path is a sequence of integers that correspond to the branches taken to reach a statement.
+As an example, the statement \texttt{return 1} in the above code would have the path \texttt{[0,0,1]}.
+
+let $paths(f)$ return the set of paths to any case statement in $f$,
+and $f_p$ be the statement after traversing the body of at with path $p$,
+and $vars(f,p)$ return the set of local variables declared up to $p$ in $f$.
+Then we compile each function $f$ into a set of functions:
+$$\textbf{f} = \bigcup_{p \in paths(e)} f_p(vars(f,p))$$\\
+
+We can define $paths(f)$ with the following algorithm:
+$$paths(case\ x\ of \{C_1 \rightarrow e_1, \\
+                      C_2 \rightarrow e_2, \\
+                      \ldots, \\
+                      C_n \rightarrow e_n\}) \\
+                      = [] \\
+                      ? 1:paths(e_1) \\
+                      ? 2:paths(e_2) \\
+                      \ldots \\
+                      ? n:paths(e_n) \\
+$$\\
+We can define $vars(f)$ with the following algorithm:
+$$vars(delcs, _, case\ x\ of \{C_1 \rightarrow e_1, \\
+                               C_2 \rightarrow e_2, \\
+                               \ldots, \\
+                               C_n \rightarrow e_n\}, i:path) \\
+                               = decls \cup vars(e_i, path)
+$$\\
+
+That is 

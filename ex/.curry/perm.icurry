@@ -1,0 +1,7 @@
+interface perm where {
+import Prelude;
+insert 2 :: a -> [a] -> [a];
+main 0 :: [Prelude.Int];
+perm 1 :: [a] -> [a];
+hiding data Prelude.Int
+}

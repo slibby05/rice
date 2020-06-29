@@ -1,0 +1,1 @@
+("EmptyFM","(BranchFM (\"Curry_perm\",\"C_main\") ND 3 (BranchFM (\"Curry_perm\",\"C_insert\") ND 1 EmptyFM EmptyFM) (BranchFM (\"Curry_perm\",\"C_perm\") ND 1 EmptyFM EmptyFM))","EmptyFM","EmptyFM","(BranchFM (\"Curry_perm\",\"C_main\") FuncFO 3 (BranchFM (\"Curry_perm\",\"C_insert\") FuncFO 1 EmptyFM EmptyFM) (BranchFM (\"Curry_perm\",\"C_perm\") FuncFO 1 EmptyFM EmptyFM))")

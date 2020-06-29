@@ -24,8 +24,8 @@ then we may get some unexpected results.
 The semantics of Curry are generally given in terms of rewriting.
 \cite{?}
 While there are other semantics \cite{?}, 
-rewriting is generally a good fit for Curry.
-We'll give a general definition of a rewrite system,
+rewriting is a good fit for Curry.
+We'll give a definition of a rewrite system,
 then we'll look at two distinct types of rewrite systems.
 A Term Rewrite System, which is used to implement transformations and optimizations
 on the Curry syntax trees;
@@ -62,14 +62,34 @@ So, it shouldn't be surprising that most systems have a pretty direct translatio
 It's worth understanding the properties and limitations of these rewrite systems.
 Traditionally there are two important questions to answer about any rewrite system.
 Is it \textit{confluent}? Is it \textit{terminating}?
+
 A confluent system is a system where the order or the rewrites doesn't change the final result.
 For example consider the distributive rule.
 When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.\\
 $3\cdot(4 + 5) \rightarrow 3\cdot 4 + 3\cdot 5 \rightarrow 12 + 15 \rightarrow 27$\\
 $3\cdot(4 + 5) \rightarrow 3\cdot 9 \rightarrow 27$\\
 Both of these reductions arrived at the same answer.
-A terminating system will always
+
+A terminating system will always halt.
+That means that eventually there are no rules that can be applied.
+Distributivity is terminating, where as commutativity is not terminating.\\
+$a\cdot (b + c) \rightarrow a\cdot b + a\cdot c$\\
+$x + y \rightarrow y + x \rightarrow x + y \rightarrow \ldots$\\
+
+Confluence and termination are important topics in rewriting, but we will largely ignore them.
+After all, Curry is neither confluent nor terminating.
+However, there will be a few cases where these concepts will be important.
+For example, if our optimizer isn't terminating, then we'll never actually compile a program.
+
+Now that we have a general notation for rewriting, we can introduce two important rewriting frameworks.
+Term rewriting and graph, where we are transforming trees and graphs respectively.
+
+% possibly add more about proving confluence and termination if I need it.
 
 \subsection{Term Rewriting}
+
+As mentioned previously, the purpose of term rewriting is to transform trees.
+This will be useful in optimizing the abstract syntax trees (ASTs) of Curry programs.
+Formally we define a term as a c
 \subsection{Graph Rewriting}
 \end{document}

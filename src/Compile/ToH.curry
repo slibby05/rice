@@ -1,6 +1,7 @@
 
 module Compile.ToH (toHeader) where
 
+import FlatUtils.FlatRewrite (Path)
 import ICurry.Types
 import List
 import Compile.C
@@ -21,6 +22,7 @@ toHeader (IProg name imps types allFuns) write append
       mapM_ (setFun append) funs  
       mapM_ (makeType append) types 
       mapM_ (makeFun append) funs  
+      mapM_ (makeFunParts append) funs
       mapM_ (setTypeFree append) types 
       mapM_ (makeTypeFree append) types 
       append $ "#endif //"++name++"_H"
@@ -35,31 +37,41 @@ makeIntro write name imps funs = write $ unlines $
                                      map cinclude imps ++
                                      nl ++
                                      map declareFun funs ++
+                                     concatMap declareFunParts funs ++
                                      nl
 
-declareFun :: IFunction -> String
-declareFun (IFunction f _ _ _ _) = cfunDecl "void" (hnf f) [(nodePtr, "root")]
+declareFun :: IFunction -> CStmt
+declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [(nodePtr, "root")]
+
+declareFunParts :: IFunction -> [CStmt]
+declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b)
+ where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [(nodePtr, "root")]
 
 makeTags :: (String -> IO ()) -> IDataType -> IO ()
 makeTags append (IDataType name cons) = append $ unlines $
                                          map makeTag cons ++
                                          nl
- where makeTag (n,_) = cdefine (tag n) (getTag n + 5)
+ where makeTag (n,_) = cdefine (tag n) (getTag n + 4)
 
 writeSymbols :: (String -> IO ()) -> [IDataType] -> [IFunction] -> IO ()
 writeSymbols append types funs = append $ unlines $
                                   [conSymbol c | t <- types, c <- cons t] ++
                                   map funSymbol funs ++
+                                  concatMap funParts funs ++
                                   nl
  where
   cons (IDataType _ cs) = cs
-  symbol name tag arity hnf = ("static Symbol "++mangle name++"_symbol") .=
-                                (carray [ ".tag" .= tag,
-                                          ".arity" .= show arity,
-                                          ".name" .= nameStr name,
-                                          ".hnf" .= hnf]) ++ ";"
-  conSymbol (n,a)                 = symbol n (mangle n ++ "_TAG") a "&CTR_hnf"
-  funSymbol (IFunction n a _ _ _) = symbol n "FUNCTION_TAG"       a ("&"++mangle n++"_hnf")
+  symbol name p tag arity hnf = ("static Symbol "++mname name p++"_symbol") .=
+                                 (carray [ ".tag" .= tag,
+                                           ".arity" .= show arity,
+                                           ".name" .= nameStr name p,
+                                           ".hnf" .= hnf]) ++ ";"
+  conSymbol (n,a)                 = symbol n Nothing (mangle n ++ "_TAG") a           "&CTR_hnf"
+  funSymbol (IFunction n a _ _ _) = symbol n Nothing  "FUNCTION_TAG"      a           ("&"++mangle n++"_hnf")
+  makePartSym n (p,vs,_)          = symbol n (Just p) "FUNCTION_TAG"      (length vs) (getPathName n p ++ "_hnf")
+  funParts  (IFunction n _ _ _ b) = map (makePartSym n) (pathList b)
+  mname n Nothing  = mangle n
+  mname n (Just p) = getPathName n p
 
 set :: (IQName, Int) -> CStmt
 set (name,arity) 
@@ -80,25 +92,34 @@ setType append (IDataType _ cons) = append $ concat (map set cons)
 setFun :: (String -> IO ()) -> IFunction -> IO ()
 setFun append (IFunction name arity _ _ _) = append $ set (name,arity)
 
-make :: (IQName, Int) -> String
-make (name,arity) 
- = unlines $ [comment (uninstance name)] ++
-             hfunDefn nodePtr ("make_"++mangle name) (makeArgs [1..arity] ++ [("int", "missing")]) ++
+make :: Maybe Path -> (IQName, Int) -> String
+make path (name,arity) 
+ = unlines $ [comment (uname path)] ++
+             hfunDefn nodePtr ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
                  [(nodePtr ++ " root") .= calloc_n 1 ++ ";",
-                  symbol "root" .= ("&"++ mangle name ++ "_symbol;"),
+                  symbol "root" .= ("&"++ (mname path) ++ "_symbol;"),
                   missing "root" .= "missing" ++ ";"] ++
                  makeArray False arity ++
                  zipWith (\x y -> children "root" [x] .= var y ++ ";") [0..] (reverse [1..arity]) ++
                  ["return root;"]
                 ) ++
              nl
+ where uname Nothing  = uninstance name
+       uname (Just p) = uninstance name ++ " @ [" ++ (intercalate "," (map show p)) ++ "]"
+       mname Nothing  = mangle name
+       mname (Just p) = getPathName name p
 
 makeType :: (String -> IO ()) -> IDataType -> IO ()
-makeType append (IDataType _ cons) = append $ concat (map make cons)
+makeType append (IDataType _ cons) = append $ concat (map (make Nothing) cons)
 
 makeFun :: (String -> IO ()) -> IFunction -> IO ()
-makeFun append (IFunction name arity _ _ _) = append $ make (name,arity)
+makeFun append (IFunction name arity _ _ _) = append $ make Nothing (name,arity)
+
+makeFunParts :: (String -> IO ()) -> IFunction -> IO ()
+makeFunParts append (IFunction name _ _ _ body) = mapM_ (append . makePath) (pathList body)
+ where makePath (p,vs,_) = make (Just p) (name,length vs)
+       
 
 setTypeFree :: (String -> IO ()) -> IDataType -> IO ()
 setTypeFree append (IDataType _ cons) = append $ unlines $ concatMap setConFree cons

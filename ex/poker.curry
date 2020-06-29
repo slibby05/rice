@@ -11,7 +11,7 @@ data Card = Card Rank Suit
 rank (Card r _) = r
 suit (Card _ s) = s
 
-four l | l =:= (x++[_]++z) = map rank (x++z) =:= [r,r,r,r] where r free
+four l | l =:= (x++[_]++z) = map rank (x++z) =:= [r,r,r,r] where r,x,z free
 
 testYes = [(Card Six Club),(Card Six Spade),(Card Five Heart),
            (Card Six Heart),(Card Six Diamond)]

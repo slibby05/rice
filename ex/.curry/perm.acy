@@ -1,0 +1,11 @@
+{- AbstractCurry 2.0 -}
+CurryProg "perm"
+["Prelude"]
+Nothing
+ []
+ []
+ []
+ [CFunc ("perm","perm") 1 Public (CQualType (CContext []) (CFuncType (CTApply (CTCons ("Prelude","[]")) (CTVar (0,"a"))) (CTApply (CTCons ("Prelude","[]")) (CTVar (0,"a"))))) [CRule [CPComb ("Prelude","[]") []] (CSimpleRhs (CSymbol ("Prelude","[]")) []),CRule [CPComb ("Prelude",":") [CPVar (0,"x"),CPVar (1,"xs")]] (CSimpleRhs (CApply (CApply (CSymbol ("perm","insert")) (CVar (0,"x"))) (CApply (CSymbol ("perm","perm")) (CVar (1,"xs")))) [])],
+  CFunc ("perm","insert") 2 Public (CQualType (CContext []) (CFuncType (CTVar (0,"a")) (CFuncType (CTApply (CTCons ("Prelude","[]")) (CTVar (0,"a"))) (CTApply (CTCons ("Prelude","[]")) (CTVar (0,"a")))))) [CRule [CPVar (0,"x"),CPComb ("Prelude","[]") []] (CSimpleRhs (CApply (CApply (CSymbol ("Prelude",":")) (CVar (0,"x"))) (CSymbol ("Prelude","[]"))) []),CRule [CPVar (1,"x"),CPComb ("Prelude",":") [CPVar (2,"y"),CPVar (3,"ys")]] (CSimpleRhs (CApply (CApply (CSymbol ("Prelude",":")) (CVar (1,"x"))) (CApply (CApply (CSymbol ("Prelude",":")) (CVar (2,"y"))) (CVar (3,"ys")))) []),CRule [CPVar (4,"x"),CPComb ("Prelude",":") [CPVar (5,"y"),CPVar (6,"ys")]] (CSimpleRhs (CApply (CApply (CSymbol ("Prelude",":")) (CVar (5,"y"))) (CApply (CApply (CSymbol ("perm","insert")) (CVar (4,"x"))) (CVar (6,"ys")))) [])],
+  CFunc ("perm","main") 0 Public (CQualType (CContext []) (CTApply (CTCons ("Prelude","[]")) (CTCons ("Prelude","Int")))) [CRule [] (CSimpleRhs (CApply (CSymbol ("perm","perm")) (CApply (CApply (CSymbol ("Prelude","enumFromTo")) (CLit (CIntc 1))) (CLit (CIntc 8)))) [])]]
+ []

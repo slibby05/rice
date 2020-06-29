@@ -1,0 +1,15 @@
+
+data T = A | B
+
+f x = case (g x) of
+    A -> case (h x) of
+      B -> 23
+    B -> case (j x) of
+      A -> 45
+
+g x = x
+h x = x
+j x = x
+
+main :: Int 
+main = f A

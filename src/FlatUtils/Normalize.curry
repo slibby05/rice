@@ -44,7 +44,7 @@ transform dt (Prog n is d fs ops) = Prog n is d fs' ops
 --
 -- But this would be really inefficient, so we don't do that.
 -- Instead we handle each transformation individually.
--- The convection I'm using is
+-- The convention I'm using is
 -- Rule name:
 -- origonal expr
 -- =>
@@ -146,7 +146,7 @@ transform dt (Prog n is d fs ops) = Prog n is d fs' ops
 -- Or in Case:
 -- case (c1 ? c2) of b -> e
 -- =>
--- let x = (c1?c2) in case b -> e
+-- let x = (c1?c2) in case x of b -> e
 
 -- expr in Case:
 -- It's just easier to remove non-variable expressions from case here.
@@ -158,7 +158,7 @@ moveContFlow :: FuncDecl -> Int -> [FuncDecl]
 moveContFlow (Func _ _ _ _ (External _))   _ = []
 moveContFlow (Func n a v t (Rule vs body)) _ =
   case rules body of
-       Nothing      -> []
+       Nothing          -> []
        Just newBody -> [Func n a v t (Rule vs newBody)]
 
 rules :: Expr -> DET (Maybe Expr)
@@ -189,8 +189,7 @@ rules body = (body, Typed e t) |=> e
 rules body = (body, Let vs e) |=> makeBlocks vs e
   where vs, e free
 rules body = (body,l) |=> fixAlias l
-  where x,y free
-        l = Let (_++[(x, Var y)]++_) _
+  where l = Let (_++[(_, Var _)]++_) _
 rules body = (body, Case ct e bs) |=> Let [(x,e)] (Case ct (Var x) bs)
   where e = ccomb ? clit ? cor
         x = foldr max 0 (allNames body) + 1
@@ -199,6 +198,47 @@ rules body = (body, Comb ct ("Prelude","apply") (Comb _ ("Prelude","apply") as :
                     (Comb ct ("Prelude","apply") (as++bs))
   where ct,n,as,bs,vs,e free
 rules body = Nothing
+
+
+--rules :: Expr -> DET (Maybe (Path, Expr))
+--rules body = start body ~> Or (Let vs e1) e2 |~> Let vs (Or e1 e2)
+--  where vs, e1, e2 free
+--rules body = start body ~> Or e1 (Let vs e2) |~> Let vs (Or e1 e2)
+--  where vs, e1, e2 free
+--rules body = start body ~> Or (Free vs e1) e2 |~> Free vs (Or e1 e2)
+--  where vs, e1, e2 free
+--rules body = start body ~> Or e1 (Free vs e2) |~> Free vs (Or e1 e2)
+--  where vs, e1, e2 free
+--rules body = start body ~> Comb ct n (as++[Let vs e]++bs) |~> Let vs (Comb ct n (as++[e]++bs))
+--  where ct,n,as,vs,e,bs free
+--rules body = start body ~> Comb ct n (as++[Free vs e]++bs) |~> Free vs (Comb ct n (as++[e]++bs))
+--  where ct,n,as,bs,vs,e free
+--rules body = start body ~> Let (as++[(x,Let vs e1)]++bs) e2 |~> Let (as++vs++[(x,e1)]++bs) e2
+--  where as,x,vs,e1,bs,e2 free
+--rules body = start body ~> Let (as++[(x,Free vs e1)]++bs) e2 |~> Free vs (Let (as++[(x,e1)]++bs) e2)
+--  where as,x,vs,e1,bs,e2 free
+--rules body = start body ~> Case r1 (Case r2 e b2) b1 |~> Case r2 e (map (foldCase r1 b1) b2)
+--  where r1,r2,e,b1,b2 free
+--rules body = start body ~> Case ct (Let vs e) bs |~> Let vs (Case ct e bs)
+--  where ct,vs,e,bs free
+--rules body = start body ~> Case ct (Free vs e) bs |~> Free vs (Case ct e bs)
+--  where ct,vs,e,bs free
+--rules body = start body ~> Typed e t |~> e
+--  where e,t free
+--rules body = start body ~> Let vs e |~> makeBlocks vs e
+--  where vs, e free
+--rules body = start body ~> l |~> fixAlias l
+--  where l = Let (_++[(_, Var _)]++_) _
+--rules body = start body ~> Case ct e bs |~> Let [(x,e)] (Case ct (Var x) bs)
+--  where e = ccomb ? clit ? cor
+--        x = foldr max 0 (allNames body) + 1
+--        ct,bs free
+--rules body = start body ~> 
+--               Comb ct ("Prelude","apply") (Comb _ ("Prelude","apply") as : bs) |~> 
+--               (Comb ct ("Prelude","apply") (as++bs))
+--  where ct,n,as,bs,vs,e free
+--rules body = Nothing
+
 
 -- Case in Case:
 -- case (case s2 of b21 -> e21
@@ -237,8 +277,6 @@ makeBlocks es e
 
        makeEdge v f       = (v,f)
        makeEdges (v, exp) = map (makeEdge v) (freeVars exp)
-
-
 
 --------------------------------------------------------------------
 -- Remove aliasing

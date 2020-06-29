@@ -5,27 +5,14 @@
 Node* toCurryString(char* str);
 char* toCStr_rec(Node* str, int i);
 char* toCStr(Node* string);
-Node* contract(Node* v);
+//Node* contract(Node* v);
 
 bool unify(Node* s, Node* t);
 
 
-Node* contract(Node* v)
-{
-    if(v->symbol->tag == FORWARD_TAG)
-    {
-        while(v->children[0].n->symbol->tag == FORWARD_TAG)
-        {
-            v->children[0] = v->children[0].n->children[0];
-        }
-        return v->children[0].n;
-    }
-    return v;
-}
-
 char* toCStr(Node* string)
 {
-    return toCStr_rec(contract(string), 0);
+    return toCStr_rec(string, 0);
 }
 
 char* toCStr_rec(Node* str, int i)
@@ -37,8 +24,8 @@ char* toCStr_rec(Node* str, int i)
         cstr[i] = '\0';
         return cstr;
     }
-    Node* c = contract(str->children[1].n);
-    Node* cs = contract(str->children[0].n);
+    Node* c = str->children[1].n;
+    Node* cs = str->children[0].n;
     cstr = toCStr_rec(cs, i+1);
     cstr[i] = c->children[0].c;
     return cstr;
@@ -71,12 +58,12 @@ void Prelude_ensureNotFree_hnf(Node* root)
 void Prelude__DL_EX_hnf(Node* root)
 {
     Node* v2 = root->children[0].n;
-    Node* v1 = contract(root->children[1].n);
+    Node* v1 = root->children[1].n;
     v2->symbol->hnf(v2);
-    v2 = contract(v2);
+    v2 = v2;
     if(v2->nondet)
     {
-        save(root);
+        save_copy(root);
     }
     if(v2->symbol->tag == FAIL_TAG)
     {
@@ -93,12 +80,12 @@ void Prelude__DL_EX_hnf(Node* root)
 void Prelude__DL_EX_EX_hnf(Node* root)
 {
     Node* v2 = root->children[0].n;
-    Node* v1 = contract(root->children[1].n);
+    Node* v1 = root->children[1].n;
     nf(v2);
-    v2 = contract(v2);
+    v2 = v2;
     if(v2->nondet)
     {
-        save(root);
+        save_copy(root);
     }
     if(v2->symbol->tag == FAIL_TAG ||
        v2->symbol->tag == FREE_TAG)
@@ -116,12 +103,11 @@ void Prelude__DL_EX_EX_hnf(Node* root)
 void Prelude__DL_HT_HT_hnf(Node* root)
 {
     Node* v2 = root->children[0].n;
-    Node* v1 = contract(root->children[1].n);
+    Node* v1 = root->children[1].n;
     ground_nf(v2);
-    v2 = contract(v2);
     if(v2->nondet)
     {
-        save(root);
+        save_copy(root);
     }
     if(v2->symbol->tag == FAIL_TAG)
     {
@@ -148,6 +134,7 @@ void Prelude_failed_hnf(Node* root)
     fail(root);
 }
 
+// =:=
 void Prelude__EQ_CO_EQ_hnf(Node* root)
 {
     error("=:= not implemented", root);
@@ -211,7 +198,7 @@ void Prelude__EQ_CO_LT_LT_EQ_hnf(Node* root)
 
 void Prelude_ifVar_hnf(Node* root)
 {
-    if(contract(root)->symbol->tag == FREE_TAG)
+    if(root->symbol->tag == FREE_TAG)
     {
         set_Prelude_True(root,0);
     }

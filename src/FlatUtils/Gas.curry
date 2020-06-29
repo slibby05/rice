@@ -83,6 +83,10 @@ e ~~> a = e ~~ _ ~> a
 (~|) :: Maybe (Path, Expr) -> (Expr -> Bool) -> Maybe (Path, Expr)
 a@(Just (_,e)) ~| p | p e = a
 
+
+(|~>) ::  Maybe (Path,Expr) -> Expr -> Maybe (Path, Expr)
+(Just (p,l)) |~> r = Just (p,r)
+
 -- These are constants the let me build up expressions more easily
 clet, ccase, ccomb, cor, cfree, ctype, clit, cvar :: Expr
 clet  = Let   _ _
@@ -95,7 +99,11 @@ clit  = Lit _
 cvar  = Var _
 
 
+-- This is a simpler version that will apply a rewrite rule
+-- This has a more limited use, but it's pretty easy when it does work
+-- given the rule l -> r, then we can rewrite e with that rule with (e,l) |-> r
 (|=>) :: (Expr, Expr) -> Expr -> Maybe Expr
 (e, l) |=> r 
  | subexpr e =:= (p,l) = Just (replace e p r)
   where p free
+

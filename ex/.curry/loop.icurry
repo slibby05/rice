@@ -1,0 +1,7 @@
+interface loop where {
+import Prelude;
+build 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+loop 0 :: a;
+main 0 :: Prelude.Int;
+hiding data Prelude.Int
+}

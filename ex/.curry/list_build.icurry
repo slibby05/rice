@@ -1,0 +1,5 @@
+interface list_build where {
+import Prelude;
+main 0 :: [Prelude.Int];
+hiding data Prelude.Int
+}

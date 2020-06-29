@@ -9,4 +9,4 @@ insert x (y:ys) = x:y:ys
 insert x (y:ys) = y : insert x ys
 
 main :: [Int]
-main = perm [1..4]
+main = perm [1..8]

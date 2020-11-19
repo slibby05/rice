@@ -1,0 +1,168 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+
+\begin{document}
+%\chapter{Compilation}
+
+\section{The Curry Language}
+
+\subsection{Syntax}
+
+The syntax of Curry should look familiar to anyone with experience programming in Haskell \ref{fig:syntax}.
+Functions are declared by defining equations, and new data types are declared as algebraic data types.
+Function application is represented by juxtaposition, so $f\ x$ represents the function $f$ applied to the variable $x$.
+Curry also allows for declaring new infix operators.
+In fact, Curry really only adds two new pieces of syntax to Haskell, \textbf{fcase} and \textbf{free}.
+However, the main difference between Curry and Haskell is not immediately clear from the syntax.
+Curry allows for overlapping rules and free variables.
+Specifically Curry is a Limited Overlapping Inductively Sequential (LOIS) Rewrite system.
+Haskell, on the other hand, requires all rules to be non-overlapping.
+
+To see the difference consider the usual definition of factorial.
+\begin{verbatim}
+fac :: Int -> Int
+fac 0 = 1
+fac n = n * fac (n-1)
+\end{verbatim}
+
+This seems like an innocuous Haskell program, however It's non-terminating for every possible input for Curry.
+The reason is that \texttt{fac 0} could match either rule.
+In Haskell all defining equations are ordered sequentially. which results in control flow similar to the following C
+implementation.
+\begin{verbatim}
+int fac(int n)
+{
+    if(n == 0)
+    {
+        return 1;
+    }
+    else
+    {
+        return n * fac(n-1);
+    }
+}
+\end{verbatim}
+In fact, every rule with multiple defining equations follows this pattern
+If we the equations where $p_i$ is a pattern and $E_i$ is an expression.
+\begin{align*}
+f\ p_1 &= E_1\\
+f\ p_2 &= E_2\\
+\ldots\\
+f\ p_n &= E_n
+\end{align*}
+Then this is redefined to be semantically equivalent to the following.
+\begin{align*}
+f\ p_1 &= E_1\\
+f\ \neg p_1 \wedge p_2 &= E_2\\
+\ldots\\
+f\ \neg p_1 \wedge \neg p_2 \wedge p_n &= E_n\\
+\end{align*}
+Here $\lnot p_i$ means that we don't match pattern $i$.
+This ensures that we will ever only reduce to a single expression.
+Specifically we reduce to the first expression where we match the pattern.
+
+Curry rules, on the other hand, are unordered.
+If we could match multiple patterns, such as in the case of \texttt{fac}, 
+then we non-deterministically return both expressions.
+Therefore \texttt{fac 0} reduces to both \texttt 1 and \texttt{fac (-1)}.
+Exactly how Curry reduces an expression non-deterministically will be discussed throughout this dissertation,
+but for now it is acceptable to think in terms of sets.
+If the expression $e \rightarrow e_1$ and $e \rightarrow e_2$,
+$e_1 \rightarrow^* v_1$ and $e_2 \rightarrow^* v_2$, then $e \rightarrow^* \{v_1, v_2\}$.
+This intuition breaks down in several corner cases involving lazy evaluation,
+but it works well enough for now.
+
+The second major addition to Curry is free variables.
+A free variable could have any value of the correct type,
+so a free \texttt{BooL} could be either \texttt{True} or \texttt{False}.
+Usually a free variable's value will be constrained during the execultion of the program.
+For example.z
+
+
+
+\begin{figure}
+
+\begin{tabular}{rcl}
+Prog     & \rightarrow & Module\textsuperscript{?} Import*  Decl*                           \\
+Module   & \rightarrow & \textbf{module} Name \textbf{(} Export*  \textbf{)} \textbf{where} \\
+Type     & \rightarrow & Name\ Type*                                                        \\
+         & |           & TVar                                                               \\
+         & |           & Type \textbf{->} Type                                              \\
+         & |           & \textbf{(} (Type,)*  Type \textbf{)}                               \\
+         & |           & \textbf{[} (Type,)*  Type \textbf{]}                               \\
+Decl     & \rightarrow & FunDecl | DataDecl                                                 \\
+DataDecl & \rightarrow & \textbf{data} Name TVar*  \textbf{=} Cons (\textbf{|} Cons*)       \\
+         & |           & \textbf{type} Name TVar*  \textbf{=} Type                          \\
+Cons     & \rightarrow & Name Type*                                                         \\
+FunDecl  & \rightarrow & FunType\textsuperscript{?} FunDefn                                 \\
+FunType  & \rightarrow & Name :: Type                                                       \\
+FunDefn  & \rightarrow & Name Param* \textbf{=} Expr                                        \\
+Expr     & \rightarrow & Var                                                                \\
+         & |           & Lit                                                                \\
+         & |           & Expr \textbf{::} Type                                              \\
+         & |           & \textbf{(} Expr \textbf{)}                                         \\
+         & |           & Expr Expr*                                                         \\
+         & |           & Expr Op Expr                                                       \\
+         & |           & \textbf{let} Binding* \textbf{in} Expr                             \\
+         & |           & Expr \textbf{where} Binding*                                       \\
+         & |           & \textbf{case} Expr \textbf{of} Branch*                             \\
+         & |           & \textbf{fcase} Expr \textbf{of} Branch*                            \\
+Binding  & \rightarrow & Name \textbf{=} Expr                                               \\
+Branch   & \rightarrow & Constructor \textbf{->} Expr                                       \\
+         & |           & Lit \textbf{->} Expr                                               \\
+TVar     & \rightarrow & Name                                                               \\
+Var      & \rightarrow & Name                                                               \\
+Param    & \rightarrow & Name                                                               \\
+\end{tabular}
+\label{fig:Syntax}
+\caption{The Syantax of Curry: Terminal symbols are in bold. Name is any valid identifier.
+    Lit is any valid Integer, floating point, character, or string literal.}
+\end{figure}
+
+\begin{figure}
+
+\begin{tabular}{rcl}
+Prog        & \rightarrow & \textbf{Prog} Name Import* Data* Fun* Op*                        \\ 
+Type        & \rightarrow & \textbf{TCons} QName Type*                                       \\ 
+            & |           & \textbf{TVar} TVar                                               \\ 
+            & |           & \textbf{FuncType} Type Type                                      \\ 
+Data        & \rightarrow & \textbf{Type} QName Vis TVar* \textbf{=} Cons (\textbf{|} Cons*) \\ 
+Cons        & \rightarrow & \textbf{Cons} QName Arity Vis Type*                              \\ 
+Op          & \rightarrow & \textbf{Op} QName Fixity Precidence                              \\ 
+Fixity      & \rightarrow & \textbf{InfixOp} | \textbf{InfixlOp} | \textbf{InfixrOp}         \\ 
+Fun         & \rightarrow & \textbf{FuncDecl} QName Arity Vis Type Rule                      \\ 
+Rule        & \rightarrow & \textbf{Rule} Param* Expr                                        \\ 
+            & |           & \textbf{External} Name                                           \\ 
+Expr        & \rightarrow & \textbf{Var} Var                                                 \\ 
+            & |           & \textbf{Lit} Lit                                                 \\ 
+            & |           & \textbf{Typed} Expr Type                                         \\ 
+            & |           & \textbf{Comb} CombType QName Expr*                               \\ 
+            & |           & \textbf{Let} Binding* \textbf{in} Expr                           \\ 
+            & |           & \textbf{Case} CaseType Expr Branch*                              \\ 
+Binding     & \rightarrow & \textbf{(} Name \textbf{,} Expr \textbf{)}                       \\ 
+CaseType    & \rightarrow & \textbf{Rigid} | \textbf{Flex}                                   \\ 
+CombType    & \rightarrow & \textbf{FuncCall} | \textbf{ConsCall}                            \\ 
+            & |           & \textbf{FuncPartCall} Arity | \textbf{ConsPartCall} Arity        \\ 
+Branch      & \rightarrow & \textbf{Branch} Pattern Expr                                     \\ 
+Pattern     & \rightarrow & \textbf{Pattern} QName Var*                                      \\ 
+            & |           & \textbf{LPattern} Lit                                            \\ 
+Lit         & \rightarrow & \textbf{Intc} Int | \textbf{Charc} Char | \textbf{Floatc} Float  \\ 
+Import      & \rightarrow & Name                                                             \\ 
+QName       & \rightarrow & \textbf{(}Name\textbf{,} Name\textbf{)}                          \\ 
+Vis         & \rightarrow & \textbf{Public} | \textbf{Private}                               \\ 
+TVar        & \rightarrow & Nat                                                              \\ 
+Var         & \rightarrow & Nat                                                              \\ 
+Param       & \rightarrow & Nat                                                              \\ 
+Arity       & \rightarrow & Nat                                                              \\ 
+Precidence  & \rightarrow & Nat                                                              \\ 
+\end{tabular}
+\label{Syntax}
+\caption{The Syantax of FlatCurry}
+\caption{The Syantax of FlatCurry: Again terminal symbols are in bold, and Nam is any valid identifier.
+    Nat is any valid natural number. QName is added to disambiguate names from other modules.}
+\end{figure}
+
+\subsection{Semantics}
+\end{document}

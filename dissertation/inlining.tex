@@ -1,0 +1,76 @@
+
+basic theory of inlining
+
+case cancelling
+dead code elimination
+beta reduction
+ - ordering functions
+ - the call graph
+ - loop breakers
+
+If we have a non-trivial strongly connected component,
+then we have possible recursion in our function calls.
+While we want recursion in our language, we absolutely cannot
+deal with recursion while inlining.
+For a simple example, suppose we have the functios.
+
+\begIn{verbatim}
+f x = g x
+g x = f x
+\end{verbatim}
+
+If we were to decide to $\beta$-reduce the expression \texttt{f 5}
+we could end up in an infinite loop trying to simplify the expression.
+While this doesn't hurt the generated code, it's important that our inlining algoirthm terminate.
+
+For an even more insidious example, we could has an expanding expression.
+\begin{verbatim}
+f x = g (x+1)
+g x = f (x+1)
+\end{verbatim}
+
+Now when we $\beta$-reduce \texttt{f 5} our expression increases in size.
+\begin{verbatim}
+f 5
+-> g (5 + 1)
+-> f ((5 + 1) + 1)
+-> g (((5 + 1) + 1) + 1)
+...
+\end{verbatim}
+
+While an expression increasing in size might be warrented in some cases, 
+we clearly need to avoid this problem with recursive function calls.
+Therefore it's very important that we can detect possible recursion.
+Fortunately we already have the tool for this.
+Consider the call graph for \texttt f and \texttt g.
+
+\begin{graph}
+f -> g
+g -> f
+\end{graph}
+
+The two vertices form a cycle.
+In fact this generalizes to any collection of function calls.
+Any non-trivial strongly connected component of a call graph will contain recursion.
+If we were to eliminate all of these components from our call graph, 
+then we wouldn't need to worry about recursion durring the inlining phase.
+
+The trick to this is actually pretty simple.
+We just pick a function in a strongly-connected component, and remove it from consideration.
+We call these functions loopbreakers after \cite{inlining}.
+Once a function has been designated as a loop breaker, it's never allowed to be inlined.
+We then remove every edge to the loopbreaker from the call graph.
+This process repreats until our call graph is acyclic.
+As a side effect, when we topologically sort our graph we have a nice ordering for optimiing functions.
+We are gaurenteed any 
+
+
+ - function symbol table
+
+
+inlining
+ - variable dependancy graph
+ - loop breakers again
+ - size of a variable
+ - work of a variable
+

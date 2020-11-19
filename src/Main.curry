@@ -14,11 +14,14 @@ import System.CurryPath (getLoadPathForModule)
 
 import Control.SetFunctions
 
-import FlatUtils.Normalize
 import FlatUtils.DataTable as DT
 import FlatUtils.ReplacePrim (mergePrelude)
 
 import Optimize.Unboxing
+--import Optimize.Preprocess
+--import Optimize.Postprocess
+import Optimize.Optimize
+import Optimize.FunTable
 
 import Text.Pretty
 
@@ -54,8 +57,9 @@ compileAll file args =
          then do putStrLn "\n\nDATA TABLE\n\n"
                  putStrLn (DT.showTable dt)
          else return ()
-     mapM_ (compileOpt dt)       [opt | (opt,False) <- fcys]
-     mapM_ (compileFlat dt args) [fcy | (fcy,True) <- fcys]
+     --mapM_ (compileOpt dt)       [opt | (opt,False) <- fcys]
+     --mapM_ (compileFlat dt args) [fcy | (fcy,True) <- fcys]
+     compileFlat dt args (fst (last fcys))
      writeMain (home++"/.rice/main.c") file
      let inc = home++"/.rice/" 
      let files = [inc++x++".c" | x <- ((map (getMod . fst) fcys) ++ ["main", "runtime", "stack", "external"])]
@@ -83,7 +87,8 @@ getICurry dt p hasICurry = do home <- getEnviron "HOME"
                               let file = home++"/.rice/"++getMod p
                               if hasICurry 
                                 then readICurryFile (file++".icy")
-                                else do let c_fcy = transform dt p
+                                --else do let c_fcy = transform dt p
+                                else do let (c_fcy,_) = optimize dt (makeFunTable [] []) p
                                         let icy   = toICurry c_fcy
                                         writeFile (file++".icy") (show icy)
                                         return icy
@@ -110,28 +115,34 @@ compileFlat dt args fcy =
      --     else return ()
      -- writeFile (file++".opt") (show opt_fcy)
 
-     let c_fcy = id $## transform dt u_fcy
+     -- let pre_fcy = id $## preprocess dt u_fcy
+     -- putStrLn $ pPrint $ FP.ppProg FP.defaultOptions pre_fcy
+     -- let c_fcy = id $## preprocess dt opt_fcy
+     -- putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
+     let (c_fcy,ft) = id $## optimizeT dt (makeFunTable [] []) u_fcy
 
-     if STransformed `elem` args 
-         then do putStrLn "\n\nTRANSFORMED FLAT CURRY\n\n"
-                 putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
-         else return ()
-     writeFile (file++".opt") (show c_fcy)
+     print c_fcy
+     return ()
+     --if STransformed `elem` args 
+     --    then do putStrLn "\n\nTRANSFORMED FLAT CURRY\n\n"
+     --            putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
+     --    else return ()
+     --writeFile (file++".opt") (show c_fcy)
 
-     let icy = id $## toICurry c_fcy
-     putStrLn "\n\nICURRY\n\n"
-     --print icurry
-     if SICurry `elem` args 
-         then do putStrLn "\n\nICURRY\n\n"
-                 putStrLn $ pPrint $ ppIProg icy
-         else return ()
-     writeFile (file++".icy") (show icy)
+     --let icy = id $## toICurry c_fcy
+     --putStrLn "\n\nICURRY\n\n"
+     ----print icurry
+     --if SICurry `elem` args 
+     --    then do putStrLn "\n\nICURRY\n\n"
+     --            putStrLn $ pPrint $ ppIProg icy
+     --    else return ()
+     --writeFile (file++".icy") (show icy)
 
-     putStrLn "\n\nC\n\n"
-     let hfile = file++".h"
-     let cfile = file++".c"
-     toHeader icy (writeFile hfile) (appendFile hfile)
-     toSource icy (writeFile cfile) (appendFile cfile)
+     --putStrLn "\n\nC\n\n"
+     --let hfile = file++".h"
+     --let cfile = file++".c"
+     --toHeader icy (writeFile hfile) (appendFile hfile)
+     --toSource icy (writeFile cfile) (appendFile cfile)
 
 fixPrelude :: Prog -> IO Prog
 fixPrelude p = do home <- getEnviron "HOME"

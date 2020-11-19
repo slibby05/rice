@@ -6,6 +6,7 @@
 module FlatUtils.Gas where
 
 import FlatCurry.Types
+import FlatCurry.Goodies (updProgExps)
 import FlatUtils.FlatRewrite
 import Util
 import Debug
@@ -22,14 +23,46 @@ import Control.SetFunctions
 --              otherwise it returns a list of 1 or more transformed functions
 -- @param (f:fs) - the list of funcions to apply the transformation
 -- @return a list of transformed functions.  This list may be longer than the origonal list.
-loop :: (FuncDecl -> Int -> [FuncDecl]) -> [FuncDecl] -> Int -> ([FuncDecl],Int)
-loop _   []     n = ([], n)
-loop opt (f:fs) n
-  = trace ("FUNCTION: " ++ fname f) $ fcase opt f n of
-      []      -> mapFst (f:) (loop opt fs n)
-      y@(_:_) -> loop opt (y++fs) (n + length y)
- where fname (Func q _ _ _ _) = snd q
+loop :: (Int -> FuncDecl -> [FuncDecl]) -> Int -> [FuncDecl] -> [FuncDecl]
+loop _   _ []     = []
+loop opt n (f:fs)
+  = fcase opt n f of
+      []      -> f : loop opt n fs
+      y@(_:_) -> loop opt (n+1) (y++fs)
 
+--simplifyAll :: (Expr -> Maybe Expr) -> Prog -> Prog
+--simplifyAll opt = updProgExps (simplify opt)
+
+maybeFix :: (Eq a, Show a) => (a -> (a,String)) -> a -> DET a
+maybeFix opt e = let vs = set0 (opt e)
+                 in case isEmpty vs of
+                         True -> e
+                         False -> let (e',s) = selectValue vs
+                                  in trace (show e ++ " ->_" ++ s ++ " " ++ show e') $ maybeFix opt e'
+
+
+maybeFixLimit :: (Eq a, Show a) => (a -> (a,String)) -> a -> Int -> DET a
+maybeFixLimit opt e n 
+ | n == 0 = e
+ | otherwise = let vs = set0 (opt e)
+               in case isEmpty vs of
+                       True -> e
+                       False -> let (e',s) = selectValue vs
+                                in trace (show e ++ " ->_" ++ s ++ " " ++ show e') $ maybeFixLimit opt e' (n-1)
+
+-- Makes a deterministic operation out of a potentially non-deterministic one.
+-- this means I can combine optimizations, and just pick the first one that fired.
+mkDet :: (Eq b) => (a -> b) -> a -> Maybe b
+mkDet f e = let vs = set0 (f e)
+            in if isEmpty vs
+               then Nothing 
+               else Just (selectValue vs)
+
+simplify :: (Expr -> (Expr, String)) -> Expr -> Expr
+simplify opt e = maybeFix opt e
+
+simplifyLimit :: (Expr -> (Expr, String)) -> Int -> Expr -> Expr
+simplifyLimit opt n e = maybeFixLimit opt e n
 
 --------------------------------------------------------------------
 -- getting subexpressions
@@ -88,22 +121,52 @@ a@(Just (_,e)) ~| p | p e = a
 (Just (p,l)) |~> r = Just (p,r)
 
 -- These are constants the let me build up expressions more easily
-clet, ccase, ccomb, cor, cfree, ctype, clit, cvar :: Expr
+clet :: Expr
 clet  = Let   _ _
+ccase :: Expr
 ccase = Case  _ _ _
+ccomb :: Expr
 ccomb = Comb  _ _ _
+cor :: Expr
 cor   = Or    _ _
+cfree :: Expr
 cfree = Free  _ _
+ctype :: Expr
 ctype = Typed _ _
+clit :: Expr
 clit  = Lit _
+cvar :: Expr
 cvar  = Var _
 
 
--- This is a simpler version that will apply a rewrite rule
--- This has a more limited use, but it's pretty easy when it does work
--- given the rule l -> r, then we can rewrite e with that rule with (e,l) |-> r
-(|=>) :: (Expr, Expr) -> Expr -> Maybe Expr
-(e, l) |=> r 
- | subexpr e =:= (p,l) = Just (replace e p r)
+-- |=> represents a rewrite rule
+-- if r = (lhs |=> rhs)
+-- then r e computes f where e rewrites to f with rule r.
+-- e ->_(p,r) f for some position p in e
+(|=>) :: Expr -> (Expr,String) -> Expr -> (Expr,String)
+lhs |=> (rhs,name) = \e -> subexpr e =:= (p,lhs) &> (replace e p rhs, name)
   where p free
+
+-- Similar to above, but we make two expressions.
+-- This is used when we need to move part of an expression out into a different function.
+(||=>) :: Expr -> (Expr, Expr) -> Expr -> (Expr, Expr)
+lhs ||=> (r1, r2) = \e -> subexpr e =:= (p,lhs) &> (replace e p r1, r2)
+  where p free
+
+-- Conditional rewrite rule.
+-- Again similar to above, but this time we can add a condition.
+(?=>) :: (Expr, Bool) -> (Expr,String) -> Expr -> (Expr,String)
+(lhs, cond) ?=> (rhs, name) = \e -> (subexpr e =:= (p,lhs) & cond) &> (replace e p rhs, name)
+  where p free
+
+-- helper functions to make some expressions easier to construct
+applyf :: Expr -> [Expr] -> Expr
+applyf f es = Comb FuncCall ("Prelude","apply") (f:es)
+
+caseBranch :: Expr -> Expr
+caseBranch e = Case _ _ (_++[Branch _ e]++_)
+
+partCall :: Int -> QName -> [Expr] -> Expr
+partCall n f es = Comb (FuncPartCall n) f es
+                ? Comb (ConsPartCall n) f es
 

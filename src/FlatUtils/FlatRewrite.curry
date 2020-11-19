@@ -1,7 +1,8 @@
 module FlatUtils.FlatRewrite (replace, subexpr, arbitrary, 
                               Path, fix, step, 
-                              allVars, allNames, allVarPaths, freeVars, allInvPaths,
-                              sub, (@>), idSub) where
+                              hasVar,
+                              allDecls, allVars, allNames, allVarPaths, freeVars, allInvPaths,
+                              sub, (@>), idSub, rename) where
 
 import Control.SetFunctions
 import FlatCurry.Types
@@ -61,11 +62,12 @@ replace (Case t e' (x++[Branch f e]++y)) (p:ps)  w
 -- so if (s x) = x if x shouldn't be changed
 sub :: (Int -> Expr) -> Expr -> Expr
 sub s (Var v)       = s v
+sub s (Lit l)       = Lit l
 sub s (Free vs e)   = Free vs (sub s e)
 sub s (Or e1 e2)    = Or (sub s e1) (sub s e2)
 sub s (Typed e t)   = Typed (sub s e) t
 sub s (Comb t n es) = Comb t n (map (sub s) es)
-sub s (Let bs e)    = Let (map (mapSnd (sub s)) bs) (sub s e)
+sub s (Let vs e)    = Let (map (mapSnd (sub s)) vs) (sub s e)
 sub s (Case t e bs) = Case t (sub s e) (map (branchSub s) bs)
  where branchSub s (Branch f e) = Branch f (sub s e)
 
@@ -73,9 +75,22 @@ sub s (Case t e bs) = Case t (sub s e) (map (branchSub s) bs)
 idSub :: Int -> Expr
 idSub x = Var x
 
-(@>) :: (Int,Expr) -> (Int -> Expr) -> (Int -> Expr)
+(@>) :: (Eq a) => (a,b) -> (a -> b) -> (a -> b)
 (x,e) @> s = \v -> if x == v then e else s v
 
+-- I wanted to do this with sub, but if I'm renaming, then I probably want to rename declarations too.
+rename :: [Int] -> [Int] -> Expr -> Expr
+rename vin vout = ren (foldr (@>) id (zip vin vout))
+ where ren s (Var v)       = Var (s v)
+       ren s (Lit l)       = Lit l
+       ren s (Free vs e)   = Free (map s vs) (ren s e)
+       ren s (Or e1 e2)    = Or (ren s e1) (ren s e2)
+       ren s (Typed e t)   = Typed (ren s e) t
+       ren s (Comb t n es) = Comb t n (map (ren s) es)
+       ren s (Let vs e)    = Let (map (fork s (ren s)) vs) (ren s e)
+       ren s (Case t e bs) = Case t (ren s e) (map (branchRen s) bs)
+       branchRen s (Branch (Pattern n vs) e) = Branch (Pattern n (map s vs)) (ren s e)
+       branchRen s (Branch (LPattern l) e)   = Branch (LPattern l) (ren s e)
 
 arbitrary :: Expr -> Expr
 arbitrary = snd . subexpr
@@ -132,6 +147,10 @@ withSubexpr expr
 -- get an arbitrary variable in the expression
 isVar :: Expr -> VarIndex
 isVar (withSubexpr (Var v)) = v
+
+-- get an arbitrary variable in the expression
+hasVar :: Expr -> VarIndex -> Bool
+hasVar (withSubexpr (Var v)) v = True
 
 -- get an arbitrary declared variable from an expression
 declVar :: Expr -> VarIndex

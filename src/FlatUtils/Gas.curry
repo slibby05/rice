@@ -33,103 +33,30 @@ loop opt n (f:fs)
       y@(_:_) -> loop opt (n+1) (y++fs)
 
 
-showRule l s = (pPrint (ppExp defaultOptions l)) ++ 
-               "\n->_"++ s ++ "\n"
+showRule s r = "->_"++ s ++ "\n" ++
+               (pPrint (ppExp defaultOptions r))
+               
 
 --maybeFix :: (Eq a, Show a) => (a -> (a,String)) -> a -> a
-maybeFix :: (Expr -> (Expr,String)) -> Expr -> (Expr, String)
-maybeFix opt e = case id $## oneValue (opt e) of
-                      Nothing     -> (e, pPrint (ppExp defaultOptions e))
-                      Just (e',s) -> mapSnd (showRule e s ++) (maybeFix opt e')
+maybeFix :: (Expr -> (Expr,String)) -> Expr -> Expr
+maybeFix opt e = case oneValue (opt e) of
+                      Nothing     -> e
+                      Just (e',s) -> trace (showRule s e') $ maybeFix opt e'
 
 
 --maybeFixLimit :: (Eq a, Show a) => (a -> (a,String)) -> a -> Int -> a
-maybeFixLimit :: (Expr -> (Expr,String)) -> Expr -> Int -> (Expr, String)
+maybeFixLimit :: (Expr -> (Expr,String)) -> Expr -> Int -> Expr
 maybeFixLimit opt e n 
  | n == 0 = e
- | otherwise = case id $## oneValue (opt e) of
-                    Nothing     -> (e, pPrint (ppExp defaultOptions e))
-                    Just (e',s) -> mapSnd (showRule e s ++) (maybeFixLimit opt e' (n-1))
+ | otherwise = case oneValue (opt e) of
+                    Nothing     -> e
+                    Just (e',s) -> trace (showRule s e') $ maybeFixLimit opt e' (n-1)
 
 simplify :: (Expr -> (Expr, String)) -> Expr -> Expr
 simplify opt e = maybeFix opt e
 
 simplifyLimit :: (Expr -> (Expr, String)) -> Int -> Expr -> Expr
 simplifyLimit opt n e = maybeFixLimit opt e n
-
---------------------------------------------------------------------
--- getting subexpressions
---
--- This is the core idea behind the GAS system.
--- The idea is to find a subexpression and path as simply as possible.
--- This feels pretty similar to a parser combinator library
---
--- We start with the root of the expression and an empty path
--- start = Just ([], e)
--- We use Maybe here, because it is useful to distinguish the case
--- where we failed (Nothing), and the case where the root satisfies
--- our subexpression condition (Just ([], e))
---
--- Now, we can search for a subexpression with the ~> operator.
--- a ~> b will find a copy of b that is a subexpresion of a
--- formally if e is the root of an expression
--- and e|p = a, and a|q = b, then (Just (p,a)) ~> b returns (Just (p++q,b))
---
--- If we remove the maybe and path annotations from the expressions, then ~> forms a partial order.
---
--- There is also a one step version of this operator.
--- a ~~ b finds b if b is an immedeate child of a
--- again if e|p = a and a|[x] = b, then (Just (p,a)) ~~ b returns (Just (p++[x],b))
---
--- we can combine ~> and ~~ to get an irreflexive version.
--- a ~~> b will return if b is a proper subexpression of a.
---
--- Finally e ~| p filters the expression
--- (Just (_,e)) ~| p returns if p e is True
---------------------------------------------------------------------
-
-start :: Expr -> Maybe (Path, Expr)
-start e = Just ([], e)
-
-(~~) :: Maybe (Path, Expr) -> Expr -> Maybe (Path, Expr)
-(Just (p,e)) ~~ a
- | subexpr e == ([x],a)
- = Just (p++[x],a)
-  where x free
-
-(~>) :: Maybe (Path, Expr) -> Expr -> Maybe (Path, Expr)
-(Just (p,e)) ~> a
- | subexpr e == (q,a)
- = Just (p++q,a)
-  where q free
-
-(~~>) :: Maybe (Path, Expr) -> Expr -> Maybe (Path, Expr)
-e ~~> a = e ~~ _ ~> a
-
-(~|) :: Maybe (Path, Expr) -> (Expr -> Bool) -> Maybe (Path, Expr)
-a@(Just (_,e)) ~| p | p e = a
-
-
-(|~>) ::  Maybe (Path,Expr) -> Expr -> Maybe (Path, Expr)
-(Just (p,l)) |~> r = Just (p,r)
-
--- These are constants the let me build up expressions more easily
-clet :: Expr
-clet  = Let   _ _
-ccase :: Expr
-ccase = Case  _ _ _
-ccomb :: Expr
-ccomb = Comb  _ _ _
-cor :: Expr
-cor   = Or    _ _
-cfree :: Expr
-cfree = Free  _ _
-ctype :: Expr
-ctype = Typed _ _
-clit :: Expr
-clit  = Lit _
-cvar :: Expr
-cvar  = Var _
 
 
 -- |=> represents a rewrite rule

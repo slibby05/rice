@@ -20,17 +20,14 @@ import Graph
 import List ((\\), last)
 import Debug
 
-f <.> g = \(e,s) -> let (e1,s1) = g e
-                        (e2,s2) = f e1
-                    in (e2,s1++s2)
 
 -- Applies all transformation and returns the resulting program
 preprocess :: DataTable -> FuncDecl -> FuncDecl
 preprocess dt f = trace ("function: " ++ snd (funcName f)) $ updFuncBody runOpts f
- where runOpts =   simplify (fillCases dt) 
-               <.> simplify fixLets
-               <.> simplify (toANF trivial)
-               <.> simplify canonize
+ where runOpts = simplify (fillCases dt) 
+               . simplify fixLets
+               . simplify (toANF trivial)
+               . simplify canonize
 
 
 -- These are rules we can do with simple rewriting

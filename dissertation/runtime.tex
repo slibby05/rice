@@ -578,7 +578,7 @@ This gives us a simple algorithm for determining is an expression is determinist
 We simply percolate up determinism information as we're evaluating the expression.
 If we ever have a case on a non-deterministic subexpression, then we are also non-deterministic.
 
-Fortunately this extension doesn't add must to our generated code.
+Fortunately this extension doesn't add much to our generated code.
 We only push the root on the backtracking stack if the argument to the case was non-deterministic.
 We also have a small optimization to creating the forward node.
 It turns out that if \texttt{ys} was deterministic, then it's perfectly valid to copy the

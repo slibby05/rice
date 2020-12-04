@@ -32,7 +32,7 @@ import Control.SetFunctions
 -- in e 
 -- ==>
 -- e[x -> C v1 v2 ... vn]
-inline :: Expr -> DET (Expr, String)
+inline :: Expr -> (Expr, String)
 inline = (Let [var] e, nonRecursive var)
          ?=> 
          (sub (var @> idSub) e, "inline 1")
@@ -101,7 +101,7 @@ usedInCase x used (Typed e _)    = usedInCase x used e
 -- apply f_n [a1,a2...a(n+k)]
 -- ==>
 -- apply f(a1,a2...an) [a(n+1),...a(n+k)]
-caseCancel :: Expr -> DET (Expr, String)
+caseCancel :: Expr -> (Expr, String)
 caseCancel = (Case _ (Comb ConsCall c es) (_++[Branch (Pattern c vs) e]++_))
              |=> 
              (foldr (Let . (:[])) e (zip vs es), "case cancel 1")
@@ -109,15 +109,15 @@ caseCancel = (Case _ (Comb ConsCall c es) (_++[Branch (Pattern c vs) e]++_))
 
 caseCancel = (Case _ (Lit l) (_++[Branch (LPattern l) e]++_))
              |=> 
-             (foldr (Let . (:[])) e (zip vs es), "case cancel 1")
- where c,es,vs,e,l free
+             (e, "case cancel 2")
+ where e,l free
 
 caseCancel = rule
  where rule b = ((applyf (Comb (FuncPartCall m) f es) as, m < length as)
                  ?=> 
                  let (as1,as2) = splitAt n as
                      k = maximum (allNames b) + 1
-                 in (Let [(k, Comb FuncCall f (es++as1))] (applyf (Var k) as2), "case cancel 2")
+                 in (Let [(k, Comb FuncCall f (es++as1))] (applyf (Var k) as2), "case cancel 3")
                 ) b
        m,n,es,as,f free
 
@@ -126,28 +126,28 @@ caseCancel = rule
                  ?=> 
                  let (as1,as2) = splitAt n as
                      k = maximum (allNames b) + 1
-                 in (Let [(k, Comb ConsCall c (es++as1))] (applyf (Var k) as2), "case cancel 3")
+                 in (Let [(k, Comb ConsCall c (es++as1))] (applyf (Var k) as2), "case cancel 4")
                 ) b
        m,n,es,as,c free
 
 caseCancel = (applyf (Comb (FuncPartCall m) f es) as, m == length as)
              ?=> 
-             (Comb FuncCall f (es++as), "case cancel 4")
+             (Comb FuncCall f (es++as), "case cancel 5")
  where m,f,es,as free
 
 caseCancel = (applyf (Comb (ConsPartCall m) c es) as, m == length as)
              ?=> 
-             (Comb ConsCall c (es++as), "case cancel 5")
+             (Comb ConsCall c (es++as), "case cancel 6")
  where m,c,es,as free
 
 caseCancel = (applyf (Comb (FuncPartCall m) f es) as, m > length as)
              ?=> 
-             (Comb (FuncPartCall (m-length as)) f (es++as), "case cancel 6")
+             (Comb (FuncPartCall (m-length as)) f (es++as), "case cancel 7")
  where m,f,es,as free
 
 caseCancel = (applyf (Comb (ConsPartCall m) c es) as, m > length as)
              ?=> 
-             (Comb (ConsPartCall (m-length as)) c (es++as), "case cancel 7")
+             (Comb (ConsPartCall (m-length as)) c (es++as), "case cancel 8")
  where m,c,es,as free
 
 -- f x = e1
@@ -173,7 +173,7 @@ caseCancel = (applyf (Comb (ConsPartCall m) c es) as, m > length as)
 -------------------------------------------------------
 
 
-reduce :: FunTable -> Expr -> DET (Expr, String)
+reduce :: FunTable -> Expr -> (Expr, String)
 reduce funs b@(Comb FuncCall f es) 
  | inlinable funs f = (subVars funs b f es, "reduce 0")
 
@@ -225,7 +225,7 @@ subVars funs caller f es = sub fsub (rename (allDecls callee) [n..] callee)
 -- in e2 [x not in e2]
 -- ==>
 -- e2
-deadCode :: Expr -> DET (Expr, String)
+deadCode :: Expr -> (Expr, String)
 deadCode = Free [] e |=> (e, "dead code 1")
  where e free
 deadCode = Let [] e |=> (e, "dead code 2")

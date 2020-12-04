@@ -9,28 +9,28 @@ module Optimize.Preprocess (preprocess, flatten, alias, float, blocks, caseVar) 
 -----------------------------------------------------------
 
 import FlatCurry.Types
-import FlatCurry.Goodies (updFuncBody,branchPattern,patCons)
+import FlatCurry.Goodies (funcName, updFuncBody,branchPattern,patCons)
 import FlatUtils.FlatRewrite
 import FlatUtils.Gas
 import FlatUtils.DataTable
 import Optimize.ANF
 import Control.SetFunctions
+import Control.Findall
 import Graph
-import List ((\\))
+import List ((\\), last)
 import Debug
+
+f <.> g = \(e,s) -> let (e1,s1) = g e
+                        (e2,s2) = f e1
+                    in (e2,s1++s2)
 
 -- Applies all transformation and returns the resulting program
 preprocess :: DataTable -> FuncDecl -> FuncDecl
-preprocess dt f = updFuncBody runOpts f
- where runOpts e = let c = id $## simplify canonize e
-                       a = id $## simplify (toANF trivial) c
-                       f = id $## simplify fixLets a
-                       d = id $## simplify (fillCases dt) f
-                    in d
---                 = simplify (fillCases dt) 
---                 . simplify fixLets
---                 . simplify (toANF trivial)
---                 . simplify canonize
+preprocess dt f = trace ("function: " ++ snd (funcName f)) $ updFuncBody runOpts f
+ where runOpts =   simplify (fillCases dt) 
+               <.> simplify fixLets
+               <.> simplify (toANF trivial)
+               <.> simplify canonize
 
 
 -- These are rules we can do with simple rewriting
@@ -114,7 +114,7 @@ preprocess dt f = updFuncBody runOpts f
 --
 -- NOTE: you can't float a let out of the branch of a case.
 -- it could use the variabled defined in the pattern
-float :: Expr -> DET (Expr, String)
+float :: Expr -> (Expr, String)
 float = Let (as++[(x,Let vs e1)]++bs) e2 |=> (Let (vs++as++[(x,e1)]++bs) e2, "float 1")
   where as,x,vs,e1,bs,e2 free
 float = Let (as++[(x,Free vs e1)]++bs) e2 |=> (Free vs (Let (as++[(x,e1)]++bs) e2), "float 2")
@@ -177,12 +177,12 @@ float = Case ct (Free vs e) bs |=> (Free vs (Case ct e bs), "float 10")
 -- ==>
 -- apply f [x,y]
 
-flatten :: Expr -> DET (Expr, String)
+flatten :: Expr -> (Expr, String)
 flatten = Typed e t |=> (e, "flatten 1")
   where e,t free
 flatten = Case r1 (Case r2 e b2) b1
           |=> 
-          (Case r2 e [Branch p (Case r1 e b1) | (Branch p e) <- b2], "flatten 2")
+          (Case r2 e [Branch p (Case r1 e' b1) | (Branch p e') <- b2], "flatten 2")
   where r1,r2,e,b1,b2 free
 flatten = applyf (applyf f as) bs |=> (applyf f (as++bs), "flatten 3")
   where f, as, bs free
@@ -208,7 +208,7 @@ flatten = applyf (applyf f as) bs |=> (applyf f (as++bs), "flatten 3")
 --    in let a = b
 --       in a
 --
-blocks :: Expr -> DET (Expr, String)
+blocks :: Expr -> (Expr, String)
 blocks = Let vs e |=> (makeBlocks vs e, "blocks")
   where vs, e free
 
@@ -227,8 +227,7 @@ makeBlocks es e
        getExp (_++[(n,exp)]++_) n = (n,exp)
        makeBlock comp = Let (map (getExp es) comp)
 
-       makeEdge v f       = (v,f)
-       makeEdges (v, exp) = map (makeEdge v) (freeVars exp)
+       makeEdges (v, exp) = [(v,f) | f <- freeVars exp]
 
 
 ------------------------------------------------------------------------------
@@ -247,7 +246,7 @@ makeBlocks es e
 -- otherwise, we just remove that assignment from the let block.
 ------------------------------------------------------------------------------
 
-alias :: Expr -> DET (Expr, String)
+alias :: Expr -> (Expr, String)
 alias = l |=> (fixAlias l, "alias")
   where l = Let (_++[(_, Var _)]++_) _
 
@@ -266,7 +265,7 @@ fixAlias (Let (as++[(v,Var y)]++bs) e)
 -- =>
 -- case xs of
 --     (C x1 x2) -> ... (C x1 x2) ...
-caseVar :: Expr -> DET (Expr, String)
+caseVar :: Expr -> (Expr, String)
 caseVar = (Case ct (Var x) bs, hasVar (Case ct z bs) x)
           ?=> 
           (Case ct (Var x) (map (repCaseVar x) bs), "caseVar")
@@ -281,10 +280,15 @@ repCaseVar x (Branch (LPattern l) e)   = Branch (LPattern l)   (sub f e)
 
 ------------------------------------------------------------------------------
 
-canonize :: Expr -> DET (Expr, String)
-canonize = float ? flatten ? blocks ? alias ? caseVar
+canonize :: Expr -> (Expr, String)
+--canonize = float ? flatten ? blocks ? alias ? caseVar
+canonize = float 
+         ? flatten 
+         ? blocks 
+         ? alias 
+         ? caseVar
 
-fixLets :: Expr -> DET (Expr, String)
+fixLets :: Expr -> (Expr, String)
 fixLets = float ? blocks
 
 
@@ -298,7 +302,7 @@ fixLets = float ? blocks
 -- If They're not filled in, then we can fix that
 ------------------------------------------------------------------------------
 
-fillCases :: DataTable -> Expr -> DET (Expr, String)
+fillCases :: DataTable -> Expr -> (Expr, String)
 fillCases dt = (Case ct e bs, not (null exempts))
                ?=> 
                (Case ct e (bs++exempts), "fill case")
@@ -311,9 +315,12 @@ fillCases dt = (Case ct e bs, not (null exempts))
 
 -- find all missing branches from this tree
 missingBranches :: DataTable -> [BranchExpr] -> [QName]
-missingBranches dt bs = allBranches \\ foundBranches
+missingBranches dt bs 
+ | any (\b -> bname b == ("","")) bs = []
+ | otherwise       = allBranches \\ foundBranches
  where allBranches    = fillCons (branchName (head bs)) dt
        foundBranches  = map branchName bs
        branchName     = patCons . branchPattern
+       bname (Branch (Pattern n _) _) = n
 
 

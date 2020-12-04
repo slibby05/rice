@@ -1,10 +1,10 @@
 module FlatUtils.FlatRewrite (replace, subexpr, arbitrary, 
-                              Path, fix, step, 
+                              Path, step, 
                               hasVar,
                               allDecls, allVars, allNames, allVarPaths, freeVars, allInvPaths,
                               sub, (@>), idSub, rename) where
 
-import Control.SetFunctions
+import Control.Findall
 import FlatCurry.Types
 import List
 import Util
@@ -100,11 +100,6 @@ arbitrary = snd . subexpr
 -- then we just pick one arbitrarily
 -- it might be worth while to add some sort of ordering on what expression we pick
 
-fix :: (a -> a) -> a -> a
-fix f x = if isEmpty result then x
-          else fix f (fst (select result))
-  where result = set1 f x
-
 -- Step applies a rewrite rule (Expr -> Expr) to any subexpression where it can apply
 -- I'm a little more general here than I need to be (the rule actually knows the path too)
 -- but I think this will be helpful later
@@ -118,11 +113,6 @@ step reduce expr | subexpr expr =:= (p,y)
 -- take a non-deterministic function, and get all of the values by applying it
 -- it does destroy the non-determinism independence, but otherwise if I want all of the values,
 -- then I need to write all of the code as I/O actions
-allValues0 :: a -> [a]
-allValues0 e = sortValuesBy (const (const True)) $ set0 e
-
-allValues1 :: (a -> a) -> a -> [a]
-allValues1 f x = sortValuesBy (const (const True)) $ set1 f x
 
 
 -- This idea is entirely stolen from Sergio
@@ -159,10 +149,10 @@ declVar (withSubexpr (Free v _)) = anyOf v
 declVar (withSubexpr (Case _ _ (_++[Branch (Pattern _ v) _]++_))) = anyOf v
 
 allDecls :: Expr -> [VarIndex]
-allDecls = nub . sortValues . set1 declVar
+allDecls = nub . allValues . declVar
 
 allVars :: Expr -> [VarIndex]
-allVars = nub . sortValues . set1 isVar
+allVars = nub . allValues . isVar
 
 allNames :: Expr -> [VarIndex]
 allNames e = nub $ allVars e ++ allDecls e
@@ -173,7 +163,7 @@ isVarPath e
   where v, p free
 
 allVarPaths :: Expr -> [(VarIndex, Path)]
-allVarPaths = nub . sortValues . set1 isVarPath
+allVarPaths = nub . allValues . isVarPath
 
 
 freeVars :: Expr -> [VarIndex]
@@ -181,7 +171,8 @@ freeVars expr = allVars expr \\ allDecls expr
 
 
 allInvPaths :: Expr -> [(Int,Path)]
-allInvPaths = nub . sortValues . set1 invPath
+allInvPaths = nub . allValues . invPath
+
 invPath :: Expr -> (Int,Path)
 invPath (Var v)                 = (v,[])
 invPath (Or l r)                = (mapSnd (0:) (invPath l)) ? (mapSnd (1:) (invPath r))

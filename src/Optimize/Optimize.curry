@@ -13,6 +13,7 @@ import Optimize.Inline (caseCancel, deadCode, inline, reduce)
 import Optimize.Postprocess (postprocess)
 import Optimize.FunTable (FunTable, addEntry, showTable)
 import Control.SetFunctions
+import Control.Findall
 import Debug (trace)
 import Text.Pretty (pPrint)
 import FlatCurry.Pretty (ppProg, defaultOptions)
@@ -24,10 +25,10 @@ output name p fs@(_:_) = trace ("==== "++name++" ===============================
                          trace (pPrint $ ppProg defaultOptions (updProgFuncs (\_ -> fs) p))
 
 optimizeT :: DataTable -> FunTable -> Prog -> (Prog, FunTable)
-optimizeT dt ft p = let (fs,bs)      = id $## orderFuns (progFuncs p)
-                        pre_fs       = id $## map (\e -> id $## preprocess dt e) fs
-                        (ft',opt_fs) = id $## optimize_funs bs ft pre_fs
-                        post_fs      = id $## postprocess opt_fs
+optimizeT dt ft p = let (fs,bs)      = orderFuns (progFuncs p)
+                        pre_fs       = map (preprocess dt) fs
+                        (ft',opt_fs) = optimize_funs bs ft pre_fs
+                        post_fs      = postprocess opt_fs
                     in output "Function Order" p fs $
                        trace ("\nloop breakers\n" ++ show bs) $
                        output "Preprocess"  p pre_fs  $
@@ -44,15 +45,15 @@ optimize dt ft p = let (fs,bs)      = orderFuns (progFuncs p)
                        post_fs      = postprocess opt_fs
                    in ((updProgFuncs (const post_fs) p), ft')
 
-optimize_funs :: [QName] -> FunTable -> [FuncDecl] -> DET (FunTable, [FuncDecl])
+optimize_funs :: [QName] -> FunTable -> [FuncDecl] -> (FunTable, [FuncDecl])
 optimize_funs bs ft []     = (ft, [])
 optimize_funs bs ft (f:fs) = trace ("=== Optimizing " ++ (showQName (funcName f)) ++ " =====================================") $
                                 let f' = updFuncBody (optimize_expr ft) f
                                     (ft',fs') = optimize_funs bs (addEntry bs f' ft) fs
                                 in (ft', f':fs')
 
-optimize_expr :: FunTable -> Expr -> DET Expr
-optimize_expr ft = simplifyLimit opt 20
+optimize_expr :: FunTable -> Expr -> Expr
+optimize_expr ft = simplifyLimit opt 100
  where opt = caseCancel ?
              flatten ?
              deadCode ?

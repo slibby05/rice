@@ -6,7 +6,6 @@ module Optimize.LoopBreakers (orderFuns) where
 import Prelude hiding (lookup)
 import FlatCurry.Types
 import FlatCurry.Goodies (isVar,isExternal,caseBranches,branchPattern,branchExpr,patCons, funcName, funcBody)
-import FlatUtils.DataTable
 import Optimize.FunTable
 import Graph
 import List (minimumBy, delete, minimum)
@@ -19,7 +18,7 @@ import Util
 -- because we may have mutual recursion, we need to pick some loop breakers that we just won't inline.
 -- The rule is if I'm walking the list, and I haven't encountered a function yet,
 -- that that function is a loop breaker.
-orderFuns :: [FuncDecl] -> DET ([FuncDecl], [QName])
+orderFuns :: [FuncDecl] -> ([FuncDecl], [QName])
 orderFuns fs
   = let fs'      = filter (not . isExternal) fs
         exts     = filter isExternal fs

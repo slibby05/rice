@@ -12,7 +12,7 @@ import FlatCurry.Goodies (allVars)
 -- Otherwise I'll get
 -- Lit (Intc 4) => Int (Lit (Intc 4)) => Int (Int (Lit (Intc 4))) => ...
 
-boxProg :: Prog -> DET Prog
+boxProg :: Prog -> Prog
 boxProg (Prog n is ts fs os) = Prog n is ts (map boxFun fs) os
 
 boxFun :: FuncDecl -> FuncDecl

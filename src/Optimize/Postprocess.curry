@@ -13,10 +13,9 @@ import FlatCurry.Types
 import FlatCurry.Goodies (updFuncBody)
 import FlatUtils.FlatRewrite
 import FlatUtils.Gas
-import FlatUtils.DataTable
 import Optimize.ANF
 import Util
-import Control.SetFunctions
+import Control.Findall
 import Graph
 import List (delete, (\\), nub)
 
@@ -96,7 +95,7 @@ findCase n = Let (vs1++[(x, rcase)]++vs2) e
 rootCases :: Int -> FuncDecl -> [FuncDecl]
 rootCases _ (Func _    _ _   _     (External _))   = []
 rootCases n (Func name a vis xtype (Rule vs body))
-  = case mkDet (findCase new_name) body of
+  = case oneValue (findCase new_name body) of
        Nothing -> []
        (Just (e1, e2)) -> let new_vars = freeVars e2
                               num_vs = length new_vars

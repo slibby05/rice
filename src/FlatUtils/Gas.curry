@@ -8,9 +8,11 @@ module FlatUtils.Gas where
 import FlatCurry.Types
 import FlatCurry.Goodies (updProgExps)
 import FlatUtils.FlatRewrite
+import FlatCurry.Pretty
+import Text.Pretty
 import Util
 import Debug
-import Control.SetFunctions
+import Control.Findall (oneValue)
 
 
 -- Loop over each function and applied a specified transformation.
@@ -30,33 +32,24 @@ loop opt n (f:fs)
       []      -> f : loop opt n fs
       y@(_:_) -> loop opt (n+1) (y++fs)
 
---simplifyAll :: (Expr -> Maybe Expr) -> Prog -> Prog
---simplifyAll opt = updProgExps (simplify opt)
 
-maybeFix :: (Eq a, Show a) => (a -> (a,String)) -> a -> DET a
-maybeFix opt e = let vs = set0 (opt e)
-                 in case isEmpty vs of
-                         True -> e
-                         False -> let (e',s) = selectValue vs
-                                  in trace (show e ++ " ->_" ++ s ++ " " ++ show e') $ maybeFix opt e'
+showRule l s = (pPrint (ppExp defaultOptions l)) ++ 
+               "\n->_"++ s ++ "\n"
+
+--maybeFix :: (Eq a, Show a) => (a -> (a,String)) -> a -> a
+maybeFix :: (Expr -> (Expr,String)) -> Expr -> (Expr, String)
+maybeFix opt e = case id $## oneValue (opt e) of
+                      Nothing     -> (e, pPrint (ppExp defaultOptions e))
+                      Just (e',s) -> mapSnd (showRule e s ++) (maybeFix opt e')
 
 
-maybeFixLimit :: (Eq a, Show a) => (a -> (a,String)) -> a -> Int -> DET a
+--maybeFixLimit :: (Eq a, Show a) => (a -> (a,String)) -> a -> Int -> a
+maybeFixLimit :: (Expr -> (Expr,String)) -> Expr -> Int -> (Expr, String)
 maybeFixLimit opt e n 
  | n == 0 = e
- | otherwise = let vs = set0 (opt e)
-               in case isEmpty vs of
-                       True -> e
-                       False -> let (e',s) = selectValue vs
-                                in trace (show e ++ " ->_" ++ s ++ " " ++ show e') $ maybeFixLimit opt e' (n-1)
-
--- Makes a deterministic operation out of a potentially non-deterministic one.
--- this means I can combine optimizations, and just pick the first one that fired.
-mkDet :: (Eq b) => (a -> b) -> a -> Maybe b
-mkDet f e = let vs = set0 (f e)
-            in if isEmpty vs
-               then Nothing 
-               else Just (selectValue vs)
+ | otherwise = case id $## oneValue (opt e) of
+                    Nothing     -> (e, pPrint (ppExp defaultOptions e))
+                    Just (e',s) -> mapSnd (showRule e s ++) (maybeFixLimit opt e' (n-1))
 
 simplify :: (Expr -> (Expr, String)) -> Expr -> Expr
 simplify opt e = maybeFix opt e

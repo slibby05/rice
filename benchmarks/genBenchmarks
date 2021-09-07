@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "kics2" > kics2.out
+echo "time" > time.out
+echo "rice output" > riceOut.out
+
+for V in $(ls *.curry)
+do
+    echo "******************************" >> kics2.out
+    echo ${V%.*} >> kics2.out
+    echo "******************************" >> kics2.out
+    echo "******************************" >> riceOut.out
+    echo ${V%.*} >> riceOut.out
+    echo "******************************" >> riceOut.out
+    echo "******************************" >> time.out
+    echo ${V%.*} >> time.out
+    echo "******************************" >> time.out
+    echo "kics2" >> time.out
+    /home/steven/opt/kics2/bin/kics2 :set +time :l ${V%.*} :eval main :q 2>> time.out >> kics2.out
+    echo "rice" >> time.out
+    rice -g ${V%.*}
+    { time  ./${V%.*} >> riceOut.out ; } 2>> time.out
+done

@@ -97,7 +97,7 @@ chop seen (Node v ts : us)
                        (seen2,bs) = chop seen1 us
                    in (seen2, Node v as : bs)
 
--- dff (depth first forrest) is a siplified interface for dfs
+-- dff (depth first forrest) is a simplified interface for dfs
 dff :: Graph -> Forrest Vertex
 dff g = dfs g (vertices g)
 

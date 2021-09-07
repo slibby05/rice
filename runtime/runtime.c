@@ -8,36 +8,49 @@
 #include "stack.h"
 #include "debug.h"
 
-void CTR_hnf(Node* root)
+
+unsigned long set_RET_nondet()
+{
+    if(!RET.n->nondet)
+    {
+        field RET_ptr;
+        RET_ptr.n = (Node*)calloc(1, sizeof(Node));
+        RET_ptr.n->symbol = &RET_symbol;
+        RET_ptr.n->nondet = RET_ptr.c;
+        RET.n->nondet = RET_ptr.c;
+    }
+}
+
+
+void CTR_hnf(field root)
 {
     debug_expr(LOW, root);
     return;
 }
 
-void choice_hnf(Node* root)
+void choice_hnf(field root)
 {
     debug_expr(LOW, root);
     choose(root);
 }
 
-void apply_hnf(Node* root)
+void apply_hnf(field root)
 {
     debug(LOW, "apply\n");
-    debug(HIGH, "apply high\n");
-    Node* f = child_at_n(root,0);
+    field f = child_at(root,0);
 
-    if(f->missing > 0)
+    if(f.n->missing > 0)
     {
         goto PART;
     }
     
-    static void* table[] = {&&FAIL, &&FUNCTION, &&CHOICE, &&FREE};
-    goto* table[f->symbol->tag];
+    static void* table[] = {&&FAIL, &&FUNCTION, &&CHOICE, &&FORWARD, &&FREE};
+    goto* table[f.n->symbol->tag];
     
     FAIL:
     {
         debug(HIGH, "apply FAIL\n");
-        if(f->nondet)
+        if(f.n->nondet)
         {
             save_copy(root);
         }
@@ -48,18 +61,14 @@ void apply_hnf(Node* root)
     FUNCTION:
     {
         debug(HIGH, "apply FUNCTION\n");
-        if(f->missing > 0)
+        if(f.n->missing > 0)
         {
             goto PART;
         }
         else
         {
-            f->symbol->hnf(f);
-            //if(f->missing > 0)
-            //{
-            //    goto PART;
-            //}
-            goto* table[f->symbol->tag];
+            HNF(f);
+            goto* table[TAG(f)];
         }
     }
     
@@ -67,11 +76,14 @@ void apply_hnf(Node* root)
     {
         debug(HIGH, "apply CHOICE\n");
         choose(f);
-        //if(f->missing > 0)
-        //{
-        //    goto PART;
-        //}
-        goto* table[f->symbol->tag];
+        goto* table[TAG(f)];
+    }
+
+    FORWARD:
+    {
+        debug(HIGH, "apply FORWARD\n");
+        f = child_at(f,0);
+        goto* table[f.n->symbol->tag];
     }
     
     FREE:
@@ -86,39 +98,39 @@ void apply_hnf(Node* root)
     PART:
     {
         debug(HIGH, "apply PART\n");
-        if(f->nondet)
+        if(f.n->nondet)
         {
             save_copy(root);
         }
 
         // number of arguments that we're applying
-        int nargs = -root->missing;
+        int nargs = -root.n->missing;
         debug(LOW, "apply: ");
         debug_expr(LOW, f);
         debug(LOW, "/%d\n", nargs);
 
         //the actual function to apply
-        int arity = f->symbol->arity;
+        int arity = f.n->symbol->arity;
 
         //number of arguments we have left
-        int missing = f->missing;
+        int missing = f.n->missing;
 
-        //we're missing more arugments then we're applying
+        //we're missing more arguments then we're applying
         //so this will result in another partial application
         if(missing > nargs)
         {
-            debug(LOW, "too few args (%d/%d)\n", f->missing, nargs);
+            debug(LOW, "too few args (%d/%d)\n", f.n->missing, nargs);
             debug_expr(LOW, f);
             //hold the old array of children.
             //we'll need to move this to a bigger array
-            field* array = root->children[3].a;
+            field* array = root.n->children[3].a;
             if(arity > 3)
             {
-                root->children[3].a = (field*)calloc(arity-3, sizeof(field));
+                root.n->children[3].a = (field*)calloc(arity-3, sizeof(field));
             }
             else
             {
-                root->children[3].a = NULL;
+                root.n->children[3].a = NULL;
             }
 
             for(int i = arity-1; i >= missing; i--)
@@ -138,29 +150,28 @@ void apply_hnf(Node* root)
             //missing has to be at least 1, otherwise there'd be no apply node
             set_child_at(root,missing-1, child_at(root,1));
             missing--;
-            debug_expr(LOW, child_at(root,1).n);
+            debug_expr(LOW, child_at(root,1));
             debug(LOW, "%d\n", missing);
-            root->symbol = f->symbol;
-            root->nondet = root->nondet | f->nondet;
-            root->missing = missing;
+            root.n->symbol = f.n->symbol;
+            root.n->missing = missing;
             return;
         }
         // we're applying exactly the right number of arguments.
         // So, set the root to be f, and copy all of the arguments.
         else if(missing == nargs)
         {
-            debug(LOW, "equal args (%d/%d)\n", f->missing, nargs);
+            debug(LOW, "equal args (%d/%d)\n", f.n->missing, nargs);
             debug_expr(LOW, f);
             //hold the old array of children.
             //we'll need to move this to a bigger array
-            field* array = root->children[3].a;
+            field* array = root.n->children[3].a;
             if(arity > 3)
             {
-                root->children[3].a = (field*)calloc(arity-3, sizeof(field));
+                root.n->children[3].a = (field*)calloc(arity-3, sizeof(field));
             }
             else
             {
-                root->children[3].n = NULL;
+                root.n->children[3].n = NULL;
             }
             
             child_at(root,0) = child_at(root,1);
@@ -174,39 +185,40 @@ void apply_hnf(Node* root)
             {
                 set_child_at(root,i, child_at_v(f,i));
             }
-            root->symbol = f->symbol;
-            root->nondet = root->nondet | f->nondet;
-            root->missing = 0;
-            debug(LOW, "BEG_OUT: ");
+            root.n->symbol = f.n->symbol;
+            root.n->missing = 0;
+            debug(LOW, "fully applied: ");
             debug_expr(LOW, root);
             debug(LOW, "\n");
-            if(root->symbol->tag < FREE_TAG)
+            if(root.n->symbol->tag < FREE_TAG)
             {
-                root->symbol->hnf(root);
+                HNF(root);
             }
-            debug(LOW, "END_OUT: ");
+            debug(LOW, "fully applied HNF: ");
             debug_expr(LOW, root);
             debug(LOW, "\n");
             return;
         }
         else
         {
-            debug(LOW, "too many args (%d/%d)\n", f->missing, nargs);
+            debug(LOW, "too many args (%d/%d)\n", f.n->missing, nargs);
             debug_expr(LOW, f);
             // app(part(f/2,1), 2, 3) => app(f(1,2), 3);
             //copy the contents of f into newf
             //Since we need to copy all the arguments we need the arity.
             //(although we could probably store it in the array, or lower bits of the pointer)
-            Node* newf = (Node*)calloc(1,sizeof(Node));
+            field newf;
+            newf.n = (Node*)malloc(sizeof(Node));
             set_node(newf,f);
+            newf.n->nondet = f.n->nondet;
             if(arity > 3)
             {
-                field* array = (field*)malloc(sizeof(Node*) * arity-3);
+                field* array = (field*)malloc(sizeof(field) * arity-3);
                 for(int i = 3; i < arity; i++)
                 {
                     array[i] = child_at_v(f,i);
                 }
-                newf->children[3].a = array;
+                newf.n->children[3].a = array;
             }
             debug_expr(LOW, newf);
 
@@ -218,18 +230,41 @@ void apply_hnf(Node* root)
             }
             debug_expr(LOW, newf);
 
-            newf->missing = 0;
-            if(newf->symbol->tag < FREE_TAG)
+            newf.n->missing = 0;
+            if(newf.n->symbol->tag < FREE_TAG)
             {
-                newf->symbol->hnf(newf);
+                HNF(newf);
             }
-            child_at_n(root,0) = newf;
-            root->missing = -nargs;
+            child_at(root,0) = newf;
+            root.n->missing = -nargs;
             f = newf;
-            debug(LOW, "end too many args (%d/%d)\n", f->missing, nargs);
+            debug(LOW, "end too many args (%d/%d)\n", f.n->missing, nargs);
             debug_expr(LOW, f);
         }
-        goto* table[f->symbol->tag];
+        goto* table[f.n->symbol->tag];
+    }
+}
+
+void forward_hnf(field root)
+{
+    // rule: all forwarding nodes point to HNF forms
+    // if this is true, then I don't need to chase down the forwarding pointers.
+    // if it's a forwarding pointer then I know the thing at the end is in head normal form.
+    field child = child_at(root,0);
+    if(child.n->symbol->tag == FUNCTION_TAG || child.n->symbol->tag == CHOICE_TAG)
+    {
+        HNF(child);
+    }
+    if(child.n->nondet)
+    {
+        if(root.n == RET.n)
+        {
+            set_RET_nondet();
+        }
+        else
+        {
+            root.n->nondet = true;
+        }
     }
 }
 
@@ -238,66 +273,86 @@ void apply_hnf(Node* root)
 //////////////////////////////////////////////////////////////////////////////
 
 // Save a node n, and a copy of n to the backtracking stack
-// If we ever backtrack, I'll over write the current contents
+// If we ever backtrack, I'll overwrite the current contents
 // of n with it's saved copy.
 // This will let me redo a computation.
-void save_copy(Node* n)
+void save_copy(field n)
 {
-    Node* saved = (Node*)malloc(sizeof(Node));
-    memcpy(saved, n, sizeof(Node));
-    n->nondet = true;
-
-    debug(MED, "pushing ");
-    debug_frame(MED, n, saved);
+    debug(HIGH, "save copy: ");
+    debug_expr(HIGH, n);
+    field saved;
+    saved.n = (Node*)malloc(sizeof(Node));
+    memcpy(saved.n, n.n, sizeof(Node));
+    n.n->nondet = true;
 
     stack_push(bt_stack, n, saved, false);
 }
-void save(Node* n, Node* saved)
+void save(field n, field saved)
 {
-    n->nondet = true;
-
-    debug(MED, "pushing ");
-    debug_frame(MED, n, saved);
-
-    stack_push(bt_stack, n, saved, false);
-}
-
-//push a choice onto the backtrack stack
-//This is our stopping condition for backtracking.
-void push_choice(Node* left, Node* right)
-{
-    stack_push(bt_stack, left, right, true);
-    left->nondet = true;
-}
-
-void choose(Node* root)
-{
-    Node* left  = child_at_n(root,0);
-    Node* right = child_at_n(root,1);
-
-    if(child_at_i(root,2) == 0)
+    debug(HIGH, "save: ");
+    debug_expr(HIGH, n);
+    debug_expr(HIGH, saved);
+    if(n.n == RET.n)
     {
-        left->symbol->hnf(left);
-        Node* saved = (Node*)malloc(sizeof(Node));
-        memcpy(saved, root, sizeof(Node));
-        set_node(root,left);
-        child_at_i(saved,2) = 1;
-        stack_push(bt_stack, root, saved, true);
-        root->nondet = true;
+        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
+        set_RET_nondet();
+        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
+        stack_push(bt_stack, (field){.c = RET.n->nondet}, saved, false);
+        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
+        debug(MED, "RET frame\n");
     }
     else
     {
-        right->symbol->hnf(right);
-        Node* saved = (Node*)malloc(sizeof(Node));
-        memcpy(saved, root, sizeof(Node));
-        set_node(root,right);
-        child_at_i(saved,2) = 0;
-        stack_push(bt_stack, root, saved, false);
-        root->nondet = true;
+        n.n->nondet = true;
+        stack_push(bt_stack, n, saved, false);
+    }
+}
+
+
+//push a choice onto the backtrack stack
+//This is our stopping condition for backtracking.
+void push_choice(field left, field right)
+{
+    stack_push(bt_stack, left, right, true);
+    left.n->nondet = true;
+}
+
+void choose(field root)
+{
+    debug(HIGH, "in choice\n");
+    //choices = {left, right}
+    //side == 0 -> left
+    //side == 1 -> right
+    field choices[2] = {child_at(root,0), child_at(root,1)};
+    int side = child_at_i(root,2);
+
+    //if we're RET and we've already made a node, then use that one.
+    field saved;
+    if(root.n == RET.n && RET.n->nondet)
+    {
+        saved.c = RET.n->nondet;
+    }
+    else
+    {
+        saved.n = (Node*)malloc(sizeof(Node));
     }
 
-    //print_stack(bt_stack);
-    //printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
+    //save = left ? right
+    memcpy(saved.n, root.n, sizeof(Node));
+    child_at_i(saved,2) = !side;
+    //this is ok for RET, because we're not using it when we undo, 
+    //so it's ok (but pointless) to overwrite it)
+    stack_push(bt_stack, root, saved, side == 0);
+
+    //reduce the side, and set us to a forwarding node
+    HNF(choices[side]);
+    set_forward(root,choices[side]);
+    //if root is RET, then it points to the thing we replace it with on the stack
+    //if it's not, then it's not false
+    root.n->nondet = saved.c;
+
+
+    debug(HIGH, "leaving choice\n");
 }
 
 // backtrack until we find a choice.
@@ -309,94 +364,111 @@ bool undo()
     if(bt_stack->size == 0)
         return false;
 
-    NodePair* frame;
+    debug(HIGH, "full stack\n");
+    debug_stack(HIGH);
+    debug(HIGH, "undoing\n");
+    FieldPair* frame;
     do 
     {
         frame = pop(bt_stack);
-        memcpy(frame->lhs, frame->rhs, sizeof(Node));
-    } while(!frame->choice && !empty(bt_stack));
+        memcpy(frame->lhs.n, frame->rhs.n, sizeof(Node));
+    } while(!(frame->choice || empty(bt_stack)));
 
+    debug(HIGH, "finished undoing\n");
+    debug_stack(HIGH);
     return frame->choice;
 }
 
-void print_frame(NodePair* f)
+void print_frame(FieldPair* f)
 {
-    printf("%p:", f->lhs);
+    printf("%p:", f->lhs.n);
     print_expr(f->lhs);
     if(f->choice)
         printf(" T-> ");
     else
         printf(" F-> ");
 
-    printf("%p:", f->rhs);
+    printf("%p:", f->rhs.n);
     print_expr(f->rhs);
 }
 
 void print_stack(Stack* s)
 {
+    printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
     if(bt_stack->size == 0)
     {
         printf("[]\n");
         return;
     }
-    for(int i = 0; i < bt_stack->size-1; i++)
+    int i = bt_stack->size;
+    while(i --> 1)
     {
         print_frame(&bt_stack->array[i]);
         printf(", \n");
     }
-    print_frame(&bt_stack->array[bt_stack->size-1]);
-    printf("stacksize: %ld %ld\n", bt_stack->size, bt_stack->capacity);
+    print_frame(&bt_stack->array[0]);
+    printf("\n");
 }
 
-void print_expr(Node* n)
+void print_expr(field n)
 {
-    printf("%s", n->symbol->name);
+    if(n.i < 1000)
+    {
+        printf("%ld", n.i);
+        fflush(stdout);
+        return;
+    }
     fflush(stdout);
-    if(n->nondet)
+    printf("%s", n.n->symbol->name);
+    fflush(stdout);
+    if(n.n->nondet)
     {
         printf("?");
         fflush(stdout);
     }
-    if(n->missing < 0) // this is only ever true in an apply symbol
+    if(n.n->missing < 0) // this is only ever true in an apply symbol
     {
         printf("(");
         fflush(stdout);
-        print_expr(child_at_n(n,0));
+        print_expr(child_at(n,0));
         printf(": ");
         fflush(stdout);
-        for(int i = -n->missing; i > 1; i--)
+        for(int i = -n.n->missing; i > 1; i--)
         {
-            print_expr(child_at_v(n,i).n);
+            print_expr(child_at_v(n,i));
             printf(", ");
             fflush(stdout);
         }
-        print_expr(child_at_n(n,1));
+        print_expr(child_at(n,1));
         printf(")");
         fflush(stdout);
     }
-    else if(n->symbol->arity)
+    else if(n.n->symbol->arity)
     {
         printf("(");
         fflush(stdout);
         if(child_at_i(n,1) == INT_CTR)
         {
             printf("%ld", child_at_i(n,0));
+            fflush(stdout);
         }
         else if(child_at_i(n,1) == CHAR_CTR)
         {
-            printf("%c", child_at_c(n,0));
+            printf("%c", (char)child_at_c(n,0));
+            fflush(stdout);
         }
         else if(child_at_i(n,1) == FLOAT_CTR)
         {
             printf("%lf", child_at_f(n,0));
+            fflush(stdout);
         }
         else
         {
-            for(int i = n->symbol->arity-1; i > 0; i--)
+            for(int i = n.n->symbol->arity-1; i > 0; i--)
             {
-                if(i >= n->missing)
+                if(i >= n.n->missing)
                 {
-                    print_expr(child_at_v(n,i).n);
+                    print_expr(child_at_v(n,i));
                     printf(", ");
                     fflush(stdout);
                 }
@@ -406,78 +478,150 @@ void print_expr(Node* n)
                     fflush(stdout);
                 }
             }
-            if(n->missing == 0)
-                print_expr(child_at_v(n,0).n);
+            if(n.n->missing == 0)
+            {
+                print_expr(child_at_v(n,0));
+            }
             else
+            {
                 printf("*");
+                fflush(stdout);
+            }
         }
         printf(")");
         fflush(stdout);
     }
 }
 
-void print_final(Node* n)
+void print_tuple(field n, int i)
 {
-    printf("%s", n->symbol->name);
-    if(n->symbol->arity)
+    if(i == 0)
     {
-        printf("(");
-        if(child_at_i(n,1) == INT_CTR)
+        print_final(child_at(n,0));
+        printf(")");
+    }
+    else
+    {
+        print_final(child_at_v(n,i));
+        printf(", ");
+        print_tuple(n,i-1);
+    }
+}
+
+void print_list(field n)
+{
+    field h = child_at(n,1);
+    field t = child_at(n,0);
+    printf("[");
+    print_final(h);
+    while(strcmp(t.n->symbol->name, "[]"))
+    {
+        if(t.n->symbol->tag == FORWARD_TAG)
         {
-            printf("%ld", child_at_i(n,0));
-        }
-        else if(child_at_i(n,1) == CHAR_CTR)
-        {
-            printf("%c", child_at_c(n,0));
-        }
-        else if(child_at_i(n,1) == FLOAT_CTR)
-        {
-            printf("%lf", child_at_f(n,0));
+            t = child_at(t,0);
         }
         else
         {
-            for(int i = n->symbol->arity-1; i > 0; i--)
-            {
-                if(i >= n->missing)
-                {
-                    print_final(child_at_v(n,i).n);
-                    printf(", ");
-                }
-                else
-                {
-                    printf("*, ");
-                }
-            }
-            if(n->missing == 0)
-                print_final(child_at_v(n,0).n);
-            else
-                printf("*");
+            h = child_at(t,1);
+            t = child_at(t,0);
+            printf(", ");
+            print_final(h);
         }
+    }
+    printf("]");
+    return;
+}
+
+void print_final(field n)
+{
+    if(n.n->symbol->tag == FORWARD_TAG)
+    {
+        print_final(child_at_v(n,0));
+        return;
+    }
+    if(!strcmp(n.n->symbol->name, ":"))
+    {
+        print_list(n);
+        return;
+    }
+    if(!strcmp(n.n->symbol->name, "(,)"))               { printf("("); print_tuple(n,1);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,)"))              { printf("("); print_tuple(n,2);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,)"))             { printf("("); print_tuple(n,3);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,)"))            { printf("("); print_tuple(n,4);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,)"))           { printf("("); print_tuple(n,5);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,)"))          { printf("("); print_tuple(n,6);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,)"))         { printf("("); print_tuple(n,7);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,)"))        { printf("("); print_tuple(n,8);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,)"))       { printf("("); print_tuple(n,9);  return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,)"))      { printf("("); print_tuple(n,10); return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,,)"))     { printf("("); print_tuple(n,11); return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,,,)"))    { printf("("); print_tuple(n,12); return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,,,,)"))   { printf("("); print_tuple(n,13); return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,,,,,)"))  { printf("("); print_tuple(n,14); return; }
+    if(!strcmp(n.n->symbol->name, "(,,,,,,,,,,,,,,,)")) { printf("("); print_tuple(n,15); return; }
+    if(child_at_i(n,1) == INT_CTR)
+    {
+        printf("%ld", child_at_i(n,0));
+        return;
+    }
+    if(child_at_i(n,1) == CHAR_CTR)
+    {
+        printf("%c", (char)child_at_c(n,0));
+        return;
+    }
+    if(child_at_i(n,1) == FLOAT_CTR)
+    {
+        printf("%lf", child_at_f(n,0));
+        return;
+    }
+    printf("%s", n.n->symbol->name);
+    if(n.n->symbol->arity)
+    {
+        printf("(");
+        for(int i = n.n->symbol->arity-1; i > 0; i--)
+        {
+            if(i >= n.n->missing)
+            {
+                print_final(child_at_v(n,i));
+                printf(", ");
+            }
+            else
+            {
+                printf("*, ");
+            }
+        }
+        if(n.n->missing == 0)
+            print_final(child_at_v(n,0));
+        else
+            printf("*");
         printf(")");
     }
 }
 
-void error(char* msg, Node* n)
+//////////////////////////////////////////////////////////////////////////////
+// normal forms
+//////////////////////////////////////////////////////////////////////////////
+void error(char* msg, field n)
 {
     printf("Error: %s\n", msg);
     print_expr(n);
     exit(1);
 }
 
-void ground_nf(Node* expr)
+void ground_nf(field expr)
 {
     debug(LOW, "solving: ");
     debug_expr(LOW, expr);
     // if we're a variable, then we can't reduce to ground normal from
-    if(expr->symbol->tag == FREE_TAG)
+    if(expr.n->symbol->tag == FREE_TAG)
     {
         fail(expr);
         return;
     }
     // if we're a constructor, then we don't ned to put ourselves in head normal form
-    if(expr->symbol->tag <= 4 && expr->missing <= 0)
+    if(expr.n->symbol->tag <= 4 && expr.n->missing <= 0)
     {
-        expr->symbol->hnf(expr);
+        HNF(expr);
     }
     debug(LOW, "HNF: ");
     debug_expr(LOW, expr);
@@ -490,14 +634,14 @@ void ground_nf(Node* expr)
         return;
     }
     
-    for(int i = 0; i < expr->symbol->arity; i++)
+    for(int i = 0; i < expr.n->symbol->arity; i++)
     {
-        if(child_at_v(expr,i).n)
+        field e = child_at_v(expr,i);
+        if(e.n != NULL)
         {
-            Node* e = child_at_v(expr,i).n;
             ground_nf(e);
-            if(e->symbol->tag == FAIL_TAG ||
-               e->symbol->tag == FREE_TAG)
+            if(e.n->symbol->tag == FAIL_TAG ||
+               e.n->symbol->tag == FREE_TAG)
             {
                 fail(expr);
             }
@@ -505,14 +649,14 @@ void ground_nf(Node* expr)
     }
 }
 
-void nf(Node* expr)
+void nf(field expr)
 {
     debug(LOW, "solving: ");
     debug_expr(LOW, expr);
     // if we're a constructor, then we don't need to put ourselves in head normal form
-    if(expr->missing <= 0)
+    if(expr.n->missing <= 0)
     {
-        expr->symbol->hnf(expr);
+        HNF(expr);
     }
     debug(LOW, "HNF: ");
     debug_expr(LOW, expr);
@@ -526,39 +670,48 @@ void nf(Node* expr)
         return;
     }
     
-    for(int i = expr->symbol->arity-1; i >= 0 ; i--)
+    for(int i = expr.n->symbol->arity-1; i >= 0; i--)
     {
-        Node* e = child_at_v(expr,i).n;
+        field e = child_at_v(expr,i);
         nf(e);
-        if(e->symbol->tag == FAIL_TAG)
+        if(e.n->symbol->tag == FAIL_TAG)
         {
             fail(expr);
+            i = 0;
         }
     }
 }
 
-void nf_all(Node* expr)
+void nf_all(field expr)
 {
     bool solution = false;
     nf(expr);
+    debug(HIGH, "MAYBE SOLUTION 1: ");
+    debug_expr(HIGH, expr);
+    debug(HIGH, "%d = %d?\n", expr.n->symbol->tag, FAIL_TAG);
     debug_stack(MED);
-    if(expr->symbol->tag != FAIL_TAG)
+    if(expr.n->symbol->tag != FAIL_TAG)
     {
         printf("SOLUTION: ");
         print_final(expr);
         printf("\n");
         solution = true;
+        //printf("stack\n");
+        //print_stack(bt_stack);
     }
     while(undo())
     {
+        debug(HIGH, "NORMALIZING: ");
+        debug_expr(HIGH, expr);
         nf(expr);
-        debug_stack(MED);
-        if(expr->symbol->tag != FAIL_TAG)
+        if(expr.n->symbol->tag != FAIL_TAG)
         {
             printf("SOLUTION: ");
             print_final(expr);
             printf("\n");
             solution = true;
+            //printf("stack\n");
+            //print_stack(bt_stack);
         }
     }
     if(!solution)

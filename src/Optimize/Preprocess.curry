@@ -1,6 +1,8 @@
 {-# OPTIONS_CYMAKE -F --pgmF=currypp --optF=defaultrules #-}
 
-module Optimize.Preprocess (preprocess, flatten, alias, float, blocks, caseVar) where
+module Optimize.Preprocess (preprocess, showPreprocess, 
+                            flatten, alias, float, blocks, unapply,
+                            caseVar, fixLets, fixPartFunc, makeStrLit) where
 
 -----------------------------------------------------------
 -- This module preprocesses FlatCurry files to do a bunch of simple transformations
@@ -9,26 +11,57 @@ module Optimize.Preprocess (preprocess, flatten, alias, float, blocks, caseVar) 
 -----------------------------------------------------------
 
 import FlatCurry.Types
-import FlatCurry.Goodies (funcName, updFuncBody,branchPattern,patCons)
-import FlatUtils.FlatRewrite
+import FlatCurry.Goodies (funcName, funcBody, updFuncBody,branchPattern,patCons,isExternal)
 import FlatUtils.Gas
+import FlatUtils.FlatUtils
 import FlatUtils.DataTable
-import Optimize.ANF
+import FlatCurry.Pretty (ppExp, Options(..), QualMode(..))
+import Text.Pretty (pPrint)
+import Optimize.FunTable (FunTable, arity)
+import Optimize.Unboxing (box)
+import Optimize.ANF (toANF, trivial)
 import Control.SetFunctions
 import Control.Findall
 import Graph
-import List ((\\), last)
+import List ((\\), last, intersect)
 import Debug
+import Util
+import Time (getClockTime, clockTimeToInt)
 
+time = getClockTime >>= (return . clockTimeToInt)
 
 -- Applies all transformation and returns the resulting program
-preprocess :: DataTable -> FuncDecl -> FuncDecl
-preprocess dt f = trace ("function: " ++ snd (funcName f)) $ updFuncBody runOpts f
- where runOpts = simplify (fillCases dt) 
-               . simplify fixLets
-               . simplify (toANF trivial)
-               . simplify canonize
+preprocess :: DataTable -> FunTable -> FuncDecl -> FuncDecl
+preprocess dt ft f
+ | isExternal f = f
+ | otherwise    = updFuncBody runOpts f
+ where runOpts = simplify (fillCases dt) (-1)
+               . simplify (canonize ft) (-1)
+               . box
 
+showPreprocess :: DataTable -> FunTable -> FuncDecl -> IO FuncDecl
+showPreprocess dt ft f 
+ | isExternal f = do putStrLn $ "function: " ++ snd (funcName f) ++ " external\n"
+                     return f
+ | otherwise    = do t <- time
+                     putStrLn $ "function: " ++ snd (funcName f)
+                     let e        = funcBody f
+                     putStrLn (pPrint (ppExp (Options 2 QualNone "") e))
+                     let e1 = box e
+                     putStrLn "=> unbox"
+                     putStrLn (pPrint (ppExp (Options 2 QualNone "") e1))
+                     tunbox <- time
+                     let (e2, w1, _) = showWork (canonize ft) (-1) e1
+                     putStr w1
+                     tcanonize <- time
+                     let (e3, w2, _) = showWork (fillCases dt) (-1) e2
+                     putStrLn w2
+                     tfillCases <- time
+                     putStrLn ("unbox time: " ++ show (tunbox-t))
+                     putStrLn ("canonize time: " ++ show (tcanonize-tunbox))
+                     putStrLn ("fill cases time: " ++ show (tfillCases-tcanonize))
+                     putStrLn ("total time: " ++ show (tfillCases-t) ++ "\n")
+                     return (updFuncBody (const e3) f)
 
 -- These are rules we can do with simple rewriting
 -- All of these forms must be changed before we can transform into flatCurry
@@ -111,27 +144,26 @@ preprocess dt f = trace ("function: " ++ snd (funcName f)) $ updFuncBody runOpts
 --
 -- NOTE: you can't float a let out of the branch of a case.
 -- it could use the variabled defined in the pattern
-float :: Expr -> (Expr, String)
-float = Let (as++[(x,Let vs e1)]++bs) e2 |=> (Let (vs++as++[(x,e1)]++bs) e2, "float 1")
-  where as,x,vs,e1,bs,e2 free
-float = Let (as++[(x,Free vs e1)]++bs) e2 |=> (Free vs (Let (as++[(x,e1)]++bs) e2), "float 2")
-  where as,x,vs,e1,bs,e2 free
-float = Or (Let vs e1) e2 |=> (Let vs (Or e1 e2), "float 3")
-  where vs, e1, e2 free
-float = Or e1 (Let vs e2) |=> (Let vs (Or e1 e2), "float 4")
-  where vs, e1, e2 free
-float = Or (Free vs e1) e2 |=> (Free vs (Or e1 e2), "float 5")
-  where vs, e1, e2 free
-float = Or e1 (Free vs e2) |=> (Free vs (Or e1 e2), "float 6")
-  where vs, e1, e2 free
-float = Comb ct n (as++[Let vs e]++bs) |=> (Let vs (Comb ct n (as++[e]++bs)), "float 7")
-  where ct,n,as,vs,e,bs free
-float = Comb ct n (as++[Free vs e]++bs) |=> (Free vs (Comb ct n (as++[e]++bs)), "float 8")
-  where ct,n,as,bs,vs,e free
-float = Case ct (Let vs e) bs |=> (Let vs (Case ct e bs), "float 9")
-  where ct,vs,e,bs free
-float = Case ct (Free vs e) bs |=> (Free vs (Case ct e bs), "float 10")
-  where ct,vs,e,bs free
+float :: Opt
+float _ (Let [(x,l@(Let _ _))] e)           = (traverse x e l, "float 1'", 0)
+float _ (Let [(x,l@(Free _ _))] e)          = (traverse x e l, "float 2'", 0)
+float _ (Let (as++[(x,Let vs e1)]++bs) e2)  = (letBlocks, "float 1",0)
+ where letBlocks = fst $ makeBlocks ((x,e1):vs++as++bs) e2
+float _ (Let (as++[(x,Free vs e1)]++bs) e2) = (Free vs letBlocks, "float 2",0)
+ where letBlocks = fst $ makeBlocks ((x,e1):as++bs) e2
+float _ (Or (Let vs e1) e2)                 = (Let vs (Or e1 e2), "float 3",0)
+float _ (Or e1 (Let vs e2))                 = (Let vs (Or e1 e2), "float 4",0)
+float _ (Or (Free vs e1) e2)                = (Free vs (Or e1 e2), "float 5",0)
+float _ (Or e1 (Free vs e2))                = (Free vs (Or e1 e2), "float 6",0)
+float _ (Comb ct n (as++[Let vs e]++bs))    = (Let vs (Comb ct n (as++[e]++bs)), "float 7",0)
+float _ (Comb ct n (as++[Free vs e]++bs))   = (Free vs (Comb ct n (as++[e]++bs)), "float 8",0)
+float _ (Case ct (Let vs e) bs)             = (Let vs (Case ct e bs), "float 9",0)
+float _ (Case ct (Free vs e) bs)            = (Free vs (Case ct e bs), "float 10",0)
+
+traverse x e l = case l of
+                      (Let vs e')  -> Let vs (traverse x e e')
+                      (Free vs e') -> Free vs (traverse x e e')
+                      e'           -> Let [(x,e')] e
 
 ------------------------------------------------------------------------------
 -- Flattening expression
@@ -166,26 +198,85 @@ float = Case ct (Free vs e) bs |=> (Free vs (Case ct e bs), "float 10")
 -- but then we'd need to make a function for x later
 -- and we want to avoid that if at all possible.
 
--- Typed:
--- e : t => e
---
 -- double apply
 -- apply (apply f [x]) [y]
 -- ==>
 -- apply f [x,y]
+--
+-- apply (case e of (b -> f)) x
+-- ==>
+-- case e of b -> apply f x
 
-flatten :: Expr -> (Expr, String)
-flatten = Typed e t |=> (e, "flatten 1")
-  where e,t free
-flatten = Case r1 (Case r2 e b2) b1
-          |=> 
-          (Case r2 e [Branch p (Case r1 e' b1) | (Branch p e') <- b2], "flatten 2")
-  where r1,r2,e,b1,b2 free
-flatten = applyf (applyf f as) bs |=> (applyf f (as++bs), "flatten 3")
-  where f, as, bs free
+flatten :: Opt
+flatten (x,_) (Case r1 (Case r2 e b2) b1) = let (b2', x') = renameCases x r1 b1 b2
+                                            in  (Case r2 e b2', "flatten 1", x'-x)
+flatten _     (applyf (applyf f as) bs)   = (applyf f (as++bs), "flatten 2",0)
+flatten _     (applyf (Case r e bs) xs)   = 
+            (Case r e [Branch p (applyf e' xs) | (Branch p e') <- bs], "flatten 3",0)
 
+-- case (case e2 [p2 -> b2]) of [p1 -> b1]
+-- => 
+-- case e2 of
+--      [p2 -> let x = b2 in case x of [p1 -> b1]]
+renameCases :: VarIndex -> CaseType -> [BranchExpr] -> [BranchExpr] -> ([BranchExpr],VarIndex)
+renameCases n _  _  [] = ([],n)
+renameCases n ct b1 (Branch p e:bs) 
+ | p == (Pattern ("","primCond") _) = mapFst (Branch p e :) (renameCases n ct b1 bs)
+ | otherwise = let (b1',n') = renameBranches n b1
+                   b'       = Branch p (Let [(n', e)] (Case ct (Var n') b1'))
+               in mapFst (b' :) (renameCases (n'+1) ct b1 bs) 
+
+renameBranches :: VarIndex -> [BranchExpr] -> ([BranchExpr],VarIndex)
+renameBranches n [] = ([],n)
+renameBranches n [b] = ([b],n)
+renameBranches n (Branch p e : bs) = let (e',n') = rename n id e
+                                     in mapFst (Branch p e' :) (renameBranches n' bs)
 
 ------------------------------------------------------------------------------
+-- making String literals
+-- flatCurry represents string literals as a sequence of cons cells.
+-- This is really inefficient for the optimizer, and other programs.
+-- so, let's just go back to using strings.
+------------------------------------------------------------------------------
+makeStrLit :: Opt
+makeStrLit _ e@(strCons c cs)
+ | cs =:= strNil = (strConst [c],   "String Constant 1", 0)
+makeStrLit _ e@(strCons c cs)
+ | cs =:= strConst x = (strConst (c:x), "String Constant 2", 0)
+  where x free
+
+strCons c str = Comb ConsCall ("Prelude",":") [Lit (Charc c), str]
+strCons c str = Comb ConsCall ("Prelude",":") [Comb ConsCall ("","char") [Lit (Charc c)], str]
+strNil     = Comb ConsCall ("Prelude","[]") []
+strConst x = Comb ConsCall ("StringConst",x) []
+
+-- This should also play nice with deforestation.
+-- foldr :: (a -> b -> b) -> b -> [a] -> b
+-- foldr f z [] = z
+-- foldr f z (x:xs) = x `f` (foldr z xs)
+-- 
+-- build :: ((a -> b -> b) -> b -> a -> b) -> a -> [a]
+-- build g = g (:) []
+-- 
+-- toCurryString :: StrPtr -> [Char]
+-- toCurryString p = if *p == '\0'
+--                   then ""
+--                   else (Char *p) : toCurryString (p+1)
+-- 
+-- I could rewrite this as
+-- toCurryString = build toCurryStringBuilder
+-- toCurryStringBuilder :: (StrPtr -> b -> b) -> b -> b
+-- toCurryStringBuilder c z = if *p == '\0'
+--                      then z
+--                      else c (Char *p) (toCurryStringBuilder (p+1))
+--
+-- then if we redefine the output functions like
+-- putStr = foldr ((>>) . putChar) (return ())
+-- we'd get
+-- putStr "this is a string"
+-- =>
+-- toCurryStringBuilder ((>>) . putChar) (return ()) (*"this is a string")
+-- Which will never construct the curry string.
 
 -- Let Blocks:
 -- Seperate let expressions into strongly connected components
@@ -205,26 +296,11 @@ flatten = applyf (applyf f as) bs |=> (applyf f (as++bs), "flatten 3")
 --    in let a = b
 --       in a
 --
-blocks :: Expr -> (Expr, String)
-blocks = Let vs e |=> (makeBlocks vs e, "blocks")
-  where vs, e free
+blocks :: Opt
+blocks _ (Let es@(_:_:_) e)
+ | changed = (e', "blocks", 0)
+  where (e', changed) = makeBlocks es e
 
--- compute the mutually recursive let blocks
--- This is done by making a graph and computing the strongly connected components
--- 
--- @param es the list of variable/expression pairs in a let block
--- @param e the final expression to return
--- @return a new let expression where each let block is a set of mutually recursive definitions.
-makeBlocks :: [(Int,Expr)] -> Expr -> Expr
-makeBlocks es e
- | length comps > 1 = foldr makeBlock e comps
- where getComponents = map preorder . scc . buildG . concatMap makeEdges
-       comps         = getComponents es
-
-       getExp (_++[(n,exp)]++_) n = (n,exp)
-       makeBlock comp = Let (map (getExp es) comp)
-
-       makeEdges (v, exp) = [(v,f) | f <- freeVars exp]
 
 
 ------------------------------------------------------------------------------
@@ -243,31 +319,25 @@ makeBlocks es e
 -- otherwise, we just remove that assignment from the let block.
 ------------------------------------------------------------------------------
 
-alias :: Expr -> (Expr, String)
-alias = l |=> (fixAlias l, "alias")
-  where l = Let (_++[(_, Var _)]++_) _
-
-fixAlias :: Expr -> Expr
-fixAlias (Let (as++[(v,Var y)]++bs) e)
- | v == y       = Let (as++[(v,loop)]++bs) e
- | otherwise    = suby (Let (as++bs) e)
+alias :: Opt
+alias _ (Let (as++[(v, Var y)]++bs) e)
+ | v == y       = (Let (as++[(v,loop)]++bs) e, "alias", 0)
+ | otherwise    = (suby (Let (as++bs) e), "alias", 0)
   where loop = Comb ConsCall ("","LOOP") []
         suby = sub ((v, Var y) @> idSub)
 
 ------------------------------------------------------------------------------
 
 -- reuse of case-variable
--- case xs of 
---     (C x1 x2) -> ... xs ...
+-- case x of 
+--     (C x1 x2) -> ... x ...
 -- =>
--- case xs of
+-- case x of
 --     (C x1 x2) -> ... (C x1 x2) ...
-caseVar :: Expr -> (Expr, String)
-caseVar = (Case ct (Var x) bs, hasVar (Case ct z bs) x)
-          ?=> 
-          (Case ct (Var x) (map (repCaseVar x) bs), "caseVar")
-  where ct,x,bs free
-        z = (Lit (Intc 0)) -- dummy expression that doesn't contain x
+caseVar :: Opt
+caseVar _ (Case ct (Var x) bs)
+ | hasVar x (Case ct z bs) = (Case ct (Var x) (map (repCaseVar x) bs), "caseVar",0)
+ where z = (Lit (Intc 0)) -- dummy expression that doesn't contain x
 
 repCaseVar :: VarIndex -> BranchExpr -> BranchExpr
 repCaseVar x (Branch (Pattern n vs) e) = Branch (Pattern n vs) (sub f e)
@@ -277,18 +347,42 @@ repCaseVar x (Branch (LPattern l) e)   = Branch (LPattern l)   (sub f e)
 
 ------------------------------------------------------------------------------
 
-canonize :: Expr -> (Expr, String)
---canonize = float ? flatten ? blocks ? alias ? caseVar
-canonize = float 
-         ? flatten 
-         ? blocks 
-         ? alias 
-         ? caseVar
+canonize :: FunTable -> Opt
+canonize ft = float
+            ? flatten
+            ? blocks
+            ? alias
+            ? caseVar
+            ? makeStrLit
+            ? unapply
+            ? fixPartFunc ft
 
-fixLets :: Expr -> (Expr, String)
+fixLets :: Opt
 fixLets = float ? blocks
 
+------------------------------------------------------------------------------
 
+fixPartFunc :: FunTable -> Opt
+fixPartFunc ft _ (Comb ct f es)
+ | missed = case compare a (length es) of
+                 LT -> (applyf (Comb (miss ct 0) f es1) es2, "fixPartial <",  0)
+                 EQ -> (Comb (miss ct 0) f es,               "fixPartial ==", 0)
+                 GT -> (Comb (miss ct (a - length es)) f es, "fixPartial >",  0)
+ where a = arity ft f
+       missed = shouldMiss ct /= a - length es
+       (es1,es2) = splitAt a es
+
+shouldMiss :: CombType -> Int
+shouldMiss FuncCall = 0
+shouldMiss ConsCall = 0
+shouldMiss (FuncPartCall n) = n
+shouldMiss (ConsPartCall n) = n
+
+miss :: CombType -> Int -> CombType
+miss FuncCall         a = if a == 0 then FuncCall else FuncPartCall a
+miss ConsCall         a = if a == 0 then ConsCall else ConsPartCall a
+miss (FuncPartCall _) a = if a == 0 then FuncCall else FuncPartCall a
+miss (ConsPartCall _) a = if a == 0 then ConsCall else ConsPartCall a
 
 ------------------------------------------------------------------------------
 -- fill in cases
@@ -299,25 +393,51 @@ fixLets = float ? blocks
 -- If They're not filled in, then we can fix that
 ------------------------------------------------------------------------------
 
-fillCases :: DataTable -> Expr -> (Expr, String)
-fillCases dt = (Case ct e bs, not (null exempts))
-               ?=> 
-               (Case ct e (bs++exempts), "fill case")
- where ct, e, bs free
+fillCases :: DataTable -> Opt
+fillCases dt _ (Case ct e bs)
+ | not (null exempts) = (Case ct e (bs++exempts), "fill case", 0)
        -- We can get away with having the wrong arity, because
        -- these branches are always a failure, so we should
        -- never bind variables to them anyway
-       exempts = [Branch (Pattern b []) exempt | b <- missingBranches dt bs]
+ where exempts = [Branch (Pattern b []) exempt | b <- missingBranches dt bs]
 
 
 -- find all missing branches from this tree
 missingBranches :: DataTable -> [BranchExpr] -> [QName]
 missingBranches dt bs 
- | any (\b -> bname b == ("","")) bs = []
+ | any nullName bs = []
  | otherwise       = allBranches \\ foundBranches
  where allBranches    = fillCons (branchName (head bs)) dt
        foundBranches  = map branchName bs
        branchName     = patCons . branchPattern
-       bname (Branch (Pattern n _) _) = n
+       nullName (Branch (Pattern n _) _) = n == ("","")
 
+
+-- applyRules:  f_m (function or constructor f missing m arguments)
+--
+-- apply f_(n+k) [a1,a2...an] 
+-- ==>
+-- f_k(a1,a2...an)
+--
+-- apply f_n [a1,a2...an]
+-- ==>
+-- f(a1,a2...an)
+-- 
+-- apply f_n [a1,a2...a(n+k)]
+-- ==>
+-- apply f(a1,a2...an) [a(n+1),...a(n+k)]
+unapply :: Opt
+unapply (n,_) (applyf (Comb pcall f es) as)
+ = case compare m (length as) of
+        LT -> (Let [(n, Comb (call pcall) f (es++as1))] (applyf (Var n) as2), "unapply <", 1)
+        EQ -> (Comb (call pcall) f (es++as),                                  "unapply =", 0)
+        GT -> (Comb (partcall pcall (m-length as)) f (es++as),                "unapply >", 0)
+ where m = missing pcall
+       (as1, as2) = splitAt (missing pcall) as
+       missing (FuncPartCall x) = x
+       missing (ConsPartCall x) = x
+       call (FuncPartCall _) = FuncCall
+       call (ConsPartCall _) = ConsCall
+       partcall (FuncPartCall _) n = FuncPartCall n
+       partcall (ConsPartCall _) n = ConsPartCall n
 

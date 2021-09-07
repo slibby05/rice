@@ -1,11 +1,11 @@
 
 module Compile.ToH (toHeader) where
 
-import FlatUtils.FlatRewrite (Path)
+import Util (Path)
 import ICurry.Types
 import List
 import Compile.C
-import FlatUtils.ReplacePrim (ignoredPrimOps)
+import Compile.PrimOps (ignoredPrimOps)
 import Data.Map as M
 
 ----------------------------------------------------
@@ -41,17 +41,17 @@ makeIntro write name imps funs = write $ unlines $
                                      nl
 
 declareFun :: IFunction -> CStmt
-declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [(nodePtr, "root")]
+declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [(field, "root")]
 
 declareFunParts :: IFunction -> [CStmt]
 declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b)
- where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [(nodePtr, "root")]
+ where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [(field, "root")]
 
 makeTags :: (String -> IO ()) -> IDataType -> IO ()
 makeTags append (IDataType name cons) = append $ unlines $
                                          map makeTag cons ++
                                          nl
- where makeTag (n,_) = cdefine (tag n) (getTag n + 4)
+ where makeTag (n,_) = cdefine (tag n) (getTag n + 5)
 
 writeSymbols :: (String -> IO ()) -> [IDataType] -> [IFunction] -> IO ()
 writeSymbols append types funs = append $ unlines $
@@ -76,13 +76,13 @@ writeSymbols append types funs = append $ unlines $
 set :: (IQName, Int) -> CStmt
 set (name,arity) 
  = unlines $ [comment (uninstance name)] ++
-             hfunDefn "void" ("set_"++mangle name) ((nodePtr, "root") : makeArgs [1..arity] ++ [("int", "missing")]) ++
+             hfunDefn "void" ("set_"++mangle name) ((field, "root") : makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
                [symbol "root" .= ("&"++mangle name++"_symbol") ++ ";"] ++
                [missing "root" .= "missing" ++ ";"] ++
                makeArray True arity ++
                zipWith (\x y -> children "root" [x] .= var y ++ ";") [0..] (reverse [1 .. arity]) ++
-               map (\x -> children "root" [x] .= "NULL;") [arity..2]
+               map (\x -> children "root" [x] ++ ".n" .= "NULL;") [arity..2]
                ) ++
              nl
 
@@ -95,9 +95,10 @@ setFun append (IFunction name arity _ _ _) = append $ set (name,arity)
 make :: Maybe Path -> (IQName, Int) -> String
 make path (name,arity) 
  = unlines $ [comment (uname path)] ++
-             hfunDefn nodePtr ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
+             hfunDefn field ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
-                 [(nodePtr ++ " root") .= calloc_n 1 ++ ";",
+                 [(field ++ " root;"),
+                  "root.n" .= calloc_n 1 ++ ";",
                   symbol "root" .= ("&"++ (mname path) ++ "_symbol;"),
                   missing "root" .= "missing" ++ ";"] ++
                  makeArray False arity ++
@@ -125,7 +126,7 @@ setTypeFree :: (String -> IO ()) -> IDataType -> IO ()
 setTypeFree append (IDataType _ cons) = append $ unlines $ concatMap setConFree cons
 
 setConFree :: (IQName, IArity) -> [CStmt]
-setConFree (n, a) = hfunDefn "void" ("set_"++mangle n++"_free") [(nodePtr, "root")] ++
+setConFree (n, a) = hfunDefn "void" ("set_"++mangle n++"_free") [(field, "root")] ++
                     cblock 
                     (
                         [symbol "root" .= "&"++mangle n++"_symbol;",
@@ -139,10 +140,11 @@ makeTypeFree :: (String -> IO ()) -> IDataType -> IO ()
 makeTypeFree append (IDataType _ cons) = append $ unlines $ concatMap makeConFree cons
 
 makeConFree :: (IQName, IArity) -> [CStmt]
-makeConFree (n, a) = hfunDefn nodePtr ("make_"++mangle n++"_free") [] ++
+makeConFree (n, a) = hfunDefn field ("make_"++mangle n++"_free") [] ++
                      cblock 
                      (
-                         ["Node* root" .= calloc_n 1 ++ ";",
+                         ["field root;",
+                          "root.n" .= calloc_n 1 ++ ";",
                           symbol "root" .= "&"++mangle n++"_symbol;",
                           missing "root" .= "0" ++ ";"] ++
                          makeArray False a ++
@@ -156,11 +158,11 @@ makeConFree (n, a) = hfunDefn nodePtr ("make_"++mangle n++"_free") [] ++
 ---------------------------------------------------
 
 makeArgs :: [Int] -> [(String, String)]
-makeArgs = map (\v -> (nodePtr, var v))
+makeArgs = map (\v -> (field, var v))
 
 makeArray :: Bool -> Int -> [String]
 makeArray nullable arity
- | arity > 3 = ["root->children[3].a" .= calloc_f (arity - 3) ++ ";"]
- | nullable  = ["root->children[3].a" .= "NULL;"]
+ | arity > 3 = ["root.n->children[3].a" .= calloc_f (arity - 3) ++ ";"]
+ | nullable  = ["root.n->children[3].a" .= "NULL;"]
  | otherwise = []
 

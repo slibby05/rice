@@ -66,8 +66,8 @@ primDivFloat external
 primNegateFloat :: Float -> Float
 primNegateFloat external
 
-primPutChar :: Char -> IO ()
-primPutChar external
+prim_putChar :: Char -> IO ()
+prim_putChar external
 
 (&) :: Bool -> Bool -> Bool
 True & x = x
@@ -82,25 +82,25 @@ eqInt x y = case x of
                  I x' -> case y of
                               I y' -> primEqInt x' y'
 
-eqFlaot :: F -> F -> Bool
-eqFlaot x y = case x of 
+eqFloat :: F -> F -> Bool
+eqFloat x y = case x of 
                    F x' -> case y of
                                 F y' -> primEqFloat x' y'
 
 ltEqChar :: C -> C -> Bool
 ltEqChar x y = case x of 
                     C x' -> case y of
-                                 C y' -> primEqChar x' y'
+                                 C y' -> primLtEqChar x' y'
 
 ltEqInt :: I -> I -> Bool
 ltEqInt x y = case x of 
                    I x' -> case y of
-                                I y' -> primEqInt x' y'
+                                I y' -> primLtEqInt x' y'
 
-ltEqFlaot :: F -> F -> Bool
-ltEqFlaot x y = case x of 
+ltEqFloat :: F -> F -> Bool
+ltEqFloat x y = case x of 
                      F x' -> case y of
-                                  F y' -> primEqFloat x' y'
+                                  F y' -> primLtEqFloat x' y'
 
 ord :: C -> I
 ord c = case c of 
@@ -175,4 +175,4 @@ x /. y = case x of
 
 putChar :: C -> IO ()
 putChar c = case c of
-                 C c' -> primPutChar c'
+                 C c' -> prim_putChar c'

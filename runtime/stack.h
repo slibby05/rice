@@ -10,23 +10,23 @@
 
 #define INIT_CAPACITY 20
 
-typedef struct NodePair
+typedef struct FieldPair
 {
     bool choice;
-    Node* lhs;
-    Node* rhs;
-} NodePair;
+    field lhs;
+    field rhs;
+} FieldPair;
 
 typedef struct
 {
-    NodePair* array;
+    FieldPair* array;
     size_t size;
     size_t capacity;
 } Stack;
 
 Stack* new_stack();
-void stack_push(Stack* s, Node* from, Node* rep, bool choice);
-NodePair* pop(Stack* s);
+void stack_push(Stack* s, field from, field rep, bool choice);
+FieldPair* pop(Stack* s);
 bool empty(Stack* s);
 
 #endif

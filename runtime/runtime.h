@@ -2,6 +2,14 @@
 #define RUNTIME_H
 
 
+#define SET_RET(fn,args...) \
+  { \
+    set_##fn(RET,args); \
+    RET.n->nondet = 0; \
+    fn##_hnf(RET);\
+  }
+
+
 #include "node.h"
 #include "stack.h"
 #include "debug.h"
@@ -9,21 +17,26 @@
 #define FAIL_TAG     0
 #define FUNCTION_TAG 1
 #define CHOICE_TAG   2
-#define FREE_TAG     3
-#define INT_TAG      4
-#define FLOAT_TAG    4
-#define CHAR_TAG     4
+#define FORWARD_TAG  3
+#define FREE_TAG     4
+#define INT_TAG      5
+#define FLOAT_TAG    5
+#define CHAR_TAG     5
 
 
 #define INT_CTR      -1
 #define FLOAT_CTR    -2
 #define CHAR_CTR     -3
 
-#define child_at(r, i) child_at_##i(r)
-#define child_at_n(r, k) child_at_##k(r).n
-#define child_at_i(r, k) child_at_##k(r).i
-#define child_at_c(r, k) child_at_##k(r).c
-#define child_at_f(r, k) child_at_##k(r).f
+#define HNF(expr) (expr).n->symbol->hnf(expr)
+
+
+
+#define child_at(r, k) child_at_##k(r.n)
+#define child_at_n(r, k) child_at_##k(r.n).n
+#define child_at_i(r, k) child_at_##k(r.n).i
+#define child_at_c(r, k) child_at_##k(r.n).c
+#define child_at_f(r, k) child_at_##k(r.n).f
 #define child_at_0(r) r->children[0]
 #define child_at_1(r) r->children[1]
 #define child_at_2(r) r->children[2]
@@ -75,38 +88,46 @@
 #define child_at_48(r) r->children[3].a[46]
 #define child_at_49(r) r->children[3].a[47]
 
-#define child_at_v(n, i) (i < 3 ? n->children[i] : n->children[3].a[i-3])
-#define set_child_at(n, i, v) if(i < 3) {n->children[i] = v;} else {n->children[3].a[i-3] = v;}
+#define child_at_v(r, i) (i < 3 ? r.n->children[i] : r.n->children[3].a[i-3])
+#define set_child_at(r, i, v) if(i < 3) {r.n->children[i] = v;} else {r.n->children[3].a[i-3] = v;}
 
-#define tochar(n) ((field)n).c
-#define toint(n) ((field)n).i
-#define tofloat(n) ((field)n).f
-#define tonode(n) ((field)n).n
-
-void CTR_hnf(Node* root);
-void choice_hnf(Node* root);
-void apply_hnf(Node* root);
-void save_copy(Node* n);
-void save(Node* n, Node* saved);
-void push_choice(Node* left, Node* right);
-void choose(Node* root);
+void CTR_hnf(field root);
+void choice_hnf(field root);
+void apply_hnf(field root);
+void forward_hnf(field root);
+void save_copy(field n);
+void save(field n, field saved);
+void push_choice(field left, field right);
+void choose(field root);
 bool undo();
 void print_stack(Stack* s);
-void print_frame(NodePair* f);
-void print_expr(Node* n);
-void print_final(Node* n);
-void nf(Node* expr);
-void ground_nf(Node* expr);
-void nf_all(Node* expr);
-void error(char* msg, Node* expr);
+void print_frame(FieldPair* f);
+void print_expr(field n);
+void print_final(field n);
+void print_tuple(field n, int i);
+void print_list(field n);
+void nf(field expr);
+void ground_nf(field expr);
+void nf_all(field expr);
+void error(char* msg, field expr);
+
+// functions for manipulating curry strings
+field toCurryString(char* str);
+void setCurryString(field root, char* str);
+char* toCStr(field string);
 
 static Symbol fail_symbol    = { .tag = FAIL_TAG,     .arity = 0, .name = "FAIL",    .hnf = &CTR_hnf};
 static Symbol choice_symbol  = { .tag = CHOICE_TAG,   .arity = 2, .name = "?",       .hnf = &choice_hnf};
+static Symbol forward_symbol = { .tag = FORWARD_TAG,  .arity = 1, .name = "->",      .hnf = &forward_hnf};
 static Symbol free_symbol    = { .tag = FREE_TAG,     .arity = 0, .name = "free",    .hnf = &CTR_hnf};
 static Symbol int_symbol     = { .tag = INT_TAG,      .arity = 1, .name = "int",     .hnf = &CTR_hnf};
 static Symbol char_symbol    = { .tag = CHAR_TAG,     .arity = 1, .name = "char",    .hnf = &CTR_hnf};
 static Symbol float_symbol   = { .tag = FLOAT_TAG,    .arity = 1, .name = "float",   .hnf = &CTR_hnf};
 static Symbol apply_symbol   = { .tag = FUNCTION_TAG, .arity = 0, .name = "apply",   .hnf = &apply_hnf};
+static Symbol RET_symbol     = { .tag = FUNCTION_TAG, .arity = 0, .name = "RET",     .hnf = &CTR_hnf};
+
+field RET;
+field RET_forward;
 
 
 // the backtracking stack can be used pretty much anywhere
@@ -115,115 +136,140 @@ static Symbol apply_symbol   = { .tag = FUNCTION_TAG, .arity = 0, .name = "apply
 Stack* bt_stack;
 
 
+// when I know I'm going to reduce an apply node, I already have the number of arguments
+// as part of the name.
+// So, I just want these to pass through to apply_hnf.
+// This is actually a potential chance for optimization in the future, but I want to graduate sometime.
+__attribute__((always_inline)) 
+static inline void apply1_hnf(field root) {apply_hnf(root);}
+__attribute__((always_inline)) 
+static inline void apply2_hnf(field root) {apply_hnf(root);}
+__attribute__((always_inline)) 
+static inline void apply3_hnf(field root) {apply_hnf(root);}
 
 __attribute__((always_inline)) 
-static inline void fail(Node* root)
+static inline void fail(field root)
 {
-    root->symbol = &fail_symbol;
-    root->missing = 0;
+    root.n->symbol = &fail_symbol;
+    root.n->missing = 0;
     child_at_n(root, 0) = NULL;
     child_at_n(root, 1) = NULL;
     child_at_n(root, 2) = NULL;
-    root->children[3].a = NULL;
+    root.n->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 
-static inline void set_node(Node* root, Node* rep)
+static inline void set_node(field root, field rep)
 {
-    bool nondet = root->nondet;
-    memcpy(root,rep,sizeof(Node));
-    root->nondet |= nondet;
+    long nondet = root.n->nondet;
+    memcpy(root.n,rep.n,sizeof(Node));
+    root.n->nondet = nondet;
 }
 
 __attribute__((always_inline)) 
-static inline void set_choice(Node* root, Node* left, Node* right)
+static inline void set_choice(field root, field left, field right)
 {
-    root->missing = 0;
-    root->symbol = &choice_symbol;
-    child_at_n(root,0) = left;
-    child_at_n(root,1) = right;
-    child_at_i(root,2) = 0;
-    root->children[3].a = NULL;
+    root.n->missing = 0;
+    root.n->symbol = &choice_symbol;
+    child_at(root,0) = left;
+    child_at(root,1) = right;
+    child_at(root,2).i = 0;
+    root.n->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make_choice(Node* left, Node* right)
+static inline void set_forward(field root, field child)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->nondet = false;
-    n->missing = 0;
-    n->symbol = &choice_symbol;
-    child_at_n(n, 0) = left;
-    child_at_n(n, 1) = right;
-    child_at_i(n, 2) = 0;
+    root.n->missing = 0;
+    root.n->symbol = &forward_symbol;
+    child_at(root,0) = child;
+    child_at_n(root,1) = NULL;
+    child_at_n(root,2) = NULL;
+    root.n->children[3].a = NULL;
+}
+
+__attribute__((always_inline)) 
+static inline field make_choice(field left, field right)
+{
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->nondet = false;
+    n.n->missing = 0;
+    n.n->symbol = &choice_symbol;
+    child_at(n, 0) = left;
+    child_at(n, 1) = right;
+    child_at(n, 2).i = 0;
     return n;
 }
 
 
 __attribute__((always_inline)) 
-static inline void set__int(Node* root, long i, int missing)
+static inline void set__int(field root, long i, int missing)
 {
-    root->missing = 0;
-    root->symbol = &int_symbol;
-    root->missing = missing;
+    root.n->missing = 0;
+    root.n->symbol = &int_symbol;
+    root.n->missing = missing;
     child_at_i(root,0) = i;
     child_at_i(root,1) = INT_CTR;
     child_at_n(root,2) = NULL;
-    root->children[3].a = NULL;
+    root.n->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make__int(long i, int missing)
+static inline field make__int(long i, int missing)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &int_symbol;
-    n->missing = missing;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &int_symbol;
+    n.n->missing = missing;
     child_at_i(n,0) = i;
     child_at_i(n,1) = INT_CTR;
     return n;
 }
 
 __attribute__((always_inline)) 
-static inline void set__char(Node* root, char c, int missing)
+static inline void set__char(field root, long c, int missing)
 {
-    root->missing = 0;
-    root->symbol = &char_symbol;
-    root->missing = missing;
+    root.n->missing = 0;
+    root.n->symbol = &char_symbol;
+    root.n->missing = missing;
     child_at_c(root,0) = c;
     child_at_i(root,1) = CHAR_CTR;
     child_at_n(root,2) = NULL;
-    root->children[3].a = NULL;
+    root.n->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make__char(char c, int missing)
+static inline field make__char(long c, int missing)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &char_symbol;
-    n->missing = missing;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &char_symbol;
+    n.n->missing = missing;
     child_at_c(n,0) = c;
     child_at_i(n,1) = CHAR_CTR;
     return n;
 }
 
 __attribute__((always_inline)) 
-static inline void set__float(Node* root, double f, int missing)
+static inline void set__float(field root, double f, int missing)
 {
-    root->missing = 0;
-    root->symbol = &float_symbol;
-    root->missing = missing;
+    root.n->missing = 0;
+    root.n->symbol = &float_symbol;
+    root.n->missing = missing;
     child_at_f(root,0) = f;
     child_at_i(root,1) = FLOAT_CTR;
     child_at_n(root,2) = NULL;
-    root->children[3].a = NULL;
+    root.n->children[3].a = NULL;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make__float(double f, int missing)
+static inline field make__float(double f, int missing)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &float_symbol;
-    n->missing = missing;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &float_symbol;
+    n.n->missing = missing;
     child_at_f(n,0) = f;
     child_at_i(n,1) = FLOAT_CTR;
     return n;
@@ -231,10 +277,11 @@ static inline Node* make__float(double f, int missing)
 
 
 __attribute__((always_inline)) 
-static inline Node* free_var()
+static inline field free_var()
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &free_symbol;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &free_symbol;
     return n;
 }
 
@@ -249,71 +296,87 @@ static inline Node* free_var()
 //////////////////////////////////////
 
 __attribute__((always_inline)) 
-static inline Node* set_apply1(Node* root, Node* f, Node* v1)
+static inline field set_apply1(field root, field f, field v1)
 {
-    root->symbol = &apply_symbol;
-    root->missing = -1;
-    child_at_n(root,0) = f;
-    child_at_n(root,1) = v1;
+    root.n->symbol = &apply_symbol;
+    root.n->missing = -1;
+    child_at(root,0) = f;
+    child_at(root,1) = v1;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make_apply1(Node* f, Node* v1)
+static inline field make_apply1(field f, field v1)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &apply_symbol;
-    n->missing = -1;
-    child_at_n(n,0) = f;
-    child_at_n(n,1) = v1;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &apply_symbol;
+    n.n->missing = -1;
+    child_at(n,0) = f;
+    child_at(n,1) = v1;
     return n;
 }
 
 __attribute__((always_inline)) 
-static inline Node* set_apply2(Node* root, Node* f, Node* v1, Node* v2)
+static inline field set_apply2(field root, field f, field v1, field v2)
 {
-    root->symbol = &apply_symbol;
-    root->missing = -2;
-    child_at_n(root,0) = f;
-    child_at_n(root,1) = v2;
-    child_at_n(root,2) = v1;
+    root.n->symbol = &apply_symbol;
+    root.n->missing = -2;
+    child_at(root,0) = f;
+    child_at(root,1) = v2;
+    child_at(root,2) = v1;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make_apply2(Node* f, Node* v1, Node* v2)
+static inline field make_apply2(field f, field v1, field v2)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &apply_symbol;
-    n->missing = -2;
-    child_at_n(n,0) = f;
-    child_at_n(n,1) = v2;
-    child_at_n(n,2) = v1;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &apply_symbol;
+    n.n->missing = -2;
+    child_at(n,0) = f;
+    child_at(n,1) = v2;
+    child_at(n,2) = v1;
     return n;
 }
 
 __attribute__((always_inline)) 
-static inline Node* set_apply3(Node* root, Node* f, Node* v1, Node* v2, Node* v3)
+static inline field set_apply3(field root, field f, field v1, field v2, field v3)
 {
-    root->symbol = &apply_symbol;
-    root->missing = -3;
-    root->children[3].a = (field*)malloc(sizeof(Node*) * 1);
-    child_at_n(root,0) = f;
-    child_at_n(root,1) = v3;
-    child_at_n(root,2) = v2;
-    child_at_n(root,3) = v1;
+    root.n->symbol = &apply_symbol;
+    root.n->missing = -3;
+    root.n->children[3].a = (field*)malloc(sizeof(field) * 1);
+    child_at(root,0) = f;
+    child_at(root,1) = v3;
+    child_at(root,2) = v2;
+    child_at(root,3) = v1;
 }
 
 __attribute__((always_inline)) 
-static inline Node* make_apply3(Node* f, Node* v1, Node* v2, Node* v3)
+static inline field make_apply3(field f, field v1, field v2, field v3)
 {
-    Node* n = (Node*)calloc(1, sizeof(Node));
-    n->symbol = &apply_symbol;
-    n->missing = -3;
-    n->children[3].a = (field*)malloc(sizeof(Node*) * 1);
-    child_at_n(n,0) = f;
-    child_at_n(n,1) = v3;
-    child_at_n(n,2) = v2;
-    child_at_n(n,3) = v1;
+    field n;
+    n.n = (Node*)calloc(1, sizeof(Node));
+    n.n->symbol = &apply_symbol;
+    n.n->missing = -3;
+    n.n->children[3].a = (field*)malloc(sizeof(field) * 1);
+    child_at(n,0) = f;
+    child_at(n,1) = v3;
+    child_at(n,2) = v2;
+    child_at(n,3) = v1;
     return n;
+}
+
+
+__attribute__((always_inline)) 
+static inline unsigned char TAG(field root)
+{
+    int tag = root.n->symbol->tag;
+    while(tag == FORWARD_TAG)
+    {
+        root = child_at(root,0);
+        tag = root.n->symbol->tag;
+    }
+    return tag;
 }
 
 #endif //RUNTIME_H

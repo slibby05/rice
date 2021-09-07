@@ -2,12 +2,11 @@ module Compile.ToICurry (toICurry) where
 
 import FlatCurry.Types
 import FlatCurry.Goodies
-import FlatUtils.FlatRewrite (allInvPaths)
 import FlatUtils.DataTable (exempt)
 import ICurry.Types
 import List
 import Sort (sort)
-
+import Util (mapSnd, Path)
 
 -- Prog:
 --    n = (module name)
@@ -35,14 +34,15 @@ toIVis FlatCurry.Types.Private = ICurry.Types.Private
 toIFunction :: FuncDecl -> IFunction
 toIFunction (Func (mn,fn) arity vis _ r) = IFunction (mn,fn,0) arity (toIVis vis) (demandOf r) (toRule r)
  where toRule (External x) = IExternal x
-       toRule (Rule vs e)  = IFuncBody (toBlock vs e 0)
+       toRule (Rule vs e)  = IFuncBody (toBlock (map abs vs) e 0)
        -- from Michael's translation, but we don't use demanded variables.
        demandOf (External _) = []
        demandOf (Rule args rhs) = case rhs of
          Case _ ce _ -> case ce of
            Var v -> maybe (error $ "Function '" ++ fn ++ "'case variable not in left-hand side")
                           (\i -> [i])
-                          (elemIndex v args)
+                          (elemIndex v (map abs args))
+           Comb FuncCall ("","primCond") [] -> []
            _     -> []
          _ -> []
 
@@ -96,8 +96,13 @@ fill (Free _ e)   = fill e
 fill (Let vs e)   = concatMap (fillVar (map fst vs)) vs ++ fill e
 
 fillVar :: [VarIndex] -> (VarIndex,Expr) -> [IAssign]
-fillVar ds (v,e) = [INodeAssign v p (IVar x) | (x,p) <- allInvPaths e, x `elem` ds]
+fillVar ds (v,e) = [INodeAssign v p (IVar x) | (x,p) <- paths e, x `elem` ds]
 
+paths :: Expr -> [(VarIndex, Path)]
+paths (Var v)       = [(v,[])]
+paths (Or e1 e2)    = [mapSnd (0:) ps | ps <- paths e1] ++ 
+                      [mapSnd (1:) ps | ps <- paths e2]
+paths (Comb _ _ es) = [mapSnd (i:) ps | (e,i) <- zip es [0..], ps <- paths e]
 
 toStmt :: Expr -> IStatement
 toStmt exp
@@ -120,6 +125,10 @@ toCase _ (Var v) bs
   isADTBranch = isConsPattern . branchPattern . head
   toLitBranch (Branch (LPattern l)         e)   = ILitBranch  (toLit l) (toBlock [] e v)
   toADTBranch (Branch (Pattern (mn,cn) vs) e) i = IConsBranch (mn,cn,i) (length vs) (toBlock vs e v)
+toCase _ (Comb FuncCall ("","primCond") []) (cond:bs)
+             = ICaseCons (-1) (zipWith toADTBranch (cond:reverse (sort bs)) [-1..])
+ where
+  toADTBranch (Branch (Pattern (mn,cn) vs) e) i = IConsBranch (mn,cn,i) (length vs) (toBlock vs e (-1))
 
 toExpr :: Expr -> IExpr
 toExpr (Var x)             = IVar x

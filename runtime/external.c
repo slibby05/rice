@@ -2,19 +2,17 @@
 #include "runtime.h"
 #include "Prelude.h"
 
-Node* toCurryString(char* str);
-char* toCStr_rec(Node* str, int i);
-char* toCStr(Node* string);
-//Node* contract(Node* v);
-
-bool unify(Node* s, Node* t);
+bool unify(field s, field t);
 
 
-char* toCStr(Node* string)
+bool unify(field s, field t)
 {
-    return toCStr_rec(string, 0);
+    return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// code for strings
+//////////////////////////////////////////////////////////////////////////////
 char* toCStr_rec(Node* str, int i)
 {
     char* cstr;
@@ -27,11 +25,16 @@ char* toCStr_rec(Node* str, int i)
     Node* c = str->children[1].n;
     Node* cs = str->children[0].n;
     cstr = toCStr_rec(cs, i+1);
-    cstr[i] = c->children[0].c;
+    cstr[i] = (char)c->children[0].c;
     return cstr;
 }
 
-Node* toCurryString(char* str)
+char* toCStr(field string)
+{
+    return toCStr_rec(string.n, 0);
+}
+
+field toCurryString(char* str)
 {
     if(*str == '\0')
     {
@@ -41,101 +44,105 @@ Node* toCurryString(char* str)
     return make_Prelude__CO(make__char(*str,0), toCurryString(str+1), 0);
 }
 
-bool unify(Node* s, Node* t)
+void setCurryString(field root, char* str)
 {
-    return false;
+    if(*str == '\0')
+    {
+        return set_Prelude__LB_RB(root,0);
+    }
+
+    set_Prelude__CO(root, make__char(*str,0), toCurryString(str+1), 0);
 }
 
 
+
 // ensureNotFree
-void Prelude_ensureNotFree_hnf(Node* root)
+void Prelude_ensureNotFree_hnf(field root)
 {
   printf("ensureNotFree is undefined\n");
   exit(0);
 }
 
 // $!
-void Prelude__DL_EX_hnf(Node* root)
+void Prelude__DL_EX_hnf(field root)
 {
-    Node* v2 = root->children[0].n;
-    Node* v1 = root->children[1].n;
-    v2->symbol->hnf(v2);
-    v2 = v2;
-    if(v2->nondet)
+    field v2 = root.n->children[0];
+    field v1 = root.n->children[1];
+    HNF(v2);
+    if(v2.n->nondet)
     {
         save_copy(root);
     }
-    if(v2->symbol->tag == FAIL_TAG)
+    if(v2.n->symbol->tag == FAIL_TAG)
     {
         fail(root);
     }
     else
     {
         set_apply1(root, v1, v2);
-        root->symbol->hnf(root);
+        HNF(root);
     }
 }
 
 // $!!
-void Prelude__DL_EX_EX_hnf(Node* root)
+void Prelude__DL_EX_EX_hnf(field root)
 {
-    Node* v2 = root->children[0].n;
-    Node* v1 = root->children[1].n;
+    field v2 = root.n->children[0];
+    field v1 = root.n->children[1];
     nf(v2);
-    v2 = v2;
-    if(v2->nondet)
+    if(v2.n->nondet)
     {
         save_copy(root);
     }
-    if(v2->symbol->tag == FAIL_TAG ||
-       v2->symbol->tag == FREE_TAG)
+    if(v2.n->symbol->tag == FAIL_TAG ||
+       v2.n->symbol->tag == FREE_TAG)
     {
         fail(root);
     }
     else
     {
         set_apply1(root, v1, v2);
-        root->symbol->hnf(root);
+        HNF(root);
     }
 }
 
 // $##
-void Prelude__DL_HT_HT_hnf(Node* root)
+void Prelude__DL_HT_HT_hnf(field root)
 {
-    Node* v2 = root->children[0].n;
-    Node* v1 = root->children[1].n;
+    field v2 = root.n->children[0];
+    field v1 = root.n->children[1];
     ground_nf(v2);
-    if(v2->nondet)
+    if(v2.n->nondet)
     {
         save_copy(root);
     }
-    if(v2->symbol->tag == FAIL_TAG)
+    if(v2.n->symbol->tag == FAIL_TAG)
     {
         fail(root);
     }
     else
     {
         set_apply1(root, v1, v2);
-        root->symbol->hnf(root);
+        HNF(root);
     }
 }
 
 // prim_error
-void Prelude_prim_USerror_hnf(Node* root)
+void Prelude_prim_USerror_hnf(field root)
 {
-    char* c = toCStr(root->children[0].n);
+    char* c = toCStr(root.n->children[0]);
     fprintf(stderr, "%s\n", c);
     exit(0);
 }
 
 // failed
-void Prelude_failed_hnf(Node* root)
+void Prelude_failed_hnf(field root)
 {
     fail(root);
 }
 
 // =:=
-void Prelude__EQ_CO_EQ_hnf(Node* root)
+void Prelude__EQ_CO_EQ_hnf(field root)
 {
     error("=:= not implemented", root);
 }
@@ -145,60 +152,74 @@ void Prelude__EQ_CO_EQ_hnf(Node* root)
 //////////////////////////////////////////////
 
 // >>=$
-void Prelude__GT_GT_EQ_DL_hnf(Node* root)
+void Prelude__GT_GT_EQ_DL_hnf(field root)
 {
-    Node* v2 = root->children[0].n;
-    Node* v1 = root->children[1].n;
-    v2->symbol->hnf(v2);
+    field v2 = root.n->children[0];
+    field v1 = root.n->children[1];
+    HNF(v2);
     set_apply1(root, v1, v2);
+    HNF(root);
 }
 
 // returnIO
-void Prelude_returnIO_hnf(Node* root) 
+void Prelude_returnIO_hnf(field root) 
 {
-    set_node(root, root->children[1].n);
-    root->symbol->hnf(root);
+    set_node(root, root.n->children[1]);
+    HNF(root);
 }
 
 // catch
-void Prelude_catch_hnf(Node* root)
+void Prelude_catch_hnf(field root)
 {
     error("catch not implemented", root);
 }
 
-// show_
-void Prelude_prim_USshow_hnf(Node* root)
+// prim_show
+void Prelude_prim_USshow_hnf(field root)
 {
-    error("_show is now redundant, use show", root);
+    char str[50];
+    if(root.n->symbol->tag == FLOAT_TAG)
+    {
+        sprintf(str, "%f", root.n->children[0].f);
+    }
+    if(root.n->symbol->tag == INT_TAG)
+    {
+        sprintf(str, "%ld", root.n->children[0].i);
+    }
+    if(root.n->symbol->tag == CHAR_TAG)
+    {
+        sprintf(str, "%c", (char)root.n->children[0].c);
+    }
+    setCurryString(root, str);
 }
 
 // failure
-void Prelude_failure_hnf(Node* root)
+void Prelude_failure_hnf(field root)
 {
     error("failure not implemented", root);
 }
 
 // letrec
-void Prelude_letrec_hnf(Node* root)
+void Prelude_letrec_hnf(field root)
 {
     error("letrec not implemented (or used?)", root);
 }
 
 // =:<=
-void Prelude__EQ_CO_LT_EQ_hnf(Node* root)
+void Prelude__EQ_CO_LT_EQ_hnf(field root)
 {
     error("=:<= (for function patterns) not implemented", root);
 }
 
 // =:<<=
-void Prelude__EQ_CO_LT_LT_EQ_hnf(Node* root)
+void Prelude__EQ_CO_LT_LT_EQ_hnf(field root)
 {
     error("=:<<= (for function patterns) not implemented", root);
 }
 
-void Prelude_ifVar_hnf(Node* root)
+void Prelude_ifVar_hnf(field root)
 {
-    if(root->symbol->tag == FREE_TAG)
+    if(root.n->symbol->tag == FREE_TAG)
     {
         set_Prelude_True(root,0);
     }
@@ -208,22 +229,22 @@ void Prelude_ifVar_hnf(Node* root)
     }
 }
 
-void Prelude_prim_USputChar_hnf(Node* root)
+void Prelude_prim_USputChar_hnf(field root)
 {
-    putchar(root->children[0].c);
+    putchar((char)root.n->children[0].c);
     set_Prelude__LP_RP(root,0);
 }
 
-void Prelude_getChar_hnf(Node* root)
+void Prelude_getChar_hnf(field root)
 {
     char c = getchar();
     set__char(root, c, 0);
 }
 
-void Prelude_prim_USreadFile_hnf(Node* root)
+void Prelude_prim_USreadFile_hnf(field root)
 {
-    nf(root->children[0].n);
-    char* filename = toCStr(root->children[0].n);
+    nf(root.n->children[0]);
+    char* filename = toCStr(root.n->children[0]);
     FILE* file = fopen(filename, "r");
 
     if(file == NULL)
@@ -250,12 +271,12 @@ void Prelude_prim_USreadFile_hnf(Node* root)
 
 
 
-void Prelude_prim_USwriteFile_hnf(Node* root)
+void Prelude_prim_USwriteFile_hnf(field root)
 {
-    nf(root->children[1].n);
-    char* filename = toCStr(root->children[1].n);
-    nf(root->children[0].n);
-    char* text = toCStr(root->children[0].n);
+    nf(root.n->children[1]);
+    char* filename = toCStr(root.n->children[1]);
+    nf(root.n->children[0]);
+    char* text = toCStr(root.n->children[0]);
     FILE* file = fopen(filename, "w");
 
     if(file == NULL)
@@ -275,12 +296,12 @@ void Prelude_prim_USwriteFile_hnf(Node* root)
     set_Prelude__LP_RP(root,0);
 }
 
-void Prelude_prim_USappendFile_hnf(Node* root)
+void Prelude_prim_USappendFile_hnf(field root)
 {
-    nf(root->children[1].n);
-    char* filename = toCStr(root->children[1].n);
-    nf(root->children[0].n);
-    char* text = toCStr(root->children[0].n);
+    nf(root.n->children[1]);
+    char* filename = toCStr(root.n->children[1]);
+    nf(root.n->children[0]);
+    char* text = toCStr(root.n->children[0]);
     FILE* file = fopen(filename, "a");
 
     if(file == NULL)

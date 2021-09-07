@@ -1,14 +1,14 @@
 
-module FlatUtils.ReplacePrim (ignoredPrimOps, primOps) where
+module Compile.PrimOps (ignoredPrimOps, primOps) where
 
 import ICurry.Types (IQName)
-import List (intercalate, splitOn)
-import FlatCurry.Types
-import FlatCurry.Goodies
 import Data.Map (Map, fromList)
-import Util
-import Debug
 
+-- These are primitive operations that have been replaced
+-- usually because there's a better way to do it with unboxing
+-- but I can't just give new functions these low level names
+-- or curry will compain.
+-- So, We just pretend these functions don't exist.
 ignoredPrimOps :: [IQName]
 ignoredPrimOps = [("Prelude", "prim_eqChar",            0),
                   ("Prelude", "prim_eqInt",             0),
@@ -132,11 +132,13 @@ primOps = fromList [-- equality operations
                           \[x] -> ["root.f = -"++x++";"],
                           "f")),
 
+                    -- I/O
                     ( ("Prelude","primPutChar",0),
                          (\[c] -> "(putchar("++c++"), make_Prelude__LP_RP(0))",
                           \[c] -> ["putchar("++c++");", "set_Prelude__LP_RP(root,0);"],
                           "c")),
 
+                    -- Constructors
                     ( ("","int",0),  
                          (\[i] -> "make__int("++i++", 0)",
                           \[i] -> ["set__int(root, "++i++", 0);"],

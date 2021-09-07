@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+pakcs :l SplitPrelude :eval run :q
+

@@ -15,10 +15,15 @@ data NameTree = None | Name Int | Br [NameTree]
 -- Finally after I've fill the name tree with free variables, I can bind all of them at once.
 -- I start with the smallest x such that no name n > x is in use (all larger names don't conflict)
 -- then I traverse the tree and bind all of the free variables with x, x+1, x+2, ...
-bindNames :: NameTree -> Int -> Int
-bindNames None     n = n
-bindNames (Name n) n = n+1
-bindNames (Br ts)  n = foldr bindNames n ts
+--
+-- bindNames returns True if it was able to bind all the names
+-- otherwise it fails
+bindNames :: NameTree -> Int -> Bool
+bindNames nt n | bind nt n >= n = True
+ where
+  bind None     n = n
+  bind (Name n) n = n+1
+  bind (Br ts)  n = foldr bind n ts
 
 
 -- Convenience function
@@ -27,16 +32,14 @@ bindNames (Br ts)  n = foldr bindNames n ts
 withNames :: (NameTree -> a -> b) -> a -> Int -> b
 withNames f x start
  | y =:= f nt x 
- & bindNames nt start >= start
+ & bindNames nt start
  = y
   where nt,y free
 
--- We need to use this instead of zipWith
--- This is because a list of NameTree objects could be empty, 
--- so we need to force it to be as long as the second list.Suppose that f nt x = y, and that f fills in the NameTree nt
+-- Like zipWith, but only succeeds if the two lists are the same length.
+-- This is important is one list is a free variable.
+-- It should be equivalent to 
+-- forceZipWith f xs ys | length xs == length ys = zipWith f xs ys
 forceZipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 forceZipWith _ [] [] = []
 forceZipWith f (n:ns) (e:es) = f n e : forceZipWith f ns es
-
-freeVarList :: [a] -> [b]
-freeVarList = map (\x -> _) 

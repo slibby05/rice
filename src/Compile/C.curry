@@ -1,8 +1,10 @@
 module Compile.C where
 
 import FlatUtils.FlatRewrite (Path)
+import Util ((++-),(&&-),mergeMap)
 import ICurry.Types 
 import List (intercalate, isPrefixOf, splitOn, intersect)
+import Sort (sort)
 
 
 type CType = String
@@ -79,7 +81,7 @@ cdefine name val = "#define " ++ name ++ " " ++ show val
 
 children :: CName -> [Int] -> CExpr
 children node xs = foldl childAt node xs
- where childAt x y = "child_at_n("++x++", "++show y++")"
+ where childAt x y = "child_at("++x++", "++show y++")"
 
 child_t :: CType -> CName -> CExpr
 child_t "int" node   = "child_at_i("++node++",0)"
@@ -106,6 +108,9 @@ call name es = name ++ cargs es
 
 scall :: CName -> [CExpr] -> CStmt
 scall name es = name ++ cargs es ++ ";"
+
+retCall :: CName -> [CExpr] -> CStmt
+retCall name es = "return " ++ name ++ cargs es ++ ";"
 
 calloc_n :: Int -> CExpr
 calloc_n num = "(Node*)calloc("++show num++", sizeof(Node))"
@@ -162,8 +167,8 @@ cfunDecl ret name ps = cfunDefn ret name ps ++ ";"
 nl :: [CStmt]
 nl = [""]
 
-nodePtr :: CType
-nodePtr = "Node*"
+field :: CType
+field = "field"
 
 list :: [CExpr] -> CExpr
 list = intercalate ", "
@@ -195,29 +200,41 @@ tag f = mangle f ++ "_TAG"
 var :: Int -> CExpr
 var v
  | v == 0    = "root"
+ | isRET v   = "RET"
  | otherwise = "v"++show v
 
+fwd :: Int -> CExpr
+fwd v = var v ++ if v == 0 then "" else "_forward"
+
+hasRET :: [IVarIndex] -> Bool
+hasRET = not . null . filter (<(-1))
+
+isRET :: IVarIndex -> Bool
+isRET v = v < (-1)
 
 symbol :: String -> CExpr
-symbol v = v ++ "->symbol"
+symbol v = v ++ ".n->symbol"
 
 symhnf :: CExpr -> CExpr
-symhnf v = v ++ "->symbol->hnf(" ++ v ++ ")"
+symhnf v = "HNF("++v++")"
 
 symtag :: CExpr -> CExpr
-symtag v = v ++ "->symbol->tag"
+symtag v = v ++ ".n->symbol->tag"
 
 symname :: CExpr -> CExpr
-symname v = v ++ "->symbol->name"
+symname v = v ++ ".n->symbol->name"
 
 symarity :: CExpr -> CExpr
-symarity v = v ++ "->symbol->arity"
+symarity v = v ++ ".n->symbol->arity"
 
 nondet :: CExpr -> CExpr
-nondet v = v ++ "->nondet"
+nondet v = v ++ ".n->nondet"
 
 missing :: CExpr -> CExpr
-missing v = v ++ "->missing"
+missing v = v ++ ".n->missing"
+
+nullf :: CExpr
+nullf = "(field){.n = NULL}"
 
 ----------------------------------------------------------
 -- get path
@@ -233,14 +250,21 @@ pathList (IFuncBody b) = getPath [] [] b
 
 getPath :: Path -> [IVarIndex] -> IBlock -> [(Path, [IVarIndex], IStatement)]
 getPath _    _    (IBlock _  _   IExempt)        = []
-getPath _    _    (IBlock _  _   (ICaseLit _ _)) = []
-getPath path vars (IBlock ds _ c@(ICaseCons _ bs))
-    = (reverse path, usedVars , c)
-    : concat [getPath (i:path) (vars++ds') b | (IConsBranch (_,_,i) _ b) <- bs]
- where ds' = map varFromDecl ds
-       usedVars = (vars++ds') `intersect` (varsInStmt c)
 
--- because collapsing rules need to save at their current statew
+getPath path vars (IBlock ds _ c@(ICaseLit _ bs)) 
+    = concat [getPath (i:path) (vars ++- ds') b | (i, ILitBranch _ b) <- zip [0..] bs]
+ where ds' = sort (map varFromDecl ds)
+
+getPath path vars (IBlock ds _ c@(ICaseCons v bs))
+    = if v == -1 
+      then concat [getPath (i:path) vs b | (IConsBranch (_,_,i) _ b) <- bs, i >= 0]
+      else (reverse path, usedVars , c)
+           : concat [getPath (i:path) vs b | (IConsBranch (_,_,i) _ b) <- bs]
+ where ds' = sort (map varFromDecl ds)
+       vs = vars ++- ds'
+       usedVars = vs &&- (varsInStmt c)
+
+-- because collapsing rules need to save at their current state
 getPath path vars (IBlock ds _ ret@(IReturn e))
  | isVar e   = [(reverse path, usedVars, ret)] 
  | otherwise = []
@@ -252,13 +276,8 @@ getPath path vars (IBlock ds _ ret@(IReturn e))
         isVar (ICCall _ _)       = False
         isVar (IFPCall _ _ _)    = False
         isVar (ICPCall _ _ _)    = False
-        ds' = map varFromDecl ds
-        usedVars = (vars++ds') `intersect` (varsInStmt ret)
--- I don't think I need this, because a literal cannot be a choice.
---getPath path vars (IBlock ds _ c@(ICaseLit _ bs)) 
---    = (reverse path, vars, c)
---    : concat [getPath (i:path) (vars++ds') b | (i, ILitBranch _ b) <- zip [0..] bs]
--- where ds' = map varFromDecl ds
+        ds' = sort (map varFromDecl ds)
+        usedVars = (vars ++- ds') &&- (varsInStmt ret)
 
 
 varFromDecl :: IVarDecl -> IVarIndex
@@ -268,26 +287,59 @@ varFromDecl (IFreeDecl v) = v
 varsInStmt :: IStatement -> [IVarIndex]
 varsInStmt IExempt          = []
 varsInStmt (IReturn e)      = varsInExpr e
-varsInStmt (ICaseLit  v bs) = v : concatMap varsInLit bs
+varsInStmt (ICaseLit  v bs) = [v] ++- mergeMap varsInLit bs
  where varsInLit (ILitBranch _ b) = varsInBlock b
-varsInStmt (ICaseCons v bs) = v : concatMap varsInCons bs
+varsInStmt (ICaseCons v bs) = [v] ++- mergeMap varsInCons bs
  where varsInCons (IConsBranch _ _ b) = varsInBlock b
 
 varsInExpr :: IExpr -> [IVarIndex]
 varsInExpr (IVar        v)      = [v]
 varsInExpr (IVarAccess  v _)    = [v]
 varsInExpr (ILit        _)      = []
-varsInExpr (IFCall      _ es)   = concatMap varsInExpr es
-varsInExpr (ICCall      _ es)   = concatMap varsInExpr es
-varsInExpr (IFPCall     _ _ es) = concatMap varsInExpr es
-varsInExpr (ICPCall     _ _ es) = concatMap varsInExpr es
-varsInExpr (IOr         e1 e2)  = varsInExpr e1 ++ varsInExpr e2
+varsInExpr (IFCall      _ es)   = mergeMap varsInExpr es
+varsInExpr (ICCall      _ es)   = mergeMap varsInExpr es
+varsInExpr (IFPCall     _ _ es) = mergeMap varsInExpr es
+varsInExpr (ICPCall     _ _ es) = mergeMap varsInExpr es
+varsInExpr (IOr         e1 e2)  = varsInExpr e1 ++- varsInExpr e2
 
 varsInBlock :: IBlock -> [IVarIndex]
-varsInBlock (IBlock _ as s) = concatMap varsInAssign as ++ 
+varsInBlock (IBlock _ as s) = mergeMap varsInAssign as ++-
                               varsInStmt s
  where varsInAssign (IVarAssign _ e)    = varsInExpr e
        varsInAssign (INodeAssign _ _ e) = varsInExpr e
+
+replace :: Maybe (IVarIndex,IVarIndex) -> IStatement -> IStatement
+replace Nothing       e                = e
+replace (Just (r,nr)) IExempt          = IExempt
+replace (Just (r,nr)) (IReturn e)      = IReturn (replaceExpr r nr e)
+replace (Just (r,nr)) (ICaseLit  v bs) = ICaseLit (repVar r nr v) (map (replaceLitBranch r nr) bs)
+replace (Just (r,nr)) (ICaseCons v bs) = ICaseCons (repVar r nr v) (map (replaceConsBranch r nr) bs)
+
+repVar :: IVarIndex -> IVarIndex -> IVarIndex -> IVarIndex
+repVar r nr v = if v == r then nr else v
+
+replaceConsBranch :: IVarIndex -> IVarIndex -> IConsBranch -> IConsBranch
+replaceConsBranch r nr (IConsBranch c a b) = IConsBranch c a (replaceBlock r nr b)
+
+replaceLitBranch :: IVarIndex -> IVarIndex -> ILitBranch -> ILitBranch
+replaceLitBranch r nr (ILitBranch l b) = ILitBranch l (replaceBlock r nr b)
+
+replaceBlock :: IVarIndex -> IVarIndex -> IBlock -> IBlock
+replaceBlock r nr (IBlock vs as s) = IBlock vs (map (replaceAsgn r nr) as) (replace (Just (r,nr)) s)
+
+replaceAsgn :: IVarIndex -> IVarIndex -> IAssign -> IAssign
+replaceAsgn r nr (IVarAssign  v e)     = IVarAssign v (replaceExpr r nr e)
+replaceAsgn r nr (INodeAssign v ixs e) = INodeAssign v ixs (replaceExpr r nr e)
+
+replaceExpr :: IVarIndex -> IVarIndex -> IExpr -> IExpr
+replaceExpr r nr (IVar v)          = IVar (repVar r nr v)
+replaceExpr r nr (IVarAccess v xs) = IVarAccess (repVar r nr v) xs
+replaceExpr r nr (ILit l)          = ILit l
+replaceExpr r nr (IFCall f es)     = IFCall f (map (replaceExpr r nr) es)
+replaceExpr r nr (ICCall c es)     = ICCall c (map (replaceExpr r nr) es)
+replaceExpr r nr (IFPCall f n es)  = IFPCall f n (map (replaceExpr r nr) es)
+replaceExpr r nr (ICPCall c n es)  = ICPCall c n (map (replaceExpr r nr) es)
+replaceExpr r nr (IOr e1 e2)       = IOr (replaceExpr r nr e1) (replaceExpr r nr e2)
 
 ----------------------------------------------------
 -- Name mangling
@@ -296,9 +348,14 @@ varsInBlock (IBlock _ as s) = concatMap varsInAssign as ++
 getTag :: IQName -> Int
 getTag (_,_,t) = t
 
+--nameStr :: IQName -> Maybe Path -> String
+--nameStr (m,f,_) Nothing = "\"" ++ m ++ "." ++ f ++ "\""
+--nameStr (m,f,_) (Just p) = "\"" ++ m ++ "." ++ f ++ "@" ++ show p ++ "\""
+-- It's easier to read debugging information without the module names.
+-- but this is technically wrong.
 nameStr :: IQName -> Maybe Path -> String
-nameStr (m,f,_) Nothing = "\"" ++ m ++ "." ++ f ++ "\""
-nameStr (m,f,_) (Just p) = "\"" ++ m ++ "." ++ f ++ "@" ++ show p ++ "\""
+nameStr (_,f,_) Nothing = "\"" ++ f ++ "\""
+nameStr (_,f,_) (Just p) = "\"" ++ f ++ "@" ++ show p ++ "\""
 
 -- there's a lot of characters that aren't valid in C
 -- We can't to have a consistent way of dealing with them

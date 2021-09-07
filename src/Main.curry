@@ -2,36 +2,39 @@
 import System
 import GetOpt
 import List
-import Either (partitionEithers)
+import Sort (sort)
+
 
 import FlatCurry.Goodies
-import FlatCurry.Types
+import FlatCurry.Types as F
 import FlatCurry.Pretty as FP
-import FlatCurry.Files  (flatCurryFileName, readFlatCurry, readFlatCurryFile)
-import Directory        (doesFileExist, getModificationTime)
-import FileGoodies      (getFileInPath)
-import System.CurryPath (getLoadPathForModule)
 
-import Control.SetFunctions
+import Files
+import FlatCurry.Files  (readFlatCurry, readFlatCurryFile)
+import Directory        (doesFileExist)
 
 import FlatUtils.DataTable as DT
-import FlatUtils.ReplacePrim (mergePrelude)
+import FlatUtils.FlatUtils (funcCalls)
 
 import Optimize.Unboxing
 import Optimize.Optimize
-import Optimize.FunTable
+import Optimize.FunTable as FT
+import Optimize.Strictness as ST
+import qualified Data.Map as M
 
 import Text.Pretty
 
 import Compile.ToICurry
 import Compile.ToC
 import Compile.ToH
-import ICurry.Types
+import ICurry.Types as I
 import ICurry.Pretty as IP
 import ICurry.Files (readICurryFile)
 
 import Util
 
+import Time (getClockTime, clockTimeToInt)
+time = getClockTime >>= (return . clockTimeToInt)
 
 main :: IO ()
 main = do
@@ -42,103 +45,185 @@ main = do
                     else errors'
     if not $ null errors
       then mapM_ putStrLn errors
-      else compileAll (head files) opts
+      else if opts == [SCodeGen]
+            then genCode (head files)
+            else compileAll (head files) opts
+
+
+genCode :: String -> IO ()
+genCode p = do icyName <- icyFile p
+               hasICurry <- doesFileExist icyName
+               when (not hasICurry) $ error "Error: no ICURY file"
+               icy <- readICurryFile icyName
+               compileC p icy
+               inc <- riceDir
+               putStrLn (gccObj inc p)
+               system (gccObj inc p)
+               when (hasIMain icy) $
+                     do main_file <- mainFile
+                        writeMain main_file p
+                        imports <- icyImports [p] icy
+                        let includeFiles = imports ++ ["runtime", "stack", "external", "main"]
+                        let obj x = inc++x++".c"
+                        let files = map obj includeFiles
+                        let command = "gcc -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ p
+                        putStrLn command
+                        system command
+                        return ()
+
+
+icyImports :: [String] -> IProg -> IO [String]
+icyImports seen (IProg _ is _ _)  = if null new 
+                                       then return seen
+                                       else do ms <- mapM run new
+                                               return (foldr (++-) [] ms)
+ where new = (sort is) \\- seen
+       run i = icyFile i >>= readICurryFile >>= icyImports (new ++- seen)
+
 
 compileAll :: String -> [FileType] -> IO ()
 compileAll file args = 
-  do fcys <- readfcy_opt_imports file
-     home <- getEnviron "HOME"
-     print (length fcys)
-     mapM_ (\(p,b) -> putStrLn ((getMod p) ++ ": " ++ show b)) fcys
+  do fcys <- readFlatWithImports file
+     mapM_ (\(p,r) -> putStrLn ((progName p) ++ ": " ++ (show r))) fcys
+
      let dt = foldr DT.fillTable DT.empty (map fst fcys)
-     if SDataTable `elem` args 
-         then do putStrLn "\n\nDATA TABLE\n\n"
-                 putStrLn (DT.showTable dt)
-         else return ()
-     --mapM_ (compileOpt dt)       [opt | (opt,False) <- fcys]
-     --mapM_ (compileFlat dt args) [fcy | (fcy,True) <- fcys]
-     compileFlat dt args (fst (last fcys))
-     writeMain (home++"/.rice/main.c") file
-     let inc = home++"/.rice/" 
-     let files = [inc++x++".c" | x <- ((map (getMod . fst) fcys) ++ ["main", "runtime", "stack", "external"])]
-     putStrLn $ "gcc -I"++inc++" " ++ unwords files ++ " -o " ++ file
-     system $ "gcc -I"++inc++" " ++ unwords files ++ " -o " ++ file
-     return ()
+
+     let fcys' = if SNoPrelude `elem` args
+                  then filter (not . isPrefixOf "Prelude" . progName . fst) fcys
+                  else fcys
+
+     when (SDataTable `elem` args) $
+        do putStrLn "\n\nDATA TABLE\n\n"
+           putStrLn (DT.showTable dt)
+
+     let st = foldr ST.addProg ST.emptyST [opt | (opt,False) <- fcys']
+     putStrLn "read strictness"
+     
+     t <- time 
+     let ft = makeOptFunTable [f | (opt,False) <- fcys', f <- progFuncs opt]
+     putStrLn "read fun table"
+     putStrLn (FT.showTable ft)
+     t' <- time
+     putStrLn ("time to make funTable: " ++ show (t' - t))
+
+     mapM_ compileOpt [opt | (opt,False) <- fcys']
+
+     compileFlats dt args st ft [fcy | (fcy,True) <- fcys']
+     let new_files = map (progName . fst) (filter snd fcys')
+
+     inc <- riceDir
+
+     mapM_ (putStrLn . gccObj inc) new_files
+     mapM_ (system . gccObj inc) new_files
 
 
-compileOpt :: DT.DataTable -> Prog -> IO ()
-compileOpt dt p = do let name = getMod p
-                     home <- getEnviron "HOME"
-                     let file = home++"/.rice/"++name
-                     hasICurry <- doesFileExist (file++".icy")
-                     hasC <- doesFileExist (file++".c")
-                     if hasC
-                       then return ()
-                       else do icy <- getICurry dt p hasICurry
-                               let hfile = file++".h"
-                               let cfile = file++".c"
-                               toHeader icy (writeFile hfile) (appendFile hfile)
-                               toSource icy (writeFile cfile) (appendFile cfile)
+     mapM_ putStrLn 
+           $ map (snd . funcName) 
+           $ concatMap progFuncs 
+           $ filter ((file==) . progName) 
+           $ map fst fcys
 
-getICurry :: DT.DataTable -> Prog -> Bool -> IO IProg
-getICurry dt p hasICurry = do home <- getEnviron "HOME"
-                              let file = home++"/.rice/"++getMod p
-                              if hasICurry 
-                                then readICurryFile (file++".icy")
-                                else do let (c_fcy,_) = optimize dt (makeFunTable [] []) p
-                                        let icy       = toICurry c_fcy
-                                        writeFile (file++".icy") (show icy)
-                                        return icy
+     when (hasMain file fcys) $
+           do main_file <- mainFile
+              writeMain main_file file
+              let includeFiles = ((map (progName . fst) fcys') ++ ["runtime", "stack", "external", "main"])
+              let obj x = inc++x++".c"
+              let files = map obj includeFiles
+              let command = "gcc -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ file
+              putStrLn command
+              system command
+              return ()
 
-compileFlat :: DT.DataTable -> [FileType] -> Prog -> IO ()
-compileFlat dt args fcy =
-  do home <- getEnviron "HOME"
-     let file = home++"/.rice/"++getMod fcy
-     fcy <- if getMod fcy == "Prelude"
-               then fixPrelude $## fcy
-               else return $## fcy
+gccObj inc f =  "gcc -I"++inc++" -c "++(inc++f++".c")++" -O2 -o "++(inc++f++".o")
 
-     if SFlat `elem` args 
-         then do putStrLn "\n\nFLAT CURRY\n\n"
-                 putStrLn $ pPrint $ FP.ppProg FP.defaultOptions fcy
-         else return ()
+hasMain :: String -> [(Prog,Bool)] -> Bool
+hasMain file = elem "main" 
+             . map (snd . funcName) 
+             . concatMap progFuncs 
+             . filter ((file==) . progName) 
+             . map fst
 
-     let u_fcy = id $## boxProg fcy
+hasIMain :: IProg -> Bool
+hasIMain = not . null . filter isMain . iFuns
+ where isMain (IFunction (_,n,_) _ _ _ _) = n == "main"
+       iFuns (IProg _ _ _ fs) = fs
+
+fromOpt :: String -> IO ()
+fromOpt name = optFile name >>= readFlatCurryFile >>= compileOpt
+
+compileOpt :: Prog -> IO ()
+compileOpt p = do putStrLn ("compiling " ++ progName p)
+                  hasC <- cFile (progName p) >>= doesFileExist
+                  if hasC then putStrLn "has C" else putStrLn "doesn't have C"
+                  unless hasC (getICurry p >>= compileC (progName p))
+
+getICurry :: Prog -> IO IProg
+getICurry p = do icyName <- icyFile (progName p)
+                 hasICurry <- doesFileExist icyName
+                 if hasICurry 
+                    then do putStrLn "has ICurry"
+                            readICurryFile icyName
+                    else do putStrLn "doesn't have ICurry"
+                            putStrLn $ pPrint (FP.ppProg (Options 2 QualNone "") p)
+                            let ip = toICurry p
+                            putStrLn $ pPrint (IP.ppIProg ip)
+                            return ip
+
+compileFlats :: DT.DataTable -> [FileType] -> ST.StrictTable -> FunTable -> [Prog] -> IO ()
+compileFlats _  _    _  _  []         = return ()
+compileFlats dt args st ft (fcy:fcys) =
+  do let file = progName fcy
+
+     when (SFlat `elem` args ) $
+         do putStrLn "\n\nFLAT CURRY\n\n"
+            putStrLn $ pPrint $ FP.ppProg FP.defaultOptions fcy
+
+     (opt_fcy,c_ft,c_st) <- if SOpt `elem` args 
+                            then optimizeT dt ft st fcy
+                            else return (optimize dt ft st fcy)
+
+     let calls = mergeMap funcCalls (progFuncs opt_fcy)
+     let used_fcy = updProgFuncs (filter (\f -> isPublic f || funcName f `elem` calls)) opt_fcy
+
+     opt_file <- optFile file
+     writeFile opt_file (show (flipAllPrivates c_ft c_st used_fcy))
+
+     icy_file <- icyFile file
+     let icy = id $## toICurry used_fcy
+
+     when (SICurry `elem` args) $
+         do putStrLn "\n\nICURRY\n\n"
+            putStrLn $ pPrint $ ppIProg icy
+
+     writeFile icy_file (show icy)
+
+     compileC file icy
+
+     compileFlats dt args c_st c_ft fcys
 
 
-     let (c_fcy,ft) = id $## optimizeT dt (makeFunTable [] []) u_fcy
-     if SOpt `elem` args 
-         then do putStrLn "\n\nOPTIMIZED FLAT CURRY\n\n"
-                 putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
-         else return ()
-     writeFile (file++".opt") (show c_fcy)
-
-     if STransformed `elem` args 
-         then do putStrLn "\n\nTRANSFORMED FLAT CURRY\n\n"
-                 putStrLn $ pPrint $ FP.ppProg FP.defaultOptions c_fcy
-         else return ()
-
-     let icy = id $## toICurry c_fcy
-     if SICurry `elem` args 
-         then do putStrLn "\n\nICURRY\n\n"
-                 putStrLn $ pPrint $ ppIProg icy
-         else return ()
-     writeFile (file++".icy") (show icy)
-
-     putStrLn "\n\nC\n\n"
-     let hfile = file++".h"
-     let cfile = file++".c"
-     toHeader icy (writeFile hfile) (appendFile hfile)
-     toSource icy (writeFile cfile) (appendFile cfile)
-
-fixPrelude :: Prog -> IO Prog
-fixPrelude p = do home <- getEnviron "HOME"
-                  prim <- readFlatCurryFile (home++"/.rice/.curry/prim.fcy")
-                  let pprim = (mergePrelude p prim)
-                  replace <- readFlatCurryFile (home++"/.rice/.curry/replace.fcy")
-                  return $ id $## mergePrelude pprim replace
+compileC :: String -> IProg -> IO ()
+compileC file icy = do h <- hFile file
+                       c <- cFile file
+                       toHeader icy (writeFile h) (appendFile h)
+                       toSource icy (writeFile c) (appendFile c)
 
 
+-- This is a hack because I don't have a good place to store the loop breaker in FlatCurry files.
+-- Basically I'm hijacking the visibility field for functions, since I never use it.
+flipAllPrivates :: FunTable -> ST.StrictTable -> Prog -> Prog
+flipAllPrivates ft st = updProgFuncs (map (flipPrivate ft st))
+
+flipPrivate :: FunTable -> ST.StrictTable -> FuncDecl -> FuncDecl
+flipPrivate _  _  f@(Func _ _ _ _ (External _)) = f
+flipPrivate ft st (Func f a _ t (Rule vs e)) = Func f a viz t (Rule vs' e)
+  where viz = if loopbreaker ft f then F.Private else F.Public
+        vs' = case M.lookup f st of
+                   Just us -> [if i `elem` us then -v else v | (v,i) <- zip vs [1..]]
+                   Nothing -> vs
+
+isPublic :: F.FuncDecl -> Bool
+isPublic f = funcVisibility f == F.Public
 
 --------------------------------------------------------------------
 -- Code for reading files
@@ -189,89 +274,13 @@ fixPrelude p = do home <- getEnviron "HOME"
 
 
 
--- reads a flatCurry file, where some of the imports may have already been optimized
--- We take a string of a program to read
--- we return two lists of programs (fcy, opts)
--- fcy is the normal flatcurry programs that still need to be optimized
--- opts is the programs that have already been optimized
---
-readfcy_opt_imports :: String -> IO [(Prog,Bool)]
-readfcy_opt_imports file = 
- do rootfcy <- readFlatCurry file
-    let imps = getImports rootfcy
-    ps <- readLoop imps [getMod rootfcy] []
-    fixOpts (ps++[(rootfcy,True)]) []
 
-getImports :: Prog -> [String]
-getImports (Prog _ is _ _ _) = is
-
-getMod :: Prog -> String
-getMod (Prog m _ _ _ _) = m
-
--- This is a simple loop to read all of the imports
--- for each import check to see if it's been optimized
--- if it hasn't, the read the flat-curry file
--- Now, we get all of the imports we haven't seen before
--- and we add those to the list of imports
--- We're basically doing a topological sort on the files
-read_import :: [String] -> String -> IO [(Prog,Bool)]
-read_import seen imp =
- if imp `elem` seen 
-   then return []
-   else do opt <- try_readopt imp
-           case opt of
-               Nothing   -> do prog <- readFlatCurry imp
-                               ps <- readLoop (getImports prog) (imp:seen) []
-                               return (ps++[(prog,True)])
-               Just prog -> do ps <- readLoop (getImports prog) (imp:seen) []
-                               return (ps++[(prog,False)])
-
-readLoop :: [String] -> [String] -> [(Prog,Bool)] -> IO [(Prog,Bool)]
-readLoop []     seen ps = return ps
-readLoop (x:xs) seen ps = read_import seen x >>= readLoop xs seen
-
--- tries to read an optimized program from the ~/.rice directory
--- if this file doesn't exist, then we haven't optimized it yet
--- if the source file is newer, then we haven't optimized the current version
--- returns Just the optimize program if it exists
--- otherwise it returns Nothing
-try_readopt :: String -> IO (Maybe Prog)
-try_readopt m = do p <- getLoadPathForModule m
-                   f <- getFileInPath (flatCurryFileName m) [""] p
-                   t0 <- getModificationTime f
-                   home <- getEnviron "HOME"
-                   let fopt = home++"/.rice/"++m++".opt"
-                   opt <- doesFileExist fopt
-                   putStrLn (m ++ "_opt exists? " ++ show opt)
-                   if opt then do t1 <- getModificationTime fopt
-                                  putStrLn (m ++ ": " ++ show t0)
-                                  putStrLn (m ++ "_opt: " ++ show t1)
-                                  putStrLn (show (t0 > t1))
-                                  if t1 > t0 then readFlatCurryFile fopt >>= 
-                                                   return . Just 
-                                             else return Nothing
-                          else return Nothing
-
-
-
--- It might be the case that we one of our imports needs to be re-optimized
--- If that's true, then we need to re-optimize the current file.
--- So, go through and make sure that if we're optimized then all of our imports are too.
--- This isn't efficient (O(n^2)), but the number of imports in small (<100) so it shouldn't matter.
-fixOpts :: [(Prog,Bool)] -> [(Prog,Bool)] -> IO [(Prog,Bool)]
-fixOpts []             fs = return fs
-fixOpts ((b,True) :bs) fs = fixOpts bs (fs++[(b,True)])
-fixOpts ((b,False):bs) fs
- | any (\i -> (i,True) `elem` map (mapFst getMod) fs) (getImports b)
- = do b' <- readFlatCurry (getMod b) 
-      fixOpts bs (fs++[(b',True)])
- | otherwise = fixOpts bs (fs++[(b,False)])
 
 --------------------------------------------------------------------
 -- Code for handling options
 --------------------------------------------------------------------
 
-data FileType = SDataTable | SFlat | SOpt | STransformed | SICurry | SC
+data FileType = SDataTable | SFlat | SOpt | SICurry | SC | SNoPrelude | SCodeGen
  deriving(Show, Eq)
 
 optDescrs :: [OptDescr FileType]
@@ -279,7 +288,26 @@ optDescrs = [
   Option "d" ["datatable"]   (NoArg SDataTable)   "print DataTable",
   Option "f" ["flatcurry"]   (NoArg SFlat)        "print FlatCurry",
   Option "o" ["optimized"]   (NoArg SOpt)         "print optimized FlatCurry",
-  Option "t" ["transformed"] (NoArg STransformed) "print transformed FlatCurry",
   Option "i" ["icurry"]      (NoArg SICurry)      "print ICurry",
-  Option "c" []              (NoArg SC)           "print C"]
+  Option "c" []              (NoArg SC)           "print C",
+  Option "g" ["codegen"]     (NoArg SCodeGen)     "only generate code from icurry",
+  Option "p" ["noprelude"]   (NoArg SNoPrelude)   "don't include Prelude (for testing)"]
+
+
+-----------------------------------------------------------------------
+-- DEBUGGING
+-----------------------------------------------------------------------
+
+printFiles :: (Prog,Bool) -> IO ()
+printFiles (fcy,hasOpt) = do let name = progName fcy
+                             f <- flatFile name
+                             o <- optFile name
+                             i <- icyFile name
+                             c <- cFile name
+                             [fe,oe,ie,ce] <- mapM doesFileExist [f,o,i,c]
+                             putStrLn (name ++ ": " ++ show hasOpt)
+                             putStrLn ("flatCurry exists " ++ f ++ ": " ++ show fe)
+                             putStrLn ("optCurry exists "  ++ o ++ ": " ++ show oe)
+                             putStrLn ("ICurry exists "    ++ i ++ ": " ++ show ie)
+                             putStrLn ("C exists "         ++ c ++ ": " ++ show ce)
 

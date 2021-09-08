@@ -1,5 +1,7 @@
 $! /bin/bash
 
+cypm install
+
 mkdir ~/.rice
 
 cp runtime/* ~/.rice

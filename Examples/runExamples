@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for V in $(ls *.curry)
-do 
-    echo ${V%.*}; 
-    rice -f -t${V%.*}.t $V; 
-done

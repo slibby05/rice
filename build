@@ -8,6 +8,8 @@ cd src
 pakcs :l SplitPrelude :eval run :q
 cd ..
 
+./compile
+
 cd benchmarks
 ./runBenchmarks
 cd ..

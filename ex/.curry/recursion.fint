@@ -1,1 +1,0 @@
-Prog "recursion" ["Prelude"] [] [Func ("recursion","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Var 0))] []

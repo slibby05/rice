@@ -1,1 +1,0 @@
-Prog "loop" ["Prelude"] [] [Func ("loop","loop") 0 Public (TVar 0) (Rule [] (Var 0)),Func ("loop","build") 2 Public (FuncType (TCons ("Prelude","Int") []) (FuncType (TCons ("Prelude","Int") []) (TCons ("Prelude","Int") []))) (Rule [] (Var 0)),Func ("loop","main") 0 Public (TCons ("Prelude","Int") []) (Rule [] (Var 0))] []

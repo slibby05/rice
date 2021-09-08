@@ -1,1 +1,0 @@
-Prog "insert" ["Prelude"] [] [Func ("insert","insert") 2 Public (FuncType (TVar 0) (FuncType (TCons ("Prelude","[]") [TVar 0]) (TCons ("Prelude","[]") [TVar 0]))) (Rule [] (Var 0)),Func ("insert","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Var 0))] []

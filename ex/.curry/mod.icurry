@@ -1,8 +1,0 @@
-interface mod where {
-import Prelude;
-average
-3
-::
-Prelude.Float -> Prelude.Float -> Prelude.Float -> Prelude.Float;
-hiding data Prelude.Float
-}

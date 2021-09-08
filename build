@@ -1,0 +1,13 @@
+$! /bin/bash
+
+mkdir ~/.rice
+
+cp runtime/* ~/.rice
+
+cd src
+pakcs :l SplitPrelude :eval run :q
+cd ..
+
+cd benchmarks
+./runBenchmarks
+cd ..

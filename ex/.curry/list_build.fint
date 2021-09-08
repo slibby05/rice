@@ -1,1 +1,0 @@
-Prog "list_build" ["Prelude"] [] [Func ("list_build","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Var 0))] []

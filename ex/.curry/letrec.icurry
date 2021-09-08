@@ -1,6 +1,0 @@
-interface letrec where {
-import Prelude;
-main 0 :: [Prelude.Int];
-t 1 :: Prelude.Int -> [Prelude.Int];
-hiding data Prelude.Int
-}

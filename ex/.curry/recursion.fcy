@@ -1,1 +1,0 @@
-Prog "recursion" ["Prelude"] [] [Func ("recursion","main") 0 Public (TCons ("Prelude","[]") [TCons ("Prelude","Int") []]) (Rule [] (Let [(1,Comb ConsCall ("Prelude",":") [Lit (Intc 1),Var 1])] (Comb FuncCall ("Prelude","take") [Lit (Intc 5),Var 1])))] []

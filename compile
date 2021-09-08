@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Prelude Base" > time.out
+{ time rice -d -f -o -i PreludeBase    ; } 2> time.out | tee Prelude.out
+echo "Prelude Compare" >> time.out
+{ time rice -d -f -o -i PreludeCompare ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude Num" >> time.out
+{ time rice -d -f -o -i PreludeNum     ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude List" >> time.out
+{ time rice -d -f -o -i PreludeList    ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude String" >> time.out
+{ time rice -d -f -o -i PreludeString  ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude Read" >> time.out
+{ time rice -d -f -o -i PreludeRead    ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude Monad" >> time.out
+{ time rice -d -f -o -i PreludeMonad   ; } 2>> time.out | tee -a Prelude.out
+echo "Prelude Tuple" >> time.out
+{ time rice -d -f -o -i PreludeTuple   ; } 2>> time.out | tee -a Prelude.out

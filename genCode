@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Prelude Base"
+rice -g PreludeBase
+echo "Prelude Compare"
+rice -g PreludeCompare
+echo "Prelude Num"
+rice -g PreludeNum
+echo "Prelude List"
+rice -g PreludeList
+echo "Prelude String"
+rice -g PreludeString
+echo "Prelude Read"
+rice -g PreludeRead
+echo "Prelude Monad"
+rice -g PreludeMonad
+echo "Prelude Tuple"
+rice -g PreludeTuple

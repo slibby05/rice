@@ -1,6 +1,0 @@
-interface free_bool where {
-import Prelude;
-f 1 :: a -> [a];
-main 0 :: Prelude.Int;
-hiding data Prelude.Int
-}

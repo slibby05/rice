@@ -100,6 +100,7 @@ fillVar ds (v,e) = [INodeAssign v p (IVar x) | (x,p) <- paths e, x `elem` ds]
 
 paths :: Expr -> [(VarIndex, Path)]
 paths (Var v)       = [(v,[])]
+paths (Lit l)       = []
 paths (Or e1 e2)    = [mapSnd (0:) ps | ps <- paths e1] ++ 
                       [mapSnd (1:) ps | ps <- paths e2]
 paths (Comb _ _ es) = [mapSnd (i:) ps | (e,i) <- zip es [0..], ps <- paths e]

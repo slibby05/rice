@@ -1,0 +1,3267 @@
+\documentclass{book}
+\usepackage{amsfonts}
+\usepackage[fleqn]{amsmath}
+\usepackage{xspace}
+\usepackage[all]{xy}
+\usepackage{mdframed}
+\usepackage{qtree}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\def\N{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\DeclareMathSymbol{:}{\mathord}{operators}{"3A}
+%% ODER: format ==         = "\mathrel{==}"
+%% ODER: format /=         = "\neq "
+%
+%
+\makeatletter
+\@ifundefined{lhs2tex.lhs2tex.sty.read}%
+  {\@namedef{lhs2tex.lhs2tex.sty.read}{}%
+   \newcommand\SkipToFmtEnd{}%
+   \newcommand\EndFmtInput{}%
+   \long\def\SkipToFmtEnd#1\EndFmtInput{}%
+  }\SkipToFmtEnd
+
+\newcommand\ReadOnlyOnce[1]{\@ifundefined{#1}{\@namedef{#1}{}}\SkipToFmtEnd}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\DeclareFontFamily{OT1}{cmtex}{}
+\DeclareFontShape{OT1}{cmtex}{m}{n}
+  {<5><6><7><8>cmtex8
+   <9>cmtex9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmtex10}{}
+\DeclareFontShape{OT1}{cmtex}{m}{it}
+  {<-> ssub * cmtt/m/it}{}
+\newcommand{\texfamily}{\fontfamily{cmtex}\selectfont}
+\DeclareFontShape{OT1}{cmtt}{bx}{n}
+  {<5><6><7><8>cmtt8
+   <9>cmbtt9
+   <10><10.95><12><14.4><17.28><20.74><24.88>cmbtt10}{}
+\DeclareFontShape{OT1}{cmtex}{bx}{n}
+  {<-> ssub * cmtt/bx/n}{}
+\newcommand{\tex}[1]{\text{\texfamily#1}}	% NEU
+
+\newcommand{\Sp}{\hskip.33334em\relax}
+
+
+\newcommand{\Conid}[1]{\mathit{#1}}
+\newcommand{\Varid}[1]{\mathit{#1}}
+\newcommand{\anonymous}{\kern0.06em \vbox{\hrule\@width.5em}}
+\newcommand{\plus}{\mathbin{+\!\!\!+}}
+\newcommand{\bind}{\mathbin{>\!\!\!>\mkern-6.7mu=}}
+\newcommand{\rbind}{\mathbin{=\mkern-6.7mu<\!\!\!<}}% suggested by Neil Mitchell
+\newcommand{\sequ}{\mathbin{>\!\!\!>}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\usepackage{polytable}
+
+%mathindent has to be defined
+\@ifundefined{mathindent}%
+  {\newdimen\mathindent\mathindent\leftmargini}%
+  {}%
+
+\def\resethooks{%
+  \global\let\SaveRestoreHook\empty
+  \global\let\ColumnHook\empty}
+\newcommand*{\savecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\savecolumns[#1]}}
+\newcommand*{\restorecolumns}[1][default]%
+  {\g@addto@macro\SaveRestoreHook{\restorecolumns[#1]}}
+\newcommand*{\aligncolumn}[2]%
+  {\g@addto@macro\ColumnHook{\column{#1}{#2}}}
+
+\resethooks
+
+\newcommand{\onelinecommentchars}{\quad-{}- }
+\newcommand{\commentbeginchars}{\enskip\{-}
+\newcommand{\commentendchars}{-\}\enskip}
+
+\newcommand{\visiblecomments}{%
+  \let\onelinecomment=\onelinecommentchars
+  \let\commentbegin=\commentbeginchars
+  \let\commentend=\commentendchars}
+
+\newcommand{\invisiblecomments}{%
+  \let\onelinecomment=\empty
+  \let\commentbegin=\empty
+  \let\commentend=\empty}
+
+\visiblecomments
+
+\newlength{\blanklineskip}
+\setlength{\blanklineskip}{0.66084ex}
+
+\newcommand{\hsindent}[1]{\quad}% default is fixed indentation
+\let\hspre\empty
+\let\hspost\empty
+\newcommand{\NB}{\textbf{NB}}
+\newcommand{\Todo}[1]{$\langle$\textbf{To do:}~#1$\rangle$}
+
+\EndFmtInput
+\makeatother
+%
+%
+%
+%
+%
+%
+% This package provides two environments suitable to take the place
+% of hscode, called "plainhscode" and "arrayhscode". 
+%
+% The plain environment surrounds each code block by vertical space,
+% and it uses \abovedisplayskip and \belowdisplayskip to get spacing
+% similar to formulas. Note that if these dimensions are changed,
+% the spacing around displayed math formulas changes as well.
+% All code is indented using \leftskip.
+%
+% Changed 19.08.2004 to reflect changes in colorcode. Should work with
+% CodeGroup.sty.
+%
+\ReadOnlyOnce{polycode.fmt}%
+\makeatletter
+
+\newcommand{\hsnewpar}[1]%
+  {{\parskip=0pt\parindent=0pt\par\vskip #1\noindent}}
+
+% can be used, for instance, to redefine the code size, by setting the
+% command to \small or something alike
+\newcommand{\hscodestyle}{}
+
+% The command \sethscode can be used to switch the code formatting
+% behaviour by mapping the hscode environment in the subst directive
+% to a new LaTeX environment.
+
+\newcommand{\sethscode}[1]%
+  {\expandafter\let\expandafter\hscode\csname #1\endcsname
+   \expandafter\let\expandafter\endhscode\csname end#1\endcsname}
+
+% "compatibility" mode restores the non-polycode.fmt layout.
+
+\newenvironment{compathscode}%
+  {\par\noindent
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed\)%
+   \par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\compaths}{\sethscode{compathscode}}
+
+% "plain" mode is the proposed default.
+% It should now work with \centering.
+% This required some changes. The old version
+% is still available for reference as oldplainhscode.
+
+\newenvironment{plainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\hspre\(\let\hspost\)%
+   \pboxed}%
+  {\endpboxed%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newenvironment{oldplainhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+% Here, we make plainhscode the default environment.
+
+\newcommand{\plainhs}{\sethscode{plainhscode}}
+\newcommand{\oldplainhs}{\sethscode{oldplainhscode}}
+\plainhs
+
+% The arrayhscode is like plain, but makes use of polytable's
+% parray environment which disallows page breaks in code blocks.
+
+\newenvironment{arrayhscode}%
+  {\hsnewpar\abovedisplayskip
+   \advance\leftskip\mathindent
+   \hscodestyle
+   \let\\=\@normalcr
+   \(\parray}%
+  {\endparray\)%
+   \hsnewpar\belowdisplayskip
+   \ignorespacesafterend}
+
+\newcommand{\arrayhs}{\sethscode{arrayhscode}}
+
+% The mathhscode environment also makes use of polytable's parray 
+% environment. It is supposed to be used only inside math mode 
+% (I used it to typeset the type rules in my thesis).
+
+\newenvironment{mathhscode}%
+  {\parray}{\endparray}
+
+\newcommand{\mathhs}{\sethscode{mathhscode}}
+
+% texths is similar to mathhs, but works in text mode.
+
+\newenvironment{texthscode}%
+  {\(\parray}{\endparray\)}
+
+\newcommand{\texths}{\sethscode{texthscode}}
+
+% The framed environment places code in a framed box.
+
+\def\codeframewidth{\arrayrulewidth}
+\RequirePackage{calc}
+
+\newenvironment{framedhscode}%
+  {\parskip=\abovedisplayskip\par\noindent
+   \hscodestyle
+   \arrayrulewidth=\codeframewidth
+   \tabular{@{}|p{\linewidth-2\arraycolsep-2\arrayrulewidth-2pt}|@{}}%
+   \hline\framedhslinecorrect\\{-1.5ex}%
+   \let\endoflinesave=\\
+   \let\\=\@normalcr
+   \(\pboxed}%
+  {\endpboxed\)%
+   \framedhslinecorrect\endoflinesave{.5ex}\hline
+   \endtabular
+   \parskip=\belowdisplayskip\par\noindent
+   \ignorespacesafterend}
+
+\newcommand{\framedhslinecorrect}[2]%
+  {#1[#2]}
+
+\newcommand{\framedhs}{\sethscode{framedhscode}}
+
+% The inlinehscode environment is an experimental environment
+% that can be used to typeset displayed code inline.
+
+\newenvironment{inlinehscode}%
+  {\(\def\column##1##2{}%
+   \let\>\undefined\let\<\undefined\let\\\undefined
+   \newcommand\>[1][]{}\newcommand\<[1][]{}\newcommand\\[1][]{}%
+   \def\fromto##1##2##3{##3}%
+   \def\nextline{}}{\) }%
+
+\newcommand{\inlinehs}{\sethscode{inlinehscode}}
+
+% The joincode environment is a separate environment that
+% can be used to surround and thereby connect multiple code
+% blocks.
+
+\newenvironment{joincode}%
+  {\let\orighscode=\hscode
+   \let\origendhscode=\endhscode
+   \def\endhscode{\def\hscode{\endgroup\def\@currenvir{hscode}\\}\begingroup}
+   %\let\SaveRestoreHook=\empty
+   %\let\ColumnHook=\empty
+   %\let\resethooks=\empty
+   \orighscode\def\hscode{\endgroup\def\@currenvir{hscode}}}%
+  {\origendhscode
+   \global\let\hscode=\orighscode
+   \global\let\endhscode=\origendhscode}%
+
+\makeatother
+\EndFmtInput
+%
+
+\title{Making Curry with Rice \\
+       \large{An Optimizing Curry Compiler}}
+\author{Steven Libby}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Mathematical Background}
+
+
+When cooking, it is very important to follow the rules.
+You don't need to stick to an exact recipe, 
+but you do need to know the how ingredients will react to temperature
+and how different combinations will taste.
+Otherwise you might get some unexpected reactions.
+
+Similarly, there isn't a single way to compile Curry programs,
+however we do need to know the rules of the game.
+Throughout this compiler, we'll be transforming Curry programs
+in many different ways, and it's important to make sure that all
+of these transformations respect the rules of Curry.
+As we'll see, if we break these rules, 
+then we may get some unexpected results.
+
+\section{Rewriting}
+In programing language terms, the rules of Curry are its semantics.
+The semantics of Curry are generally given in terms of rewriting.
+\cite{IntegrationFunLog, FunLog, Needed}
+While there are other semantics \cite{currySemantics, crwl, monadSemantics}, 
+rewriting is a good fit for Curry.
+We'll give a definition of rewrite systems,
+then we'll look at two distinct types of rewrite systems:
+Term Rewrite Systems, which are used to implement transformations and optimizations
+on the Curry syntax trees;
+and Graph Rewrite Systems, which define the operational semantics for Curry programs.
+This mathematical foundation will help us justify the correctness of our transformations
+even in the presence of laziness, non-determinism, and free variables.
+
+An Abstract Rewrite System (ARS) is a set $A$ along with a relation $\to$.
+We write $a \to b$ instead of $(a,b) \in \to$, and we have several modifiers on our relation.
+\begin{itemize}
+    \item $a \to^n b$ iff $a = x_0 \to x_1 \to \ldots x_n = b$.
+    \item $a \to^{\le n} b$ iff $a \to^i b$ and $i \leq n$.
+    \item reflexive closure: $a \to^= b$ iff $a = b$ or $a \to b$.
+    \item symmetric closure: $a \leftrightarrow b$ iff $a \to b$ or $b \to a$.
+    \item transitive closure: $a \to^+ b$ iff $\exists n\in \N. a \to^n b$.
+    \item reflexive transitive closure: $a \to^* b$ iff $a \to^= b$ or $a \to^+ b$.
+    \item rewrite derivation: a sequence of rewrite steps $a_0 \to a_1 \to \ldots a_n$.
+    \item $a$ is in \textit{normal form} if no rewrite rules can apply.
+\end{itemize}
+
+A rewrite system is meant to invoke the feeling of algebra.
+In fact, rewrite system are much more general, but they can still retain the feeling.
+If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in figure \ref{fig:reduce}.
+
+\begin{figure}
+\begin{tabular}{rll}
+          & $(x\cdot x + 1)(2 + x)$                          & \\
+    $\to$ & $(x\cdot x + 1)(x + 2)$                          & by commutativity of addition \\
+    $\to$ & $(x^2 + 1)(x + 2)$                               & by definition of $x^2$\\
+    $\to$ & $x^2\cdot x + 2\cdot x^2 + 1\cdot x + 1 \cdot 2$ & by FOIL\\
+    $\to$ & $x^2\cdot x + 2x^2 + x + 2$                      & by identity of multiplication\\ 
+    $\to$ & $x^3 + 2x^2 + x + 2$                             & by definition of $x^3$\\
+\end{tabular}\\
+    \caption{reducing $(x\cdot x + 1)(2 + x)$ using the standard rules of algebra}
+    \label{fig:reduce}
+\end{figure}
+
+We can conclude that $(x\cdot x + 1)(x + 2) \to^+ x^3 + 2x^2 + x + 2$.
+This idea of rewriting invokes the feel of algebraic rules.
+The mechanical process of rewriting allows for a straightforward implementation on a computer.
+Therefore, it shouldn't be surprising that most systems
+have a straightforward translation to rewrite systems.
+
+It's worth understanding the properties and limitations of these rewrite systems.
+Traditionally there are two important questions to answer about any rewrite system.
+Is it \textit{confluent}? Is it \textit{terminating}?
+
+A confluent system is a system where the order of the rewrites doesn't change the final result.
+For example, consider the distributive rule.
+When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.
+Both of these reductions arrived at the same answer as can be seen in figure \ref{fig:confluent}.
+
+\begin{figure}[h]
+  \begin{subfigure}{.5\textwidth}
+      \centering
+    \fbox{
+      \begin{tabular}{rl}
+              & $3\cdot(4 + 5)$       \\
+        $\to$ & $3\cdot 4 + 3\cdot 5$ \\
+        $\to$ & $12 + 15$             \\
+        $\to$ & $27$                  \\
+      \end{tabular}
+    }
+      \caption{distributing first}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+      \centering
+    \fbox{
+      \begin{tabular}{rl}
+              & $3\cdot(4 + 5)$       \\
+        $\to$ & $3\cdot 9$            \\
+        $\to$ & $27$                  \\
+      \end{tabular}
+    }
+      \caption{reducing $4 + 5$ first}
+  \end{subfigure}
+    \caption{Two possible reductions of $3\cdot(4 + 5)$.  
+             Because they both can rewrite to 27, this is a confluent system.}
+    \label{fig:confluent}
+\end{figure}
+
+A terminating system will always halt.
+That means that eventually there are no rules that can be applied.
+Distributivity is terminating, whereas commutativity is not terminating.  See figure \ref{fig:terminate}.
+
+\begin{figure}[h]
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \fbox{
+      \begin{tabular}{rl}
+              & $a\cdot (b + c)$\\
+        $\to$ & $a\cdot b + a\cdot c$ \\
+      \end{tabular}
+    }
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \fbox{
+      \begin{tabular}{rl}
+              & $x + y$\\
+        $\to$ & $y + x$\\
+        $\to$ & $x + y$\\
+        $\ldots$      & \\
+      \end{tabular}
+    }
+  \end{subfigure}
+    \caption{A system with a single rule for distribution is terminating,
+             but any system with a commutative rule is not.
+             Note that $x + y \to^2 x + y$}
+    \label{fig:terminate}
+\end{figure}
+
+Confluence and termination are important topics in rewriting, but we will largely ignore them.
+After all, Curry is neither confluent nor terminating.
+However, there will be a few cases where these concepts will be important.
+For example, if our optimizer isn't terminating, then we'll never actually compile a program.
+
+Now that we have a general notation for rewriting, we can introduce two important rewriting frameworks:
+term rewriting and graph rewriting, where we are transforming trees and graphs respectively.
+
+% possibly add more about proving confluence and termination if I need it.
+
+\section{Term Rewriting}
+
+As mentioned previously, the purpose of term rewriting is to transform trees.
+This will be useful in optimizing the Abstract Syntax Trees (ASTs) of Curry programs.
+Term rewriting is a special case of abstract rewriting.
+Therefore everything from abstract rewriting will apply to term rewriting.
+
+A term is made up of signatures and variables.
+We let $\Sigma$ and $V$ be two arbitrary alphabets, 
+but we require that $V$ be countably infinite, and $\Sigma \cap V = \emptyset$ to avoid name conflicts.
+A \textit{signature} $f^{(n)}$ consists of a name $f \in \Sigma$ and an arity $n\in \mathbb{N}$.
+A \textit{variable} $v\in V$ is just a name.
+Finally a \textit{term} is defined inductively.
+The term $t$ is either a variable $v$, or it's a signature $f^{(n)}$ with children $t_1,t_2, \ldots t_n$,
+where $t_1,t_2, \ldots t_n$ are all terms.
+We write the set of terms all as $T(\Sigma,V)$.
+
+If $t \in T(\Sigma,V)$ then we write $Var(t)$ to denote the set of variables in $t$.
+By definition $Var(t) \subseteq V$.
+We say that a term is linear if no variable appears twice in the term.
+
+This inductive definition gives us a tree structure for terms.
+As an example consider Peano arithmetic $\Sigma = \{+^2, *^2, -^2, <^2, 0^0, S^1, \top^0, \bot^0\}$.
+We can define the term $*(+(0, S(0)), +(S(0), 0))$.
+This gives us the tree in figure \ref{fig:tree}.
+Every term can be converted into a tree like this and vice versa.
+The symbol at the top of the tree is called the root of the term.
+
+
+\begin{figure}[h]
+    \Tree[.$*$ [.$+$ $0$ [.$S$ $0$ ] ] [.$+$ [.$S$ $0$ ] $0$ ] ]\\
+    \label{fig:tree}
+    \caption{Tree representation of the term $*(+(0, S(0)), +(S(0), 0))$.}
+\end{figure}
+
+A \textit{child} $c$ of term $t = f(t_1, t_2, \ldots t_n)$ is one of $t_1, t_2, \ldots t_n$.
+A \textit{subterm} $s$ of $t$ is either $t$ itself, or it is a subterm of a child of $t$.
+We write $s = t\vert_{[i_1,i_2,\ldots i_n]}$ to denote that 
+$t$ has child $t_{i_1}$ which has child $t_{i_2}$ and so on until $t_{i_n} = s$.
+Note that we can define this recursively as
+$t\vert_{[i_1,i_2,\ldots i_n]} = t_{i_1}\vert_{[i_2,\ldots i_n]}$, which matches our definition for subterm.
+We call $[i_1,i_2,\ldots i_n]$ the \textit{path} from $t$ to $s$.
+We write $\epsilon$ for the empty path,
+and $i:p$ for the path starting with the number $i$ and followed by the path $p$,
+and $p\cdot q$ for concatenation of paths $p$ and $q$.
+
+In our previous term $S(0)$ is a subterm in two different places.
+One occurrence is at path $[0,1]$, and the other is at path $[1,0]$.
+
+We write $t[p \leftarrow r]$ to denote replacing subterm $t\vert_p$ with $r$.
+Algorithmically we can define this as in figure \ref{fig:subterm}
+
+\begin{figure}[h]
+    $t[\epsilon \leftarrow r] = r$\\
+    $f(t_1,\ldots t_i,\ldots t_n)[i:p \leftarrow r] = f(t_1,\ldots t_i[p\leftarrow r],\ldots t_n) $\\
+    \label{fig:subterm}
+    \caption{algorithm for finding a subterm of $t$.}
+\end{figure}
+
+In our above example $t =*(+(0, S(0), +(S(0), 0)))$,
+We can compute the rewrite  $t[[0,1] \leftarrow *(S(0),S(0))]$, and we get the term
+$*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
+
+\begin{figure}[h]
+    \begin{center}
+    \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
+        \Tree[.$*$ [.$+$ $0$ [.$S$ $0$ ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$*$ [.$+$ $0$ [.$*$ [.$S$ $0$ ] [.$S$ $0$ ] ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] \\
+    \end{tabular}
+    \end{center}
+    \label{fig:subtree}
+    \caption{The result of the computation $t[[0,1] \leftarrow S(0)]$}
+\end{figure}
+
+A substitution replaces variables with terms.
+Formally, a \textit{substitution} is a mapping from $\sigma : V \to T(\Sigma,V)$.
+We write $\sigma = \{v_1 \mapsto t_1, \ldots v_n \mapsto t_n\}$ to denote the substitution
+where $s(v_i) = t_i$ for $i \in \{1\ldots n\}$, and $s(v) = v$ otherwise.
+We can uniquely extend $\sigma$ to a function on terms by figure \ref{fig:substitute}
+
+\begin{figure}[h]
+    $\sigma'(v) = \sigma(v)$\\
+    $\sigma'(f(t_1,\ldots t_n) = f(\sigma'(t_1) \ldots \sigma'(t_n))$\\
+    \caption{Algorithm for applying a substitution.}
+    \label{fig:substitute}
+\end{figure}
+
+Since this extension is unique, we will just write $\sigma$ instead of $\sigma'$.
+Term $t_1$ \textit{matches} term $t_2$
+if there exists some substitution $\sigma$ such that $t_1 = \sigma(t_2)$,
+Two terms $t_1$ and $t_2$ \textit{unify}
+if there exists some substitution $\sigma$ such that $\sigma(t_1) = \sigma(t_2)$.
+In this case $\sigma$ is called a \textit{unifier} for $t_1$ and $t_2$.
+
+We can order substitutions based on what variables they define.
+A substitution $\sigma \leq \tau$, iff,
+there is some substitution $\nu$ such that $\tau = \nu \circ \sigma$.
+The relation $\sigma \leq \tau$ should be read as $\sigma$ is more general than $\tau$,
+and it is a quasi-order on the set of substitutions.
+A unifier $u$ for two terms is \textit{most general} (or an mgu), iff, for all unifiers $v$, $v \le u$.
+Mgu's are unique up to renaming of variables.
+That is, if $u_1$ and $u_2$ are mgu's for two terms, then $u_1 = \sigma_1 \circ u_2$
+and $u_2 = \sigma_2 \circ u_1$.
+This can only happen if $\sigma_1$ and $\sigma_2$ just rename the variables in their terms.
+
+As an example $+(x,y)$ matches $+(0, S(0))$ with $\sigma = \{x \mapsto 0, y \mapsto S(0)\}$.
+The term $+(x, S(0))$ unifies with term $+(0, y)$ with unifier
+$\sigma = \{x \mapsto 0, y \mapsto S(0)\}$.
+If $\tau = \{x \mapsto 0, y \mapsto S(z)\}$, then $\tau \le \sigma$.  We can define $\nu = \{z \mapsto 0\}$,
+and $\{\sigma = \nu \circ \tau\}$
+
+Now that we have a definition for a term, we need to be able to rewrite it.
+A rewrite rule $l \to r$ is a pair of terms.
+However this time we require that $Var(r) \subseteq Var(l)$, and that $l \not \in V$.
+A Term Rewrite System (TRS) is the pair $(T(\Sigma,V),R)$ where $R$ is a set of rewrite rules.
+
+
+\theoremstyle{definition}
+\begin{definition}{Rewriting:}
+Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ rewrites to $s$ if, 
+$l$ matches $t\vert_p$ with matcher $\sigma$, and $t[p \leftarrow \sigma(r)] = s$.
+The term $\sigma(l)$ is the \textit{redex}, and the term $\sigma(r)$ is the \textit{contractum}
+of the rewrite.
+\end{definition}
+
+There are a few important properties of rewrite rules $l \to r$.
+A rule is left (right) linear if $l$($r$) is linear.
+A rule is collapsing if $r \in V$.
+A rule is duplicating if there is an $x \in V$ that occurs more often in $r$ than in $l$.
+
+Two terms $s$ and $t$ are \textit{overlapping} if $t$ unifies with a subterm of $s$,
+or $s$ unifies with a subterm of $t$ at a non-variable position.
+Two rules $l_1 \to r_1$ and $l_2 \to r_2$ if $l_1$ and $l_2$ overlap.
+A rewrite system is overlapping if any two rules overlap.  Otherwise it's non-overlapping.
+Any non-overlapping left linear system is \textit{orthogonal}.
+It is well known that all orthogonal TRS's are confluent. \cite{AdvancedTRS}\\
+
+As an example, in figure \ref{fig:overlap} examples (b) and (c) both overlap.
+It's clear that these systems aren't confluent,
+but non-confluence can arise in more subtle ways.
+The converse to theorem \ref{thm:orthogonal} isn't true. There can be overlapping systems which are confluent.
+
+\begin{figure}[h]
+    \begin{subfigure}{.29\textwidth}
+    \fbox{
+    \begin{tabular}{c}
+    $g(0,y) \to 0$\\
+    $g(1,y) \to 1$\\
+    \end{tabular}
+    }
+    \caption{A non-overlapping system}
+    \end{subfigure}
+    \begin{subfigure}{.29\textwidth}
+    \fbox{
+    \begin{tabular}{c}
+    $g(0,y) \to 0$\\
+    $g(x,1) \to 1$\\
+    \end{tabular}
+    }
+    \caption{A system that overlaps at the root}
+    \end{subfigure}
+    \begin{subfigure}{.29\textwidth}
+    \fbox{
+    \begin{tabular}{c}
+    $f(g(x,y)) \to 0$\\
+    $g(x,y)    \to 1$\\
+    \end{tabular}
+    }
+    \caption{A system that overlaps at a subterm}
+    \end{subfigure}
+    \label{fig:overlap}
+    \caption{Three TRSs demonstrating how rules can overlap.
+            In (a) they don't overlap at all,
+            In (b) both rules overlap at the root,
+            and in (c) rule 2 overlaps with a subterm of rule 1.}
+    \label{fig:overlap}
+\end{figure}
+
+When defining rewrite systems we usually follow the constructor discipline;
+we separate the set $\Sigma = C \uplus F$.
+$C$ is the set of \textit{constructors},
+and $F$ is the set of \textit{function symbols}.
+Furthermore, for every rule $l \to r$, the root of $l$ is a function symbol, 
+and every other symbol is a constructor or variable.
+We call such systems \textit{constructor systems}.
+As an example, the rewrite system for Peano arithmetic is a constructor system.
+
+\begin{figure}[h]
+    \begin{tabular}{lclcl}
+        $R_1$ &    : & $0    + y$      & $\to$ & $y$       \\
+        $R_2$ &    : & $S(x) + y$      & $\to$ & $S(x+y)$  \\
+        $R_3$ &    : & $0    * y$      & $\to$ & $0$       \\
+        $R_4$ &    : & $S(x) * y$      & $\to$ & $y+(x*y)$ \\
+        $R_5$ &    : & $0    - y$      & $\to$ & $0$       \\
+        $R_6$ &    : & $S(x) - 0$      & $\to$ & $S(x)$    \\
+        $R_7$ &    : & $S(x) - S(y)$   & $\to$ & $x - y$   \\
+        $R_8$ &    : & $0    \le y$    & $\to$ & $\top$    \\
+        $R_9$ &    : & $S(x) \le 0$    & $\to$ & $\bot$    \\
+        $R_{10}$ & : & $S(x) \le S(y)$ & $\to$ & $x < y$   \\
+        $R_{11}$ & : & $0    = 0   $   & $\to$ & $\top$    \\
+        $R_{12}$ & : & $S(x) = 0   $   & $\to$ & $\bot$    \\
+        $R_{13}$ & : & $0    = S(y)$   & $\to$ & $\bot$    \\
+        $R_{14}$ & : & $S(x) = S(y)$   & $\to$ & $x = y$   \\
+    \end{tabular}
+    \caption{The rewrite rules for Peano Arithmetic with addition, multiplicaton,
+             subtraction, and comparison.  All operators use infix notation.}
+    \label{fig:peano}
+\end{figure}
+
+The two sets are $C = \{0, S, \top, \bot\}$ and $F = \{+,*,-,\le\}$,
+and the root of the left hand side of each rule is a function symbol.
+In contrast, the SKI system is not a constructor system.
+While $S,K,I$ can all be constructors, the $Ap$ symbol appears in both root
+and non-root positions of the left hand side of rules.
+This example will become important for us in Curry.
+W e will do something similar to implement higher order functions.
+This means that Curry programs won't directly follow the constructor discipline.
+Therefore, we must be careful when specifying the semantics of function application.
+
+\begin{figure}[h]
+    \begin{tabular}{lcl}
+        $Ap(I,x)$             & $\to$ & $x$\\
+        $Ap(Ap(K,x),y)$       & $\to$ & $x$\\
+        $Ap(Ap(Ap(S,x),y),z)$ & $\to$ & $Ap(Ap(x,z),Ap(y,z))x$\\
+    \end{tabular}
+    \caption{The SKI system from combinatorial logic.}
+    \label{fig:SKI}
+\end{figure}
+
+
+Constructor systems have several nice properties.
+They are usually easy to analyze for confluence and termination.
+For example, if the left hand side of two rules don't unify, then they cannot overlap.
+We don't need to check if subterms overlap.
+Furthermore, any term that consists entirely of constructors and variables is in normal form.
+For this reason, it's not surprising that most functional languages are based on constructor systems.
+
+Finally, we can introduce conditions to rewriting systems.
+We introduce a new symbol $\top$ to the rewrite system's alphabet $\Sigma$.
+A conditional rewrite rule is a rule $l \vert c \to r$ where $l,c,$ and $r$ are terms.
+A term $t$ conditionally rewrites to $s$ with rule $l \vert c \to r$ if
+there exists a path $p$ and substitution $\sigma$ such that 
+$t_p = \sigma(l)$, $\sigma(c) \to^* \top$, and $s = \sigma(r)$.
+
+The idea is actually a pretty simple extension.
+In order to rewrite a term, we must satisfy a condition.
+If the condition is true, then the rule is applied.
+In order to simplify the semantics of this system,
+we determine if a condition is true by rewriting it to the value $\top$.
+Figure \ref{fig:gcd} gives an example of a conditional rewrite system for computing
+greatest common divisor.  It uses the rule defined in \ref{fig:peano}.
+
+\begin{figure}
+    \begin{tabular}{lllcl}
+        $gcd(x,x)$ &         &           & $\to$ & $x$ \\
+        $gcd(x,y)$ & $\vert$ & $y \le x$ & $\to$ & $gcd(x-y,y)$ \\
+        $gcd(x,y)$ & $\vert$ & $x \le y$ & $\to$ & $gcd(x,y-x)$ \\
+    \end{tabular}
+    \caption{Conditional rewrite system for computing greatest common divisor.}
+    \label{fig:gcd}
+\end{figure}
+
+While most treatments of conditional rewriting \cite{IntegrationFunLog,condKaplan}
+define a condition as a pair $s = t$ where $s$ and $t$ mutually rewrite to each other,
+We chose this definition because it's closer to the definition of Curry,
+where the condition must reduce to the boolean value \texttt{True} for the rule to apply.
+
+Curry uses conditional rewriting extensively,
+and efficiently evaluating conditional rewrite systems 
+is the core problem in most functional logic languages.
+The solution to this problem comes from the theory of narrowing.
+
+
+\section{Narrowing}
+
+Narrowing was originally developed to solve the problem of semantic unification.
+The goal was, given a set of equations $E = \{a_1 = b_2, a_2 = b_2, \ldots a_n = b_n\}$ 
+how do you solve the $t_1 = t_2$ for arbitrary terms $t_1$ and $t_2$.
+Here a solution to $t_1 = t_2$ is a substitution $\sigma$ such that $\sigma(t_1)$
+can be transformed into $\sigma(t_2)$ by the equations in $E$.
+
+As an example let $E = \{*(x +(y, z)) = +(*(x,y), *(x,z))\}$
+Then the equation $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$
+is solved by $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.
+The derivation is in figure \ref{fig:narrow}.
+
+\begin{figure}[h]
+\begin{tabular}{ll}
+    $\sigma(*(1,+(x,3)))$                & = \\
+    $*(1,+(+(4,5),3))$                   & = \\
+    $+(*(1,+(4,5)),*(1,3))$              & = \\
+    $+(+(*(1,4),*(1,5)),*(1,3))$         & = \\
+    $\sigma(+(+(*(1,4),*(y,5)),*(z,3)))$ &
+\end{tabular}
+    \caption{Derivation of $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$ with
+    $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.}
+    \label{fig:narrow}
+\end{figure}
+
+Unsurprisingly, there is a lot of overlap with rewriting.
+One of the earlier solutions to this problem was to convert 
+the equations into a confluent, terminating rewrite system. \cite{KnuthBendix}
+Unfortunately, this only works for ground terms, that is, terms without variables.
+However, this idea still has merit.
+So we want to extend it to terms with variables.
+
+Before, when we rewrote a term $t$ with rule $l \to r$, we assumed it was a ground term,
+then we could find a substitution $\sigma$ that would match a subterm $t\vert_p$ with $l$,
+so that $\sigma(l) = t\vert_p$.
+To extend this idea to terms with variables in them, 
+we look for a unifier $\sigma$ that unifies $t\vert_p$ with $l$.
+This is really the only change we need to make.
+However, now we record $\sigma$, because it is part of our solution.
+
+\theoremstyle{definition}
+\begin{definition}{Narrowing:}
+Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ narrows to $s$ if, 
+$l$ unifies with $t\vert_p$ with unifier $\sigma$, and $t[p \leftarrow \sigma(r)] = s$.
+We write $t \rightsquigarrow_{p,l\to r,\sigma} s$.
+We may write $t \rightsquigarrow_\sigma s$ if $p$ and $l \to r$ are clear.
+\end{definition}
+
+Notice that this is almost identical to the definition of rewriting.
+The only difference is that $\sigma$ is a unifier instead of a matcher.
+
+Narrowing gives us a way to solve equations with a rewrite system,
+but for our purposes it's more important that narrowing allows us to
+rewrite terms with free variables.
+
+At this point, rewrite systems are a nice curiosity,
+but they are completely impractical. 
+This is because we don't have a plan for solving them.
+In the definition for both rewriting and narrowing,
+we did not specify how to find $\sigma$ the correct rule to apply, or even
+what subterm to apply the rule.
+
+In confluent terminating systems, we could simply try every possible rule
+at every possible position with every possible substitution.
+Since the system is confluent, we could choose the first rule that could be successfully applied,
+and since the system is terminating, we'd be sure to finish.
+This is the best possible case for rewrite systems, 
+and even this is still terribly inefficient.
+We need a systematic method for deciding what rule should be applied,
+what subterm to apply it to,
+and what substitution to use.
+This is the role of a strategy.
+
+\section{Rewriting Strategies}
+
+Our goal with a rewriting strategy is to find a normal form for a term.
+Similarly our goal for narrowing will be to find a normal form and substitution.
+However, we want to be efficient when rewriting.
+We would like to use only local information when deciding what rule to select.
+We would also like to avoid unnecessary rewrites.
+Consider the following term from the SKI system defined in figure \ref{fig:SKI}
+$Ap(Ap(K, I), Ap(Ap(S,Ap(I,I)),Ap(S,Ap(I,I))))$.
+It would be pointless to reduce $Ap(Ap(S,Ap(I,I)),Ap(S,Ap(I,I))))$ since $Ap(Ap(K,I,z)$ rewrites to $I$
+no matter what $z$ is.
+
+A \textit{Rewriting Strategy} $\mathcal{S} : T(\Sigma, V) \to Pos$ is a function from terms to positions,
+such that for any term $t$, $\mathcal{S}(t)$ is a redex.
+The idea is that $S(t)$ should give us a position to rewrite, and we find the rule that matches $S(t)$.
+
+For orthogonal rewriting systems, there are two common rewriting strategies,
+innermost and outermost rewriting.
+Innermost rewriting corresponds to eager evaluation in functional programming.
+We rewrite the term that matches a rule that is the furthest down the tree.
+Outermost strategies correspond roughly to lazy evaluation.
+We rewrite the highest possible term that matches a rewrite rule.
+
+A strategy is normalizing if a term $t$ has a normal form, then the strategy will eventually find it.
+While outermost rewriting isn't normalizing in general, it is for a large subclass of orthogonal rewrite systems.
+This matches the intuition from programming languages.
+Lazy languages can perform computations that would loop forever with an eager language.
+
+While both of these strategies are well understood, we can actually make a stronger guarantee.
+We want to reduce only the redexes that are necessary to find a normal form.
+To formalize this we need to understand what can happen as a term is rewritten.
+Specifically for a redex $s$ that is a subterm of $t$, how can $s$ change as $t$ is being rewritten.
+If we're rewriting at position $p$ with rule $l \to r$, then there are 3 cases to consider.\\
+Case 1: we are rewriting $s$ itself.  That is, $s$ is the subterm $t\vert_p$.
+Then $s$ disappears entirely.\\
+Case 2: $s$ is either above $t\vert_p$, or they are completely disjoint.
+In this case $s$ doesn't change.\\
+Case 3: $s$ is a subterm of $t\vert_p$.
+In this case $s$ may be duplicated, or erased, moved, or left unchanged.
+It depends on whether the rule is duplicating, erasing, or right linear.\\
+These cases can be seen in figure \ref{fig:descendant}
+We can formalize this with the notion of descendants with the following definition.
+
+
+\begin{figure}
+  \begin{subfigure}{.6\textwidth}
+    \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
+        \Tree[.$S$ [.\fbox{$+$} [.$S$ $0$ ] [.$+$ [.$S$ $0$ ] $0$ ] ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$S$ [.\fbox{$+$} [.$S$ $0$ ] [.$S$ [.$+$ $0$ $0$ ] ] ] ] \\
+    \end{tabular}
+    \caption{rewrite $R_1$ at position $[0,1]$ doesn't affect $t\vert_{[0]}$.}
+  \end{subfigure}
+  \begin{subfigure}{.4\textwidth}
+    \begin{tabular}{>{\centering\arraybackslash}m{1.5cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{1.5cm}} 
+        \Tree[.$*$ [.\fbox{.$+$} $0$ $0$ ] [.$*$ $0$ $0$ ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$*$ [.\fbox{.$+$} $0$ $0$ ] $0$ ] \\
+    \end{tabular}
+    \caption{rewrite $R_4$ at position $[1]$ doesn't affect $t\vert_{[0]}$.}
+  \end{subfigure}
+  \begin{subfigure}{.6\textwidth}
+    \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
+        \Tree[.$S$ [.$*$ [.$S$ $0$ ] [.\fbox{$+$} $0$ $0$ ] ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$S$ [.$+$ [.\fbox{$+$} $0$ $0$ ] [.$*$ $0$ [.\fbox{$+$} $0$ $0$ ] ] ] ] \\
+    \end{tabular}
+    \caption{rewrite $R_3$ at position $[0]$ duplicates $t\vert_[0,1]$.}
+  \end{subfigure}
+  \begin{subfigure}{.4\textwidth}
+    \begin{tabular}{>{\centering\arraybackslash}m{1.5cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{1cm}} 
+        \Tree[.$S$ [.$-$ $0$ [.\fbox{$+$} $0$ $0$ ] ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$S$ $0$ ] \\
+    \end{tabular}
+    \caption{rewrite $R_5$ at position $[0]$ erases term at $t\vert_[0,1]$.}
+  \end{subfigure}
+  \begin{subfigure}{.5\textwidth}
+    \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{1cm}} 
+        \Tree[.$S$ [.$+$ [$S$ $0$ ] .\fbox{$0$} ] ] &
+        {\huge $\Rightarrow$} &
+        \Tree[.$S$ [.$S$ [.$+$ $0$ .\fbox{$0$} ] ] ] \\
+    \end{tabular}
+    \caption{rewrite $R_2$ at position $[0]$ moves $t\vert_[0,1]$ to position $[0,0,1]$.}
+  \end{subfigure}
+    \caption{four cases for the descendants for a term after a single rewrite.
+    The boxed term is either left alone, duplicated, or erased, or moved.}
+    \label{fig:descendant}
+\end{figure}
+
+
+\theoremstyle{definition}
+\begin{definition}{Descendant:}
+    Let $s = t\vert_v$, and $A = l \rightarrow_{p,\sigma,R} r$ be a rewrite step in $t$.
+    The set of descendants of $s$ is given by $Des(s,A)$\\
+    $$
+    Des(s,A) = 
+    \begin{cases}
+        \emptyset & \text{if}\ v = u \\
+        \{s\}     & \text{if}\ p \not \leq v \\
+        \{t\vert_{u\cdot w\cdot q}\ :\ r\vert_w = x \}
+                  & \text{if}\ p = u\cdot v \cdot q\ \text{and}\ t\vert_v = x\ \text{and}\ x\in V
+    \end{cases}
+    $$\\
+    This definition extends to derivation $t \to_{A_1} t_1 \to_{A_2} t_2 \to_{A_2} \ldots \to_{A_n}, t_{n+1}$.
+    $Des(s,A_1,A_2\ldots A_n) = \bigcup_{s' \in Des(s,A_1)} Des(s', A_2,\ldots A_n)$.
+\end{definition}
+
+The first part of the definition is formalizing the notion of descendant.
+The second part is extending it to a rewrite derivation.
+The extension is straightforward. Calculate the descendants for the first rewrite,
+then for each descendant, calculate the descendants for the rest of the rewrites.
+With the idea of a descendant, we can talk about what happens to a term in the future.
+This is necessary to describing our rewriting strategy.
+Now we can formally define what it means for a redex to be necessary for computing
+a normal form.
+
+\theoremstyle{definition}
+\begin{definition}{Needed:}
+    A redex $s \le t$ is \textit{needed} if, for every derivation of $t$ to a normal form,
+    a descendant of $s$ is the root of a rewrite.
+\end{definition}
+
+This definition is good because it's immediately clear that, if we're going
+to rewrite a term to normal form, we need to rewrite all of the needed redexes.
+In fact, we can guarantee more than that with the following theorem.
+
+\begin{theorem}
+    For an orthogonal TRS, any term that is not in normal form contains a needed redex.
+    Furthermore, a rewrite strategy that rewrites only needed redexes is normalizing.
+\end{theorem}
+
+This is a very powerful result.
+We can compute normal forms by rewriting needed redexes.
+This is also, in some sense, the best possible strategy.
+Every needed redex needs to be rewritten.
+Now we just need to make sure our strategy only rewrites needed redexes.
+There's only one problem with this plan.
+Determining if a redex is needed is undecidable in general.
+However, with some restrictions, there are rewrite systems where this is possible.
+
+\theoremstyle{definition}
+\begin{definition}{Sequential}
+    A rewrite system is \textit{sequential} if, given a term $t$ with $n$ variables $v_1,v_2\ldots v_n$,
+    such that $t$ is in normal form,
+    then there is an $i$ such that for every substitution $\sigma$, $\sigma(v_i)$ is needed in $\sigma(t)$.
+\end{definition}
+
+If we have a sequential rewrite system,
+then this leads to an efficient algorithm for reducing terms to normal form.
+Unfortunately, sequential is also an undecidable property.
+There is still hope.
+As we'll see in the next section,
+with certain restrictions we can ensure the our rewrite systems are sequential.
+Actually we can make a stronger guarantee.
+The rewrite system will admit a narrowing strategy that only narrows needed subterms.
+
+\section{Narrowing Strategies}
+
+Similar to rewriting strategies, narrowing strategies attempt to compute a normal form
+for a term using narrowing steps.
+However, a narrowing strategy must also compute a substitution for that term.
+There have been many narrowing strategies including basic \cite{basicNarrowing},
+innermost \cite{slog}, outermost \cite{outerNarrowing},
+standard \cite{standardNarrowing}, and lazy \cite{lazyNarrowing}.
+Unfortunately, each of these strategies are too restrictive on the rewrite systems they allow.
+
+
+\begin{figure}[h]
+  \begin{subfigure}{.45\textwidth}
+      $(x + x) + x = 0$
+    \caption{This fails for eager narrowing, because evaluating $x + x$ can produce infinitely many answers.
+             However This is fine for lazy narrowing. We will get
+             $(0 + 0) + 0 = 0, \{x = 0\}$
+             or $S(S(y + S(y)) + S(y)) = 0 \{x = S(y)\}$
+             and the second one will fail.}
+  \end{subfigure}
+  \hspace{.05\textwidth}
+  \begin{subfigure}{.45\textwidth}
+      $x \le y + y$
+    \caption{With a lazy narrowing strategy we may end up computing more than is necessary.
+             If $x$ is instantiated to $0$, then we don't need to evaluate $y + y$ at all.}
+  \end{subfigure}
+    \label{NarrowingComp}
+\end{figure}
+
+
+Fortunately there exists a narrowing strategy that's defined on a large class of rewrite systems,
+only narrows needed expressions, and is sound and complete.
+However this strategy requires a new construct called a definitional tree.
+
+The idea is straightforward.  Since we are working with constructor rewrite systems,
+we can group all of the rules defined for the same function symbol together.
+We'll put them together in a tree structure defined below, and 
+then we can compute a narrowing step by traversing the tree for the defined symbol.
+
+
+\theoremstyle{definition}
+\begin{definition}
+    $T$ is a \textit{partial definitional tree} if $T$ is one of the following.\\
+    $T = exempt(\pi)$ where $\pi$ is a pattern.\\
+    $T = leaf(\pi \to r)$ where $\pi$ is a pattern, and $\pi \to r$ is a rewrite rule.\\
+    $T = branch(\pi, o, T_1, \ldots T_k)$, where $\pi$ is a pattern,
+    $o$ is a path,
+    $\pi\vert_o$ is a variable,
+    $c_1,\ldots c_k$ are constructors,
+    and $T_i$ is a pdt with pattern $\pi[c_i(X_1,\ldots X_n)]_o$ where $n$ is the arity of $c_i$,
+    and $X_1,\ldots X_n$ are fresh variables.\\
+    $\ $\\
+    Given a constructor rewrite system $R$,
+    $T$ is a definitional tree for function symbol $f$ if
+    $T$ is a partial definitional tree, and each leaf in $T$
+    corresponds to exactly one rule rooted by $f$.
+    A rewrite system is \textit{inductively sequential} 
+    if there exists a definitional tree for every function symbol.
+\end{definition}
+
+The name ``inductively sequential'' is justified because there 
+is a narrowing strategy that only reduces needed redexes for any of these systems.
+This definition can be difficult to follow mathematically, 
+but it is usually much easier to understand with a few examples.
+In figure \ref{fig:defTree} we show the definitional tree for the $+, \le,$ and $=$ rules.
+The idea is that, at each branch, we decide which variable to inspect.
+Then we decide what child to follow based on the constructor of that branch.
+This gives us a simple algorithm for outermost rewriting with definitional trees.
+However, we need to extend this to narrowing.
+
+
+\begin{figure}
+  \begin{subfigure}{.4\textwidth}
+    \begin{tabular}{lcl}
+        $0    + y$      & $\to$ & $y$       \\
+        $S(x) + y$      & $\to$ & $S(x+y)$  \\
+  \end{tabular}
+  \end{subfigure}
+  \begin{subfigure}{.6\textwidth}
+  \Tree[.$x+y$ [.$0+y$ $y$ ]
+               [.$S(x)+y$ $S(x+y)$ ] ]
+  \end{subfigure} \\
+  \begin{subfigure}{.4\textwidth}
+  \begin{tabular}{lcl}
+        $0    \le y$    & $\to$ & $\top$    \\
+        $S(x) \le 0$    & $\to$ & $\bot$    \\
+        $S(x) \le S(y)$ & $\to$ & $x < y$   \\
+  \end{tabular}
+  \end{subfigure}
+  \begin{subfigure}{.6\textwidth}
+  \Tree[.$x\le y$ [.$0\le y$ .$\top$ ] 
+                   [.$S(x)\le y$ [.$S(x)\le 0$ .$\bot$ ]
+                                 [.$S(x)\le S(y)$ .$x\le y$ ] ] ] 
+  \end{subfigure} \\
+  \begin{subfigure}{.4\textwidth}
+  \begin{tabular}{lcl}
+        $0    = 0   $   & $\to$ & $\top$    \\
+        $S(x) = 0   $   & $\to$ & $\bot$    \\
+        $0    = S(y)$   & $\to$ & $\bot$    \\
+        $S(x) = S(y)$   & $\to$ & $x = y$   \\
+  \end{tabular}
+  \end{subfigure}
+  \begin{subfigure}{.6\textwidth}
+  \Tree[.$x=y$ [.$0=y$ [.$0=0$ .$\top$ ]
+                       [.$0=S(y)$ .$\bot$ ] ]
+               [.$S(x)=y$ [.$S(x)=0$ .$\bot$ ]
+                          [.$S(x)=S(y)$ .$x=y$ ] ] ]
+  \end{subfigure} 
+  \caption{Definitional trees for $x + y$, $x \le y$, and $x = y$.}
+  \label{fig:defTree}
+\end{figure}
+
+
+The extension from rewriting to narrowing has two complications.
+The first is that we need to compute a substitution.  This is pretty straightforward,
+but it leads to the second complication.
+What does it mean for a narrowing step to be needed?
+The earliest definition involved finding a most general unifier for the substitution.
+This has some nice properties.
+There is a well known algorithm for computing mgu's, which are unique up to renaming of variables.
+However, this turned out to be the wrong approach.
+Computing mgu's is too restrictive.
+Consider the step $x \le y + z \rightsquigarrow_{2\cdot \epsilon,R_1,\{y \mapsto 0\}} x \le z$.  
+Without further substitutions $x \le z$ is a normal form, and $\{y \mapsto 0\}$ is an mgu.
+Therefore this should be a needed step.
+But if we were to instead narrow $x$, we have $x \le y + z \rightsquigarrow_{\epsilon,R_8,\{x \mapsto 0\}} \top$.
+This step never needs to compute a substitution for $y$.
+Therefore we need a definition that isn't dependent on substitutions that might be computed later.
+
+
+\theoremstyle{definition}
+\begin{definition}
+    A narrowing step $t \rightsquigarrow_{p, R, \sigma} s$ is needed, iff, for every $\eta \ge \sigma$,
+    there is a needed redex at $p$ in $\eta(t)$.
+\end{definition}
+
+Here we don't require that $\sigma$ be an mgu, but, for any less general substitution,
+it must be the case that we're rewriting a needed redex.
+So our example, $x \le y + z \rightsquigarrow_{2\dot \epsilon,R_1,\{y \mapsto 0\}} x \le z$,
+isn't a needed narrowing step because $x \le y + z \rightsquigarrow_{2\dot \epsilon,R_1,\{x \mapsto 0, y \mapsto 0\}} 0 \le z$,
+Isn't a needed rewriting step.
+
+Unfortunately, this definition raises a new problem.
+Since we are no longer using mgu's for our unifiers, we may not have a unique step for an expression.
+For example, $x < y \rightsquigarrow_{\epsilon, R_8, \{x\mapsto 0\}} \top $, and
+$x < y \rightsquigarrow_{\epsilon, R_9, \{x\rightarrow S(u), t \mapsto S(v)\}} u \le v $
+are both possible needed narrowing steps.
+
+Therefore we define a \textit{Narrowing Strategy} $\mathcal{S}$ as a function from terms
+to a set of triples of a position, rule, and substitution, such that if $(p, R, \sigma) \in \mathcal{S}(t)$,
+then $\sigma(t)\vert_p$ is a redex for rule $R$.
+
+At this point we have everything we need to define a needed narrowing strategy.
+
+\theoremstyle{definition}
+\begin{definition}
+    Let $e$ be an expression rooted by function symbol $f$.
+    Let $T$ be the definitional tree for $f$.
+    $$\lambda(e,t) \in  
+    \begin{cases}
+        (\epsilon, R,    mgu(t, \pi) & \text{if}\ T = rule(\pi, R) \\
+        (\epsilon, \bot, mgu(t, \pi) & \text{if}\ T = exempt(\pi) \\
+        (p, \bot, \sigma)            & \text{if}\ T = branch(\pi, o, T_1, \ldots T_n) \\
+                                     & t\ \text{unifies with}\ T_i \\
+                                     & (p, R, \sigma) \in \lambda(t, T_i) \\
+        (p, \bot, \sigma \circ \tau) & \text{if}\ T = branch(\pi, o, T_1, \ldots T_n) \\
+                                     & t\ \text{does not unifies with any}\ T_i \\
+                                     & \tau = mgu(t, \pi) \\
+                                     & T'\ \text{is the definitional tree for}\ t\vert_o \\
+                                     & (p, R, \sigma) \in \lambda(t\vert_o, T') \\
+    \end{cases}
+    $$
+\end{definition}
+
+The function $\lambda$ simply traverses the definitional tree for a function symbol.
+If we reach a rule node, then we can just rewrite;
+if we reach an exempt node, then there is no possible rewrite;
+if we reach a branch node, then we match a constructor;
+but if the subterm we're looking at isn't a constructor, then we need to narrow that subterm first.
+
+
+\begin{theorem}
+    $\lambda$ is a needed narrowing strategy.
+    Furthermore, $\lambda$ is sound and complete.
+\end{theorem}
+
+It should be noted that while $\lambda$ is complete with respect to finding substitutions
+and selecting rewrite rules,
+this says nothing about the underlying completeness of the rewrite system we're narrowing.
+We may still have non-terminating derivations.
+
+This needed narrowing strategy is the underlying mechanism for evaluating Curry programs.
+In fact, one of the early stages of a Curry compiler is to construct definitional trees
+for each function defined.
+However, if we were to implement our compiler using terms, it would be needlessly inefficient.
+We solve this problem with graph rewriting.
+
+\section{Graph Rewriting}
+As mentioned above term rewriting is too inefficient to implement Curry.
+Consider the rule $double(x) = x + x$.
+Term rewriting requires this rule to make a copy of $x$, no matter how large it is,
+whereas we can share the variable if we use a graph.
+In programming languages, this distinction moves the evaluation strategy from
+``call by name'' to ``call by need'', and it is what we mean when we refer to ``lazy evaluation''.
+
+
+As a brief review of relevant graph theory:
+A graph $G = (V,E)$ is a pair of vertices $V$ and edges $E \subseteq V \times V$.
+We will only deal with directed graphs, so the order of the edge matters.
+A rooted graph is a graph with a specific vertex $r$ designated as the root.
+The neighborhood of $v$, written $N(v)$ is the set of vertices adjacent to $v$.
+That is, $N(v) = \{u\ \vert\ (v,u) \in E\}$.
+A path $p$ from vertex $u$ to vertex $v$ is a sequence 
+$u = p_1, p_2 \ldots p_n = v$ where $(p_i,p_{i+1}) \in E$.
+A rooted graph is connected if there is a path from the root to every other vertex in the graph.
+A graph is strongly connected if, for each pair of vertices $(u,v)$, there is a path from $u$ to $v$
+and a path form $v$ to $u$.
+A path $p$ is a cycle
+\footnote{Some authors will use walk and tour and
+reserve path and cycle for the cases where there are no repeated vertices.
+This distinction isn't relevant for our work.}
+if its endpoints are the same.
+A graph is acyclic if it contains no cycles.
+Such graphs are referred to as Directed Acyclic Graphs, or DAG's.
+A graph $H$ is a subgraph of $G$, $H \subseteq G$ if, and only if, $V_H \subseteq V_G$
+and $E_H \subseteq E_G$.
+A strongly connected component $S$ of $G$ is a subgraph that is strongly connected.
+We will use the well-known facts that strongly connected components partition a graph.
+The component graph, which is obtained by shrinking the strongly connected components 
+to a single vertex, is a DAG.
+To avoid confusion with variables, we will refer to vertices of graphs as nodes.
+
+
+We define term graphs in a similar way to terms.
+Let $\Sigma = C \uplus F$ be an alphabet of constructor and function names respectively,
+and $V$ be a countably infinite set of variables.
+A \textit{term graph} is a rooted graph $G$ with nodes in
+$N$ where each node $n$ has a label in $\Sigma \cup V$.
+We'll write $L(n)$ to refer to the label of a node.
+If $(n, s) \in E$ is an edge, then $s$ is a successor of $n$.
+In most applications the order of the outgoing edges doesn't matter, 
+however it is very important in term graphs.
+So, we will refer to the first successor, second successor and so on.
+The arity of a node is the number of successors.
+Finally, no two nodes can be labeled by the same variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EXAMPLES (\label{termGraphs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\begin{enumerate}
+    \item $
+          \begin{tikzcd}
+              & +_1 \ar[ld] \ar[rd] & \\
+              /_2 \ar[rd, bend right=50] \ar[rd] & & /_4 \ar[ld] \ar[ld, bend left=50]\\
+              & x_3 & \\
+          \end{tikzcd}
+          $
+    \item $
+          \begin{tikzcd}
+              double_1 \ar[d] \\
+              x_2
+          \end{tikzcd} \ \ \ \Rightarrow \ \ \ 
+          \begin{tikzcd}
+              +_3 \ar[d, bend right=50] \ar[d, bend left=50] \\
+              x_2        
+          \end{tikzcd}
+          $
+    \item $
+          \begin{tikzcd}
+              & +_1 \ar[ld] \ar[loop, out = -50, in = 50, distance = 5em] \\
+            4_2 & \\
+          \end{tikzcd}
+          $
+    \item $
+          \begin{tikzcd}
+              +_1 \ar[rd] \ar[dd] &             \\
+                                  & S_4 \ar[ld] \\
+              S_2 \ar[d]          &             \\
+              0_3                 &
+          \end{tikzcd}
+          \ \ \ \ \Rightarrow\ \ \ \ 
+          \begin{tikzcd}
+              S_5 \ar[d]                          &             \\
+              +_6 \ar[ddd, bend right=20] \ar[rd] &             \\
+                                                  & S_4 \ar[ld] \\
+              S_2 \ar[d]                          &             \\
+              0_3                                 &
+          \end{tikzcd}
+          $
+\end{enumerate}
+\caption{1. $1:+(2:/(3:x,3), 4:/(3,3))$,\\
+         2. $1:double(2:x) \Rightarrow 3:+(2:x, 2)$\\
+         3. $1:+(2:4, 1)$\\
+         4. $1:+(2:S(3:0), 4:S(2)) \Rightarrow 5:S(6:+(3:0), 4:S(2:S(3)))$}
+\label{fig:termGraph}
+\end{figure}
+
+
+
+While the nodes in a term graph are abstract, 
+in reality, they will be implemented using pointers.
+It can be helpful to keep this in mind. 
+As we define more operations on our term graphs, 
+there exists a natural implementation using pointers.
+
+We will often use a linear notation to represent graphs.
+This has two advantages.
+The first is that it is exact.
+There are many different ways to draw the same graph,
+but there is only one way to write it out a linear representation.
+The second is that this representation corresponds closely to the representation in a computer.
+The notation these graphs is given by the grammar
+\begin{tabular}{lll}
+    Graph & $\rightarrow$ & Node \\
+    Node  & $\rightarrow$ & $n$:$L$(Node, $\ldots$ Node) $\vert$ $n$\\
+\end{tabular}\\
+We start with the root node, and for each node in the graph, If we haven't encountered
+it yet, then we write down the node, the label, and the list of successors.
+If we have seen it, then we just write down the node.
+If a node doesn't have any successors, then we'll omit the parentheses entirely,
+and just write down the label.
+
+A few examples are shown in figure \ref{fig:termGraph}.
+Example 1 shows an expression where a single variable is shared several times.
+Example 2 shows how a rewrite can introduce sharing.
+Example 3 shows an example of an expression with a loop.
+These examples would require an infinitely large term, so they cannot be represented
+in term rewrite systems.
+Example 4 shows how reduction changes from terms to graphs.
+In a term rewrite system, if a node is in the pattern of a redex, then it can safely be discarded.
+However, in graph rewriting this is no longer true.
+
+\theoremstyle{definition}
+\begin{definition}
+Let $p$ be a node in $G$, then the \textit{subgraph} $G\vert_p$ is a new graph rooted by $p$.
+The nodes are restricted to only those reachable from $p$.
+\end{definition}
+
+Notice that we don't define subgraphs by paths like we did with subterms.
+This is because there may be more than one path to the node $p$.
+It may be the case that $G\vert_p$ and $G$ have the same nodes, such as if the root of $G$ is in a loop.
+
+\theoremstyle{definition}
+\begin{definition}
+A \textit{replacement} of node $p$ by graph $u$ in $g$ 
+(written $g[p \leftarrow u]$) is given by the following procedure.
+For each edge $(n,p) \in E_g$ replace it with an edge $(n, root_u)$.
+Add all other edges from $E_g$ and $E_u$.
+If $p$ is the root of $g$, then $root_u$ is now the root.
+\end{definition}
+
+From here we can define rewriting and narrowing similarly to how we did for terms.
+We do not give the definitions here, but they can be found in Echaned and Janodet \cite{graphRewriting}.
+They also show that the needed narrowing strategy is still valid for graph rewriting systems.
+
+\section{Previous Work}
+This was not meant to be an exhaustive examination of rewriting, but rather an introduction to the concepts,
+since they form this theoretical basis of the Curry language.
+Most work on term rewriting up through 1990 has been summarized by Klop \cite{termRewriting},
+and Baader and Nipkow \cite{termAndAllThat}.
+The notation and ideas in this section largely come from
+Ohlebusch \cite{AdvancedTRS}, although they are very similar to the previous two summaries.
+The foundations of term rewriting were laid by Church, Rosser, Curry, Feys, Newman. 
+\cite{churchRosser, CombLogic, Newman}
+Most of the work on rewriting has centered on confluence and termination. \cite{termRewriting}
+Narrowing has been developed by Slagle \cite{narrowing}.
+Sequential strategies were developed by Huet and Levy \cite{StrongSequential},
+who gave a decidable criteria for a subset of sequential systems.
+This led to the work of Antoy on inductively sequential systems \cite{DefinitionalTrees}.
+The needed narrowing strategy came from Hanus, Antoy, and Echahed \cite{Needed}.
+Graph rewriting is a bit more disconnected.  
+Currently there isn't a consensus on how to represent graphs mathematically.
+We went with the presentation in \cite{graphRewriting}, 
+but there are also alternatives in \cite{termRewriting, termAndAllThat, AdvancedTRS}
+
+Here we saw how we can rewrite terms and graphs.
+We'll use this idea in the next chapter to rewrite entire programs.
+This will become the semantics for our language.
+Now that we have some tools, It's time to find out how to make Curry!
+
+
+\chapter{The Curry Language}
+
+
+\section{The Curry Language}
+
+In order to write a compiler for Curry, we need to understand how Curry works.
+We'll start by looking at some examples of Curry programs.
+We'll see how Curry programs differ from Haskell and Prolog programs.
+Then we'll move on to defining a small interpreter for Curry.
+Finally we'll use this interpreter to define equivalent C code.
+
+Curry combines the two most popular paradigms of declarative programming:
+Functional languages and logic languages.
+Curry programs are composed of defining equations like Haskell or ML,
+but we are allowed to have non-deterministic expressions and free variables like Prolog.
+This will not be an introduction to modern declarative programming languages.
+The reader is expected to be familiar with functional languages such as Haskell or ML,
+and logic languages such as Prolog.
+For an introduction to programming in Curry see \cite{CurryTutorial}.
+For an exhaustive explanation of the syntax and semantics of Curry see \cite{CurryReport}.
+
+To demonstrate the features of Curry, we will examine a small Haskell program to permute a list.
+Then we will simplify the program by adding features of Curry.
+This will demonstrate the features of Curry that we need to handle in the compiler,
+and also give a good basis for how we can write the compiler.
+
+First let's consider an example of a permutation function.
+This is not the only way to permute a list in Haskell,
+and you could easily argue that it's not the most elegant way,
+but I chose it for two reasons.
+There is no syntactic sugar and no libraries hiding any of the computations,
+and the algorithm for permuting a list is similar to the algorithm we will use in Curry.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{17}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{perms}{}\<[17]%
+\>[17]{}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu [\mskip1.5mu \Varid{a}\mskip1.5mu]\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perms}\;[\mskip1.5mu \mskip1.5mu]{}\<[17]%
+\>[17]{}\mathrel{=}[\mskip1.5mu [\mskip1.5mu \mskip1.5mu]\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perms}\;(\Varid{x}\mathbin{:}\Varid{xs}){}\<[17]%
+\>[17]{}\mathrel{=}\Varid{concat}\;(\Varid{map}\;(\Varid{insert}\;\Varid{x})\;(\Varid{perms}\;\Varid{xs})){}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mathbf{where}{}\<[E]%
+\\
+\>[5]{}\hsindent{2}{}\<[7]%
+\>[7]{}\Varid{insert}\;\Varid{x}\;[\mskip1.5mu \mskip1.5mu]{}\<[24]%
+\>[24]{}\mathrel{=}[\mskip1.5mu [\mskip1.5mu \Varid{x}\mskip1.5mu]\mskip1.5mu]{}\<[E]%
+\\
+\>[5]{}\hsindent{2}{}\<[7]%
+\>[7]{}\Varid{insert}\;\Varid{x}\;(\Varid{y}\mathbin{:}\Varid{ys}){}\<[24]%
+\>[24]{}\mathrel{=}(\Varid{x}\mathbin{:}\Varid{y}\mathbin{:}\Varid{ys})\mathbin{:}\Varid{map}\;(\Varid{y}\mathbin{:})\;(\Varid{insert}\;\Varid{x}\;\Varid{ys}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+The algorithm itself is broken into two parts.
+The \ensuremath{\Varid{insert}} function will return a list of lists,
+where \ensuremath{\Varid{x}} is inserted into \ensuremath{\Varid{ys}} at every possible position.
+For example: \ensuremath{\Varid{insert}\;\mathrm{1}\;[\mskip1.5mu \mathrm{2},\mathrm{3}\mskip1.5mu]} returns \ensuremath{[\mskip1.5mu [\mskip1.5mu \mathrm{1},\mathrm{2},\mathrm{3}\mskip1.5mu],[\mskip1.5mu \mathrm{2},\mathrm{1},\mathrm{3}\mskip1.5mu],[\mskip1.5mu \mathrm{2},\mathrm{3},\mathrm{1}\mskip1.5mu]\mskip1.5mu]}.
+The \ensuremath{\Varid{perms}} function splits the list into a head \ensuremath{\Varid{x}} and tail \ensuremath{\Varid{xs}}.
+First it computes all permutations of \ensuremath{\Varid{xs}}, then it will insert \ensuremath{\Varid{x}} into every possible position
+of every permutation.
+
+While this algorithm is not terribly complex, it's really more complex than it needs to be.
+The problem is that we need to keep track of all of the permutations we generate.
+This doesn't seem like a big problem here.
+We just put each permutation in a list, and return the whole list of permutations.
+However, now every part of the program has to deal with the entire list of results.
+As our programs grow, we will need more data structures for this plumbing, and this problem will grow too.
+This is not new.
+Many languages have spent a lot of time trying to resolve this issue.
+In fact, several of Haskell's most successful concepts,
+such as monads, arrows, and lenses, are designed strictly to reduce this sort of plumbing.
+
+We take a different approach in Curry.
+Instead of generating every possible permutation, and searching for the right one,
+we will non-deterministically generate a single permutation.
+This seems like a trivial difference, but its really quite substantial.
+We offload generating all of the possibilities onto the language itself.
+
+We can simplify our code with the non-deterministic \textit{choice} operator \ensuremath{\mathbin{?}}.
+Choice is defined by the rules:\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{x}\mathbin{?}\Varid{y}\mathrel{=}\Varid{x}{}\<[E]%
+\\
+\>[3]{}\Varid{x}\mathbin{?}\Varid{y}\mathrel{=}\Varid{y}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Now our permutation example becomes a little easier.
+We only generate a single permutation,
+and when we insert \ensuremath{\Varid{x}} into \ensuremath{\Varid{ys}}, we only insert into a single arbitrary position.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{perm}{}\<[16]%
+\>[16]{}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;[\mskip1.5mu \mskip1.5mu]{}\<[16]%
+\>[16]{}\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;(\Varid{x}\mathbin{:}\Varid{xs}){}\<[16]%
+\>[16]{}\mathrel{=}\Varid{insert}\;\Varid{x}\;(\Varid{perm}\;\Varid{xs}){}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mathbf{where}{}\<[E]%
+\\
+\>[5]{}\hsindent{2}{}\<[7]%
+\>[7]{}\Varid{insert}\;\Varid{x}\;[\mskip1.5mu \mskip1.5mu]{}\<[24]%
+\>[24]{}\mathrel{=}[\mskip1.5mu \Varid{x}\mskip1.5mu]{}\<[E]%
+\\
+\>[5]{}\hsindent{2}{}\<[7]%
+\>[7]{}\Varid{insert}\;\Varid{x}\;(\Varid{y}\mathbin{:}\Varid{ys}){}\<[24]%
+\>[24]{}\mathrel{=}\Varid{x}\mathbin{:}\Varid{y}\mathbin{:}\Varid{ys}\mathbin{?}\Varid{y}\mathbin{:}\Varid{insert}\;\Varid{x}\;\Varid{ys}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+In many cases functions that return multiple results can lead to much simpler code.
+Curry has another feature that's just as useful.
+We can declare a \textit{free variable} in Curry.
+This is a variable that hasn't been assigned a value.
+We can then constrain the value of a variable later in the program.
+In the following example \ensuremath{\Varid{begin}}, \ensuremath{\Varid{x}}, and \ensuremath{\Varid{end}} are all free variables,
+but they're constrained by the guard so that \ensuremath{\Varid{begin}\plus [\mskip1.5mu \Varid{x}\mskip1.5mu]\plus \Varid{end}} is equal to \ensuremath{\Varid{xs}}.
+Our algorithm then becomes: pick an arbitrary \ensuremath{\Varid{x}} in the list,
+move it to the front, and permute the rest of the list.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{perm}{}\<[12]%
+\>[12]{}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;[\mskip1.5mu \mskip1.5mu]{}\<[12]%
+\>[12]{}\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;\Varid{xs}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{xs}\equiv (\Varid{begin}\plus [\mskip1.5mu \Varid{x}\mskip1.5mu]\plus \Varid{end})\mathrel{=}\Varid{x}\mathbin{:}\Varid{perm}\;(\Varid{begin}\plus \Varid{end}){}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mathbf{where}\;\Varid{begin},\Varid{x},\Varid{end}\;\textbf{free} {}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Look at that.
+We've reduced the number of lines of code by 25\%.
+In fact, this pattern of declaring free variables, and then immediately constraining them
+is used so often in Curry that we have syntactic sugar for it.
+A \textit{functional pattern} is any pattern that contains a function that is not at the
+root.\footnote{
+    This isn't completely correct.  While the above code would fully evaluate the list,
+    a functional pattern is allowed to be more lazy.
+    Since the elements don't need to be checked for equality, they can be left unevaluated.
+}
+We can use functional patterns to simplify our \ensuremath{\Varid{perm}} function even further.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{27}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{perm}{}\<[27]%
+\>[27]{}\mathbin{::}[\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;[\mskip1.5mu \mskip1.5mu]{}\<[27]%
+\>[27]{}\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{perm}\;(\Varid{begin}\plus [\mskip1.5mu \Varid{x}\mskip1.5mu]\plus \Varid{end}){}\<[27]%
+\>[27]{}\mathrel{=}\Varid{x}\mathbin{:}\Varid{perm}\;(\Varid{begin}\plus \Varid{end}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Now the real work of our algorithm is a single line.
+Even better, it's easy to read off what this line means.
+Decompose the list into \ensuremath{\Varid{begin}}, \ensuremath{\Varid{x}}, and \ensuremath{\Varid{end}}, then put \ensuremath{\Varid{x}} at the front, and permute \ensuremath{\Varid{begin}} and \ensuremath{\Varid{end}}.
+This is almost exactly how we would describe the algorithm in English.
+
+There is one more important feature of Curry.
+In fact we've already seen it, but a more explicit example would be helpful.
+We've shown how we can generate all permutations of a list by generating an arbitrary permutation,
+and letting the language take care of the exhaustive search.
+However, we usually don't need, or even want, every permutation.
+So, how do we filter out the permutations we don't want?
+The answer is surprisingly simple.  We just let expressions fail.
+An expression fails if it cannot be reduced to a constructor form.
+The common example here is \ensuremath{\Varid{head}\;[\mskip1.5mu \mskip1.5mu]}, but a more useful example might be sorting a list.
+We can build a sorting algorithm by permuting a list, and only keeping the permutation that's sorted.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{sort}\mathbin{::}(\Conid{Ord}\;\Varid{a})\Rightarrow [\mskip1.5mu \Varid{a}\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{sort}\;\Varid{xs}\mid \Varid{sorted}\;\Varid{ys}\mathrel{=}\Varid{ys}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{1}{}\<[5]%
+\>[5]{}\Varid{ys}\mathrel{=}\Varid{perm}\;\Varid{xs}{}\<[E]%
+\\
+\>[4]{}\hsindent{1}{}\<[5]%
+\>[5]{}\Varid{sorted}\;[\mskip1.5mu \mskip1.5mu]{}\<[22]%
+\>[22]{}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{1}{}\<[5]%
+\>[5]{}\Varid{sorted}\;[\mskip1.5mu \Varid{x}\mskip1.5mu]{}\<[22]%
+\>[22]{}\mathrel{=}\Conid{True}{}\<[E]%
+\\
+\>[4]{}\hsindent{1}{}\<[5]%
+\>[5]{}\Varid{sorted}\;(\Varid{x}\mathbin{:}\Varid{y}\mathbin{:}\Varid{ys}){}\<[22]%
+\>[22]{}\mathrel{=}\Varid{x}\leq \Varid{y}\mathrel{\wedge}\Varid{sorted}\;(\Varid{y}\mathbin{:}\Varid{ys}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+In this example every permutation of \ensuremath{\Varid{xs}} that isn't sorted will fail in the guard.
+Once an expression has failed computation on it stops, and other alternatives are tried.
+As we'll see later on, this ability to conditionally execute a function will 
+become crucial when developing optimizations.
+
+These are some of the useful programming constructs in Curry.
+While they are convenient for programming, we need to understand how they work
+if we are going to implement them in a compiler.
+
+\section{Semantics}
+
+As we've seen, the syntax of Curry is very similar to Haskell.
+Functions are declared by defining equations, and new data types are declared as algebraic data types.
+Function application is represented by juxtaposition,
+so \ensuremath{\Varid{f}\;\Varid{x}} represents the function \ensuremath{\Varid{f}} applied to the variable \ensuremath{\Varid{x}}.
+Curry also allows for declaring new infix operators.
+In fact, Curry really only adds two new pieces of syntax to Haskell, \textbf{fcase} and \textbf{free}.
+However, the main difference between Curry and Haskell is not immediately clear from the syntax.
+Curry allows for overlapping rules and free variables.
+Specifically Curry is a Limited Overlapping Inductively Sequential (LOIS) Rewrite system.
+Haskell, on the other hand, requires all rules to be non-overlapping.
+
+To see the difference consider the usual definition of factorial.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{fac}\mathbin{::}\Conid{Int}\to \Conid{Int}{}\<[E]%
+\\
+\>[3]{}\Varid{fac}\;\mathrm{0}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[3]{}\Varid{fac}\;\Varid{n}\mathrel{=}\Varid{n}\mathbin{*}\Varid{fac}\;(\Varid{n}\mathbin{-}\mathrm{1}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This seems like an innocuous Haskell program, 
+however It's non-terminating for every possible input for Curry.
+The reason is that \ensuremath{\Varid{fac}\;\mathrm{0}} could match either rule.
+In Haskell all defining equations are ordered sequentially. 
+which results in control flow similar to the following C implementation.
+\begin{tabbing}\ttfamily
+~int~fac\char40{}int~n\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~if\char40{}n~\char61{}\char61{}~0\char41{}\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~~~return~1\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~~~~~else\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~~~return~n~\char42{}~fac\char40{}n\char45{}1\char41{}\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+In fact, every rule with multiple defining equations follows this pattern
+If we the equations where \ensuremath{\Varid{p}_{\Varid{i}}} is a pattern and \ensuremath{\Conid{E}_{\Varid{i}}} is an expression.\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{10}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{f}\;\Varid{p}_{\mathrm{1}}{}\<[10]%
+\>[10]{}\mathrel{=}\Conid{E}_{\mathrm{1}}{}\<[E]%
+\\
+\>[3]{}\Varid{f}\;\Varid{p}_{\mathrm{2}}{}\<[10]%
+\>[10]{}\mathrel{=}\Conid{E}_{\mathrm{2}}{}\<[E]%
+\\
+\>[3]{}\ldots {}\<[E]%
+\\
+\>[3]{}\Varid{f}\;\Varid{p}_{\Varid{n}}{}\<[10]%
+\>[10]{}\mathrel{=}\Conid{E}_{\Varid{n}}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Then this is semantically equivalent to the following.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{33}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{f}\;\Varid{p}_{\mathrm{1}}{}\<[33]%
+\>[33]{}\mathrel{=}\Conid{E}_{\mathrm{1}}{}\<[E]%
+\\
+\>[3]{}\Varid{f}\;\neg \;\Varid{p}_{\mathrm{1}}{}\<[14]%
+\>[14]{}\mathrel{\wedge}\Varid{p}_{\mathrm{2}}{}\<[33]%
+\>[33]{}\mathrel{=}\Conid{E}_{\mathrm{2}}{}\<[E]%
+\\
+\>[3]{}\ldots {}\<[E]%
+\\
+\>[3]{}\Varid{f}\;\neg \;\Varid{p}_{\mathrm{1}}{}\<[14]%
+\>[14]{}\mathrel{\wedge}\neg \;\Varid{p}_{\mathrm{2}}\mathrel{\wedge}\Varid{p}_{\Varid{n}}{}\<[33]%
+\>[33]{}\mathrel{=}\Conid{E}_{\Varid{n}}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Here \ensuremath{\neg \;\Varid{p}_{\Varid{i}}} means that we don't match pattern \ensuremath{\Varid{i}}.
+This ensures that we will only ever reduce to a single expression.
+Specifically we reduce to the first expression where we match the pattern.
+
+
+Curry rules, on the other hand, are unordered.
+If we could match multiple patterns, such as in the case of \ensuremath{\Varid{fac}}, 
+then we non-deterministically return both expressions.
+This means that \ensuremath{\Varid{fac}\;\mathrm{0}} reduces to both \ensuremath{\mathrm{1}} and \ensuremath{\Varid{fac}\;(\mathbin{-}\mathrm{1})}.
+Exactly how Curry reduces an expression non-deterministically will be discussed throughout this dissertation,
+but for now we can think in terms of sets.
+If the expression \ensuremath{\Varid{e}\to \Varid{e}_{\mathrm{1}}} and \ensuremath{\Varid{e}\to \Varid{e}_{\mathrm{2}}},
+\ensuremath{\Varid{e}_{\mathrm{1}}\rightarrow^* \Varid{v}_{\mathrm{1}}} and \ensuremath{\Varid{e}_{\mathrm{2}}\rightarrow^* \Varid{v}_{\mathrm{2}}}, then \ensuremath{\Varid{e}\rightarrow^* \{\mskip1.5mu \Varid{v}_{\mathrm{1}},\Varid{v}_{\mathrm{2}}\mskip1.5mu\}}.
+
+This addition of non-determinism can lead to problems if we're not careful.
+Consider the following example:\\
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{coin}\mathrel{=}\mathrm{0}\mathbin{?}\mathrm{1}{}\<[E]%
+\\
+\>[3]{}\Varid{double}\;\Varid{x}\mathrel{=}\Varid{x}\mathbin{+}\Varid{x}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+We would expect that for any \ensuremath{\Varid{x}}, \ensuremath{\Varid{double}\;\Varid{x}} should be an even number.
+However, if we were to rewrite \ensuremath{\Varid{double}\;\Varid{coin}} using ordinary term rewriting,
+then we could have the derivation.\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{double}\;\Varid{coin}\Rightarrow \Varid{coin}\mathbin{+}\Varid{coin}\Rightarrow (\mathrm{0}\mathbin{?}\mathrm{1})\mathbin{+}(\mathrm{0}\mathbin{?}\mathrm{1})\Rightarrow \mathrm{0}\mathbin{+}(\mathrm{0}\mathbin{?}\mathrm{1})\Rightarrow \mathrm{0}\mathbin{+}\mathrm{1}\Rightarrow \mathrm{1}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This is clearly not the derivation we want.
+The problem here is that when we reduced \ensuremath{\Varid{double}\;\Varid{coin}},
+we made a copy of the non-deterministic expression \ensuremath{\Varid{coin}}.
+This ability to clone non-deterministic expressions to get different answers
+is known as run-time choice semantics. \cite{callTimeChoice}.
+
+The alternative to this is call-time choice semantics.
+When a non-deterministic expression is reduced,
+all instances of the expression take the same value.
+One way to enforce this solution to this is the use graph rewriting instead of term rewriting.
+Since no expressions are ever duplicated, all instances of \ensuremath{\Varid{coin}} will reduce the same way.
+This issue of run-time choice semantics will appear throughout the compiler.
+
+
+
+\subsection{Flat Curry}
+
+One of the earliest steps in the compilation process is to form definitional trees out of Curry functions.
+These trees are then turned into an intermediate representation where each branch of the Tree
+is replaced by a case expression.
+This IR is called FlatCurry \cite{currySemantics},
+and We will be working exclusively with FlatCurry Programs.
+FlatCurry is a simple language to represent Curry programs.
+All syntactic sugar has been removed, and we are left with a language similar to Haskell's Core.
+The syntax is given in figure \ref{fig:flatSyntax}.
+It has been modified from the original in two ways.
+First the original relied on transforming free variables into non-determinism.
+Since I do not use that transformation in my compiler, I represent free variables explicitly with a
+\ensuremath{\mathbf{let}\ldots \textbf{free} } expression.
+The second change is a little more substantial.
+I've added an expression \ensuremath{\bot } to represent failure.
+This comes with the assumption no \ensuremath{\mathbf{case}} expressions have missing branches.
+While this is not common in Curry compilers,
+It's easy enough to enforce, and leads to an easier implementation.
+It also allows for more optimizations.
+An example of the \ensuremath{\Varid{fac}} function in both Curry and FlatCurry is given in figure \ref{fig:flatFac}
+
+\begin{figure}[h]
+\textbf{Curry}\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{fac}\;\mathrm{0}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[3]{}\Varid{fac}\;\Varid{n}\mathrel{=}\Varid{n}\mathbin{*}\Varid{fac}\;(\Varid{n}\mathbin{-}\mathrm{1}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+\textbf{FlatCurry}\\
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{fac}\;\Varid{v}_{\mathrm{1}}\mathrel{=}(\mathbf{case}\;\Varid{v}_{\mathrm{1}}\;\mathbf{of}\;\mathrm{0}\to \mathrm{1})\mathbin{?}(\Varid{v}_{\mathrm{1}}\mathbin{*}\Varid{fac}\;(\Varid{v}_{\mathrm{1}}\mathbin{-}\mathrm{1})){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+\caption{the factorial function in Curry and FlatCurry}
+\label{fig:flatFac}
+\end{figure}
+
+\begin{figure}
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{15}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{15E}{@{}l@{}}%
+\column{19}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{60}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{f}{}\<[15]%
+\>[15]{}\Rightarrow {}\<[15E]%
+\>[19]{}\Varid{f}\;\Varid{v}_{\mathrm{1}}\;\Varid{v}_{\mathrm{2}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{e}{}\<[E]%
+\\
+\>[3]{}\Varid{e}{}\<[15]%
+\>[15]{}\Rightarrow {}\<[15E]%
+\>[19]{}\Varid{v}\;{}\<[60]%
+\>[60]{}\Conid{Variable}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Varid{l}\;{}\<[60]%
+\>[60]{}\Conid{Literal}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Varid{e}\mathbin{::}\Varid{t}\;{}\<[60]%
+\>[60]{}\Conid{Typed}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{e}_{\mathrm{2}}\;{}\<[60]%
+\>[60]{}\Conid{Choice}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\bot \;{}\<[60]%
+\>[60]{}\Conid{Failed}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Varid{f}_{\Varid{k}}\;\Varid{e}_{\mathrm{1}}\;\Varid{e}_{\mathrm{2}}\ldots \Varid{e}_{\Varid{n}}\;{}\<[60]%
+\>[60]{}\Conid{Function}\;\Conid{Application}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Conid{C}_{\Varid{k}}\;\Varid{e}_{\mathrm{1}}\;\Varid{e}_{\mathrm{2}}\ldots \Varid{e}_{\Varid{n}}\;{}\<[60]%
+\>[60]{}\Conid{Constructor}\;\Conid{Application}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\mathbf{let}\;\Varid{v}_{\mathrm{1}}\mathrel{=}\Varid{e}_{\mathrm{2}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{e}_{\Varid{n}}\;\mathbf{in}\;\Varid{e}\;{}\<[60]%
+\>[60]{}\Conid{Variable}\;\Conid{Declaration}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\mathbf{let}\;\Varid{v}_{\mathrm{1}},\Varid{v}_{\mathrm{2}},\ldots \Varid{v}_{\Varid{n}}\;\textbf{free} \;\mathbf{in}\;\Varid{e}\;{}\<[60]%
+\>[60]{}\Conid{Free}\;\Conid{Variable}\;\Conid{Declaration}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\{\mskip1.5mu \Varid{p}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}};\ldots \Varid{p}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}\;{}\<[60]%
+\>[60]{}\Conid{Case}\;\Conid{Expression}{}\<[E]%
+\\
+\>[3]{}\Varid{p}{}\<[15]%
+\>[15]{}\Rightarrow {}\<[15E]%
+\>[19]{}\Conid{C}\;\Varid{v}_{\mathrm{1}}\;\Varid{v}_{\mathrm{2}}\ldots \Varid{v}_{\Varid{n}}\;{}\<[60]%
+\>[60]{}\Conid{Constructor}\;\Conid{Pattern}{}\<[E]%
+\\
+\>[15]{}\mid {}\<[15E]%
+\>[19]{}\Varid{l}\;{}\<[60]%
+\>[60]{}\Conid{Literal}\;\Conid{Pattern}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+\caption{FlatCurry
+This is largely the same as other presentations \cite{currySemantics,icurry}
+but we have elected to add more information that will become relevant for optimizations later.}
+\label{fig:flatSyntax}
+\end{figure}
+
+\subsection{Evaluation}
+
+We'll start off with a small interpreter for a first order functional language.
+Then we'll make incremental improvements until we have all of the features of Curry.
+It's important to start here, because each time we add a feature,
+it may interact with features that came before.
+
+Let's look at the first interpreter.
+The goal is to rewrite a term in our language to normal form.
+In this language a normal form is simple.  It can consist of Constructors, Literals, and nothing else.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{5E}{@{}l@{}}%
+\column{9}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{26}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{n}\Rightarrow {}\<[9]%
+\>[9]{}\Varid{l}\;{}\<[26]%
+\>[26]{}\Varid{literal}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mid {}\<[5E]%
+\>[9]{}\Conid{C}_{\Varid{k}}\;\Varid{n\char95 1}\ldots \Varid{n\char95 k}\;{}\<[26]%
+\>[26]{}\Varid{constructor}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+In a lazy language, to compute an expression to normal form, we first compute head normal form.
+Head Normal form is just the restriction that the root of the expression must be a constructor or literal.
+That is, the \textit{head} is in normal form.
+
+So the algorithm for computing an expression to normal form is 
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{35}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{nf}\mathbin{::}\Conid{Expr}\to \Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\Varid{nf}\;\Varid{e}\mathrel{=}\mathbf{case}\;{}\<[16]%
+\>[16]{}\Varid{hnf}\;\Varid{e}\;\mathbf{of}{}\<[E]%
+\\
+\>[16]{}\Conid{C}\;\Varid{e}_{\mathrm{1}}\;\Varid{e}_{\mathrm{2}}\ldots \Varid{e}_{\Varid{n}}{}\<[35]%
+\>[35]{}\to \Conid{C}\;(\Varid{nf}\;\Varid{e}_{\mathrm{1}})\;(\Varid{nf}\;\Varid{e}_{\mathrm{2}})\ldots (\Varid{nf}\;\Varid{e}_{\Varid{n}}){}\<[E]%
+\\
+\>[16]{}\Varid{l}{}\<[35]%
+\>[35]{}\to \Varid{l}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+We can build a simple interpreter for a first order language simply by giving the \ensuremath{\Varid{hnf}} function.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{38}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{38E}{@{}l@{}}%
+\column{41}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{46}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{hnf}\mathbin{::}\Conid{Expr}\to \Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{l}\rrbracket {}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\Varid{l}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{e}\mathbin{::}\Varid{t}\rrbracket {}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\Varid{hnf}\;\Varid{e}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{f}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\mathbf{let}\;{}\<[46]%
+\>[46]{}\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{vars}\;\Varid{f}{}\<[E]%
+\\
+\>[46]{}\Varid{e}_{\Varid{f}}\mathrel{=}\Varid{body}\;\Varid{f}{}\<[E]%
+\\
+\>[46]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[41]{}\mathbf{in}\;{}\<[46]%
+\>[46]{}\Varid{hnf}\;(\sigma\;\Varid{e}_{\Varid{f}}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \;\mathbf{let}\;\Varid{v}_{\mathrm{1}}\mathrel{=}\Varid{e}_{\mathrm{1}}\;\mathbf{in}\;\Varid{e}\rrbracket {}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\mathbf{let}\;{}\<[46]%
+\>[46]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[41]{}\mathbf{in}\;{}\<[46]%
+\>[46]{}\Varid{hnf}\;(\sigma\;\Varid{e}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \;\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\Varid{bs}\rrbracket {}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\llbracket \Varid{e}\rrbracket \mathrel{=}\Varid{l}{}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\mathbf{let}\;{}\<[46]%
+\>[46]{}(\Varid{l}\to \Varid{e})\in \Varid{bs}{}\<[E]%
+\\
+\>[41]{}\mathbf{in}\;{}\<[46]%
+\>[46]{}\Varid{hnf}\;\Varid{e}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\llbracket \Varid{e}\rrbracket \mathrel{=}(\Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}){}\<[38]%
+\>[38]{}\mathrel{=}{}\<[38E]%
+\>[41]{}\mathbf{let}\;{}\<[46]%
+\>[46]{}(\Conid{C}\;\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\to \Varid{e})\in \Varid{bs}{}\<[E]%
+\\
+\>[46]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[41]{}\mathbf{in}\;{}\<[46]%
+\>[46]{}\Varid{hnf}\;(\sigma\;\Varid{e}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Notice that we don't need to interpret a variable, since they will all be replaced by substitutions.
+While this interpreter is compact, it suffers from a number of problems.
+One is that we can't handle recursive definitions in let expressions.
+Recursive functions are allowed, but a recursive let expression will crash the interpreter.
+The second problem is that we aren't actually using lazy evaluation.
+Since we may copy terms by performing a substitution, we may reevaluate the same expression multiple times.
+
+We can get around this by moving to graph rewriting.
+Surprisingly not much changes for the interpreter.
+The only real change is that all expressions are graphs,
+and make substitution work by pointer redirection.
+Now our interpreter is lazy and will work correctly with recursive let bindings.
+Even mutually recursive let bindings are still fine.
+This also solves the problem of enforcing call time choice semantics.
+
+There is one issue with graph rewriting that requires a little more care.
+A \textit{collapsing rule} is a function that returns a single variable.
+A simple example is the \ensuremath{\Varid{id}} function, but collapsing rules can be much more complicated
+as shown by the following \ensuremath{\Varid{sum}} function.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{22}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{30}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{sum}\;\Varid{xs}\;\Varid{acc}\mathrel{=}\mathbf{case}\;{}\<[22]%
+\>[22]{}\Varid{xs}\;\mathbf{of}{}\<[E]%
+\\
+\>[22]{}[\mskip1.5mu \mskip1.5mu]{}\<[30]%
+\>[30]{}\to \Varid{acc}{}\<[E]%
+\\
+\>[22]{}(\Varid{y}\mathbin{:}\Varid{ys}){}\<[30]%
+\>[30]{}\to \Varid{sum}\;\Varid{ys}\;(\Varid{y}\mathbin{+}\Varid{acc}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+The first branch of the case statement here is collapsing.
+Collapsing rules will cause several problems thought this compiler,
+but the first one we need to deal with is sharing.
+Suppose we have the following expression graph:
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$sum$\,} \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr]& & \llap{$f$\,} \bullet \ar@{-}@/-6pt/[dl] \\
+      & \llap{$[]$\,} \bullet & & \llap{$n$\,} \bullet \\
+  }
+}
+\end{mdframed}
+
+
+Now, if we reduce \ensuremath{\Varid{sum}\;[\mskip1.5mu \mskip1.5mu]\;\Varid{n}} to \ensuremath{\Varid{n}}, then we have a problem.
+Do we overwrite the \ensuremath{\Varid{sum}} node with the value of \ensuremath{\Varid{n}}?
+This seems like it would be a problem.  After all we'd need to copy the expression, which
+was the very thing that graph rewriting was supposed to help us avoid.
+However, there's another possibility.
+According to our evaluation strategy we must evaluate \ensuremath{\Varid{n}} to head normal form.
+So, we can evaluate \ensuremath{\Varid{n}}, and then copy the value of the constructor over to the \ensuremath{\Varid{sum}} node.
+This is the strategy use by GHC \cite{GHC}.
+
+Unfortunately, this strategy of copying the constructor is also going to fail.
+The problem here is non-determinism.
+The \ensuremath{\mathbin{?}} operator is a non-deterministic collapsing functions that is used heavily throughout Curry.
+We will justify why copying can't work in the next section,
+but for now we can find a solution using forwarding nodes.
+A forwarding nodes is very simple.
+It's just a node with a single child that we represent as \ensuremath{(\Conid{FORWARD}\;\Varid{e})}.
+We can think of forwarding nodes like references in other languages.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{39}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{39E}{@{}l@{}}%
+\column{42}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{47}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{hnf}\mathbin{::}\Conid{Expr}\to \Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{l}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\Varid{l}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{e}\mathbin{::}\Varid{t}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\Varid{hnf}\;\llbracket \Varid{e}\rrbracket {}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Varid{f}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\mathbf{let}\;{}\<[47]%
+\>[47]{}\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{vars}\;\Varid{f}{}\<[E]%
+\\
+\>[47]{}\Varid{e}_{\Varid{f}}\mathrel{=}\Varid{body}\;\Varid{f}{}\<[E]%
+\\
+\>[47]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[42]{}\mathbf{in}\;{}\<[47]%
+\>[47]{}\Varid{hnf}\;(\sigma\;\Varid{e}_{\Varid{f}}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \Conid{FORWARD}\;\Varid{e}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\Conid{FORWARD}\;(\Varid{hnf}\;\llbracket \Varid{e}\rrbracket ){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\llbracket \;\mathbf{let}\;\Varid{v}_{\mathrm{1}}\mathrel{=}\Varid{e}_{\mathrm{1}}\;\mathbf{in}\;\Varid{e}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\mathbf{let}\;{}\<[47]%
+\>[47]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[42]{}\mathbf{in}\;{}\<[47]%
+\>[47]{}\Varid{hnf}\;(\sigma\;\Varid{e}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;(\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\Varid{bs}){}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{e}\equiv \llbracket \Conid{FORWARD}\;\Varid{e'}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\Conid{FORWARD}\;(\Varid{hnf}\;\llbracket \;\mathbf{case}\;\Varid{e'}\;\mathbf{of}\;\Varid{bs}\rrbracket ){}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv \llbracket \Varid{l}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\mathbf{let}\;{}\<[47]%
+\>[47]{}(\Varid{l}\to \Varid{e})\in \Varid{bs}{}\<[E]%
+\\
+\>[42]{}\mathbf{in}\;{}\<[47]%
+\>[47]{}\Varid{hnf}\;\Varid{e}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv \llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[39]%
+\>[39]{}\mathrel{=}{}\<[39E]%
+\>[42]{}\mathbf{let}\;{}\<[47]%
+\>[47]{}(\Conid{C}\;\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\to \Varid{e})\in \Varid{bs}{}\<[E]%
+\\
+\>[47]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[42]{}\mathbf{in}\;\Varid{hnf}\;(\sigma\;\Varid{e}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Non-determinism}
+
+The next problem is to add non-determinism.
+The change to the interpreter is small.
+We only need to add a two types of expression, \ensuremath{\Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{e}_{\mathrm{2}}} and \ensuremath{\bot }.
+However, we now need to find a strategy for evaluating non-deterministic expressions.
+
+This has recently been the subject of a lot of research.
+Currently there are four options for representing non-determinism.
+Backtracking, Copying, Pull-tabbing, and Bubbling.
+All of these options are incomplete in their naive implementations.
+However, all of them can be made complete. \cite{fairScheme}
+
+Backtracking is conceptually the simplest mechanism for non-determinism.
+We evaluate an expression normally,
+and every time we hit a choice operator, we pick one option.
+If we finish the computation, either by producing an answer or failing,
+then we undo each of the computations until the last choice expression.
+We continue until we've tried every possible choice.
+
+There are a few issues with backtracking.
+Aside from being incomplete, a naive backtracking implementation relies on
+copying each node as we evaluate it, so we can undo the computation.
+Solving incompleteness is a simple matter of using iterative deepening
+instead of backtracking.
+This poses its own set of issues, such as how to avoid producing the same answer multiple times,
+however these are not difficult problems to solve.
+The issue of copying every node we evaluate is a bigger issue, as it
+directly competes with any attempt to build an optimizing compiler.
+However, we'll show how we can avoid creating many of these backtracking nodes.
+
+The following three mechanisms are all based on the idea of copying part of the expression graph.
+All of them are incomplete with a naive implementation, however
+they can all be made complete using the fair scheme \cite{fairScheme}.
+I'll demonstrate each of these mechanisms with the following expression.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\mathbf{let}\;\Varid{x}\mathrel{=}\mathrm{0}\mathbin{?}\mathrm{1}{}\<[E]%
+\\
+\>[3]{}\mathbf{in}\;\Varid{sqrt}\;((\Varid{x}\mathbin{*}\Varid{x})\mathbin{+}\Varid{x}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+\noindent
+This expression has the following graph:
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+    0 \bullet &                                         & 1 \bullet 
+  }
+}
+\end{mdframed}
+
+Copying is a different take on non-determinism.
+The idea is straightforward.
+Any time we encounter a choice node in an expression, move the choice node up to the root
+of the graph, and copy every node that was on the path to that choice.
+We can see the results of copying on our expression below.
+
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+    0 \bullet &                                         & 1 \bullet 
+  }
+
+  \hspace*{8em}
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+      & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d]                & &  \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl]       & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] & & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & 0 \bullet                                                    & & 1 \bullet\\
+  }
+
+}
+\end{mdframed}
+
+The advantage to copying is its simplicity.
+We just move the non-determinism to the root, and copy everything on the way up.
+This is simple to do, and we end up with an expression of the form \ensuremath{\Varid{answer}\mathbin{?}\Varid{answer}\mathbin{?}\Varid{answer}\ldots }.
+The down side is that we must copy the entire expression.
+This usually leads to a lot of wasted copying.  Especially if one of the branches of the choice will fail.
+
+Pull-tabbing is the other extreme for moving non-determinism.
+Instead of moving the choice node to the root of the graph, we move the choice node up one level.
+\cite{pulltab}
+A naive implementation of pull-tabbing isn't even valid, so identifier must be included for each variable
+to represent which branch it is on.
+There is a significant cost to keeping track of these identifiers.
+
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+    0 \bullet &                                         & 1 \bullet 
+  }
+
+  \hspace*{8em}
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & 0 \bullet                                                    & & 1 \bullet\\
+  }
+}
+\end{mdframed}
+
+Bubbling is a more sophisticated approach to moving non-determinism.
+Instead of moving the choice node to the root, we move it to it's dominator. \cite{bubblingCorrect}
+Bubbling is always valid, and we aren't copying the entire graph.
+Unfortunately computing dominators at runtime is expensive.
+There are strategies of keeping track of the current dominator, \cite{bubblingPractical}
+but as of this time, there are no known bubbling implementations.
+
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+    0 \bullet &                                         & 1 \bullet 
+  }
+
+  \hspace*{8em}
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & & \llap{$sqrt$\,} \bullet \ar@{-}@/-6pt/[d] \\
+      & & & ? \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[dr] \\
+      & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl]       & & + \bullet \ar@{-}@/_6pt/[dl] \ar@{-}@/^6pt/[ddl] \\
+      & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] & & \llap{$*$\,} \bullet \ar@{-}@/^6pt/[d] \ar@{-}@/_6pt/[d] \\
+      & 0 \bullet                                                    & & 1 \bullet\\
+  }
+}
+\end{mdframed}
+
+
+We've elected to implement non-determinism using backtracking for a few reasons.
+It is the simplest one to implement, and it is known to be efficient.
+In order for backtracking to work, we need to augment the interpreter with a stack.
+We'll keep things simple.  A stack will be a list of \texttt{frames}.
+Each frame will represent a single rewrite, and a bit to mark if this rewrite was the result of a choice.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\mathbf{type}\;\Conid{Frame}\mathrel{=}(\Conid{Expr},\Conid{Expr},\Conid{Bool}){}\<[E]%
+\\
+\>[3]{}\mathbf{type}\;\Conid{Stack}\mathrel{=}[\mskip1.5mu \Conid{Frame}\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+We define an auxiliary function \ensuremath{\Varid{push}} to handle the stack.
+The idea is that if we rewrite an expression,
+then push a frame with the rewrite, and the original expression.
+This avoids cluttering the code with \ensuremath{\Varid{hnf}\;\Varid{bt}\;\Varid{e}\mathord{@}\llbracket \ldots \rrbracket }.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\Varid{e}\mathrel{=}\mathbf{let}\;\Varid{e'}\mathrel{=}\ldots {}\<[E]%
+\\
+\>[3]{}\hsindent{11}{}\<[14]%
+\>[14]{}\mathbf{in}\;\Varid{push}\;\Varid{e'}\;\Varid{bt}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mathbf{where}\;\Varid{push}\;\Varid{exp}\;\Varid{stack}\mathrel{=}(\Varid{exp},(\Varid{exp},\Varid{e},\Conid{False})\mathbin{:}\Varid{stack}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+The \ensuremath{\Varid{pushChoice}} is defined similarly, except the frame is \ensuremath{(\Varid{exp},\Varid{e},\Conid{True})} since it's a choice frame.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{42E}{@{}l@{}}%
+\column{44}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{44E}{@{}l@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{47}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{50}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{hnf}\mathbin{::}\Conid{Stack}\to \Conid{Expr}\to (\Conid{Expr},\Conid{Stack}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \bot \rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\bot ,\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{l}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\Varid{l},\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}\mathbin{::}\Varid{t}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}\rrbracket {}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}},\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{f}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{vars}\;\Varid{f}{}\<[E]%
+\\
+\>[50]{}\Varid{e}_{\Varid{f}}\mathrel{=}\Varid{body}\;\Varid{f}{}\<[E]%
+\\
+\>[50]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[50]{}(\Varid{e}_{\Varid{f}}',\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{e}_{\Varid{f}}){}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{push}\;\Varid{e}_{\Varid{f}}'\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Conid{FORWARD}\;\Varid{e}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{e}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{push}\;(\Conid{FORWARD}\;\Varid{e'})\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{e}_{\mathrm{2}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}(\Varid{e\char95 }_{1}',\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{e}_{\mathrm{1}}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{pushChoice}\;(\Conid{FORWARD}\;\Varid{e\char95 }_{1}')\;\Varid{bt'})\;{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{let}\;\Varid{v}_{\mathrm{1}}\mathrel{=}\Varid{e}_{\mathrm{1}}\;\mathbf{in}\;\Varid{e}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{e}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\Varid{bs}\rrbracket {}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{e}\equiv \llbracket \Conid{FORWARD}\;\Varid{e'}\rrbracket {}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}(\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{case}\;\Varid{e'}\;\mathbf{of}\;\Varid{bs}\rrbracket ){}\<[E]%
+\\
+\>[52]{}\Varid{fwd}\mathrel{=}\Conid{FORWARD}\;\Varid{e'}{}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;(\Conid{FORWARD}\;\Varid{e'})\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv (\llbracket \Varid{l}\rrbracket ,\Varid{bt'}){}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Varid{l}\to \Varid{be})\in \Varid{bs}{}\<[E]%
+\\
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{be}{}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;\Varid{e'}\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv ((\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket ,\Varid{bt'}){}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Conid{C}\;\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\to \Varid{be})\in \Varid{bs}{}\<[E]%
+\\
+\>[52]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{be}){}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;\Varid{e'}\;\Varid{bt'}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Notice that we don't need to push values in head normal from onto the stack, since there is no evaluation.
+We also don't push let expressions onto the stack, since they already represent an expression graph.
+
+Due to our recursive evaluation of a \ensuremath{\mathbf{case}} expression with a forwarding node,
+we may add several \textit{phantom rewrites} to the backtracking stack.
+For example if we have \ensuremath{\mathbf{case}\;(\Conid{FORWARD}\;(\Conid{FORWARD}\ldots \Varid{e}))}, we'll add one frame for every forwarding node.
+They do not effect the semantics because 
+\ensuremath{\Varid{e'}} will have another frame higher in the stack that will undo that rewrite.
+This can be proved by induction on the derivation of \ensuremath{\Varid{e'}}.
+In practice we evaluate the case expression with forwarding nodes iteratively,
+so these phantom rewrites are never added to the stack.
+This will be discussed further in the next section.
+
+
+
+To justify the use of forwarding nodes from the last section consider the expression
+\ensuremath{(\Conid{A}\mathbin{?}\Conid{B})\mathbin{?}\Conid{C}} for some constructors \ensuremath{\Conid{A},\Conid{B},\Conid{C}},
+If we are backtracking, and attempting to copy values onto the stack,
+then there is no way produce only the three required answers with copying.
+The problem is that in the first evaluation, we will replace both \ensuremath{\mathbin{?}} nodes with a copy of \ensuremath{\Conid{A}}.
+So, we start with the expression graph:
+
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & & ?_1 \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] \\
+      & & ?_0 \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] & & C_0 \bullet\\
+      & A_0 \bullet & & B_0 \bullet \\
+  }
+}
+\end{mdframed}
+
+After evaluating the expression we'll end up with the following graph and stack.
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & & A_2 \bullet \\
+      & & A_1 \bullet & & C_0 \bullet\\
+      & A_0 \bullet & & B_0 \bullet \\
+  }
+}
+\end{mdframed}
+
+{%
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}[\mskip1.5mu (\Conid{A\char95 2},(?_0\;?_1\;\Conid{C\char95 0}),\Conid{True}),(\Conid{A\char95 1},(\Conid{A\char95 0}\;?_0\;\Conid{B\char95 0}),\Conid{True})\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This looks fine, but remember that any node pushed on the backtracking stack is a copy
+of the origonal node.
+So the \ensuremath{?_0} in the first frame does not refer to the \ensuremath{?_0} in the second frame.
+Ultimately copying will lead to either terminating programs failing to produce valid answers,
+or producing duplicate answers.
+Neither one of these options are acceptable, so we are forced to use forwarding nodes.
+}
+
+\subsection{Free Variables}
+
+Now that we've developed a semantics for non-determinism, free variables and narrowing are
+pretty easy to implement.  We add a new type of node.  \ensuremath{\Conid{FREE}} represents a free variable.
+We use \ensuremath{\mathbin{:=}} as a destructive update operation, 
+so that we can replace a free variable with a different expression.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{42}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{42E}{@{}l@{}}%
+\column{44}{@{}>{\hspre}c<{\hspost}@{}}%
+\column{44E}{@{}l@{}}%
+\column{45}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{47}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{50}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{52}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{73}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{hnf}\mathbin{::}\Conid{Stack}\to \Conid{Expr}\to (\Conid{Expr},\Conid{Stack}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \bot \rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\bot ,\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{l}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\Varid{l},\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}\mathbin{::}\Varid{t}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}\rrbracket {}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}},\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Conid{FREE}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}(\Conid{FREE},\Varid{bt}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{f}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\mathrel{=}\Varid{vars}\;\Varid{f}{}\<[E]%
+\\
+\>[50]{}\Varid{e}_{\Varid{f}}\mathrel{=}\Varid{body}\;\Varid{f}{}\<[E]%
+\\
+\>[50]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[50]{}(\Varid{e}_{\Varid{f}}',\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{e}_{\Varid{f}}){}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{push}\;\Varid{e}_{\Varid{f}}'\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Conid{FORWARD}\;\Varid{e}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{e}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{push}\;(\Conid{FORWARD}\;\Varid{e'})\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{e}_{\mathrm{2}}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}(\Varid{e\char95 }_{1}',\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{e}_{\mathrm{1}}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{pushChoice}\;(\Conid{FORWARD}\;\Varid{e\char95 }_{1}')\;\Varid{bt'})\;{}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{let}\;\Varid{v}_{\mathrm{1}}\mathrel{=}\Varid{e}_{\mathrm{1}}\;\mathbf{in}\;\Varid{e}\rrbracket {}\<[42]%
+\>[42]{}\mathrel{=}{}\<[42E]%
+\>[45]{}\mathbf{let}\;{}\<[50]%
+\>[50]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[45]{}\mathbf{in}\;{}\<[50]%
+\>[50]{}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{e}){}\<[E]%
+\\
+\>[3]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\Varid{bs}\rrbracket {}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{e}\equiv \llbracket \Conid{FORWARD}\;\Varid{e'}\rrbracket {}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}(\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{case}\;\Varid{e'}\;\mathbf{of}\;\Varid{bs}\rrbracket ){}\<[E]%
+\\
+\>[52]{}\Varid{fwd}\mathrel{=}\Conid{FORWARD}\;\Varid{e'}{}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;(\Conid{FORWARD}\;\Varid{e'})\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{e}\equiv \llbracket \Conid{FREE}\rrbracket {}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}\{\mskip1.5mu \Conid{C\char95 1}\ldots \to \anonymous ,\ldots ,{}\<[73]%
+\>[73]{}\Conid{C\char95 n}\ldots \to \anonymous \mskip1.5mu\}\mathrel{=}\Varid{bs}{}\<[E]%
+\\
+\>[52]{}\Varid{e}_{\mathrm{1}}\mathrel{=}\Conid{C\char95 1}\;\Conid{FREE}\ldots \Conid{FREE}{}\<[E]%
+\\
+\>[52]{}\ldots {}\<[E]%
+\\
+\>[52]{}\Varid{e}_{\Varid{n}}\mathrel{=}\Conid{C\char95 n}\;\Conid{FREE}\ldots \Conid{FREE}{}\<[E]%
+\\
+\>[52]{}\Varid{e}\mathbin{:=}\Varid{e}_{\mathrm{1}}\mathbin{?}\ldots \mathbin{?}\Varid{e}_{\Varid{n}}{}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{hnf}\;\Varid{bt}\;\llbracket \;\mathbf{case}\;\Varid{e}\;\mathbf{of}\;\Varid{bs}\rrbracket {}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv (\llbracket \Varid{l}\rrbracket ,\Varid{bt'}){}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Varid{l}\to \Varid{be})\in \Varid{bs}{}\<[E]%
+\\
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;\Varid{be}{}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;\Varid{e'}\;\Varid{bt'}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{hnf}\;\Varid{e}\equiv ((\llbracket \Conid{C}\;\Varid{e}_{\mathrm{1}}\ldots \Varid{e}_{\Varid{n}}\rrbracket ,\Varid{bt'}){}\<[44]%
+\>[44]{}\mathrel{=}{}\<[44E]%
+\>[47]{}\mathbf{let}\;{}\<[52]%
+\>[52]{}(\Conid{C}\;\Varid{v}_{\mathrm{1}}\ldots \Varid{v}_{\Varid{n}}\to \Varid{be})\in \Varid{bs}{}\<[E]%
+\\
+\>[52]{}\sigma\mathrel{=}\{\mskip1.5mu \Varid{v}_{\mathrm{1}}\to \Varid{e}_{\mathrm{1}},\ldots \Varid{v}_{\Varid{n}}\to \Varid{e}_{\Varid{n}}\mskip1.5mu\}{}\<[E]%
+\\
+\>[52]{}(\Varid{e'},\Varid{bt'})\mathrel{=}\Varid{hnf}\;\Varid{bt}\;(\sigma\;\Varid{be}){}\<[E]%
+\\
+\>[47]{}\mathbf{in}\;{}\<[52]%
+\>[52]{}\Varid{push}\;\Varid{e'}\;\Varid{bt'}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\subsection{Higher Order Functions}
+
+The last feature we need to add is higher order functions.
+This is typically done with defunctionalization. \cite{defunctionalization}.
+The idea is simple. We add a new function called \ensuremath{\Varid{apply}} with the definition.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{apply}\;\Varid{f}\;\Varid{x}\mathrel{=}\Varid{f}\;\Varid{x}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This means that our system is no longer strictly a rewriting system anymore.
+But this also introduces a new problem.  What is \ensuremath{\Varid{f}}.
+If we look closely we see that \ensuremath{\Varid{f}} actually has two different meanings.
+On the left hand side \ensuremath{\Varid{f}} is a symbol that is passed to apply,
+however on the right hand side \ensuremath{\Varid{f}} is a function that needs to be reduced.
+
+We make this definition precise by introducing a \textit{partial application}.
+If \ensuremath{\Varid{f}} is a function symbol with arity \ensuremath{\Varid{n}}, then \ensuremath{\Varid{f}_{\Varid{k}}} where \ensuremath{\Varid{k}\leq \Varid{n}} is the partial application
+that is missing \ensuremath{\Varid{k}} arguments.
+For example, \ensuremath{+_2} represents the usual \ensuremath{\mathbin{+}} function, but it is missing two arguments.
+We can then apply it to arguments with \ensuremath{\Varid{apply}\;(\Varid{apply}\;+_2\;\mathrm{2})\;\mathrm{3}}.
+The evaluate is show below graphically.
+
+\begin{mdframed}
+\centerline{
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$apply$\,} \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] \\
+      & \llap{$apply$\,} \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] & & 3 \bullet \\
+      \llap{$+_2$\,} \bullet & & 2 \bullet \\
+  }
+
+  \hspace*{2em}
+  $\Rightarrow$
+  \hspace*{2em}
+
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & & \llap{$apply$\,} \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] \\
+      & \llap{$+_1$\,} \bullet \ar@{-}@/-6pt/[d] & & 3 \bullet \\
+      & 2 \bullet \\
+  }
+
+  \hspace*{2em}
+  $\Rightarrow$
+  \hspace*{2em}
+
+  \xymatrix@C=-2pt@R=10pt@C=5pt{
+      & \llap{$+$\,} \bullet \ar@{-}@/-6pt/[dl] \ar@{-}@/-6pt/[dr] \\
+      2 & & 3 \bullet \\
+  }
+}
+\end{mdframed}
+
+Applying functions one argument at a time will always work,
+but in practice this is very slow.
+We can improve performance drastically by making \ensuremath{\Varid{apply}} into a variadic function.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{apply}\;\Varid{f}_{\Varid{n}}\;[\mskip1.5mu \Varid{x}_{\mathrm{1}},\ldots \Varid{x}_{\Varid{n}}\mskip1.5mu]\mathrel{=}\Varid{f}\;\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\Varid{n}}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Unfortunately this definition only works if the length of the argument list is exactly the same
+as the number of missing arguments in \ensuremath{\Varid{f}}.
+This is rarely the case.
+So, we need to change the definition of \ensuremath{\Varid{apply}} to handle the three different possibilities.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{apply}\;\Varid{f}_{\Varid{k}}\;[\mskip1.5mu \Varid{x}_{\mathrm{1}},\ldots \Varid{x}_{\Varid{n}}\mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{k}\mathbin{>}\Varid{n}{}\<[14]%
+\>[14]{}\mathrel{=}f_{k-n}\;\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\Varid{n}}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{k}\equiv \Varid{n}{}\<[14]%
+\>[14]{}\mathrel{=}\Varid{f}\;\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\Varid{n}}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{k}\mathbin{<}\Varid{n}{}\<[14]%
+\>[14]{}\mathrel{=}\Varid{apply}\;(\Varid{f}\;\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\Varid{k}})\;[\mskip1.5mu x_{k+1},\ldots \Varid{x}_{\Varid{n}}\mskip1.5mu]{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This is the only change we need to support higher order functions,
+but is this change valid?
+How does it interact with non-determinism and free variables?
+The answer is that there aren't any complicated interactions to worry about.
+If \ensuremath{\Varid{f}_{\Varid{k}}} is non-deterministic, then we push the apply node on the backtracking stack.
+This is no different than any variable evaluated by a case statement.
+If \ensuremath{\Varid{f}_{\Varid{k}}} is a free variable, then we return \ensuremath{\bot },
+since we cannot narrow over functions.
+
+\section{The Generated Code}
+
+This gives us a working semantics for the FlatCurry language.
+However this is not the semantics we used.
+Unfortunately while this semantics isn't too complicated,
+its simplicity comes at the cost of speed.
+There are two major problems.
+The first is that we explicitly represent \ensuremath{\mathbf{case}} and \ensuremath{\mathbf{let}} expressions as nodes in our graph.
+These should be translated down to flow of control and assignment statements.
+The second problem is that every time we rewrite a node, we push a frame on the backtracking stack.
+
+In order to fix these problems, we need to more from the world of abstract interpreters into compiled code.
+We compile to C code, since C is low level enough to apply all of our optimizations,
+but modern C compilers are able to take care of optimizations not related to functional logic programs.
+
+Since we are constructing a graph rewriting system, we need to decide on the representation of the graph.
+I've started with a simplified version of a \texttt{Node} of the graph.
+We will expand it as we add features.
+
+\begin{tabbing}\ttfamily
+~typedef~struct~Node\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~unsigned~int~missing\char59{}\\
+\ttfamily ~~~~~unsigned~int~tag\char59{}\\
+\ttfamily ~~~~~const~void~\char40{}\char42{}hnf\char41{}\char40{}struct~Node\char42{}\char41{}\char59{}\\
+\ttfamily ~~~~~Node\char42{}~children\char91{}4\char93{}\char59{}\\
+\ttfamily ~\char125{}~Node\char59{}
+\end{tabbing}
+
+As we can see a node doesn't contain a lot of information.
+It only contains the number of arguments it's missing, a \texttt{tag},
+a function pointer to some \texttt{hnf} function, and an array of 4 children.
+The \texttt{missing} variable will only be relevant if this node represents a partially applied function
+or constructor.  Most of the time it will be set to 0.
+While the node can have four children, we can extend this by having the final child point to an
+array of more children.
+
+The \texttt{tag} field tells us what kind of node this represents.
+There are five global tags, \texttt{FAIL, FUNCTION, CHOICE, FORWARD,} and \texttt{FREE}.
+These tags are given the values 0,1,2,3, and 4 respectively.
+Then for every data type, each constructor is given a unique tag for that type.
+For example the type \ensuremath{\Conid{Bool}} has two constructors \ensuremath{\Conid{True}} and \ensuremath{\Conid{False}}.
+The tag for \ensuremath{\Conid{False}} is 5, and the tag for \ensuremath{\Conid{True}} is 6.
+Curry's type system guarantees that expressions of one type will remain in that type,
+so we only need tags to be unique for each type.
+It's not an issue that both \ensuremath{\Conid{False}} and \ensuremath{\Conid{Nothing}} from the \ensuremath{\Conid{Maybe}} type share the tag 5,
+because no boolean expression could become a value of type \ensuremath{\Conid{Maybe}}.
+
+Finally the \texttt{hnf} field is a function pointer to the code that can reduce this node.
+For every function \ensuremath{\Varid{f}} in Curry, we will generate a \texttt{f\_hnf} C function.
+An example of the \ensuremath{\Varid{id}} hnf function is given below.
+
+\begin{tabbing}\ttfamily
+~void~Prelude\char95{}id\char95{}hnf\char40{}field~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~root\char45{}\char62{}children\char91{}0\char93{}\\
+\ttfamily ~~~x\char45{}\char62{}hnf\char40{}x\char41{}\char59{}\\
+\ttfamily ~~~root\char45{}\char62{}hnf~\char61{}~\char38{}forward\char95{}hnf\char59{}\\
+\ttfamily ~~~root\char45{}\char62{}tag~\char61{}~FORWARD\char95{}TAG\char59{}\\
+\ttfamily ~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}id\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~return\char59{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+Here each \texttt{hnf} function takes the root of the expression as a parameter.
+So if we're evaluating the expression \ensuremath{\Varid{id}\;\mathrm{5}}, then \texttt{root} is \ensuremath{\Varid{id}}
+and \texttt{x} is \ensuremath{\mathrm{5}}.
+We get this first child of \texttt{root}, since \ensuremath{\Varid{id}} only take one argument.
+Then we evaluate the child \texttt{x} to head normal form, using \texttt{x}'s hnf function.
+Finally we set \texttt{root} to be a forwarding node,
+and push \texttt{root} and a copy of the id node onto the backtracking stack.
+
+This matches what our semantics would do exactly,
+but \ensuremath{\Varid{id}} is a simple function.
+What happens when we have a function with a case statement.
+{%
+We'll use the Curry function \ensuremath{not} as an example.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{16}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}not\mathbin{::}\Conid{Bool}\to \Conid{Bool}{}\<[E]%
+\\
+\>[3]{}not\;\Varid{x}\mathrel{=}\mathbf{case}\;\Varid{x}\;\mathbf{of}{}\<[E]%
+\\
+\>[3]{}\hsindent{13}{}\<[16]%
+\>[16]{}\Conid{True}\to \Conid{False}{}\<[E]%
+\\
+\>[3]{}\hsindent{13}{}\<[16]%
+\>[16]{}\Conid{False}\to \Conid{True}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+The generated code for these functions becomes complex quickly, so we'll start with a simplified version.
+Initially we might generate the following.
+
+\begin{tabbing}\ttfamily
+~void~not\char95{}hnf\char40{}Node\char42{}~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~root\char45{}\char62{}children\char91{}0\char93{}\char59{}\\
+\ttfamily ~~~switch\char40{}x\char45{}\char62{}tag\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~~~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~~~break\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~True\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~~~root\char45{}\char62{}tag~\char61{}~False\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~~~break\char59{}\\
+\ttfamily ~~~\char125{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+This looks great.
+The only surprising part is why we are assigning a \texttt{hnf} function to a
+node in head normal form.
+The \texttt{CTR\_hnf} function doesn't actually do anything.
+It's just there because every node needs an hnf function.
+
+Right now this code only works if \texttt x is \ensuremath{\Conid{True}} or \ensuremath{\Conid{False}}.
+But \texttt x could be any other expression.
+It could be a \texttt{FAIL} node, a \texttt{FUNCTION} call,
+a \texttt{CHOICE} expression, a \texttt{FORWARD} node, or a \texttt{FREE} variable.
+We'll tackle these one at a time.
+Fortunately \texttt{FAIL} nodes are easy.  If the scrutiny of a case is a failure,
+then the whole expression should fail.
+We just need to add the case:
+
+\begin{tabbing}\ttfamily
+~case~FAIL\char95{}TAG\char58{}\\
+\ttfamily ~~~~~root\char45{}\char62{}tag~\char61{}~FAIL\char95{}TAG\char59{}\\
+\ttfamily ~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~break\char59{}
+\end{tabbing}
+
+We can reuse \texttt{CTR\_hnf} because \texttt{FAIL} is a head normal form.
+This is simple enough, but now we need to add \texttt{FUNCTION} nodes to our case.
+The problem is if our case expression is a function node, then we need to evaluate that
+to head normal form, and then we need to re-examine the tag.
+The solution here is surprisingly simple.
+We just put the whole case in a loop.
+Surprisingly this code is about as efficient as using a more complicated scheme like a jump table
+ \cite{branchPerformance}.
+So our function node becomes
+
+\begin{tabbing}\ttfamily
+~case~FUNCTION\char95{}TAG\char58{}\\
+\ttfamily ~~~~~root\char45{}\char62{}hnf\char40{}root\char41{}\char59{}\\
+\ttfamily ~~~~~break\char59{}
+\end{tabbing}
+
+We can actually do the same for choice and free nodes.
+A choice node is reduced to one of its two values,
+and a free node is replaces with one of the two constructors.
+After this is done, we reevaluate the expression.
+
+\begin{tabbing}\ttfamily
+~case~CHOICE\char95{}TAG\char58{}\\
+\ttfamily ~~~~~x\char45{}\char62{}choice\char95{}hnf\char40{}x\char41{}\char59{}\\
+\ttfamily ~~~~~break\char59{}\\
+\ttfamily ~\\
+\ttfamily ~case~FREE\char95{}TAG\char58{}\\
+\ttfamily ~~~~~x\char45{}\char62{}TAG~\char61{}~CHOICE\char95{}TAG\char59{}\\
+\ttfamily ~~~~~x\char45{}\char62{}hnf~\char61{}~\char38{}choice\char95{}hnf\char59{}\\
+\ttfamily ~~~~~x\char45{}\char62{}children\char91{}0\char93{}~\char61{}~make\char95{}True\char40{}\char41{}\char59{}\\
+\ttfamily ~~~~~x\char45{}\char62{}children\char91{}1\char93{}~\char61{}~make\char95{}False\char40{}\char41{}\char59{}\\
+\ttfamily ~~~~~x\char45{}\char62{}choice\char95{}hnf\char40{}x\char41{}\char59{}\\
+\ttfamily ~~~~~break\char59{}
+\end{tabbing}
+
+The \texttt{choice\_hnf} function chooses between the two options, and will be described later.
+Any \texttt{make\_*} function will construct new a new node.
+
+Finally we have the \texttt{FORWARD} nodes.
+Unfortunately these nodes are more complicated.
+A nieve implementation could set the value of the forward node to the node that it points to.
+Such as the following code.
+
+\begin{tabbing}\ttfamily
+~case~FORWARD\char95{}TAG\char58{}\\
+\ttfamily ~~~~~x~\char61{}~x\char45{}\char62{}children\char91{}0\char93{}\\
+\ttfamily ~~~~~break\char59{}
+\end{tabbing}
+
+Unfortunately this solution fails if we need the original node.
+Suppose we have the Curry program
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{25}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{makeJustBool}\;\Varid{x}\mathrel{=}\mathbf{case}\;\Varid{x}\;\mathbf{of}{}\<[E]%
+\\
+\>[3]{}\hsindent{22}{}\<[25]%
+\>[25]{}\Conid{True}\to \Conid{Just}\;\Varid{x}{}\<[E]%
+\\
+\>[3]{}\hsindent{22}{}\<[25]%
+\>[25]{}\Conid{False}\to \Conid{Just}\;\Varid{x}{}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\Varid{main}\mathrel{=}\Varid{makeJustBool}\;(\Conid{False}\mathbin{?}\Conid{True}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+If we were to use the naive forwarding method
+then we would evaluate \ensuremath{\Varid{main}} to the expression \ensuremath{\Conid{Just}\;\Conid{True}},
+when it should really be \ensuremath{\Conid{Just}\;(\Conid{FORWARD}\;\Conid{True})}.
+So, we need to keep the original variable around.
+This leads to an unfortunate problem of keeping two values of each variable.
+The variable itself, and a forwarding position.
+This makes the generated code harder to read, but it doesn't effect performance much.
+The C optimizer can easily remove unused duplicates.
+This finally leads to the full code for the \ensuremath{not} function given below.
+There are a few more technical issues to resolve, but this is the core idea behind how we generate code.
+
+\begin{tabbing}\ttfamily
+~void~not\char95{}hnf\char40{}Node\char42{}~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~root\char45{}\char62{}children\char91{}0\char93{}\char59{}\\
+\ttfamily ~~~Node\char42{}~x\char95{}forward~\char61{}~x\char59{}\\
+\ttfamily ~~~while\char40{}true\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~switch\char40{}x\char95{}forward\char45{}\char62{}tag\char41{}\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~case~FAIL\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~FAIL\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~FORWARD\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward~\char61{}~x\char95{}forward\char45{}\char62{}children\char91{}0\char93{}\\
+\ttfamily ~~~~~~~~~break\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~FUNCTION\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf\char40{}root\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~break\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~CHOICE\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}choice\char95{}hnf\char40{}x\char95{}forward\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~break\char59{}\\
+\ttfamily ~~~~~~~\\
+\ttfamily ~~~~~~~case~FREE\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}TAG~\char61{}~CHOICE\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}hnf~\char61{}~\char38{}choice\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}children\char91{}0\char93{}~\char61{}~make\char95{}True\char40{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}children\char91{}1\char93{}~\char61{}~make\char95{}False\char40{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~x\char95{}forward\char45{}\char62{}choice\char95{}hnf\char40{}x\char95{}forward\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~break\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~True\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~False\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char40{}x\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+
+\subsection{Let Expression}
+
+The semantics here seem fine, but we actually encounter a surprising problem when we add let expressions.
+Consider the following function:
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{12}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{21}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{28}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{weird}\mathrel{=}{}\<[12]%
+\>[12]{}\mathbf{let}\;\Varid{x}\mathrel{=}\Conid{True}\mathbin{?}\Conid{False}{}\<[E]%
+\\
+\>[12]{}\mathbf{in}\;\mathbf{case}\;{}\<[21]%
+\>[21]{}\Varid{x}\;\mathbf{of}{}\<[E]%
+\\
+\>[21]{}\Conid{False}{}\<[28]%
+\>[28]{}\to \Conid{False}{}\<[E]%
+\\
+\>[21]{}\Conid{True}{}\<[28]%
+\>[28]{}\to \Conid{True}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This would be a silly function to write, but its meaning should be clear.
+It will produce both \ensuremath{\Conid{True}} and \ensuremath{\Conid{False}}.
+
+However, if we were to run this code with our current implementation, we'd get surprising behavior.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\mathbin{:}\Varid{eval}\;\Varid{weird}{}\<[E]%
+\\
+\>[3]{}\Conid{False}{}\<[E]%
+\\
+\>[3]{}\Conid{False}{}\<[E]%
+\\
+\>[3]{}\Conid{False}{}\<[E]%
+\\
+\>[3]{}\Conid{False}{}\<[E]%
+\\
+\>[3]{}\ldots {}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+What went wrong here?
+Well, we can look at the generated code for \ensuremath{\Varid{weird}} to find a clue.
+
+\begin{tabbing}\ttfamily
+~void~weird\char95{}hnf\char40{}Node\char42{}~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~make\char95{}choice\char40{}make\char95{}True\char40{}\char41{}\char44{}~make\char95{}False\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~Node\char42{}~x\char95{}forward~\char61{}~x\char59{}\\
+\ttfamily ~~~while\char40{}true\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~switch\char40{}x\char95{}forward\char45{}\char62{}tag\char41{}\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~\char46{}\char46{}\char46{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~False\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~True\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+When we push a rewrite onto the backtracking stack,
+we can only backtrack to the calling function.
+In this case that means that when we backtrack, \texttt{root} is replaced by \texttt{weird}.
+But weird actually has some important state.
+It created a local node that was non-deterministic.
+So, when we backtrack, we need to keep the state around.
+This turns out to be a hard problem to solve.
+Both Pakcs and Kics2 sidestep this problem by transforming the program
+so that there is at most one case in each function. \cite{kics2, pakcs}
+This can solve the problem, but it increases the number of function calls substantially.
+We propose a novel solution where there are no extra function calls.
+
+The idea is pretty straightforward.
+Notice that the problem from our \ensuremath{\Varid{weird}} example happened because we reached a case statement
+with some local state.
+So, when we backtrack, we would want to backtrack to that specific point in the function.
+This leads to a new definition.
+Let \ensuremath{\Varid{e}} be an expression, then the \textit{case path} \ensuremath{\Varid{e}|_{\Varid{p}}} 
+of an expression is path through the branches of case statements.
+This is analogous to the path through a definitional tree.
+Now for each function, we can define a \textit{path function}
+as \ensuremath{\Varid{f}|_{\Varid{p}}\;\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\mathrm{1}}\mathrel{=}\Varid{e}|_{\Varid{p}}} where \ensuremath{\Varid{x}_{\mathrm{1}}\ldots \Varid{x}_{\Varid{n}}} are undefined variables in \ensuremath{\Varid{e}|_{\Varid{p}}}.
+The full definition for \ensuremath{\Varid{e}|_{\Varid{p}}} is given with the following non-deterministic function.
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{casePath}\;(\mathbf{let}\ldots \mathbf{in}\;\Varid{e})\mathrel{=}\Varid{casePath}\;\Varid{e}{}\<[E]%
+\\
+\>[3]{}\Varid{casePath}\;(\Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{e}_{\mathrm{2}})\mathrel{=}\Varid{casePath}\;\Varid{e}_{\mathrm{1}}\mathbin{?}\Varid{casePath}\;\Varid{e}_{\mathrm{2}}{}\<[E]%
+\\
+\>[3]{}\Varid{casePath}\;(\mathbf{case}\ldots \mathbf{in}\ldots )\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[3]{}\Varid{casePath}\;(\mathbf{case}\ldots \mathbf{in}\;\{\mskip1.5mu \ldots \Varid{p}_{\Varid{i}}\to \Varid{e\char95 i}\ldots \mskip1.5mu\})\mathrel{=}\Varid{i}\mathbin{:}\Varid{casePath}\;\Varid{e\char95 i}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+The idea here is that we make a new function starting at each case statement.
+Then when we're at the case at position \ensuremath{\Varid{p}}, we push \ensuremath{\Varid{f}|_{\Varid{p}}} onto the backtracking stack
+instead of \ensuremath{\Varid{f}}.
+In C we represent \ensuremath{\Varid{f}|_{\Varid{p}}} as \texttt{f\_p}, where \texttt{f\_} is the function at the empty path
+just before the first case statement to avoid name conflicts.
+We can use this to solve our \ensuremath{\Varid{wierd}} problem.
+We generate two function.
+
+\begin{tabbing}\ttfamily
+~void~weird\char95{}hnf\char40{}Node\char42{}~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~make\char95{}choice\char40{}make\char95{}True\char40{}\char41{}\char44{}~make\char95{}False\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~Node\char42{}~x\char95{}forward~\char61{}~x\char59{}\\
+\ttfamily ~~~while\char40{}true\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~switch\char40{}x\char95{}forward\char45{}\char62{}tag\char41{}\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~\char46{}\char46{}\char46{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~False\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char95{}\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~True\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char95{}\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~\char125{}\\
+\ttfamily ~\\
+\ttfamily ~void~weird\char95{}\char95{}hnf\char40{}Node\char42{}~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~Node\char42{}~x~\char61{}~root\char45{}\char62{}childrent\char91{}0\char93{}\char59{}\\
+\ttfamily ~~~Node\char42{}~x\char95{}forward~\char61{}~x\char59{}\\
+\ttfamily ~~~while\char40{}true\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~switch\char40{}x\char95{}forward\char45{}\char62{}tag\char41{}\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~\char46{}\char46{}\char46{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~False\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char95{}\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~~~case~True\char95{}TAG\char58{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~~~~~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~~~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}weird\char95{}\char40{}\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~return\char59{}\\
+\ttfamily ~~~~~\char125{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+As we can see this will duplicate a lot of code,
+and the problem gets worse when we have more nested case statements.
+However, but the problem is not as bad as it might seem at first.
+While we will have more duplication with nested case statements,
+we're duplication smaller functions each time.
+Also, while we're duplicating a lot of code,
+the duplicate code is part of a separate function,
+so having more code won't evict the running code from the cache.
+It may be possible to eliminate the duplicate code with a clever use of gotos,
+but it's not clear that it would be more efficient, and is outside the scope of this research.
+
+\subsection{Choice Nodes}
+
+At this point our compiler is correct, but there are still some details to work out.
+How do we actually implement non-determinism, and higher order functions.
+So for we've swept it under the rug with the \texttt{choice\_hnf} function.
+This function isn't terribly complicated conceptually, but it hides a lot of details.
+
+\begin{tabbing}\ttfamily
+~typedef~struct\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~bool~choice\char59{}\\
+\ttfamily ~~~~~field~lhs\char59{}\\
+\ttfamily ~~~~~field~rhs\char59{}\\
+\ttfamily ~\char125{}~Frame\char59{}\\
+\ttfamily ~\\
+\ttfamily ~typedef~struct\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~Frame\char42{}~array\char59{}\\
+\ttfamily ~~~~~size\char95{}t~size\char59{}\\
+\ttfamily ~~~~~size\char95{}t~capacity\char59{}\\
+\ttfamily ~\char125{}~Stack\char59{}\\
+\ttfamily ~\\
+\ttfamily ~Stack~bt\char95{}stack\char59{}
+\end{tabbing}
+
+In our C implementation choice frames, and the backtracking stack are both straightforward.
+A choice frame has a left hand side, right hand side,
+and a marker denoting if the frame came from a choice node.
+Our backtracking function is about as simple.
+We just copy the \texttt{rhs} over \texttt{lhs}
+
+\begin{tabbing}\ttfamily
+~bool~undo\char40{}\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~if\char40{}empty\char40{}bt\char95{}stack\char41{}\char41{}\\
+\ttfamily ~~~~~~~~~return~false\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~Frame\char42{}~frame\char59{}\\
+\ttfamily ~~~~~do~\\
+\ttfamily ~~~~~\char123{}\\
+\ttfamily ~~~~~~~~~frame~\char61{}~pop\char40{}bt\char95{}stack\char41{}\char59{}\\
+\ttfamily ~~~~~~~~~memcpy\char40{}frame\char45{}\char62{}lhs\char46{}n\char44{}~frame\char45{}\char62{}rhs\char46{}n\char44{}~sizeof\char40{}Node\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~\char125{}~while\char40{}\char33{}\char40{}frame\char45{}\char62{}choice~\char124{}\char124{}~empty\char40{}bt\char95{}stack\char41{}\char41{}\char41{}\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~return~frame\char45{}\char62{}choice\char59{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+This is all easy, but what about the choice node itself?
+Well, that's not much more complicated.
+A choice node is just a node, but we give a specific meaning to each child.
+A choice node has a left child \texttt{children[0]}, a right child \texttt{children[1]},
+and a marker for which side to reduce \texttt{children[2]}.
+When we first encounter a choice node, we reduce it to the left hand side,
+then after we've backtracked, we reduce it to the right hand side.
+Notice that if \texttt{children[2]} is 0 then reduce the left child 
+and mark this node in the backtracking stack, otherwise reduce the right child.
+This leads to the following algorithm for evaluating a choice node.
+
+\begin{tabbing}\ttfamily
+~void~choice\char95{}hnf\char40{}field~root\char41{}\\
+\ttfamily ~\char123{}\\
+\ttfamily ~~~~~Node\char42{}~choices\char91{}2\char93{}~\char61{}~\char123{}root\char45{}\char62{}children\char91{}0\char93{}\char44{}~root\char45{}\char62{}children\char91{}1\char93{}\char125{}\char59{}\\
+\ttfamily ~~~~~int~side~\char61{}~root\char45{}\char62{}children\char91{}2\char93{}\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~Node\char42{}~saved~\char61{}~\char40{}Node\char42{}\char41{}malloc\char40{}sizeof\char40{}Node\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~memcpy\char40{}saved\char46{}n\char44{}~root\char46{}n\char44{}~sizeof\char40{}Node\char41{}\char41{}\char59{}\\
+\ttfamily ~~~~~saved\char45{}\char62{}children\char91{}2\char93{}~\char61{}~\char33{}side\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~choices\char91{}side\char93{}\char45{}\char62{}hnf\char40{}choices\char91{}side\char93{}\char41{}\char59{}\\
+\ttfamily ~~~~~set\char95{}forward\char40{}root\char44{}choices\char91{}side\char93{}\char41{}\char59{}\\
+\ttfamily ~\\
+\ttfamily ~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~saved\char44{}~side~\char61{}\char61{}~0\char41{}\char59{}\\
+\ttfamily ~\char125{}
+\end{tabbing}
+
+\subsection{Optimization: Removing Backtracking Frames}
+
+Surprisingly this is the only piece of the runtime system that is needed for non-determinism.
+However, while this works, there's a major efficiency problem here.
+We're pushing nodes on the backtracking stack for every rewrite.
+There are a lot of cases where we don't need to push most of these nodes,
+such as the following code
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{fib}\;\Varid{n}\mathrel{=}\mathbf{if}\;\Varid{n}\mathbin{<}\mathrm{2}\;\mathbf{then}\;\Varid{n}\;\mathbf{else}\;\Varid{fib}\;(\Varid{n}\mathbin{-}\mathrm{1})\mathbin{+}\Varid{fib}\;(\Varid{n}\mathbin{-}\mathrm{2}){}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\Varid{main}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{fib}\;\mathrm{20}\equiv (\mathrm{1}\mathbin{?}\mathrm{6765})\mathrel{=}\Varid{putStrLn}\;\text{\ttfamily \char34 found~answer\char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+This program will compute \ensuremath{\Varid{fib}\;\mathrm{20}}, then it will push all of those nodes onto the stack,
+Then, when it discoverers that \ensuremath{\Varid{fib}\;\mathrm{20}\not\equiv \mathrm{1}}, it will undo all of those computations,
+Only to redo them immediately afterwards!
+This is clearly not what we want.
+Since \ensuremath{\Varid{fib}} is a deterministic function, can't we just avoid pushing those values on the stack?
+The short answer is no.
+There are two reasons.  First determining if a function is non-deterministic is undecidable.
+Second, a function may have a non-deterministic argument.
+For example, we could easily change the above program to:
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\Varid{fib}\;\Varid{n}\mathrel{=}\mathbf{if}\;\Varid{n}\mathbin{<}\mathrm{2}\;\mathbf{then}\;\Varid{n}\;\mathbf{else}\;\Varid{fib}\;(\Varid{n}\mathbin{-}\mathrm{1})\mathbin{+}\Varid{fib}\;(\Varid{n}\mathbin{-}\mathrm{2}){}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\Varid{main}{}\<[E]%
+\\
+\>[3]{}\hsindent{1}{}\<[4]%
+\>[4]{}\mid \Varid{fib}\;(\mathrm{1}\mathbin{?}\mathrm{20})\equiv \mathrm{6765}\mathrel{=}\Varid{putStrLn}\;\text{\ttfamily \char34 found~answer\char34}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+Now the expression with \ensuremath{\Varid{fib}} is no longer deterministic.
+So, do we need to just give up and accept this loss of efficiency?
+Surprisingly here we don't.
+While it's impossible to tell statically if an expression is non-deterministic,
+its very easy to tell dynamically if it is.
+
+As far as We're aware, this is another novel solution.
+The idea is simple. Each expression contains a boolean flag, that marks if it is non-deterministic.
+We've called these \texttt{nondet} flags.
+
+The rules for determining if an expression node \ensuremath{\Varid{e}} is \texttt{nondet} are simple.
+If \ensuremath{\Varid{e}} is a choice, then \ensuremath{\Varid{e}} is \texttt{nondet}.
+If \ensuremath{\Varid{e}} has a case who's scrutenee is \texttt{nondet}, then \ensuremath{\Varid{e}} is \texttt{nondet}.
+If \ensuremath{\Varid{e}} is a forward node to a \texttt{nondet} node, then \ensuremath{\Varid{e}} is \texttt{nondet}.
+All other nodes are deterministic.
+
+It's easy to see that any node not marked as \texttt{nondet} doesn't need to be pushed on the stack.
+It's not part of a choice, 
+all of it's case statements used deterministic nodes,
+and it's not forwarding to a non-deterministic node.
+This doesn't prove the correctness by any means, but it's pretty compelling.
+Even better, the only change to the code is that instead of just pushing rewrites on the stack,
+we change if the variable is \texttt{nondet}.
+For example, the \texttt{not\_hnf} example is changed to:
+
+\begin{tabbing}\ttfamily
+~case~False\char95{}TAG\char58{}\\
+\ttfamily ~~~root\char45{}\char62{}tag~\char61{}~True\char95{}TAG\char59{}\\
+\ttfamily ~~~root\char45{}\char62{}hnf~\char61{}~CTR\char95{}hnf\char59{}\\
+\ttfamily ~~~if\char40{}x\char45{}\char62{}nondet\char41{}\\
+\ttfamily ~~~\char123{}\\
+\ttfamily ~~~~~push\char40{}bt\char95{}stack\char44{}~root\char44{}~make\char95{}not\char95{}\char40{}x\char41{}\char44{}~false\char41{}\char59{}\\
+\ttfamily ~~~\char125{}\\
+\ttfamily ~~~return\char59{}
+\end{tabbing}
+
+
+And with that we've arrived at our complete semantics for our compiler.
+In the next section we describe how compiler transformations are implemented,
+and give a short description of the compiler using these transformations.
+Now that we have our recipe, it's time to make some Curry!
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+\end{document}

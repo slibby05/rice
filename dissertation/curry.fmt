@@ -1,0 +1,63 @@
+%format free         = "\textbf{free} "
+%format fcase        = "\textbf{fcase} "
+%format ...          = "\ldots "
+%format ->*          = "\rightarrow^* "
+%format EXEMPT       = "\bot "
+%format Nat          = "\mathbf{N} "
+%format R            = "\textbf{R} "
+%format F            = "\textbf{F} "
+%format `elem`       = "\in "
+%format `intersect`  = "\cap"
+%format ^*           = "^* "
+%format ^?           = "^? "
+%format ^+           = "^+ "
+%format Name_A       = Name"_{Arity}"
+%format sigma        = "\sigma"
+%format e_1
+%format e_1'
+%format e_2
+%format e_2'
+%format e_n
+%format e_f
+%format e_f'
+%format v_1
+%format v_2
+%format v_n
+%format f_k
+%format f_n
+%format f_kn = "f_{k-n}"
+%format x_1
+%format x_k
+%format x_k1 = "x_{k+1}"
+%format x_n
+%format C_k
+%format b_1
+%format b_n
+%format p_1
+%format p_2
+%format p_n
+%format p_i
+%format E_1
+%format E_2
+%format E_i
+%format E_n
+%format pl_1 = "+_1"
+%format pl_2 = "+_2"
+%format case_CT        = case"_{CaseType}"
+%format case_ct        = case"_{ct}"
+%format case_R         = case"_{R}"
+%format case_F         = case"_{F}"
+%format code a         = "\llbracket " a "\rrbracket "
+%format (code (a))     = "\llbracket " a "\rrbracket "
+%format codebr a       = "\llbracket " a "\rrbracket_{BR} "
+%format (codebr (a))   = "\llbracket " a "\rrbracket_{BR} "
+%format codelit a      = "\llbracket " a "\rrbracket_{LIT} "
+%format (codelit (a))  = "\llbracket " a "\rrbracket_{LIT} "
+%format set a         = "\{ " a "\} "
+%format (set (a))     = "\{ " a "\} "
+%format emptyset       = "\emptyset "
+%format extend env v s = env"["v -> s"]"
+%format (extend env v s) = env"["v "\mapsto" s"]"
+%format (extend env v (s)) = env"["v "\mapsto" s"]"
+%format `to` = "\mapsto"
+%format path e p = e"|_{"p"}"

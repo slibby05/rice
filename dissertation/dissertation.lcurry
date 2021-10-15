@@ -1,0 +1,51 @@
+\documentclass{book}
+\usepackage{amsfonts}
+\usepackage[fleqn]{amsmath}
+\usepackage{xspace}
+\usepackage[all]{xy}
+\usepackage{mdframed}
+\usepackage{qtree}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{calc,shapes.multipart,chains,arrows}
+\def\N{\mathbb{N}}
+
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\DeclareMathSymbol{:}{\mathord}{operators}{"3A}
+%include polycode.fmt
+%include curry.fmt
+
+\title{Making Curry with Rice \\
+       \large{An Optimizing Curry Compiler}}
+\author{Steven Libby}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Mathematical Background}
+
+%include 01_Rewriting.lcurry
+
+\chapter{The Curry Language}
+
+%include 02_Language.lcurry
+
+\chapter{Generating and Altering Subexpressions}
+
+%include 03_transformation.lcurry
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+\end{document}

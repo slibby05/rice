@@ -13,36 +13,67 @@
 %format ^+           = "^+ "
 %format Name_A       = Name"_{Arity}"
 %format sigma        = "\sigma"
+%format ->^* = "\rightarrow^*"
 %format e_1
 %format e_1'
 %format e_2
 %format e_2'
+%format e2' = e"_{2'}"
+%format e_11 = e"_{1,1}"
+%format e_1n = e"_{1,n}"
+%format e_21 = e"_{2,1}"
+%format e_2n = e"_{2,n}"
 %format e_n
 %format e_f
 %format e_f'
+%format e_i
+%format e_i1 = e"_{i1}"
+%format e_ik = e"_{ik}"
 %format v_1
 %format v_2
 %format v_n
 %format f_k
 %format f_n
 %format f_kn = "f_{k-n}"
+%format f_k1 = "f_{k-1}"
 %format x_1
 %format x_k
 %format x_k1 = "x_{k+1}"
 %format x_n
+%format x_i1 = x"_{i1}"
+%format x_ik = x"_{ik}"
+%format C_1
 %format C_k
+%format C_i
+%format C_n
+%format C_i1 = C"_{i1}"
+%format C_ik = C"_{ik}"
 %format b_1
 %format b_n
+%format p_0
 %format p_1
 %format p_2
 %format p_n
 %format p_i
+%format p_11 = p"_{1,1}"
+%format p_1n = p"_{1,n}"
+%format p_21 = p"_{2,1}"
+%format p_2n = p"_{2,n}"
+%format as_1
+%format as_2
+%format E_0
 %format E_1
 %format E_2
 %format E_i
 %format E_n
+%format E_n1 = E"_{-1}"
 %format pl_1 = "+_1"
 %format pl_2 = "+_2"
+%format foldr_3 = "foldr_3"
+%format foldr_2 = "foldr_2"
+%format foldr_1 = "foldr_1"
+%format foldr_0 = "foldr_0"
+%format \* = "\bullet"
 %format case_CT        = case"_{CaseType}"
 %format case_ct        = case"_{ct}"
 %format case_R         = case"_{R}"

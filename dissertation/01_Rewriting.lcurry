@@ -213,8 +213,8 @@ $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
         \Tree[.$*$ [.$+$ $0$ [.$*$ [.$S$ $0$ ] [.$S$ $0$ ] ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] \\
     \end{tabular}
     \end{center}
-    \label{fig:subtree}
     \caption{The result of the computation $t[[0,1] \leftarrow S(0)]$}
+    \label{fig:subtree}
 \end{figure}
 
 A substitution replaces variables with terms.
@@ -313,7 +313,6 @@ The converse to theorem \ref{thm:orthogonal} isn't true. There can be overlappin
     }
     \caption{A system that overlaps at a subterm}
     \end{subfigure}
-    \label{fig:overlap}
     \caption{Three TRSs demonstrating how rules can overlap.
             In (a) they don't overlap at all,
             In (b) both rules overlap at the root,

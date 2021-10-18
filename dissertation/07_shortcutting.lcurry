@@ -1,0 +1,60 @@
+
+\section{The RET node}
+Remember, the goal here is to avoid creating nodes unless we absolutely have to.
+There is one place where we may be able to avoid creating nodes.
+This is when a node is used in a case statement.
+
+Suppose we have the code:
+
+> unsolve cond = case  not cond of
+>                      False  -> EXEMPT
+>                      True   -> True
+
+It would be great if we didn't have to construct the node |not cond|,
+and we could just call \texttt{not_hnf}.
+We really do need a physical node.
+The reason is because |not cond| could be non-deterministic.
+
+However, it's worth looking at an attempt to try to replace the node with a function call.
+One possibility would be to try to statically analyse |not| and determine if it's deterministic.
+This is a reasonable idea, but it has two major drawbacks.
+First, determining if a function is non-deterministic is undecidable,
+so the best we could do is an approximation.
+Second, even if |not| is deterministic, the expression |not cond| could still be non-deterministic.
+So any sort of determinism analysis is going to fail for 
+any expression that contains a parameter to the function.
+This is going to be very restrictive for any optimization we can come up with.
+
+So, We need a node to hold the value for |not cond|,
+but this value will only be used in the case statement.
+In fact, it's not possible for this node to be shared with any part of the expression graph.
+
+
+\section{sneaking the pointer out}
+
+\section{free variables}
+
+\section{choose}
+
+\section{save}
+
+\begin{verbatim}
+void save(field n, field saved)
+{
+    if(n.n == RET.n)
+    {
+        if(!n.n->nondet)
+        {
+            n.n->nondet = (unsigned long)calloc(1, sizeof(Node*));
+        }
+        field RET_ptr;
+        RET_ptr.c = n.n->nondet
+        stack_push(bt_stack, RET_ptr, saved, false);
+    }
+    else
+    {
+        n.n->nondet = true;
+        stack_push(bt_stack, n, saved, false);
+    }
+}
+\end{verbatim}

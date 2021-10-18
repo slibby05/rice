@@ -320,6 +320,24 @@ year         = {2016},
   url       = {http://dx.doi.org/10.1007/bfb0013825},
 }
 
+@INPROCEEDINGS{setFunctions,
+author = "Antoy, S. and Hanus, M.",
+title = "Set Functions for Functional Logic Programming",
+year = "2009",
+pages = "73-82",
+publisher = "ACM Press",
+booktitle = "Proc.\ of the 11th International ACM SIGPLAN Conference on
+             Principle and Practice of Declarative Programming (PPDP'09)"
+}
+
+@article{findall,
+  title={Encapsulating Non-Determinism in Functional Logic Computations},
+  author={Bernd Brassel and M. Hanus and F. Huch},
+  journal={J. Funct. Log. Program.},
+  year={2004},
+  volume={2004}
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -419,17 +437,16 @@ pages="156--172",
 }
 
 @article{monadSemantics,
-title = {A Monadic Semantics for Core Curry1 1This work has been supported in part by the National Science Foundation under grants CCR-0110496 and CCR-0218224},
-journal = {Electronic Notes in Theoretical Computer Science},
-volume = {86},
-number = {3},
-pages = {16-34},
-year = {2003},
-note = {WFLP 2003, 12th International Workshop on Functional and Constraint Logic Programming (in connection with RDP'03, Federated Conference on Rewriting, Deduction and Programming)},
-issn = {1571-0661},
-doi = {https://doi.org/10.1016/S1571-0661(04)80691-1},
-url = {https://www.sciencedirect.com/science/article/pii/S1571066104806911},
-author = {Andrew Tolmach and Sergio Antoy}
+  title = {A Monadic Semantics for Core Curry},
+  journal = {Electronic Notes in Theoretical Computer Science},
+  volume = {86},
+  number = {3},
+  pages = {16-34},
+  year = {2003},
+  note = {WFLP 2003, 12th International Workshop on Functional and Constraint Logic Programming},
+  issn = {1571-0661},
+  doi = {https://doi.org/10.1016/S1571-0661(04)80691-1},
+  author = {Andrew Tolmach and Sergio Antoy}
 }
 
 @article{callTimeChoice,
@@ -514,27 +531,13 @@ author = {Heinrich Hussmann},
 }
 
 @ARTICLE{icurry,
-author    = "Antoy, S. and Hanus, M. and Jost, A. and Libby, S.",
-title     = "ICurry",
-year      = "2019",
-booktitle = "Pre-Proceedings of the 27th International Workshop on Functional
-             and Logic Programming (WFLP 2019)",
-journal   = {CoRR},
-volume    = {abs/1908.11101},
-abstract = {
-FlatCurry is a well-established intermediate representation
-of Curry programs used in compilers that translate Curry code
-into Prolog and Haskell code.  Some FlatCurry constructs have
-no direct translation into imperative code. These constructs must be
-each handled differently when translating
-Curry code into C, C++ and Python code.
-We introduce a new representation of Curry programs, called ICurry,
-and derive a translation from all FlatCurry constructs into ICurry.
-We present the syntax of ICurry and the translation from FlatCurry to ICurry.
-We present a model of functional logic computations as graph rewriting,
-show how this model can be implemented in a low-level imperative language,
-and describe the translation from ICurry to this model.
-}
+  author    = "Antoy, S. and Hanus, M. and Jost, A. and Libby, S.",
+  title     = "ICurry",
+  year      = "2019",
+  booktitle = "Pre-Proceedings of the 27th International Workshop on Functional
+               and Logic Programming (WFLP 2019)",
+  journal   = {CoRR},
+  volume    = {abs/1908.11101},
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1372,3 +1375,72 @@ series = {PLPV '10}
   doi={10.1109/CGO.2015.7054191}
 }
 
+% defunctionalization
+@inproceedings{defunctionalization,
+    author = {Reynolds, John C.},
+    title = {Definitional Interpreters for Higher-Order Programming Languages},
+    year = {1972},
+    isbn = {9781450374927},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    doi = {10.1145/800194.805852},
+    booktitle = {Proceedings of the ACM Annual Conference - Volume 2},
+    pages = {717–740},
+    numpages = {24},
+    location = {Boston, Massachusetts, USA},
+    series = {ACM '72}
+}
+
+% llvm
+@InProceedings{llvm,
+    author    = {Chris Lattner and Vikram Adve},
+    title     = "{LLVM: A Compilation Framework for Lifelong Program Analysis \& Transformation}",
+    booktitle = "{Proceedings of the 2004 International Symposium on Code Generation and Optimization (CGO'04)}",
+    address   = {Palo Alto, California},
+    month     = {Mar},
+    year      = {2004}
+}
+
+% jvm
+@inproceedings{jvm,
+    author = {Paleczny, Michael and Vick, Christopher and Click, Cliff},
+    title = {The Java HotspotTM Server Compiler},
+    year = {2001},
+    publisher = {USENIX Association},
+    address = {USA},
+    booktitle = {Proceedings of the 2001 Symposium on JavaTM Virtual Machine Research and Technology Symposium - Volume 1},
+    pages = {1},
+    numpages = {1},
+    location = {Monterey, California},
+    series = {JVM'01}
+}
+
+  
+
+
+# playingByTheRules
+@article{playingByTheRules,
+    author = {Peyton Jones, Simon and Tolmach, Andrew and Hoare, Tony},
+    year = {2001},
+    month = {04},
+    pages = {},
+    title = {Playing by the Rules: Rewriting as a practical optimisation technique in GHC},
+    journal = {Haskell 2001}
+}
+
+% synthesizedSetFunctions
+@article{synthesizedSetFunctions,
+  authro = {Antoy, Sergio and Hanus, Michael and Teegen Finn},
+  title = {Synthesizing Set Functions},
+  booktitle = {Proc.\ of the 26th International Workshop on Functional and (Constraint) Logic Programming (WFLP 2018)},
+  year      = {2018},
+  publisher = {Springer},
+}
+
+% this
+@phdThesis{this,
+  author = {Libby, Steven},
+  title = {Making Curry with Rice: An Optimizing Compiler for Curry},
+  school = {Portland State University},
+  year      = {2012},
+}

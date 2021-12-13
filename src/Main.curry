@@ -45,31 +45,31 @@ main = do
                     else errors'
     if not $ null errors
       then mapM_ putStrLn errors
-      else if opts == [SCodeGen]
-            then genCode (head files)
+      else if SCodeGen `elem` opts
+            then genCode (head files) (SUseGCC `elem` opts)
             else compileAll (head files) opts
 
 
-genCode :: String -> IO ()
-genCode p = do icyName <- icyFile p
-               hasICurry <- doesFileExist icyName
-               when (not hasICurry) $ error "Error: no ICURY file"
-               icy <- readICurryFile icyName
-               compileC p icy
-               inc <- riceDir
-               putStrLn (gccObj inc p)
-               system (gccObj inc p)
-               when (hasIMain icy) $
-                     do main_file <- mainFile
-                        writeMain main_file p
-                        imports <- icyImports [p] icy
-                        let includeFiles = imports ++ ["runtime", "stack", "external", "main"]
-                        let obj x = inc++x++".c"
-                        let files = map obj includeFiles
-                        let command = "gcc -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ p
-                        putStrLn command
-                        system command
-                        return ()
+genCode :: String -> Bool -> IO ()
+genCode p isGcc = do icyName <- icyFile p
+                     hasICurry <- doesFileExist icyName
+                     when (not hasICurry) $ error "Error: no ICURRY file"
+                     icy <- readICurryFile icyName
+                     compileC p icy
+                     inc <- riceDir
+                     putStrLn (obj isGcc inc p)
+                     system (obj isGcc inc p)
+                     when (hasIMain icy) $
+                           do main_file <- mainFile
+                              writeMain main_file p
+                              imports <- icyImports [p] icy
+                              let includeFiles = imports ++ ["runtime", "stack", "external", "main"]
+                              let files = map (\x -> inc++x++".c") includeFiles
+                              let comp = if isGcc then "gcc" else "clang"
+                              let command = comp ++ " -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ p
+                              putStrLn command
+                              system command
+                              return ()
 
 
 icyImports :: [String] -> IProg -> IO [String]
@@ -101,8 +101,8 @@ compileAll file args =
      
      t <- time 
      let ft = makeOptFunTable [f | (opt,False) <- fcys', f <- progFuncs opt]
-     putStrLn "read fun table"
-     putStrLn (FT.showTable ft)
+     putStr "read fun table"
+     putStrLn (const "()" $## ft)
      t' <- time
      putStrLn ("time to make funTable: " ++ show (t' - t))
 
@@ -113,8 +113,9 @@ compileAll file args =
 
      inc <- riceDir
 
-     mapM_ (putStrLn . gccObj inc) new_files
-     mapM_ (system . gccObj inc) new_files
+     let gcc = SUseGCC `elem` args
+     mapM_ (putStrLn . obj gcc inc) new_files
+     mapM_ (system . obj gcc inc) new_files
 
 
      mapM_ putStrLn 
@@ -127,14 +128,16 @@ compileAll file args =
            do main_file <- mainFile
               writeMain main_file file
               let includeFiles = ((map (progName . fst) fcys') ++ ["runtime", "stack", "external", "main"])
-              let obj x = inc++x++".c"
-              let files = map obj includeFiles
-              let command = "gcc -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ file
+              let files = map (\x -> inc++x++".c") includeFiles
+              let comp = if gcc then "gcc" else "clang"
+              let command = comp++" -I"++inc++" " ++ unwords files ++ " -O2 -o " ++ file
               putStrLn command
               system command
               return ()
 
+obj gcc = if gcc then gccObj else clangObj
 gccObj inc f =  "gcc -I"++inc++" -c "++(inc++f++".c")++" -O2 -o "++(inc++f++".o")
+clangObj inc f =  "clang -I"++inc++" -c "++(inc++f++".c")++" -O2 -o "++(inc++f++".o")
 
 hasMain :: String -> [(Prog,Bool)] -> Bool
 hasMain file = elem "main" 
@@ -280,7 +283,7 @@ isPublic f = funcVisibility f == F.Public
 -- Code for handling options
 --------------------------------------------------------------------
 
-data FileType = SDataTable | SFlat | SOpt | SICurry | SC | SNoPrelude | SCodeGen
+data FileType = SDataTable | SFlat | SOpt | SICurry | SC | SNoPrelude | SCodeGen | SUseGCC
  deriving(Show, Eq)
 
 optDescrs :: [OptDescr FileType]
@@ -291,7 +294,8 @@ optDescrs = [
   Option "i" ["icurry"]      (NoArg SICurry)      "print ICurry",
   Option "c" []              (NoArg SC)           "print C",
   Option "g" ["codegen"]     (NoArg SCodeGen)     "only generate code from icurry",
-  Option "p" ["noprelude"]   (NoArg SNoPrelude)   "don't include Prelude (for testing)"]
+  Option "p" ["noprelude"]   (NoArg SNoPrelude)   "don't include Prelude (for testing)",
+  Option "x" ["gcc"]         (NoArg SUseGCC)      "Use Gcc instead of clang"]
 
 
 -----------------------------------------------------------------------

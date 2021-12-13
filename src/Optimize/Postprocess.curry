@@ -45,9 +45,9 @@ renameFunc (Func n a v t (Rule vs e))  = Func n a v t (Rule ps (fst (rename nv s
 
 
 showPostprocess :: FunTable -> [FuncDecl] -> IO [FuncDecl]
-showPostprocess ft fs = do putStrLn (showTable ft)
-                           let fs1 = loop rootCases 0 fs
-                           fs2 <- loopIO (outline ft) 0 fs1
+showPostprocess ft fs = do putStrLn (const "()" $## ft)
+                           fs2 <- loopIO (outline ft) 0 fs
+                           let fs1 = loop rootCases 0 fs1
                            fs3 <- mapM (showPostExpr ft) fs2
                            return (map renameFunc fs3)
 
@@ -91,8 +91,11 @@ caseCall _ (Let [(v,ve)] e@(has (Case _ (Var v) _)))
  | v >= 0
  & uses v e == 1 
  & uses v ve == 0 
+ & not (isApply ve)
  = (Let [(-(v+1),ve)] (sub ((v,Var (-(v+1))) @> idSub) e), "case call", 0)
- 
+  where isApply e = case e of 
+                         Comb _ ("Prelude","apply") _ -> True
+                         _                            -> False
 
 --------------------------------------------------------------------
 -- move nested control flow

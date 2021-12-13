@@ -7,6 +7,7 @@ import List
 import Compile.C
 import Compile.PrimOps (ignoredPrimOps)
 import Data.Map as M
+import Compile.IUtil
 
 ----------------------------------------------------
 -- .h file
@@ -41,11 +42,13 @@ makeIntro write name imps funs = write $ unlines $
                                      nl
 
 declareFun :: IFunction -> CStmt
-declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [(field, "root")]
+declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [("field", "root")]
 
 declareFunParts :: IFunction -> [CStmt]
-declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b)
- where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [(field, "root")]
+declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b) ++
+                                        [cfunDecl "Node*" (ret_hnf f) [("Node*", "backup")]]
+                                        
+ where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [("field", "root")]
 
 makeTags :: (String -> IO ()) -> IDataType -> IO ()
 makeTags append (IDataType name cons) = append $ unlines $
@@ -61,14 +64,15 @@ writeSymbols append types funs = append $ unlines $
                                   nl
  where
   cons (IDataType _ cs) = cs
-  symbol name p tag arity hnf = ("static Symbol "++mname name p++"_symbol") .=
-                                 (carray [ ".tag" .= tag,
-                                           ".arity" .= show arity,
-                                           ".name" .= nameStr name p,
-                                           ".hnf" .= hnf]) ++ ";"
-  conSymbol (n,a)                 = symbol n Nothing (mangle n ++ "_TAG") a           "&CTR_hnf"
-  funSymbol (IFunction n a _ _ _) = symbol n Nothing  "FUNCTION_TAG"      a           ("&"++mangle n++"_hnf")
-  makePartSym n (p,vs,_)          = symbol n (Just p) "FUNCTION_TAG"      (length vs) (getPathName n p ++ "_hnf")
+  symbol name p tag arity hnf ret_hnf = ("static Symbol "++mname name p++"_symbol") .=
+                                         (carray [ ".tag" .= tag,
+                                                   ".arity" .= show arity,
+                                                   ".name" .= quote (toName name p),
+                                                   ".hnf" .= hnf,
+                                                   ".hnf_RET" .= ret_hnf]) ++ ";"
+  conSymbol (n,a) = symbol n Nothing (mangle n ++ "_TAG") a "&CTR_hnf" "&CTR_RET_hnf"
+  funSymbol (IFunction n a _ _ _) = symbol n Nothing  "FUNCTION_TAG" a ("&"++hnf n) ("&"++ret_hnf n)
+  makePartSym n (p,vs,_) = symbol n (Just p) "FUNCTION_TAG" (length vs) (getPathName n p ++ "_hnf") "NULL"
   funParts  (IFunction n _ _ _ b) = map (makePartSym n) (pathList b)
   mname n Nothing  = mangle n
   mname n (Just p) = getPathName n p
@@ -76,7 +80,8 @@ writeSymbols append types funs = append $ unlines $
 set :: (IQName, Int) -> CStmt
 set (name,arity) 
  = unlines $ [comment (uninstance name)] ++
-             hfunDefn "void" ("set_"++mangle name) ((field, "root") : makeArgs [1..arity] ++ [("int", "missing")]) ++
+             hfunDefn "void" ("set_"++mangle name) 
+                         (("field", "root") : makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
                [symbol "root" .= ("&"++mangle name++"_symbol") ++ ";"] ++
                [missing "root" .= "missing" ++ ";"] ++
@@ -95,9 +100,9 @@ setFun append (IFunction name arity _ _ _) = append $ set (name,arity)
 make :: Maybe Path -> (IQName, Int) -> String
 make path (name,arity) 
  = unlines $ [comment (uname path)] ++
-             hfunDefn field ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
+             hfunDefn "field" ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
-                 [(field ++ " root;"),
+                 [("field root;"),
                   "root.n" .= calloc_n 1 ++ ";",
                   symbol "root" .= ("&"++ (mname path) ++ "_symbol;"),
                   missing "root" .= "missing" ++ ";"] ++
@@ -126,10 +131,11 @@ setTypeFree :: (String -> IO ()) -> IDataType -> IO ()
 setTypeFree append (IDataType _ cons) = append $ unlines $ concatMap setConFree cons
 
 setConFree :: (IQName, IArity) -> [CStmt]
-setConFree (n, a) = hfunDefn "void" ("set_"++mangle n++"_free") [(field, "root")] ++
+setConFree (n, a) = hfunDefn "void" ("set_"++mangle n++"_free") [("field", "root")] ++
                     cblock 
                     (
                         [symbol "root" .= "&"++mangle n++"_symbol;",
+                         nondet "root" .= "true" ++ ";",
                          missing "root" .= "0" ++ ";"] ++
                         makeArray True a ++
                         map (\x -> children "root" [x] .= "free_var();") [0..a-1]
@@ -140,11 +146,12 @@ makeTypeFree :: (String -> IO ()) -> IDataType -> IO ()
 makeTypeFree append (IDataType _ cons) = append $ unlines $ concatMap makeConFree cons
 
 makeConFree :: (IQName, IArity) -> [CStmt]
-makeConFree (n, a) = hfunDefn field ("make_"++mangle n++"_free") [] ++
+makeConFree (n, a) = hfunDefn "field" ("make_"++mangle n++"_free") [] ++
                      cblock 
                      (
                          ["field root;",
                           "root.n" .= calloc_n 1 ++ ";",
+                          nondet "root" .= "true" ++ ";",
                           symbol "root" .= "&"++mangle n++"_symbol;",
                           missing "root" .= "0" ++ ";"] ++
                          makeArray False a ++
@@ -158,7 +165,7 @@ makeConFree (n, a) = hfunDefn field ("make_"++mangle n++"_free") [] ++
 ---------------------------------------------------
 
 makeArgs :: [Int] -> [(String, String)]
-makeArgs = map (\v -> (field, var v))
+makeArgs = map (\v -> ("field", var v))
 
 makeArray :: Bool -> Int -> [String]
 makeArray nullable arity

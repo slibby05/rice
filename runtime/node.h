@@ -20,14 +20,15 @@ typedef struct
     const unsigned char tag;
     const unsigned int arity;
     const char* name;
-    const void (*hnf)(field);
+    void (*hnf)(field);
+    struct Node* (*hnf_RET)(struct Node*);
 } Symbol;
 
 
 typedef struct Node
 {
     int missing;
-    unsigned long nondet;
+    bool nondet;
     Symbol* symbol;
     field children[4];
 } Node;

@@ -9,264 +9,396 @@
 #include "debug.h"
 
 
-unsigned long set_RET_nondet()
-{
-    if(!RET.n->nondet)
-    {
-        field RET_ptr;
-        RET_ptr.n = (Node*)calloc(1, sizeof(Node));
-        RET_ptr.n->symbol = &RET_symbol;
-        RET_ptr.n->nondet = RET_ptr.c;
-        RET.n->nondet = RET_ptr.c;
-    }
-}
-
 
 void CTR_hnf(field root)
 {
+    debug(LOW, "HNF constructor:");
     debug_expr(LOW, root);
     return;
 }
 
+Node* CTR_RET_hnf(Node* backup)
+{
+    debug(LOW, "HNF constructor:");
+    debug_expr(LOW, RET);
+    return backup;
+}
+
 void choice_hnf(field root)
 {
+    debug(LOW, "HNF choice:");
     debug_expr(LOW, root);
     choose(root);
 }
 
+Node* choice_RET_hnf(Node* backup)
+{
+    debug(LOW, "HNF RET choice:");
+    debug_expr(LOW, RET);
+    return choose_RET(backup);
+}
+
+field set_copy(field new, field node)
+{
+    memcpy(new.n, node.n, sizeof(Node));
+    int arity = node.n->symbol->arity;
+    if(arity > 3)
+    {
+        new.n->children[3].a = (field*)alloc((arity-3) * sizeof(field));
+        memcpy(new.n->children[3].a, node.n->children[3].a, (arity-3)*sizeof(field));
+    }
+    return new;
+}
+
+field copy(field node)
+{
+    field new;
+    new.n = (Node*)alloc(sizeof(Node));
+    set_copy(new, node);
+    return new;
+}
+
 void apply_hnf(field root)
 {
-    debug(LOW, "apply\n");
+    debug(LOW, "HNF apply: \n");
+    debug_expr(LOW, root);
     field f = child_at(root,0);
+    field child1 = root.n->children[1];
+    field child2 = root.n->children[2];
+    field* array = root.n->children[3].a;
+    bool nondet = false;
 
-    if(f.n->missing > 0)
+    //This is the normal HNF loop
+    while(f.n->missing <= 0)
     {
-        goto PART;
-    }
-    
-    static void* table[] = {&&FAIL, &&FUNCTION, &&CHOICE, &&FORWARD, &&FREE};
-    goto* table[f.n->symbol->tag];
-    
-    FAIL:
-    {
-        debug(HIGH, "apply FAIL\n");
-        if(f.n->nondet)
+        nondet |= f.n->nondet;
+        switch(TAG(f))
         {
-            save_copy(root);
+            case FAIL_TAG:
+                debug(HIGH, "apply FAIL\n");
+                if(nondet)
+                {
+                    root.n->nondet = true;
+                    stack_push(bt_stack, root, copy(root), false);
+                }
+                fail(root);
+                return;
+    
+            case FUNCTION_TAG:
+                debug(HIGH, "apply FUNCTION\n");
+                // f must be fully applied, or we would have left the loop!
+                HNF(f);
+                break;
+    
+            case CHOICE_TAG:
+                debug(HIGH, "apply CHOICE\n");
+                choose(f);
+                break;
+
+            case FORWARD_TAG:
+                debug(HIGH, "apply FORWARD\n");
+                nondet |= f.n->nondet;
+                f = child_at(f,0);
+                break;
+    
+            case FREE_TAG:
+                debug(HIGH, "apply FREE\n");
+                // we can't actually apply a free variable
+                // because we don't know what function to make it.
+                fprintf(stderr, "Cannot apply free variable!\n");
+                exit(1);
+        } 
+    }
+    // Now we're gaurenteed to have a partial application
+    debug(HIGH, "apply PART\n");
+
+    nondet |= f.n->nondet;
+
+    if(nondet)
+    {
+        root.n->nondet = true;
+        stack_push(bt_stack, root, copy(root), false);
+    }
+
+    // number of arguments that we're applying
+    int nargs = -root.n->missing;
+
+    //number of arguments we have left
+    int missing = f.n->missing;
+
+    debug_expr(HIGH, f);
+    debug(HIGH, "arity = %d\nmissing = %d\nnargs = %d\n", f.n->symbol->arity, missing, nargs);
+    debug(HIGH, "missing > nargs %d\n", missing > nargs);
+
+    if(nargs <= missing)
+    {
+        debug(HIGH, "under/fully applied (%d/%d)\n", f.n->missing, nargs);
+        debug_expr(HIGH, f);
+        //hold the old array of children.
+        //we'll need to move this to a bigger array
+        set_copy(root,f);
+        for(int i = nargs; i > 2; i--)
+        {
+            debug_expr(HIGH, array[i-3]);
+            set_child_at(root,missing-1, array[i-3]);
+            missing--;
         }
-        fail(root);
+        if(nargs > 1)
+        {
+            debug_expr(HIGH, child2);
+            set_child_at(root,missing-1, child2);
+            missing--;
+        }
+
+        debug_expr(HIGH, child1);
+        set_child_at(root,missing-1, child1);
+        missing--;
+
+        root.n->missing = missing;
+
+        debug(HIGH, "after applying\n");
+        debug_expr(HIGH, root);
+        if(missing == 0 && (TAG(f) == CHOICE_TAG || TAG(f) == FUNCTION_TAG))
+        {
+            debug(HIGH, "before HNF call\n");
+            debug_expr(HIGH, root);
+            HNF(root);
+        }
+        debug(HIGH, "leaving apply\n");
+        debug_expr(HIGH, root);
+    }
+    else
+    {
+        debug(HIGH, "too many args (%d/%d)\n", f.n->missing, nargs);
+        debug_expr(HIGH, f);
+       
+        field newf = copy(f);
+        debug_expr(LOW, newf);
+
+        while(missing > 0)
+        {
+            set_child_at(newf, missing-1, child_at_v(root, nargs));
+            nargs--;
+            missing--;
+        }
+
+        debug(HIGH, "fully applied child\n");
+        debug_expr(HIGH, newf);
+        newf.n->missing = 0;
+        HNF(newf);
+        debug(HIGH, "fully applied child reduced\n");
+        debug_expr(HIGH, newf);
+        child_at(root,0) = newf;
+        root.n->missing = -nargs;
+        debug(HIGH, "new apply node\n");
+        debug_expr(HIGH, root);
+        apply_hnf(root);
+        debug(HIGH, "leaving apply\n");
+        debug_expr(HIGH, root);
         return;
     }
-    
-    FUNCTION:
+}
+
+
+Node* apply_RET_hnf(Node* backup)
+{
+    debug(LOW, "HNF apply: \n");
+    debug_expr(LOW, RET);
+    field f = child_at(RET,0);
+    field child1 = RET.n->children[1];
+    field child2 = RET.n->children[2];
+    field* array = RET.n->children[3].a;
+    bool nondet = false;
+
+    // number of arguments that we're applying
+    int nargs = -RET.n->missing;
+
+
+    //This is the normal HNF loop
+    while(f.n->missing <= 0)
     {
-        debug(HIGH, "apply FUNCTION\n");
-        if(f.n->missing > 0)
+        nondet |= f.n->nondet;
+        switch(TAG(f))
         {
-            goto PART;
-        }
-        else
-        {
-            HNF(f);
-            goto* table[TAG(f)];
-        }
-    }
+            case FAIL_TAG:
+                debug(HIGH, "apply FAIL\n");
+                if(nondet)
+                {
+                    backup = make_restore(backup);
+                    stack_push(bt_stack, (field)backup, copy(RET), false);
+                }
+                fail(RET);
+                return backup;
     
-    CHOICE:
-    {
-        debug(HIGH, "apply CHOICE\n");
-        choose(f);
-        goto* table[TAG(f)];
+            case FUNCTION_TAG:
+                debug(HIGH, "apply FUNCTION\n");
+                // f must be fully applied, or we would have left the loop!
+                HNF(f);
+                break;
+    
+            case CHOICE_TAG:
+                debug(HIGH, "apply CHOICE\n");
+                choose(f);
+                break;
+
+            case FORWARD_TAG:
+                debug(HIGH, "apply FORWARD\n");
+                f = child_at(f,0);
+                break;
+    
+            case FREE_TAG:
+                debug(HIGH, "apply FREE\n");
+                // we can't actually apply a free variable
+                // because we don't know what function to make it.
+                fprintf(stderr, "Cannot apply free variable!\n");
+                exit(1);
+        } 
     }
 
-    FORWARD:
+    // Now we're gaurenteed to have a partial application
+    debug(HIGH, "apply PART\n");
+
+    nondet |= f.n->nondet;
+    if(nondet)
     {
-        debug(HIGH, "apply FORWARD\n");
-        f = child_at(f,0);
-        goto* table[f.n->symbol->tag];
+        backup = make_restore(backup);
+        stack_push(bt_stack, (field)backup, copy(RET), false);
     }
-    
-    FREE:
+
+    //number of arguments we have left
+    int missing = f.n->missing;
+
+    debug_expr(HIGH, f);
+    debug(HIGH, "arity = %d\nmissing = %d\nnargs = %d\n", f.n->symbol->arity, missing, nargs);
+    debug(HIGH, "missing > nargs %d\n", missing > nargs);
+
+    if(nargs < missing)
     {
-        debug(HIGH, "apply FREE\n");
-        // we can't actually apply a free variable
-        // because we don't know what function to make it.
-        fprintf(stderr, "Cannot apply free variable!\n");
+        debug(HIGH, "under applied RET!!!!!!!! (%d/%d)\n", f.n->missing, nargs);
+        debug_expr(HIGH, f);
+        fprintf(stderr, "RET under applied! (This should never happen)\n");
         exit(1);
     }
-    
-    PART:
+    else if(missing == nargs)
     {
-        debug(HIGH, "apply PART\n");
-        if(f.n->nondet)
+        debug(HIGH, "fully applied (%d/%d)\n", f.n->missing, nargs);
+        debug_expr(HIGH, f);
+        //hold the old array of children.
+        //we'll need to move this to a bigger array
+        //
+        set_copy(RET, f);
+        for(int i = nargs; i > 2; i--)
         {
-            save_copy(root);
-        }
-
-        // number of arguments that we're applying
-        int nargs = -root.n->missing;
-        debug(LOW, "apply: ");
-        debug_expr(LOW, f);
-        debug(LOW, "/%d\n", nargs);
-
-        //the actual function to apply
-        int arity = f.n->symbol->arity;
-
-        //number of arguments we have left
-        int missing = f.n->missing;
-
-        //we're missing more arguments then we're applying
-        //so this will result in another partial application
-        if(missing > nargs)
-        {
-            debug(LOW, "too few args (%d/%d)\n", f.n->missing, nargs);
-            debug_expr(LOW, f);
-            //hold the old array of children.
-            //we'll need to move this to a bigger array
-            field* array = root.n->children[3].a;
-            if(arity > 3)
-            {
-                root.n->children[3].a = (field*)calloc(arity-3, sizeof(field));
-            }
-            else
-            {
-                root.n->children[3].a = NULL;
-            }
-
-            for(int i = arity-1; i >= missing; i--)
-            {
-                set_child_at(root, i, child_at_v(f,i));
-            }
-            for(int i = nargs; i > 2; i--)
-            {
-                set_child_at(root,missing-1, array[i-3]);
-                missing--;
-            }
-            if(nargs >= 2)
-            {
-                set_child_at(root,missing-1, child_at(root,2));
-                missing--;
-            }
-            //missing has to be at least 1, otherwise there'd be no apply node
-            set_child_at(root,missing-1, child_at(root,1));
+            debug_expr(HIGH, array[i-3]);
+            set_child_at(RET, missing-1, array[i-3]);
             missing--;
-            debug_expr(LOW, child_at(root,1));
-            debug(LOW, "%d\n", missing);
-            root.n->symbol = f.n->symbol;
-            root.n->missing = missing;
-            return;
         }
-        // we're applying exactly the right number of arguments.
-        // So, set the root to be f, and copy all of the arguments.
-        else if(missing == nargs)
+        if(nargs > 1)
         {
-            debug(LOW, "equal args (%d/%d)\n", f.n->missing, nargs);
-            debug_expr(LOW, f);
-            //hold the old array of children.
-            //we'll need to move this to a bigger array
-            field* array = root.n->children[3].a;
-            if(arity > 3)
-            {
-                root.n->children[3].a = (field*)calloc(arity-3, sizeof(field));
-            }
-            else
-            {
-                root.n->children[3].n = NULL;
-            }
-            
-            child_at(root,0) = child_at(root,1);
-            child_at(root,1) = child_at(root,2);
-            for(int i = 2; i < nargs; i++)
-            {
-                set_child_at(root,i, array[i-2]);
-            }
-
-            for(int i = missing; i < arity; i++)
-            {
-                set_child_at(root,i, child_at_v(f,i));
-            }
-            root.n->symbol = f.n->symbol;
-            root.n->missing = 0;
-            debug(LOW, "fully applied: ");
-            debug_expr(LOW, root);
-            debug(LOW, "\n");
-            if(root.n->symbol->tag < FREE_TAG)
-            {
-                HNF(root);
-            }
-            debug(LOW, "fully applied HNF: ");
-            debug_expr(LOW, root);
-            debug(LOW, "\n");
-            return;
+            debug_expr(HIGH, child2);
+            set_child_at(RET, missing-1, child2);
+            missing--;
         }
-        else
+
+        debug_expr(HIGH, child1);
+        set_child_at(RET, missing-1, child1);
+        missing--;
+
+        RET.n->missing = missing;
+
+        debug(HIGH, "after applying\n");
+        debug_expr(HIGH, RET);
+        if(TAG(f) == CHOICE_TAG || TAG(f) == FUNCTION_TAG)
         {
-            debug(LOW, "too many args (%d/%d)\n", f.n->missing, nargs);
-            debug_expr(LOW, f);
-            // app(part(f/2,1), 2, 3) => app(f(1,2), 3);
-            //copy the contents of f into newf
-            //Since we need to copy all the arguments we need the arity.
-            //(although we could probably store it in the array, or lower bits of the pointer)
-            field newf;
-            newf.n = (Node*)malloc(sizeof(Node));
-            set_node(newf,f);
-            newf.n->nondet = f.n->nondet;
-            if(arity > 3)
-            {
-                field* array = (field*)malloc(sizeof(field) * arity-3);
-                for(int i = 3; i < arity; i++)
-                {
-                    array[i] = child_at_v(f,i);
-                }
-                newf.n->children[3].a = array;
-            }
-            debug_expr(LOW, newf);
-
-            while(missing > 0)
-            {
-                set_child_at(newf, missing-1, child_at_v(root, nargs));
-                nargs--;
-                missing--;
-            }
-            debug_expr(LOW, newf);
-
-            newf.n->missing = 0;
-            if(newf.n->symbol->tag < FREE_TAG)
-            {
-                HNF(newf);
-            }
-            child_at(root,0) = newf;
-            root.n->missing = -nargs;
-            f = newf;
-            debug(LOW, "end too many args (%d/%d)\n", f.n->missing, nargs);
-            debug_expr(LOW, f);
+            HNF_RET(backup);
         }
-        goto* table[f.n->symbol->tag];
+        debug(HIGH, "leaving apply\n");
+        debug_expr(HIGH, RET);
+        return backup;
+    }
+    else
+    {
+        debug(HIGH, "too many args (%d/%d)\n", f.n->missing, nargs);
+        debug_expr(HIGH, f);
+       
+        field newf = copy(f);
+        debug_expr(LOW, newf);
+
+        while(missing > 0)
+        {
+            set_child_at(newf, missing-1, child_at_v(RET, nargs));
+            nargs--;
+            missing--;
+        }
+
+        debug(HIGH, "fully applied child\n");
+        debug_expr(HIGH, newf);
+        newf.n->missing = 0;
+        HNF(newf);
+        debug(HIGH, "fully applied child reduced\n");
+        debug_expr(HIGH, newf);
+        child_at(RET,0) = newf;
+        RET.n->missing = -nargs;
+
+        child_at(RET, 1) = child1;
+        child_at(RET, 2) = child2;
+        child_at_a(RET, 3) = array;
+
+        debug(HIGH, "new apply node\n");
+        debug_expr(HIGH, RET);
+
+        apply_RET_hnf(backup);
+
+        debug(HIGH, "leaving apply\n");
+        debug_expr(HIGH, RET);
+        return backup;
     }
 }
 
-void forward_hnf(field root)
-{
-    // rule: all forwarding nodes point to HNF forms
-    // if this is true, then I don't need to chase down the forwarding pointers.
-    // if it's a forwarding pointer then I know the thing at the end is in head normal form.
-    field child = child_at(root,0);
-    if(child.n->symbol->tag == FUNCTION_TAG || child.n->symbol->tag == CHOICE_TAG)
-    {
-        HNF(child);
-    }
-    if(child.n->nondet)
-    {
-        if(root.n == RET.n)
-        {
-            set_RET_nondet();
-        }
-        else
-        {
-            root.n->nondet = true;
-        }
-    }
-}
+
+void forward_hnf(field root) {}
+Node* forward_RET_hnf(Node* backup) {return backup;}
+//{
+//    debug(HIGH, "forward HNF\n");
+//    debug_expr(HIGH, root);
+//
+//    // remember the first child, because I may have to reconstruct the forwarding pointer
+//    // if we came from a collapsing node, and we're RET,
+//    // then we might overwrite ourselved when we evaluate child.
+//    // So remember the first child, and we'll be ->(first_child)
+//    field first_child = child_at(root,0);
+//
+//    field child = first_child;
+//
+//    debug(HIGH, "forward before HNF\n");
+//    debug(HIGH, "forward root = ");
+//    debug_expr(HIGH, root);
+//
+//    //This is the normal HNF loop
+//    while(TAG(child) == FORWARD_TAG)
+//    {
+//        debug(HIGH, "forward child = ");
+//        debug_expr(HIGH, child);
+//        child = child_at(child,0);
+//    }
+//    //make sure the thing we're pointing to is in head normal form.
+//    if(TAG(child) < FREE_TAG && child.n->missing <= 0)
+//    {
+//        HNF(f);
+//    }
+//
+//    //restore the forwarding node if we need to
+//    if(root.n == RET.n)
+//    {
+//        set_forward(root, first_child);
+//    }
+//
+//    debug(HIGH, "forward after HNF\n");
+//    debug(HIGH, "forward root = ");
+//    debug_expr(HIGH, root);
+//    debug(HIGH, "forward child = ");
+//    debug_expr(HIGH, child);
+//}
 
 //////////////////////////////////////////////////////////////////////////////
 // code for backtracking
@@ -278,10 +410,8 @@ void forward_hnf(field root)
 // This will let me redo a computation.
 void save_copy(field n)
 {
-    debug(HIGH, "save copy: ");
-    debug_expr(HIGH, n);
     field saved;
-    saved.n = (Node*)malloc(sizeof(Node));
+    saved.n = (Node*)alloc(sizeof(Node));
     memcpy(saved.n, n.n, sizeof(Node));
     n.n->nondet = true;
 
@@ -292,29 +422,31 @@ void save(field n, field saved)
     debug(HIGH, "save: ");
     debug_expr(HIGH, n);
     debug_expr(HIGH, saved);
-    if(n.n == RET.n)
-    {
-        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
-        set_RET_nondet();
-        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
-        stack_push(bt_stack, (field){.c = RET.n->nondet}, saved, false);
-        debug(HIGH, "RET->nondet = %ld\n", RET.n->nondet);
-        debug(MED, "RET frame\n");
-    }
-    else
-    {
-        n.n->nondet = true;
-        stack_push(bt_stack, n, saved, false);
-    }
+    n.n->nondet = true;
+    stack_push(bt_stack, n, saved, false);
+}
+Node* save_RET(Node* backup, field saved)
+{
+    debug(HIGH, "save: ");
+    debug_expr(HIGH, RET);
+    debug_expr(HIGH, saved);
+    backup = make_restore(backup);
+    stack_push(bt_stack, (field)(Node*)backup, saved, false);
+    debug(HIGH, "backup = %p\n", backup);
+    debug(MED, "RET frame\n");
+    return backup;
 }
 
+void push_frame(field left, field right)
+{
+    stack_push(bt_stack, left, right, false);
+}
 
 //push a choice onto the backtrack stack
 //This is our stopping condition for backtracking.
 void push_choice(field left, field right)
 {
     stack_push(bt_stack, left, right, true);
-    left.n->nondet = true;
 }
 
 void choose(field root)
@@ -326,33 +458,39 @@ void choose(field root)
     field choices[2] = {child_at(root,0), child_at(root,1)};
     int side = child_at_i(root,2);
 
-    //if we're RET and we've already made a node, then use that one.
     field saved;
-    if(root.n == RET.n && RET.n->nondet)
-    {
-        saved.c = RET.n->nondet;
-    }
-    else
-    {
-        saved.n = (Node*)malloc(sizeof(Node));
-    }
+    saved.n = (Node*)alloc(sizeof(Node));
 
     //save = left ? right
     memcpy(saved.n, root.n, sizeof(Node));
     child_at_i(saved,2) = !side;
-    //this is ok for RET, because we're not using it when we undo, 
-    //so it's ok (but pointless) to overwrite it)
     stack_push(bt_stack, root, saved, side == 0);
 
-    //reduce the side, and set us to a forwarding node
-    HNF(choices[side]);
     set_forward(root,choices[side]);
-    //if root is RET, then it points to the thing we replace it with on the stack
-    //if it's not, then it's not false
-    root.n->nondet = saved.c;
-
+    root.n->nondet = true;
 
     debug(HIGH, "leaving choice\n");
+}
+
+Node* choose_RET(Node* backup)
+{
+    debug(HIGH, "in choice\n");
+    field choices[2] = {child_at(RET,0), child_at(RET,1)};
+    int side = child_at_i(RET,2);
+
+    backup = make_restore(backup);
+
+    field saved;
+    saved.n = (Node*)alloc(sizeof(Node));
+    memcpy(saved.n, RET.n, sizeof(Node));
+    child_at_i(saved, 2) = !side;
+
+    stack_push(bt_stack, (field)backup, (field)saved, side == 0);
+
+    set_forward(RET,choices[side]);
+    debug(HIGH, "leaving choice\n");
+
+    return backup;
 }
 
 // backtrack until we find a choice.
@@ -371,7 +509,10 @@ bool undo()
     do 
     {
         frame = pop(bt_stack);
-        memcpy(frame->lhs.n, frame->rhs.n, sizeof(Node));
+        if(frame->lhs.n != RET.n)
+        {
+            memcpy(frame->lhs.n, frame->rhs.n, sizeof(Node));
+        }
     } while(!(frame->choice || empty(bt_stack)));
 
     debug(HIGH, "finished undoing\n");
@@ -412,7 +553,7 @@ void print_stack(Stack* s)
 
 void print_expr(field n)
 {
-    if(n.i < 1000)
+    if(n.i < 1000001)
     {
         printf("%ld", n.i);
         fflush(stdout);
@@ -516,7 +657,7 @@ void print_list(field n)
     print_final(h);
     while(strcmp(t.n->symbol->name, "[]"))
     {
-        if(t.n->symbol->tag == FORWARD_TAG)
+        if(TAG(t) == FORWARD_TAG)
         {
             t = child_at(t,0);
         }
@@ -534,7 +675,7 @@ void print_list(field n)
 
 void print_final(field n)
 {
-    if(n.n->symbol->tag == FORWARD_TAG)
+    if(TAG(n) == FORWARD_TAG)
     {
         print_final(child_at_v(n,0));
         return;
@@ -613,13 +754,13 @@ void ground_nf(field expr)
     debug(LOW, "solving: ");
     debug_expr(LOW, expr);
     // if we're a variable, then we can't reduce to ground normal from
-    if(expr.n->symbol->tag == FREE_TAG)
+    if(TAG(expr) == FREE_TAG)
     {
         fail(expr);
         return;
     }
     // if we're a constructor, then we don't ned to put ourselves in head normal form
-    if(expr.n->symbol->tag <= 4 && expr.n->missing <= 0)
+    if(TAG(expr) == CHOICE_TAG || TAG(expr) == FUNCTION_TAG && expr.n->missing <= 0)
     {
         HNF(expr);
     }
@@ -640,8 +781,7 @@ void ground_nf(field expr)
         if(e.n != NULL)
         {
             ground_nf(e);
-            if(e.n->symbol->tag == FAIL_TAG ||
-               e.n->symbol->tag == FREE_TAG)
+            if(TAG(e) == FAIL_TAG || TAG(e) == FREE_TAG)
             {
                 fail(expr);
             }
@@ -674,7 +814,7 @@ void nf(field expr)
     {
         field e = child_at_v(expr,i);
         nf(e);
-        if(e.n->symbol->tag == FAIL_TAG)
+        if(TAG(e) == FAIL_TAG)
         {
             fail(expr);
             i = 0;
@@ -688,9 +828,9 @@ void nf_all(field expr)
     nf(expr);
     debug(HIGH, "MAYBE SOLUTION 1: ");
     debug_expr(HIGH, expr);
-    debug(HIGH, "%d = %d?\n", expr.n->symbol->tag, FAIL_TAG);
+    debug(HIGH, "%d = %d?\n", TAG(expr), FAIL_TAG);
     debug_stack(MED);
-    if(expr.n->symbol->tag != FAIL_TAG)
+    if(TAG(expr) != FAIL_TAG)
     {
         printf("SOLUTION: ");
         print_final(expr);
@@ -704,7 +844,7 @@ void nf_all(field expr)
         debug(HIGH, "NORMALIZING: ");
         debug_expr(HIGH, expr);
         nf(expr);
-        if(expr.n->symbol->tag != FAIL_TAG)
+        if(TAG(expr) != FAIL_TAG)
         {
             printf("SOLUTION: ");
             print_final(expr);

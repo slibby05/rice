@@ -7,13 +7,14 @@
 #include "stack.h"
 #include "debug.h"
 #include "runtime.h"
+#include "memory.h"
 
 Stack* new_stack()
 {
-    Stack* s = (Stack*)malloc(sizeof(Stack));
+    Stack* s = (Stack*)alloc(sizeof(Stack));
     s->size = 0;
     s->capacity = INIT_CAPACITY;
-    s->array = (FieldPair*)malloc(sizeof(FieldPair)*INIT_CAPACITY);
+    s->array = (FieldPair*)alloc(sizeof(FieldPair)*INIT_CAPACITY);
     return s;
 }
 
@@ -22,7 +23,7 @@ void stack_push(Stack* s, field from, field rep, bool choice)
 {
     if(s->size == s->capacity)
     {
-        FieldPair* new_array = (FieldPair*)malloc(2*s->capacity*sizeof(FieldPair));
+        FieldPair* new_array = (FieldPair*)alloc(2*s->capacity*sizeof(FieldPair));
         memcpy(new_array, s->array, s->capacity*sizeof(FieldPair));
         s->capacity *= 2;
         free(s->array);

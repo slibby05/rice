@@ -69,6 +69,20 @@ lexDigits external
 cond :: Bool -> a -> a
 cond True x = x
 
+failed :: a
+failed = head []
+
+loop :: a
+loop = loop
+
+(!!) :: [a] -> Int -> a
+xs !! n = case compare n 0 of
+               LT -> failed
+               EQ -> head xs
+               GT -> case xs of
+                          [] -> failed
+                          (_:ys) -> ys !! (n-1)
+
 def_Ord_LtEq :: Ord a => a -> a -> Bool
 def_Ord_LtEq x y = case compare x y of
                         LT -> True

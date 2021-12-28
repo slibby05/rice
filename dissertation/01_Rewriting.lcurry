@@ -889,6 +889,7 @@ If $(n, s) \in E$ is an edge, then $s$ is a successor of $n$.
 In most applications the order of the outgoing edges doesn't matter, 
 however it is very important in term graphs.
 So, we will refer to the first successor, second successor and so on.
+We denote this the same way we did with terms $n_i$ is the $i$th successor of $n$.
 The arity of a node is the number of successors.
 Finally, no two nodes can be labeled by the same variable.
 
@@ -998,7 +999,57 @@ Add all other edges from $E_g$ and $E_u$.
 If $p$ is the root of $g$, then $root_u$ is now the root.
 \end{definition}
 
-From here we can define rewriting and narrowing similarly to how we did for terms.
+It should be noted that when implementing Curry, we don't actually change
+any of the pointers when doing a replacement.
+Traversing the graph to find all of the pointers to $p$ would be horribly inefficient.
+Instead we change the contents of $p$ to be the contents of $u$.
+
+We can define matching in a similar way to terms, but we need to be more careful.
+When matching terms the structure of the term needed to be the same,
+however when matching graphs the structure can be wildly different.
+Consider the following graph.
+
+$$
+\begin{tikzcd}
+    and \ar[d, bend right=50] \ar[d, bend left=50] \\
+    True
+\end{tikzcd}
+$$
+
+Here the graph should match the rule $and(True,True) \rightarrow True$.
+But $and(True,True)$ is a term, so they no longer have the same structure.
+Therefore we must be more careful about what we mean by matching.
+We define matching inductively on the structure of the term.
+
+
+\theoremstyle{definition}
+\begin{definition}
+A graph $K$ \textit{matches} a term $T$ if, and only if,
+$T$ is a variable,
+or $T = l(T_1,T_2\ldots T_n)$, the root of $K$ is labeled with $l$,
+and for each $i \in \{1\ldots n\}$, $K_i$ matches $T_i$.
+\end{definition}
+
+Now, it may be the case that we have multiple successors pointing to the same node
+when checking if a graph matches a pattern, but this is OK.
+As long as the node matches each sub pattern, then the graph will match.
+We extend substitutions to graphs in the obvious way.
+A substitution $\sigma$ maps variables to Nodes.
+In this definition for matching $\sigma$ may have multiple variables map to the same node,
+but this doesn't cause a problem.
+
+\theoremstyle{definition}
+\begin{definition}
+A \textit{rewrite rule} is a pair $L \to R$ where $L$ is a 
+term, and $R$ is a term graph.
+A graph $G$ matches the rule if there exists subgraph $K$
+where $K$ matches $L$ with matcher $\sigma$.
+A \textit{rewrite} is a triple $(K, L \to R, \sigma)$,
+and we apply the rewrite with $G[K \to \sigma(R)]$.
+\end{definition}
+
+
+From here we can define narrowing similarly to how we did for terms.
 We do not give the definitions here, but they can be found in Echaned and Janodet \cite{graphRewriting}.
 They also show that the needed narrowing strategy is still valid for graph rewriting systems.
 

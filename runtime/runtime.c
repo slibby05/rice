@@ -858,5 +858,6 @@ void nf_all(field expr)
     {
         printf("No solutions found\n");
     }
+    printf("total memory allocations: %ld\n", mem);
 }
 

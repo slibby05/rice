@@ -1,4 +1,5 @@
 \documentclass{book}
+\usepackage{thesis}
 \usepackage{amsfonts}
 \usepackage[fleqn]{amsmath}
 \usepackage{xspace}
@@ -14,8 +15,15 @@
 \usepackage{tikz-cd}
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 \def\N{\mathbb{N}}
+\newcommand{\xyS}[1]{\ar@@{-}@@/-6pt/[#1]}
+\newcommand{\xyU}[1]{\ar@@{-}@@/^6pt/[#1]}
+\newcommand{\xyD}[1]{\ar@@{-}@@/_6pt/[#1]}
+\newcommand{\graphxy}[1]{\xymatrix@@C=-2pt@@R=10pt@@C=5pt{#1}}
+\newcommand{\xynode}[1]{\llap{#1\,} \bullet }
 
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}{Theorem}[theorem]
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -46,6 +54,15 @@
 
 %include 03_transformation.lcurry
 
+\chapter{Basic Optimizations}
+
+%include 04_optimizations.lcurry
+
+\chapter{Memory Optimizations}
+
+%include 05_mine.lcurry
+
+\chapter{Conclusion}
 \bibliographystyle{plain}
 \bibliography{bibliography}
 \end{document}

@@ -364,9 +364,9 @@ but the first one we need to deal with is sharing.
 Suppose we have the following expression graph:
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$sum$\,} \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr]& & \llap{$f$\,} \bullet \ar@@{-}@@/-6pt/[dl] \\
-      & \llap{$[]$\,} \bullet & & \llap{$n$\,} \bullet \\
+  \graphxy{
+      & & \xynode{$sum$} \xyS{dl} \xyS{dr}& & \xynode{$f$} \xyS{dl} \\
+      & \xynode{$[]$} & & \xynode{$n$} \\
   }
 }
 \end{mdframed}
@@ -460,12 +460,12 @@ I'll demonstrate each of these mechanisms with the following expression.
 This expression has the following graph:
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-    0 \bullet &                                         & 1 \bullet 
+  \graphxy{
+      & & \xynode{$sqrt$} \xyS{d} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{$?$} \xyD{dl} \xyU{dr} \\
+    \xynode{0} &  & \xynode{1}
   }
 }
 \end{mdframed}
@@ -478,21 +478,21 @@ We can see the results of copying on our expression below.
 
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-    0 \bullet &                                         & 1 \bullet 
+  \graphxy{
+      & & \xynode{$sqrt$} \xyS{d} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{?} \xyD{dl} \xyU{dr} \\
+    \xynode{0} &  & \xynode{1}
   }
 
   \hspace*{8em}
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-      & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d]                & &  \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl]       & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] & & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & 0 \bullet                                                    & & 1 \bullet\\
+  \graphxy{
+      & & & \xynode{?} \xyD{dl} \xyU{dr} \\
+      & & \xynode{$sqrt$} \xyS{d}                & &  \xynode{$sqrt$} \xyS{d} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl}       & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} & & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{0}                                                    & & \xynode{1}\\
   }
 
 }
@@ -513,21 +513,21 @@ There is a significant cost to keeping track of these identifiers.
 
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-    0 \bullet &                                         & 1 \bullet 
+  \graphxy{
+      & & \xynode{$sqrt$} \xyS{d} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{?} \xyD{dl} \xyU{dr} \\
+    0 \bullet &                                         & \xynode{1} 
   }
 
   \hspace*{8em}
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & 0 \bullet                                                    & & 1 \bullet\\
+  \graphxy{
+      & & & \xynode{$sqrt$} \xyS{d} \\
+      & & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & & \xynode{?} \xyD{dl} \xyU{dr} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} & \xynode{?} \xyD{dl} \xyU{dr} & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{0}                                                    & & \xynode{1}\\
   }
 }
 \end{mdframed}
@@ -541,21 +541,21 @@ but as of this time, there are no known bubbling implementations.
 
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-    0 \bullet &                                         & 1 \bullet 
+  \graphxy{
+      & & \xynode{$sqrt$} \xyS{d} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{?} \xyD{dl} \xyU{dr} \\
+    0 \bullet &                                         & \xynode{1} 
   }
 
   \hspace*{8em}
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & & \llap{$sqrt$\,} \bullet \ar@@{-}@@/-6pt/[d] \\
-      & & & ? \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[dr] \\
-      & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl]       & & + \bullet \ar@@{-}@@/_6pt/[dl] \ar@@{-}@@/^6pt/[ddl] \\
-      & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] & & \llap{$*$\,} \bullet \ar@@{-}@@/^6pt/[d] \ar@@{-}@@/_6pt/[d] \\
-      & 0 \bullet                                                    & & 1 \bullet\\
+  \graphxy{
+      & & & \xynode{$sqrt$} \xyS{d} \\
+      & & & \xynode{?} \xyD{dl} \xyU{dr} \\
+      & & \xynode{$+$} \xyD{dl} \xyU{ddl}       & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
+      & \xynode{$*$} \xyU{d} \xyD{d} & & \xynode{$*$} \xyU{d} \xyD{d} \\
+      & \xynode{0}                                                    & & \xynode{1}\\
   }
 }
 \end{mdframed}
@@ -601,7 +601,6 @@ The |pushChoice| is defined similarly, except the frame is |(exp, e, True)| sinc
 >                                           in   hnf bt (sigma e)
 > hnf bt (code (case e of bs))
 >  | e == (code (FORWARD e'))              =  let  (e',bt') = (hnf bt (code (case e' of bs)))
->                                                  fwd = FORWARD e'
 >                                             in   push (FORWARD e') bt'
 >  | hnf e == ((code l),bt')               =  let  (l -> be) `elem` bs
 >                                                  (e',bt') = hnf bt be
@@ -634,10 +633,10 @@ So, we start with the expression graph:
 
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & & ?_1 \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] \\
-      & & ?_0 \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] & & C_0 \bullet\\
-      & A_0 \bullet & & B_0 \bullet \\
+  \graphxy{
+      & & & \xynode{$?_1$} \xyS{dl} \xyS{dr} \\
+      & & \xynode{$?_0$} \xyS{dl} \xyS{dr} & & \xynode{$C_0$}\\
+      & \xynode{$A_0$} & & \xynode{$B_0$} \\
   }
 }
 \end{mdframed}
@@ -645,10 +644,10 @@ So, we start with the expression graph:
 After evaluating the expression we'll end up with the following graph and stack.
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & & A_2 \bullet \\
-      & & A_1 \bullet & & C_0 \bullet\\
-      & A_0 \bullet & & B_0 \bullet \\
+  \graphxy{
+      & & & \xynode{$A_2$} \\
+      & & \xynode{$A_1$} & & \xynode{$C_0$}\\
+      & \xynode{$A_0$} & & \xynode{$B_0$} \\
   }
 }
 \end{mdframed}
@@ -733,29 +732,29 @@ The evaluation is shown below graphically.
 
 \begin{mdframed}
 \centerline{
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$apply$\,} \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] \\
-      & \llap{$apply$\,} \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] & & 3 \bullet \\
-      \llap{$+_2$\,} \bullet & & 2 \bullet \\
+  \graphxy{
+      & & \xynode{$apply$} \xyS{dl} \xyS{dr} \\
+      & \xynode{$apply$} \xyS{dl} \xyS{dr} & & \xynode{3} \\
+      \xynode{$+_2$} & & \xynode{2} \\
   }
 
   \hspace*{2em}
   $\Rightarrow$
   \hspace*{2em}
 
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & & \llap{$apply$\,} \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] \\
-      & \llap{$+_1$\,} \bullet \ar@@{-}@@/-6pt/[d] & & 3 \bullet \\
-      & 2 \bullet \\
+  \graphxy{
+      & & \xynode{$apply$} \xyS{dl} \xyS{dr} \\
+      & \xynode{$+_1$} \xyS{d} & & \xynode{3} \\
+      & \xynode{2} \\
   }
 
   \hspace*{2em}
   $\Rightarrow$
   \hspace*{2em}
 
-  \xymatrix@@C=-2pt@@R=10pt@@C=5pt{
-      & \llap{$+$\,} \bullet \ar@@{-}@@/-6pt/[dl] \ar@@{-}@@/-6pt/[dr] \\
-      2 & & 3 \bullet \\
+  \graphxy{
+      & \xynode{$+$} \xyS{dl} \xyS{dr} \\
+      \xynode{2} & & \xynode{3} \\
   }
 }
 \end{mdframed}
@@ -1036,7 +1035,6 @@ void not_hnf(Node* root)
 }
 \end{verbatim}
 
-
 \subsection{Let Expression}
 
 The semantics here seem fine, but we actually encounter a surprising problem when we add let expressions.
@@ -1304,28 +1302,170 @@ We've called these \texttt{nondet} flags.
 
 The rules for determining if an expression node |e| is \texttt{nondet} are simple.
 If |e| is a choice, then |e| is \texttt{nondet}.
-If |e| has a case who's scrutenee is \texttt{nondet}, then |e| is \texttt{nondet}.
-If |e| is a forward node to a \texttt{nondet} node, then |e| is \texttt{nondet}.
+If |e| has a case who's scrutenee is \texttt{nondet},
+or is a forward to a \texttt{nondet}, then |e| is \texttt{nondet}.
 All other nodes are deterministic.
 
 It's easy to see that any node not marked as \texttt{nondet} doesn't need to be pushed on the stack.
 It's not part of a choice, 
 all of its case statements used deterministic nodes,
 and it's not forwarding to a non-deterministic node.
-This doesn't prove the correctness by any means, but it's pretty compelling.
-Even better, the only change to the code is that instead of just pushing rewrites on the stack,
+However proving this is a more substantial problem.
+
+In order to prove the correctness of this modification we need to take a step back into graph rewriting.
+First we need a couple of definitions.
+
+\begin{definition}
+Given a rewrite system |R| with strategy |S|, a computation space of expression |e|, 
+|C_S(e)| is a directed graph where nodes are expressions, 
+there is an edge |(e_1, e_2)| iff |(R,p) `elem` S(e_1)| and |e_1 ->_(R,p) e_2|, 
+and |C_S(e)| is rooted by |e|.
+\end{definition}
+
+\begin{definition}
+given an expression |e| and a rewrite rule |l -> r|,
+the redex pattern of |e| is the set of non-variable nodes in |e| that match |l|.
+\cite[Def. 2.7.3]{Terese03} that the \textbf{redex pattern}
+\end{definition}
+
+Now we can start to reason about computation spaces.
+The first thing to point out is pretty straightforward.
+A path with no branches corresponds to a deterministic expression.
+
+\begin{theorem}
+If |C_S(e)| is a path, then |e| is deterministic.
+\end{theorem}
+\begin{proof}
+if |e| is non-deterministic, then |e ->* f| where |f| has two rules that can apply.
+Which means that there is a branch in |C_S(e)|,
+and therefore |C_S(e)| isn't a path.
+\end{proof}
+
+Next we can start contracting deterministic paths.
+The idea is straightforward.  If a reduction is deterministic,
+then it doesn't matter when the reduction happens.
+This would be directly implied by confluence in an orthogonal system,
+but Curry isn't confluent, so we need to prove it.
+
+\begin{lemma}[redex compression]
+if |a -> {b}|, and |e ->* n| then |extend e a b ->* n|
+\end{lemma}
+\begin{proof}
+If |a| is not needed in the derivation of |e|, the |extend e a b| will not change the computed values.
+If |a| is needed,
+then we can break the computation into 3 parts |e ->* rewrite e_a a e_b ->* n|.
+Since |a| is a redex, and |R| is a constructor rooted system, everything in the redex pattern for |a|
+must be a constructor.
+Since |a| can't be duplicated, we don't need to worry about parallel rewrites.
+Therefore by our definition of rewriting none of the nodes in the redex pattern of |a| will be changed,
+since constructors have no rewrite rules.
+Therefore if we replace |a| with |b| at the beginning, our derivation |extend e a b -> e_b ->* n|
+proceeds as before, except we've remove the step |rewrite e_a a e_b|.
+\end{proof}
+
+Finally we can prove our main theorem.
+If an expression |a| deterministically reduces to |b|,
+then we don't really need to do that reduction.
+There's only one possible choice,
+so if we just replace |a| with |b| at the start,
+then we get the same answers.
+
+\begin{theorem}[path compressions]
+if |a ->* {b}|, and |e ->* n| then |extend e a b ->* n|
+\end{theorem}
+\begin{proof}
+we proceed by induction.
+Base case: |a -> {b}|.
+This is the redex compression theorem.
+Inductive case: |a -> {a_1} ->* {b}|.
+It must be the case that |a_1| is a single reduct of |a|, because
+otherwise |a ->* b| would not be deterministic.
+Assume that |e ->* n| where |a| is a redex of |e|.
+By the redex compression theorem |extend e a a_1 ->* n|,
+and by the inductive hypothesis |extend (extend e a a_1) a_1 b ->* n|
+\end{proof}
+
+This is really all we need to prove that our backtracking strategy is valid.
+The effect of this theorem is that if I know |a ->* b| in the computation space,
+and |a ->* b| must be deterministic, then I can just replace |a| with |b|,
+and skip the entire rewriting process.
+So, In the computation space for |C_S(e)|, I can remove the path |a ->* b|,
+and it won't have any effect on the final answers.
+
+This means that if we have an expression that we know is deterministic,
+then we can replace that expression with any of it's reducts.
+This directly implies that if we don't backtrack a deterministic expression, 
+the we still produce the same set of solutions.
+
+Now we need to prove that our backtracking scheme only ever omits deterministic redexes.
+Recall that |e| is only marked nondet is it's a choice node, or if it's a case
+that depends on a nondet node.
+Taking the contrapositive of this definition we find that the following nodes
+are not nondet,
+any literal, forwarding node, fail node, 
+any constructor application, or any function application that does not contain
+a nondet node in it's redex pattern, and does not reduce to a nondet node.
+
+Now we can justify our using the term nondet for these nodes.
+\begin{lemma}
+Any Curry expression that is not marked as nondet are deterministic.
+\end{lemma}
+\begin{proof}
+Literals, forwarding nodes, fail nodes, and constructors are already in head normal form.
+If we have a function node, then by assumption we know that
+all of the nodes that it evaluates are not marked as nondet, and therefore produce 
+only a single value.
+Furthermore, since the function does not evaluate to a nondet node, 
+it must also produce a single answer.
+\end{proof}
+
+Finally we can establish correctness.
+\begin{corollary}[Correctness of fast backtracking]
+Any Curry expression will produce the same answers
+if only nodes marked as nondet are pushed on the stack.
+\end{corollary}
+\begin{proof}
+By the previous lemma we know that all nodes that aren't marked nondet are deterministic.
+Suppose we have an expression |e|, and |e ->* e'|, and |e_1 ? e_2| is needed in |e'|.
+Now if |a ->* b| is deterministic and |a| is needed by |e'|
+then |e'| will evaluate normally taking choice |e_1|,
+however when we backtrack to |e'| and take choice |e_2|, we are left with rewriting
+|extend e' a b|.  By the path compression theorem this is the same as if we
+hadn't reduced |a|.
+\end{proof}
+
+Now that we've established correctness, we can look at how we need to change the generated code.
+Fortunately the only change to the code is that instead of just pushing rewrites on the stack,
 we check if the variable is \texttt{nondet}.
 For example, the \texttt{not\_hnf} example is changed to:
 
 \begin{verbatim}
-case False_TAG:
-  root->tag = True_TAG;
-  root->hnf = CTR_hnf;
-  if(x->nondet)
+void not_hnf(Node* root)
+{
+  Node* x = root->childrent[0];
+  Node* x_forward = x;
+  bool nondet = false;
+  while(true)
   {
-    push(bt_stack, root, make_not_(x), false);
-  }
-  return;
+    nondet = x_forward->nondet;
+    switch(x_forward->tag)
+    {
+      ...
+
+      case False_TAG:
+        root->tag = False_TAG;
+        root->hnf = CTR_hnf;
+        if(nondet)
+        {
+          root->nondet = true;
+          push(bt_stack, root, make_not(x), false);
+        }
+        return;
+
+     ...
+
+    }
+}
 \end{verbatim}
 
 \subsection{Apply Nodes}

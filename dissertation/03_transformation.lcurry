@@ -1,31 +1,31 @@
 
 In this chapter we introduce our engine for Generating and Altering Subexpressions, of the GAS system.
-This system proves to be incredibly versital and is the main workhorse of the compiler and optimizer.
-We show how to construct, combine, and improve the efficiency of transformation,
+This system proves to be incredibly versatile and is the main workhorse of the compiler and optimizer.
+We show how to construct, combine, and improve the efficiency of transformations,
 as well as how the system in implemented.
 We then show an extended example of using the GAS system to transform FlatCurry programs
-into a canonical form so that we can compile them to C code as discussed in the last chapter.
+into a canonical form so that we can compile them to C code, as discussed in the last chapter.
 
 
 
-\subsection{building optimizations}
+\subsection{Building Optimizations}
 
 Optimization is usually considered the most difficult aspect of writing a modern compiler.
-It's easy to see why too.
+It's easy to see why.
 There are dozens of small optimizations to make, 
 and each one needs to be written, shown correct, and tested.
 
-Furthermore There are several levels where an optimization can be applied.
+Furthermore, there are several levels where an optimization can be applied.
 Some optimizations apply to a programs AST, some to another intermediate representation,
 some to the generated code, and even some to the runtime system.
 There are even optimizations that are applied during transformations between representations.
-For this chapter, I will be describing a system to apply optimizations to FlatCurry programs.
-While this is not the only area of the compiler that I've applied optimizations,
-it is by far the most extensive, so it's worth understanding how my optimization engine works.
+For this chapter, we will be describing a system to apply optimizations to FlatCurry programs.
+While this is not the only area of the compiler where we applied optimizations,
+it is by far the most extensive, so it's worth understanding how our optimization engine works.
 
-Generally speaking most optimizations have the same structure.
+Generally speaking, most optimizations have the same structure.
 Find an area in the AST where the optimization applies, and then replace it with the optimized version.
-As an example, consider the code for an absolute value function defined below.
+As an example, consider the code for the absolute value function defined below.
 
 > abs x
 >  | x < 0      = -x
@@ -35,94 +35,94 @@ This will be translated into FlatCurry as
 
 > abs x = case  (x < 0) of
 >               True   -> -x
->               False  -> case otherwise of
->                              True   -> x
->                              False  -> EXEMPT
+>               False  -> case  otherwise of
+>                               True   -> x
+>                               False  -> EXEMPT
 
-While This transformation is obviously inefficient, it is general and easy to implement.
-A good optimizer should be able to recognize that $otherwise$ is really a synonym for $True$,
-and reduce the case statement.
+While this transformation is obviously inefficient, it is general and easy to implement.
+A good optimizer should be able to recognize that |otherwise| is really a synonym for |True|,
+and reduce the case-expression.
 So for this one example, we have two different optimizations we need to implement.
 
 There are two common approaches to solving this problem.
 The first is to make a separate function for each optimization.
-Each function will traverse the AST and try to apply it's optimization.
+Each function will traverse the AST and try to apply its optimization.
 The second option is to make a few large functions that attempt to apply several optimizations at once.
-There are trade offs for each.
+There are trade-offs for each.
 
 The first option has the advantage that each optimization is easy to write and understand.
-However, is suffers from the fact that there is a lot of code duplication,
+However, is suffers from a lot of code duplication,
 and it's not very efficient.  We must traverse the entire AST every time we want to apply an optimization.
 Both LLVM and the JVM fall into this category. \cite{llvm, jvm}
 The second option is more efficient, and there is less code duplication,
 but it leads to large functions that are difficult to maintain or extend.
 
-Using these two options generally leads to functional optimizers that are difficult to maintain.
-To combat this problem many compilers will provide a language to describe optimization transformation.
+Using these two options generally leads to optimizers that are difficult to maintain.
+To combat this problem, many compilers will provide a language to describe optimization transformation.
 Then the compiler writer can use this domain specific language to develop their optimizations.
 With the optimization descriptions, the compiler can search the AST of a program to find
-any places where the optimizations apply. 
-However, these are typically limited in the optimizations they can apply. \cite{playingByTheRules}
+any places where optimizations apply.
+However, It is difficult or impossible to write many common optimizations in this style. \cite{playingByTheRules}
 
 The aim of our solution is to try to get the best of all three worlds.
 We've developed an approach to simplify Generating and Altering Subexpressions (GAS).
-My approach was to do optimization entirely by rewriting.
-This has several advantages, and may end up being the most useful result of this work.
-First, Developing new optimizations is simple.
-For every new optimization, we can write it down in this system within minutes.
+Our approach was to do optimization entirely by rewriting.
+This has several advantages, and might be the most useful result of this work.
+First, developing new optimizations is simple.
+We can write down new optimizations in this system within minutes.
 It was often easier to write down the optimization and test it,
-than it was to try and describe the optimization.
+than it was to try to describe the optimization in english.
 Second, any performance improvement we made to the optimization engine
 would apply to every optimization.
 Third, optimizations were easy to maintain and extend.
 If one optimization didn't work, we could look at it and test it in isolation.
 Fourth, this code is much smaller than a traditional optimizer.
-This isn't really a fair comparison given the relative immaturity of my compiler,
-but I was able to implement 16 optimizations and code transformations in under 150 lines of code.
-This gives a sense of scale of how much easier it is to implement optimizations in my system.
-Fifth, Since I'm optimizing by rewrite rules,
+This isn't really a fair comparison given the relative immaturity of our compiler,
+but we were able to implement 16 optimizations and code transformations in under 150 lines of code.
+This gives a sense of scale of how much easier it is to implement optimizations in this system.
+Fifth, Since We're optimizing by rewrite rules,
 the compiler can easily output what rule was used,
-and the position it was used in
+and the position where it was used.
 This is enough information to entirely reconstruct the optimization derivation.
 We found this very helpful in debugging.
 Finally, optimizations are written in Curry.
-We didn't need to develop a DSL to describe my optimizations,
-and there is no new ideas for programmers to learn if they want to extend the compiler.
+We didn't need to develop a DSL to describe the optimizations,
+and there are no new ideas for programmers to learn if they want to extend the compiler.
 
 We should note that there are some significant disadvantages to the GAS system as well.
-This biggest disadvantage is the there are some optimizations and transformations
+This biggest disadvantage is that there are some optimizations and transformations
 that are not easily described by rewriting.
-Another disadvantage is that while we've improved the efficiency of the algorithm considerably,
-It still takes longer to optimize programs then we'd like.
+Another disadvantage is that, while we've improved the efficiency of the algorithm considerably,
+it still takes longer to optimize programs then we'd like.
 
 The first problem isn't really a problem at all.
 If there is an optimization that doesn't lend itself well to rewriting,
 we can always write it as a traditional optimization.
 Furthermore, as we'll see later, we don't have to stay strictly in the bounds of rewriting.
 The second problem is actually more fundamental to Curry.
-My implementation relies on finding a single value form a set generated by a non-deterministic function.
+Our implementation relies on finding a single value from a set generated by a non-deterministic function.
 Current implementations are inefficient, but there are new implementations being developed.
 \cite{synthesizedSetFunctions}
-I also believe that an optimizing compiler would help with this problem \cite{this}.
+We also believe that an optimizing compiler would help with this problem \cite{this}.
 
-\subsection{The structure of an optimization}
+\subsection{The Structure of an Optimization}
 
 The goal with GAS is to make optimizations simple to implement and easily readable.
 While this is a challenging problem, we can actually leverage Curry here.
-Remember that the semantics of Curry are already nondeterministic rewriting.
+Remember that the semantics of Curry are already non-deterministic rewriting.
 
 Each optimization is going to be a function from a FlatCurry expression to another FlatCurry expression.
 
 > type Opt = Expr -> Expr
 
 We can describe an optimization by simply describing what it does to each expression.
-As an example consider the definition for floating let expressions:
+As an example consider the definition for floating let-expressions:
 
 > float (code (f (as++[let vs in e]++bs))) = (code (let vs in (f (as++[e]++bs))))
 
-This optimization tells us that if an argument to a function application is a let expression,
-then we can move the let expression outside.
-But what if there's a free variable declaration inside of a function?
+This optimization tells us that, if an argument to a function application is a |let| expression,
+then we can move the let-expression outside.
+This works for let-expressions, but what if there's a free variable declaration inside of a function?
 Well, we can define that case with another rule.
 
 > float (code (f (as++[let vs in e]++bs)))       = (code (let vs in (f (as++[e]++bs))))
@@ -135,7 +135,7 @@ Suppose we have an expression:
 
 This could be matched by either rule.
 The trick is that we don't care which rule matches, as long as they both do eventually.
-This will either be transformed into either of the following:
+This will be transformed into one of the following:
 
 > (code (let r free in let [x = 1] in f x 2))
 > (code (let [x = 1] in let r free in f x 2))
@@ -155,8 +155,8 @@ In fact, most optimizations we write won't be very complex.
 The power of optimization comes from making small improvements several times.
 
 Now that we can do simple examples, let's look at a more substantial transformation.
-Let expressions are deceptively complicated.
-They allow us to make arbitrarily complex mutually recursive definitions.
+Let-expressions are deceptively complicated.
+They allow us to make arbitrarily complex, mutually recursive, definitions.
 However, most of the time a large let expression could be broken down into several small let expressions.
 Consider the definition below:
 > let  a = b
@@ -182,7 +182,7 @@ There are several optimizations that can be safely performed on a single let bou
 Unfortunately, splitting the let expression into blocks isn't trivial.
 The algorithm involves making a graph out of all references in the let block,
 then finding the strongly connected components of that reference graph,
-and finally rebuilding the let expression from the component graph.
+and, finally, rebuilding the let expression from the component graph.
 The full algorithm is given below.
 
 > blocks _ (code (Let vs e)) | numBlocks > 1 = e'
@@ -200,13 +200,13 @@ While this optimization is significantly more complicated then the $float$ examp
 We can still implement it in our system.
 Furthermore, we're able to factor out the code for building the graph
 and finding the strongly connected components.
-This is the advantage of using curry functions as our rewrite rules.
-We have much more freedom in constructing the right hand side of our rules.
+This is the advantage of using Curry functions as our rewrite rules.
+We have much more freedom in constructing the right-hand side of our rules.
 
-Now that we can create optimizations, what if I want both $blocks$ and $float$ to run?
+Now that we can create optimizations, what if we want both $blocks$ and $float$ to run?
 This is an important part of the compilation process to get expressions into a canonical form.
-It turns out combining two optimizations is simple.
-I just make a non-deterministic choice between them.
+It turns out that combining two optimizations is simple.
+We just make a non-deterministic choice between them.
 
 > floatBlocks = float ? blocks
 
@@ -217,11 +217,11 @@ then they can be combined for efficiency.
 
 \subsection{An Initial Attempt}
 
-Our first attempt was quite simple really.
-We simply pick a arbitrary subexpression with |subExpr|
-and apply an optimization to it.
+Our first attempt is quite simple, really.
+We pick an arbitrary subexpression with |subExpr|
+and apply an optimization.
 We can then use a non-deterministic fix point operator to find
-all transformations that can applied to the current expression.
+all transformations that can be applied to the current expression.
 We can define the non-deterministic fix point operator using either
 the Findall library, or Set Function \cite{findall, setFunctions}
 The full code is given in figure \ref{fig:optFirst}
@@ -255,16 +255,16 @@ The full code is given in figure \ref{fig:optFirst}
 While this attempt is really simple,
 there's a problem with it.
 It is unusably slow.
-While looking at the code it's pretty clear to see what the problem is.
+While looking at the code, it's pretty clear to see what the problem is.
 Every time we traverse the expression, we can only apply a single transformation.
 This means that if we need to apply 100 transformations, which is not uncommon,
 then we need to traverse the expression 100 times.
 
 \subsection{A Second Attempt: Multiple Transformations Per Pass}
 
-Our second attempt was much more successful.
+Our second attempt is much more successful.
 Instead of picking an arbitrary subexpression,
-we chose to traverse the expression manually.
+we choose to traverse the expression manually.
 Now, we can check at each node if an optimization applies.
 We only need to make two changes.
 The biggest is that we eliminate |subExpr| and change |reduce| to traverse the entire expression.
@@ -308,29 +308,29 @@ The new implementation is given in figure \ref{fig:optReduce}
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt) e
 \caption{A second attempt.
-         Traverse the expression, and at each node check if an optimization applies.}
+         Traverse the expression and, at each node, check if an optimization applies.}
 \label{fig:optReduce}
 \end{figure}
 
 This approach is significantly better.
-Aside from being able to apply multiple rules in one pass,
+Aside from applying multiple rules in one pass,
 we also limit our search space when applying our optimizations.
 While there's still more we can do.
-The new approach makes the GAS library usable on larger curry programs,
+The new approach makes the GAS library usable on larger Curry programs,
 like the standard Prelude.
 
 \subsection{Adding More Information}
 
-Rather surprisingly our current approach is actually sufficient for compiling curry.
+Rather surprisingly our current approach is actually sufficient for compiling Curry.
 However, to optimize Curry we're going to need more information when we apply a transformation.
-Specifically we'll to be able to create new variables.
-To simplify optimizations we'll require that each variable name can only be used once.
+Specifically, we'll be able to create new variables.
+To simplify optimizations, we'll require that each variable name can only be used once.
 Regardless, we need a way to know what is a safe variable name that we're allowed to use.
-We will also have one occasion where it's important to know if we're rewriting the root of an expression.
+We may also need to know if we're rewriting the root of an expression.
 Fortunately, both of these changes are easy to add.
 We just change the definition of |Opt| to take all the information as an argument.
-For each optimization we'll pass in an |n :: Int|
-that represents the next variable |v_n| that is guaranteed to be free.
+For each optimization, we'll pass in an |n :: Int|
+that represents the next variable |v_n| that is guaranteed to be fresh.
 We'll also pass in a |top :: Bool| that tells us if we're at the top of the stack.
 We also return a pair of |(Expr,Int)| to denote the optimized expression,
 and the number of new variables we used.
@@ -338,13 +338,15 @@ and the number of new variables we used.
 > type Opt = (Int,Bool) -> Expr -> (Expr,Int)
 
 If we later decide that we want to add more information, then we just update the first parameter.
-The only problem is how do we make sure we're calling each optimization with the correct |n| and |top|?
+The only problem is, how do we make sure we're calling each optimization with the correct |n| and |top|?
 We just need to update |reduce| and |runOpt|.
 In order to keep track of the next available free variable we use the |State| monad.
 We do need to make minor changes to |fix| and |simplify|,
 but this is just to make them compatible with |State|.
+The full implementation is in figure \ref{fig:optAddInfo}.
 
 
+\begin{figure}
 > reduce                                :: Opt -> Bool -> Expr -> State Int Expr
 > reduce opt top (code (v))                 = runOpts opt top (code (v))
 > reduce opt top (code (l))                 = runOpts opt top (code (l))
@@ -384,22 +386,27 @@ but this is just to make them compatible with |State|.
 
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt True) e (maximum (vars e) + 1)
+\caption{A third attempt.
+         keep track of the next fresh variable, and if we're at the root.}
+\label{fig:optAddInfo}
+\end{figure}
 
 
 \subsection{Reconstruction}
 
 Right now we have everything we need to write all of our optimizations.
-However, we've found it useful to be able to track which optimizations were applied and where.
+However, we've found it useful to be able to 
+track which optimizations were applied and where they were applied.
 This helps with testing, debugging, and designing optimizations,
 as well as generating optimization derivations that we'll see later in this dissertation.
 It is difficult to overstate just how helpful this addition was in building this compiler.
 
-If we want to add this addition, then we need to make a few changes.
+If we want to add this, then we need to make a few changes.
 First, we need to decide on a representation for a rewrite derivation.
 Traditionally a rewrite derivation is a sequence of rewrite steps,
 where each step contains the rule and position of the rewrite.
-We describe paths in figure \ref{fig:path}
-To make reconstruction easier, I'll also include the expression that is the result of the rewrite.
+We describe paths in figure \ref{fig:path}.
+To make reconstruction easier, we also include the expression that is the result of the rewrite.
 This gives us the type:
 > type Path = [Int]
 > type Step = (String, Path, Expr)
@@ -424,7 +431,8 @@ This gives us the type:
 >       p_1 -> E_1
 >       ...
 >       p_n -> E_n
-\caption{The definition of a path for curry expressions. |E_i| denotes that expression |E|
+\caption{The definition of a path for Curry expressions. \\
+         |E_i| denotes that expression |E|
          is at position |i| relative to the current expression.
          Note that variables and literals don't have subexpressions, so they're excluded.
          |E_n1| is used for expressions that have a variable number of children, such as let expressions.}
@@ -435,30 +443,31 @@ This gives us the type:
 This leads to the last change we need to make to our |Opt| type.
 We need each optimization to also tell us its name.
 This is good practice in general, 
-because it forces us to come up with unique names for each optimization.A
+because it forces us to come up with unique names for each optimization.
 
-> type Opt = (Int,Bool) -> (Expr, String, Int)
+> type Opt = (Int,Bool) -> Expr -> (Expr, String, Int)
 
 So, what changes do we need to make to the algorithm?
-Again there isn't a lot.
+Again, there aren't many.
 Instead of using the |State| monad, we use a combination of the |State| and |Writer| monads,
 so we can keep track of the derivation.
 We've elected to call this the |ReWriter| 
-monad.\footnote{We are still disappointed that we were not able to come up with a was
+monad.\footnote{We are still disappointed that we were not able to come up with a way
                 to construct this using a combination of the |Reader| and |Writer| monads.
                 In our opinion this is the single great failing of this dissertation.}
 We add a function |update :: Expr -> Step -> Int -> ReWriter Expr| 
 that is similar to |put| from |State|.  This updates the state variable, and creates a single step.
 The |reduce| function requires few changes.
-We change the boolean variable |top| to a more general |Path|.
+We change the Boolean variable |top| to a more general |Path|.
 Because of this change, we need to add the correct subexpression position,
 instead of just changing |top| to |False|.
 The |RunOpts| function is similar.  We just change |top| to a |Path|,
 and check if it's null.
 Finally |fix| and |simplify| are modified to remember the rewrite steps we've already computed.
 We change the return type of |simplify| so that we have the list of steps.
+The full implementation is in figure \ref{fig:reconstruct}
 
-
+\begin{figure}
 > reduce                                  :: Opt -> Path -> Expr -> ReWriter Expr
 > reduce opt p (code (v))                 = runOpts opt p (code (v))
 > reduce opt p (code (l))                 = runOpts opt p (code (l))
@@ -501,88 +510,435 @@ We change the return type of |simplify| so that we have the list of steps.
 
 > simplify :: Opt -> Expr -> (Expr,[Step])
 > simplify opt e = fix (reduce opt []) e (maximum (vars e) + 1) []
+\caption{The final version of GAS with reconstruction.}
+\label{fig:reconstruct}
+\end{figure}
 
-Now that we've computed the rewrite steps, its a simple process to reconstruct them into a string.
+Now that we've computed the rewrite steps, it's a simple process to reconstruct them into a string.
 The |pPrint| function comes from the FlatCurry Pretty Printing Library.
 
 > reconstruct :: Expr -> [Step] -> String
 > reconstruct _ [] = ""
-> reconstruct e ((rule, p, rhs):steps) = "=>_"++rule++" "++(show p)++"\n" ++
->                                        pPrint  e[p -> rhs]')++"\n" ++
->                                        reconstruct e' steps
+> reconstruct e ((rule, p, rhs):steps) =  let e' = extend e p rhs
+>                                         in  "=>_"++rule++" "++(show p)++"\n" ++
+>                                             pPrint e' ++"\n" ++
+>                                             reconstruct e' steps
 
 \subsection{Optimizing the Optimizer}
 
-Remember that our optimizing engine is going to run for every optimization.
-So it's worth taking the time to tune it to be as efficient as possible.
+Remember that our optimizing engine is going to run for every optimization,
+so it's worth taking the time to tune it to be as efficient as possible.
 There are a few tricks we can use to make the optimization process faster.
-The first trick is really simple.  We add a boolean variables |seen| to the rewriter monad.
+The first trick is really simple.  We add a Boolean variable |seen| to the ReWriter monad.
 This variable starts as |False|, and we set it to |True| if we apply any optimization.
 This avoids the linear time check for every call of |fix| to see if we actually ran any optimizations.
-The second quick optimization is to notice that variables, literals and type expressions 
+The second quick optimization is to notice that variables, literals, and type expressions 
 are never going to run an optimization, 
 so we can immediately return in each of those cases without calling |runOpt|.
 This is actually a much bigger deal than it might first appear.
-All of the leaves are going to either be variables, literals, or constructors applied to no arguments,
-and for expression trees the leaves are often the majority of the nodes in the tree.
+All of the leaves are going to either be variables, literals, or constructors applied to no arguments.
+For expression trees the leaves are often the majority of the nodes in the tree.
 In fact we can optimize type expressions by just removing the type when we encounter it.
 We won't ever use the type in the rest of the compiler.
 Finally, we can put a limit on the number of optimizations to apply.
 If we ever reach that number, then we can immediately return.
 This can stop our optimizer from taking too much time.
 
+Now that the GAS system is in place, we can move onto compiling FlatCurry programs.
+In the next section we discus the compiler pipeline, and how to transform the FlatCurry into C.
+
 \section{The Compiler Pipeline}
+
+This compiler, unsurprisingly, follows a traditional compiler pipeline.
+While we start with an AST, there are still five phases left before we can generate C code.
+First, we normalize FlatCurry to a canonical form. 
+Second we optimize the FlatCurry. 
+Third, we sanitize the FlatCurry to simplify the process of generating C code.
+Fourth, we compile the Code to ICurry, an intermediate representation that is closer to C.
+Finally, we compile the code to C.
+These steps are referred to as preprocess, optimize, postprocess, toICurry, and toC within the compiler.
+While there are several small details that are important to constructing a working Curry compiler,
+we'll concern ourselves with the big picture here.
 
 \subsection{Canonical FlatCurry}
 
-Let's look at a transformation for |apply| nodes.
-Recall that |apply f as| applies a function |f| to the arguments in the list |as|.
-Now, if |f| is a known function, then we can statically determine how many arguments it's missing.
-We use |f_k| to denote |f| missing |k| arguments.
-While, in theory, we would never create an apply node of a known function,
-in practice this comes up often, either because it was easier to compile this way,
-or this application became exposed over the course of optimization.
+The preproces and postprocess steps of the compiler make heavy use the of GAS system,
+and transform the FlatCurry program in to a form that is more amenable to C.
+We will discuss the optimization phase in the next section,
+but for now we can see how transformations work.
 
-In any case, we should eliminate 
+Let's start with an example:
+> 1 + let x = 3 in x
 
-> unapply :: Opt
-> unapply (code (apply f_k as))
->  = case compare k n of
->         LT -> (code (apply (f as_1) as_2))
->         EQ -> code (f as)
->         GT -> code (f_kn as)
->  where  n            = length as
->         (as_1,as_2)  = split k as
+This is a perfectly fine Curry program, 
+but C does not allow variable declarations in an expression,
+so we need to rewrite this Curry expression to:
+> let x = 3 in 1 + x
 
-> unapply :: Opt
-> unapply v (code (apply f_k as))
->  = case compare k n of
->         LT -> (code (let v = f as1 in apply v as2))
->         EQ -> code (f as)
->         GT -> code (f_kn as)
->  where  n          = length as
->         (as1,as2)  = split k as
+We can translate the new expression to C in a direct manner.
+This is the purpose of the preprocess and postprocess steps.
+Rewrite Curry a expression that doesn't make sense in C to an equivalent Curry expression
+that we can translate directly to C.
+Most of the transformations aren't complicated, and consist of disallowing certain
+syntactic constructs.
 
-> case  (case e of  p_21 -> e_21 
->                   ... 
->                   p_2n -> e_2n) of
->       p_11 -> e_11
->       ...
->       p_1n -> e_1n)
-> =>
-> case  e of 
->       p_21 -> case  e_21 of
->                     p_11 -> e_11
->                     ...
->                     p_1n -> e_1n
->       ...
->       p_2n -> case  e_2n of
->                     p_11 -> e_11
->                     ...
->                     p_1n -> e_1n
+The rules are listed in table \ref{fig:canonical, fig:canonical2}
+For clarity, the rules are presented as rewrite rules.
+However, the implementation is not much more difficult, just more cluttered.
+As an example, the first let floating rule could be implemented as:
+> float _ (code (let x = (let y = e_1 in e_2) in e_3))
+>     = (code (let y = e_1 in let x = e_2 in e_3), "float 1", 0)
+
+We did not need any fresh variable names, so the first parameter is ignored,
+and we return 0 new variables.
+The name |"float 1"| is returned for reconstructing the rewrite derivation.
+
+In practice several of these rules are generalized and optimized.
+For example let-expressions may have many mutually recursive variables,
+and when floating a let bound variable inward, we may want to recursively traverse
+the expression to find the innermost declaration possible.
+However, these extensions to the rules are straightforward.
+
+\begin{figure}
+>FLOAT
+> let x = (let y = e_1 in e_2) in e_3   =>  let y = e1 
+>                                           in  let x = e_2
+>                                               in e_3
+>
+> let x = (let y free in e_1) in e_2    =>  let y free
+>                                           in  let x = e_2
+>                                               in e_3
+>
+> (let x = e_1 in e_2) ? e_3            =>  let x = e_1 in (e_2 ? e_3)
+>
+> (let x free in e_1) ? e_2             =>  let x free in (e_1 ? e_2)
+>
+> f (let x = e_1 in e_2)                =>  let x = e_1
+>                                           in f e_2
+>
+> f (let x free in e_2)                 =>  let x free
+>                                           in f e_2
+>
+> case (let x = e_1 in e_2) of ...      =>  let x = e_1
+>                                           in case e_2 of ...
+>
+> case (let x free in e) of ...         =>  let x free
+>                                           in case e of ...
+>
+>CASE_IN_CASE
+> case  (case e_1 of  b_21 -> e_21        =>  case e_1 of  b_21 -> case e_21 of  b_11 -> e_11
+>                     b_22 -> e_22                                               b_12 -> e_22
+>                     ...)                                                       ...
+>       of  b_11 -> e_11                                   b_22 -> case e_22 of  b_11 -> e_11
+>           b_12 -> b_12                                                         b_12 -> e_22
+>           ...                                                                  ...
+>                                                          ...
+>
+\caption{GAS rules for putting FlatCurry programs into canonical form}
+\label{fig:canonical}
+\end{figure}
+
+\begin{figure}
+>DOUBLE_APPLY
+> apply (apply f [x]) [y]               =>  apply f [x,y]
+>
+>CASE_APPLY
+> apply (case e of (C(...) -> f)) x     =>  case e of C(...) -> apply f x
+>
+>STRING
+> c_1 : c_2  ... c_n : []               =>  StrConst "c1c2...cn"
+>  where c_1 c_2 ... c_n are character literals
+>
+>BLOCKS
+> let  x_1 = e_2                        =>  blocks [(x_1,e_1), (x_2,e_2) ... (x_n,e_n)]
+>      x_2 = e_2                                where blocks = foldr Let e . scc
+>      ...
+>      x_n = e_n
+> in e
+>
+>ALIAS
+> let x = y in e                        =>  e[x `to` y]
+> let x = x in e                        =>  let x = loop in e
+>
+>
+>FILL
+> case e of  C_1 ... -> e_1             =>  case e of  C_1 ... -> e_1
+>            C_2 ... -> e_2                            C_2 ... -> e_2
+>            ...                                       ...
+>            C_k ... -> e_k                            C_k ... -> e_k
+>                                                      C_k1 ... -> EXEMPT
+>                                                      ...
+>                                                      C_n ... -> EXEMPT
+>                                               where C_k1 ... C_n `elem` Ctrs - {C_1,C_2,...C_k}
+\caption{GAS rules for putting FlatCurry programs into canonical form (continued)}
+\label{fig:canonical2}
+\end{figure}
+
+While most of these transformations are simple,
+a few require some explanation.
+The \textbf{blocks} transformation takes a let block with multiple variable definitions,
+and rewrites it to a series of let blocks where all variables are split into
+strongly connected components.
+This isn't strictly necessary,
+but it removes the need to check for mutual recursion during the optimization phase.
+It will often transform a block of mutually defined variables into a cascading 
+series of let expressions with a single variable, which is beneficial
+throughout the compiler.
+
+The \textbf{alias} transformation will remove any aliased variables.
+If one variables is aliased to another, then it will do the substitution,
+but if a variable is aliased to itself, then it is an infinite loop.
 
 
+Finally the \textbf{Fill cases} transformation completes the definitional tree.
+If we have a case with branches for constructors |C_1, C_2 ... C_k|,
+then we look up the type |T| that all of these constructor belong to.
+Then we get the list |Ctrs| of all constructors that belonging to |T|.
+This list will contain |C_1, C_2, ... C_n|, but it may contain more.
+For each constructor not represented in the case-expression,
+we create a new branch |C_i -> EXEMPT|.
+
+After running all of these transformations, our program is in canonical form
+and we may choose to optimize it, or we may skip straight to the post-processing phase.
+Currently, we only need two transformations for post processing.
+If we ever have an expression of the form |let x = case ...|, then we need to transform the
+case-expression into a function call.
+We don't do this transformation in pre-processing
+because we don't want to split functions apart during optimizations.
+The \textbf{Let-Case} transformation has a single rule given in figure \ref{fig:letcase}.
+
+\begin{figure}
+>LET_CASE
+> f v_1 ... v_n =  ...                               =>  f v_1 ... v_n            =  ... 
+>                  let x = case e of  C_1 -> e_1     emptyspace                      let x = f#1 x_1 ... x_k
+>                                     C_2 -> e_2                                     in ...
+>                                     ...                outline f 1 x_1 ... x_k  =  case e of  C_1 -> e_1
+>                                     C_n -> e_n                                                C_2 -> e_2
+>                  in ...                                                                       ...       
+>                                                                                               C_n -> e_n
+>  where set (x_1 ... x_k) == freeVars [e,e_1,e_2...e_n]
+>
+>VAR_CASE
+> case e of ...                                      => let x = e in case x of ...
+\caption{Rule for moving a let bound case out of a function, 
+         and eliminating compound expressions in case-expressions.}
+\label{fig:letcase}
+\end{figure}
+
+Every let with a case-expression creates a new function |outline f n|
+where |n| is incremented every time.
+
+Finally, in our post-processing phase we simply factor out 
+the scrutinee of a case-expression into a variable.
+The transformation is straightforward.
+An example of a preprecess derivation is given in \ref{fig:preprocess_example}.
+At this point point we are ready to transform the cononicalized FlatCurry into ICurry.
+
+\begin{figure}
+> poweraux v1 v2 v3 = case  (==) v3 0 of
+>                           True   ->  v1
+>                           False  ->  let  v4 = square v2
+>                                           v5 = halve v3
+>                                      in   case  (==) (apply (apply mod v3) 2) 1 of
+>                                                 True   -> powaux ((*) v1 v2) v4 v5
+>                                                 False  -> powaux v1 v4 v5
+> => DOUBLE_APPLY [1,-1,-1,0]
+> poweraux v1 v2 v3 = case  (==) v3 0 of
+>                           True   ->  v1
+>                           False  ->  let  v4 = square v2
+>                                           v5 = halve v3
+>                                      in   case  (==) (apply mod v3 2) 1 of
+>                                                 True   -> powaux ((*) v1 v2) v4 v5
+>                                                 False  -> powaux v1 v4 v5
+> => BLOCKS [1]
+> poweraux v1 v2 v3 = case  ((==) v3 0) of
+>                           True   ->  v1
+>                           False  ->  let  v4 = square v2
+>                                      in   let  v5 = halve v3
+>                                           in   case  (==) (apply mod v3 2) 1 of
+>                                                      True   -> powaux ((*) v1 v2) v4 v5
+>                                                      False  -> powaux v1 v4 v5
+    \caption{Reducing the |powaux| function defined in the standard Float library.
+             The first reduction occurs in the |False| branch |[1]| or the in expression [-1]
+             in the scrutinee of the case [-1] in the first argument of the apply node [0],
+             so it has a path of [1,-1,-1,0].}
+    \label{fig:preprocess_example}
+\end{figure}
 
 \subsection{ICurry}
+
+ICurry is meant to be a bridge between Curry code and imperative languages like C, Python, and Assembly.
+The let and case-expressions have been transformed into statements,
+and variables have been explicitly declared.
+All mutually recursive declarations are broken here into two steps.
+Declare memory for each node, 
+then fill in the pointers.
+This allows us to create expression graphs with loops in them.
+Each function is organized into a sequence of blocks,
+and each block is broken up into declarations, assignments, and a single statement.
+A statement can either fail, return a new expression graph, 
+or inspect a single variable to choose a case.
+It should be noted that restricting the scrutinee of the case statement
+to a single variable will cause efficiency problems, but
+we'll address this later.
+
+
+\begin{figure}[t]
+> p         =>  t^* f^*                       program
+> t         =>  C_1 C_2 ... C_n               datatype
+> f         =>  f = b                         function
+> b         =>  d_1                           block
+>               ... 
+>               d_k 
+>               a_1 
+>               ... 
+>               a_n 
+>               s  
+> d         =>  declare x                     variable declaration
+>           |   declfree x                    free variable declaration
+> a         =>  v = e
+> s         =>  return e                      return statement
+>           |   EXEMPT                        failure
+>           |   case x of                     case statement
+>                    C_1 -> b_1 
+>                    ...
+>                    C_n -> b_n
+> e         =>  v                             variable expression
+>           |   NODE(l,e_1,...,e_n)           node creation
+>           |   e_1 ? e_2                     choice expression
+> v         =>  x                             local variable
+>           |   v[i]                          variable access
+>           |   ROOT                          root variable
+> l         =>  C                             constructor label
+>           |   f                             function label
+>           |   LABEL(v)                      variable label
+\caption{Abstract syntax of function definitions in ICurry}
+\label{fig:iCurrySyntax}
+\end{figure}
+
+After we've finished transforming the FlatCurry,
+the transformation to ICurry is almost trivial.
+The algorithm from \cite{iCurry} can be applied directly \ref{fig:flatCurryiCurry}
+Currently we need to come up with a new variable for the
+scrutinee of a case-expression.
+However, This can either be taken care of in the FlatCurry transformations with the following rule,
+or we can create a new variable during the transformation itself.
+> case e of ... | not (isVar e) => let x_e = e in case x_e of ...
+However, as we'll see in the next section, this will become a moot point.
+All case-expressions will already only contain variables.
+Finally we can move onto code generation.
+
+\begin{figure}
+>ifunction(f(x_1,...,x_n) = e) := f = iblock(x_1,..., x_n, e, ROOT)
+>
+>iblock(x_1,...,x_n, EXEMPT, root)  := EXEMPT 
+>iblock(x_1,...,x_n, e, root)       := 
+>    declare x_1
+>    ...
+>    declare x_n
+>    decl(e)
+>    x_1 = root[1]
+>    ...
+>    x_n = root[n]
+>    asgn(e)
+>    ret(e)
+>
+>decl(let x_1,...,x_n free in e) :=
+>    decfree x_1
+>    ...
+>    decfree x_n
+>decl(let {x_1 = e_1;...;x_n = e_n} in e) :=
+>    declare x_1
+>    ...
+>    declare x_n
+>decl(case e of {p_1 -> e_1; ...; p_n -> e_n}) := declare x_e
+>
+>asgn(let {x_1 = e_1;...;x_n = e_n} in e) :=
+>    x_1 = expr(e_1)
+>    ...
+>    x_n = expr(e_n)
+>    [x_i[p] = x_j | x_j `in` {x_1,...,x_n}, e_i|_p = x_j]
+>
+>asgn(case e of _) := x_e = expr(e)
+>
+>
+>ret(case e of  C_1(x_11,...,x_1m) -> e_1   := case E(e) of  iblock(x_11,...,x_1m, e_1, x_e)
+>               ...                                          ...
+>               C_n(x_n1,...,x_nk) -> e_n)                   iblock(x_n1,...,x_nk, e_n, x_e)
+>ret(e)                                     := return E(e)
+>
+>expr(x)                                     := x
+>expr(c e_1 ... e_n)                         := NODE(c, expr(e_1),...,expr(e_n))
+>expr(f e_1 ... e_n)                         := NODE(f, expr(e_1),...,expr(e_n))
+>expr(e_1 ? e_2)                             := expr(e_1) ? expr(e_2)
+>expr(let {x_1 = e_1;...;x_n = e_n} in e)    := expr(e)
+>expr(let x_1,...,x_n free in e)             := expr(e)
+
+\caption{Algorithm for translating FlatCurry into ICurry}
+\label{fig:flatCurryiCurry}
+\end{figure}
+
 \subsection{C}
+
+Generating C code from ICurry isn't as easy as generating the ICurry code,
+but it's not much more complicated.
+We already have a good idea of what the C code should look like,
+and our ICurry structure fits closely with this.
+This major difference is that we need to be sure to declare and allocate memory for all variables,
+which leads to a split in the structure of the generated code.
+The code responsible for creating expression graphs and declaring memory will
+go in the *.h file, and the code for executing the hnf function will go in the *.c file.
+This is a common pattern for structuring C and C++ code,
+so it's not surprising that we take the same approach.
+
+For each Data type |D| and function |f|, we generate both a |makeD| function and a |setD|.
+The difference is that |makeD| will allocate memory for a new node, while |setD|
+takes an existing node as a parameter, and transforms it to the given type of node.
+Each node contains a \texttt{symbol}, that denotes the type of node, and holds information
+such as the name, arity, and hnf function of the node.
+Along with setting the \texttt{symbol}, the make and set functions reset the nondet flag to \texttt{false},
+and set any children that were passed into the node.
+
+As mentioned in the last chapter, for every function |f|, we need to generate a function |path f p| where
+|p| is a path to a case statement.
+The translation to C code is where we finally generate these functions.
+Surprisingly, this doesn't have too much of an effect on the code generator.
+Instead of generating code for a function |f|,
+we collect a list of pairs |(f,p)|, where |p| is a path to a case statement,
+then we generate code for each |(f,p)| pair.
+In practice, it is useful to keep track of the declared variables,
+so we actually generate code for a triple |(f,vars,p)|.
+While generating code for |(f,p)|,
+we track the current position |p'| of the code we're generating.
+When we need to generate code to push |f| onto the stack,
+such as when the code evaluates a non-deterministic expression,
+then we push \texttt{f\_p'} onto the stack.
+
+Aside from that change, generating the C code proceeds exactly as you would expect.
+Declarations are turned into C declarations;
+assignments are turned into calls to make functions;
+return statements are turned into calls to set functions;
+and case statements are turned into the while/switch construct from the last chapter.
+
+At this point we can now produce a running program.
+In fact, the code produced by this compiler is already relatively efficient,
+In many cases it outperforms the current state-of-the-art Curry compilers.
+
+In this chapter, we've built up the GAS tool for performing transformations
+on FlatCurry code in a simple declarative way.
+We've already seen how this transformation tool eases the process of compiling programs,
+but it turns out to be much more powerful.
+As we'll see in the next chapter,
+when we apply GAS to optimizations, we can produce some complex optimizations,
+such as inlining, with rather minimal effort.
+This allows us to implement new optimizations faster, and test them more thoroughly,
+than if we had written each optimization by hand.
+In fact, it's often faster to implement an optimization, and just see what it does to the code,
+than to try to reason it out ourselves.
+This lets us iterate quickly on designing new optimizations,
+and produce more complex and powerful optimizations.
+Now we're cooking with GAS!
+
+
+
 

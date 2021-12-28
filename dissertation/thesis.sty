@@ -1,0 +1,502 @@
+% Unofficial Portland State Computer Science dissertation/thesis style
+% Based on the Stanford University Thesis style
+% For LaTeX version 2e
+%
+% Original author might be:
+% $Id: ogi-thesis.sty,v 2.14 1997/02/12 19:08:12 jinouye Exp $
+%
+% Revised: Bill Howe, 11/20/2006
+% Revised: Chuan-kai Lin, May 15, 2010
+%
+
+\usepackage{fancyhdr}     % Declares the package fancyhdr
+\usepackage[fleqn]{amsmath}      % For titlepage
+\pagestyle{fancy}         % Forces the page to use the fancy template
+
+\fancyhf{}                % Clears all header and footer fields.
+\fancyhead[R]{\thepage\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!}
+\fancypagestyle{plain}{}
+\renewcommand{\headrulewidth}{0pt}
+\headheight = 15pt
+\typeout{Document Style Option `psu-thesis' <2010-05-15>.}
+
+\long\def\comment#1{}
+\comment{
+  Example of use:
+    \documentclass[12pt]{report}
+    \usepackage{psu-thesis}
+
+    \begin{document}
+    \title{How to Write Theses \\ With Two Line Titles}
+    \titleline{How to Write Theses With Two Line Titles}
+
+    \author{Frodo Baggins}
+    \principaladviser{Gandalf the Gray}{\ }
+    \firstreader{Tom Bombadil}
+    \secondreader{Elanor Gardner}
+    \thirdreader{Tom Cotton}
+    \graduaterepresentative{Gerard O. Ripley}
+    \departmenthead{Aragorn}
+    \grantdate{June}{30}{2010}
+
+    %% case (PAPER DISSERTATION)
+    \abstractpage
+        Your abstract goes here...
+    \titlep
+    \prefatory
+    \dedication
+        I dedicate this thesis to...
+    \prefacesection{Acknowledgments}
+        I would like to thank...
+    %% case (ELECTRONIC DISSERTATION)
+    \titlep
+    \prefatory
+    \prefacesection{Abstract}
+        Your abstract goes here...
+    \prefacesection{Dedication}
+        I dedicate this thesis to...
+    \prefacesection{Acknowledgments}
+        I would like to thank...
+    %% esac
+
+    \afterpreface
+    \body
+    \chapter{Introduction}
+         ...
+    \chapter{Conclusions}
+         ...
+    \bibliographystyle{plain}
+    \bibliography{mybib}
+    \appendix
+    \chapter{A Long Proof}
+         ...
+    \end{document}
+
+Documentation:
+
+    This style file modifies the standard report style to follow the
+    Office of Graduate Studies Thesis and Dissertation Formatting
+    Requirements (accessed April 28th, 2010):
+
+    Paper       http://www.gsr.pdx.edu/ogs_paper_format.php
+    Electronic  http://www.gsr.pdx.edu/ogs_ETD_format.php
+
+    It sets the margins and interline spacing and disallows page breaks
+    at hyphens.  Note that the two formats have different requirements
+    on the prefatory pages.
+
+    The following commands can control what goes in the front matter
+    material:
+
+    \MSthesistrue or \MSthesisfalse (default)
+        - Sets up wording for M.S. thesis of Ph.D. dissertation.
+    \title{thesis title}
+    \titleline{thesis title with no line breaks}
+        - titleline is required until I can figure out how to strip
+        - line breaks from the title.
+    \author{author's name}
+    \prevdegrees{degree, institution, year}
+        - \predegrees{} can be repeated for multiple degrees.
+    \dept{author's department}
+        - Computer Science if omitted
+    \principaladviser{the principal advisor's name}{title}
+        (or \principaladvisor, if you prefer advisor spelled with o)
+    \firstreader{the first reader's name}
+    \secondreader{the second reader's name}
+    \thirdreader{the third reader's name}
+    \graduaterepresentative{name of the graduate rep}
+    \departmenthead{signature of the department head}
+    \grantdate{month}{day}{year}
+        - Defense date; date LaTeX'd if omitted
+    \copyrightyear{year degree conferred}
+        - year LaTeX'd (or next year, in December) if omitted
+    \figurespagetrue or \figurespagefalse
+        - produce or don't produce a List of Figures page
+          (true by default)
+    \tablespagetrue or \tablespagefalse
+        - produce or don't produce a List of Tables page
+          (true by default)
+
+This style uses double spacing, except in the figure and table environments
+where normal spacing is used. That can be changed by doing:
+    \renewcommand{\baselinestretch}{1.6}
+(or whatever you want instead of 1.6)
+Unfortunately, that command probably won't take effect unless it comes
+before the \begin{document} or after something like \small \normalsize.
+} % End comment section
+
+% First thing we do is make sure that report has been loaded.  A common
+% error is to try to use psu-thesis as a documentstyle.
+
+\@ifundefined{chapter}{\@latexerr{The `psu-thesis' option should be used
+with the `report' document style}{You should probably read the
+psu-thesis documentation.}}{}
+
+% Top, right, and bottom margins are 1 inch.  Page numbers (the ones
+% that live in upper right-hand corner) should be 1 inch from the right
+% edge and 1 inch from the top edge. Text should not overlap the
+% numbers; let them begin 0.5 inches after (1.5 inches from top edge).
+% We will place arabic numbers such that their tops align at 1 inch from
+% the top edge and begin text 0.4 inches below them.  So, topmargin is
+% the default one inch plus the height of the font.
+\topmargin 0.0in
+\headsep 0.25in
+\textheight 8.3in
+\addtolength{\textheight}{-2.0\baselineskip}
+\footskip 0.4in
+
+% Use 1.5 times the normal baseline-to-baseline skip (double space)
+\renewcommand{\baselinestretch}{1.5}
+
+% OGS recommends 1.5in on left edge for binding an 1.2 everywhere else
+% Theses are single-sided, so we don't care about \evensidemargin
+% To be extra sure, set right hand margin to 1.2 inches.
+\oddsidemargin 0.6in \evensidemargin 0.1in
+\marginparwidth 40pt \marginparsep 10pt
+\textwidth 5.8in
+
+% Disallow page breaks at hyphens (this will give some underfull vbox's,
+% so an alternative is to use \brokenpenalty=100 and manually search
+% for and fix such page breaks)
+\brokenpenalty=10000
+
+% redefine the headings page style to put page number in the upper right
+%\def\ps@headings{\let\@mkboth\markboth
+%  \def\@oddfoot{}
+%  \def\@oddhead{\reset@font\rmfamily\hfil\thepage}
+%}
+
+
+% Redefine the macro used for floats (including figures and tables)
+% so that single spacing is used.
+% (Note \def\figure{\@float{figure}set single spacing} doesn't work
+%  because figure has an optional argument)
+%\def\@xfloat#1[#2]{\ifhmode \@bsphack\@floatpenalty -\@Mii\else
+%   \@floatpenalty-\@Miii\fi\def\@captype{#1}\ifinner
+%      \@parmoderr\@floatpenalty\z@
+%    \else\@next\@currbox\@freelist{\@tempcnta\csname ftype@#1\endcsname
+%       \multiply\@tempcnta\@xxxii\advance\@tempcnta\sixt@@n
+%       \@tfor \@tempa :=#2\do
+%                        {\if\@tempa h\advance\@tempcnta \@ne\fi
+%                         \if\@tempa t\advance\@tempcnta \tw@\fi
+%                         \if\@tempa b\advance\@tempcnta 4\relax\fi
+%                         \if\@tempa p\advance\@tempcnta 8\relax\fi
+%         }\global\count\@currbox\@tempcnta}\@fltovf\fi
+%    \global\setbox\@currbox\vbox\bgroup
+%    \def\baselinestretch{1}\@normalsize
+%    \boxmaxdepth\z@
+%    \hsize\columnwidth \@parboxrestore}
+
+% Redefine the macro used for footnotes to use single spacing
+\long\def\@footnotetext#1{\insert\footins{\def\baselinestretch{1}\footnotesize
+    \interlinepenalty\interfootnotelinepenalty
+    \splittopskip\footnotesep
+    \splitmaxdepth \dp\strutbox \floatingpenalty \@MM
+    \hsize\columnwidth \@parboxrestore
+   \edef\@currentlabel{\csname p@footnote\endcsname\@thefnmark}\@makefntext
+    {\rule{\z@}{\footnotesep}\ignorespaces
+      #1\strut}}}
+
+% Define a single space environment (copied from doublespace.sty)
+% e.g. \begin{singlespace}
+%         single-spaced text
+%      \end{singlespace}
+\def\singlespace{%
+    \vskip\parskip
+    \vskip\baselineskip
+    \def\baselinestretch{1.1}
+    \ifx\@currsize\normalsize\@normalsize\else\@currsize\fi
+    \vskip-\parskip
+    \vskip-\baselineskip
+}
+\def\endsinglespace{\par}
+
+% Increase the space between the last line of text and footnote rule.
+\skip\footins 20pt plus4pt minus4pt
+
+% Change the l@chapter command. Now this commands uses dotted fills
+% for chapter level contentlines in the Table of Contents.
+\renewcommand\l@chapter[2]{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    \vskip 0.8em \@plus\p@
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      {\bfseries #1}\nobreak\leaders\hbox{$\m@th \mkern \@dotsep mu.\mkern
+     \@dotsep mu$}\hfill \nobreak
+             \hbox to\@pnumwidth{\hss \bfseries #2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+
+% \author, \title are defined in report; here are the rest of the
+% front matter defining macros
+\def\titleline#1{\gdef\@titleline{#1}}
+\def\prevdegrees#1{\gdef\@prevdegrees{#1}}
+\def\@titleline{}
+\def\@prevdegrees{}
+
+\def\dept#1{\gdef\@dept{#1}}
+\def\thesisType{Dissertation}
+\def\degreeType{Doctor of Philosophy}
+\def\degreeSymbol{Ph.D.}
+
+% Commands for specifying the dissertation committee
+\def\principaladviser#1#2{\gdef\@adviser{#1}\gdef\@advtitle{#2}}
+\def\advis@r{Adviser} % default spelling
+\def\principaladvisor#1#2{\gdef\@adviser{#1}\gdef\@advtitle{#2}
+    \gdef\advis@r{Advisor}}
+\def\firstreader#1{\gdef\@firstreader{#1}}
+\def\secondreader#1{\gdef\@secondreader{#1}}
+\def\thirdreader#1{\gdef\@thirdreader{#1}}
+\def\fourthreader#1{\gdef\@fourthreader{#1}}
+\def\graduaterepresentative#1{\gdef\@graduaterepresentative{#1}}
+\def\departmenthead#1{\gdef\@departmenthead{#1}}
+
+\def\grantdate#1#2#3{\gdef\@grantmonth{#1}\gdef\@grantday{#2}\gdef\@grantyear{#3}}
+\def\copyrightyear#1{\gdef\@copyrightyear{#1}}
+% \author, \title in report
+\def\@title{}\def\@author{}\def\@dept{Computer Science}
+\def\@firstreader{}\def\@secondreader{}\def\@thirdreader{}\def\@graduaterepresentative{}
+
+\newif\iffigurespage \newif\iftablespage
+\newif\ifMSthesis
+\tablespagetrue \figurespagetrue
+\MSthesisfalse
+
+\def\titlep{
+    \clearpage
+    \thispagestyle{empty}
+    \null
+    \begin{center}
+    % Fully double-spaced title
+    \vskip\parskip
+    \vskip\baselineskip
+    \def\baselinestretch{2.0}
+    \ifx\@currsize\normalsize\@normalsize\else\@currsize\fi
+    \vskip-\parskip
+    \vskip-\baselineskip
+    \@title
+    \end{center}
+    \vfill
+    \begin{center}
+    \def\baselinestretch{2.0}
+        by \\
+        \rm \@author \\
+        \@prevdegrees
+    \end{center}
+    \vfill
+    \ifMSthesis
+        \gdef\thesisType{Thesis}
+        \gdef\degreeType{Master of Science}
+        \gdef\degreeSymbol{M.S.}
+    \fi
+    \begin{center}
+    \begin{singlespace}
+        A \MakeLowercase{\thesisType}\ submitted
+        in partial fulfillment of the \\ 
+        requirements for the degree of \\ [0.5in]
+        \degreeType \\
+        in \\
+        \@dept \\
+        \vfill
+        \thesisType\ Committee: \\
+        \@adviser, Chair \\
+        % Supports up to four more committee members
+        \ifdefined\@firstreader {\@firstreader \\} \fi
+        \ifdefined\@secondreader {\@secondreader \\} \fi
+        \ifdefined\@thirdreader {\@thirdreader \\} \fi
+        \ifdefined\@fourthreader {\@fourthreader \\} \fi
+        \ifdefined\@graduaterepresentative
+        {\@graduaterepresentative \\} \fi
+        \vfill
+        Portland State University \\
+        %\copyright\;
+	\@grantyear
+    \end{singlespace}
+    \end{center}
+}
+
+\def\prefatory{%
+    \pagenumbering{roman}
+    \setcounter{page}{0}
+    \pagestyle{fancy}
+    \def\@makeschapterhead##1{
+        \vspace*{0.25in}
+        { \center \MakeUppercase{##1}\par
+          \nobreak \vskip 40pt }
+    }
+}
+
+\long\def\signature#1#2{%
+\begin{flushright}
+\begin{minipage}{5.8in}
+\begin{flushleft}
+#1 \\
+\hbox to 5.8in{\hfil\shortstack[l]{\vrule width 3.5in height 0.4pt \\
+#2 \\ \vspace{0.3in}}}
+\end{flushleft}
+\end{minipage}
+\end{flushright}}
+
+% Portland State University Dissertation Approval Page (deprecated)
+\def\signaturepage{%
+  \thispagestyle{empty}
+  \begin{center}
+    \MakeUppercase{\thesisType} APPROVAL
+  \end{center}
+  \begin{flushleft}
+    \noindent
+    The abstract and \MakeLowercase{\thesisType} of \@author \ for the
+    \degreeType\ in \@dept\ were presented on \@grantmonth \ \@grantday,
+    \@grantyear, and accepted by the \MakeLowercase{\thesisType}
+    committee and the doctoral program.
+ \end{flushleft}
+ \vspace{0.3in}
+    \signature{COMMITTEE APPROVALS:}{\@adviser, Chair}
+    % Supports up to four more committee members
+    \ifdefined\@firstreader \signature{\ }{\@firstreader} \fi
+    \ifdefined\@secondreader \signature{\ }{\@secondreader} \fi
+    \ifdefined\@thirdreader \signature{\ }{\@thirdreader} \fi
+    \ifdefined\@fourthreader \signature{\ }{\@fourthreader} \fi
+    % Graduate Office representative, with title
+    \ifdefined\@graduaterepresentative
+      \signature{\ }{\@graduaterepresentative \\
+        Representative of the Office of Graduate Studies}
+    \fi
+    \signature{DOCTORAL PROGRAM \\ APPROVAL:}
+      {\@departmenthead, Director \\ \@dept\ Ph.D. Program}
+}
+
+\def\dedication{%
+    \chapter*{Dedication}
+}
+
+\def\prefacesection#1{%
+    \clearpage
+    \ifdefined\phantomsection {\phantomsection} \fi
+    \addcontentsline{toc}{chapter}{#1}
+    \chapter*{#1}
+}
+
+\def\afterpreface{
+    \begin{singlespace}
+    \pagestyle{fancy}
+    \tableofcontents
+    \thispagestyle{fancy}
+    \newpage
+    \end{singlespace}
+    \pagestyle{fancy}
+    \iftablespage
+        \clearpage
+        \ifdefined\phantomsection {\phantomsection} \fi
+        \addcontentsline{toc}{chapter}{List of Tables}
+        \begin{singlespace}
+        \pagestyle{fancy}
+        \listoftables
+        \thispagestyle{fancy}
+        \newpage
+        \end{singlespace}
+    \fi
+    \iffigurespage
+        \clearpage
+        \ifdefined\phantomsection {\phantomsection} \fi
+        \addcontentsline{toc}{chapter}{List of Figures}
+        \begin{singlespace}
+        \pagestyle{fancy}
+        \listoffigures
+        \thispagestyle{fancy}
+        \newpage
+        \end{singlespace}
+    \fi
+}
+
+\def\abstractpage{
+    \newpage
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
+    \def\@makeschapterhead##1{
+        \vspace*{0.25in}
+        { \center \MakeUppercase{##1}\par
+          \nobreak \vskip 40pt }
+    }
+    \chapter*{Abstract}
+    An abstract of the dissertation of \@author\ for the \degreeType\ in
+    \@dept\ presented \@grantmonth\ \@grantday, \@grantyear. \\
+    \vskip.25in
+    \hskip-.25in \expandafter{Title: \@titleline} \\ [0.25in]
+    \vskip.25in
+    \thispagestyle{empty}
+}
+
+\def\body{
+    % no more bottom page numbers anywhere,
+    % so recover the space for text
+    \textheight 8.4in
+    \footskip 0.0in
+    \pagenumbering{arabic}
+    % Heading contains only the page number in the upper right corner.
+    \pagestyle{fancy}
+    % \def\chaptermark##1{}
+}
+
+% Redefine \thebibliography to go to a new page and put an entry in the
+% Table of Contents
+\def\thebibliography#1{%
+    \chapter*{References}
+    \list {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+    \advance\leftmargin\labelsep \usecounter{enumi} }
+    \usecounter{enumi}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}
+
+% Redefine \thebibliography to not use any page headings except the
+% page number.
+\let\@ldthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{
+    \newpage
+    \ifdefined\phantomsection {\phantomsection} \fi
+    \addcontentsline{toc}{chapter}{References}
+    \@ldthebibliography{#1}
+}
+
+% Redefine \@makeschapterhead and \@makechapterhead so they start
+% out at the top of the page.
+\def\@makeschapterhead#1{
+    \vspace*{0.2in}
+    {\sc \center  #1\par
+    \nobreak \vskip 40pt }
+}
+
+% PSU wants 12 pt everything.
+\def\@makechapterhead#1{
+    \vspace*{0.2in}
+    { \center
+    \ifnum \c@secnumdepth >\m@ne \@chapapp{} \thechapter \par
+    \vskip 12pt \fi  \MakeUppercase{#1}\par
+    \nobreak \vskip 40pt }
+
+    % Page numbers on chapter heading pages are "suggested" for paper
+    % dissertations and "required" for electronic dissertations.
+    \thispagestyle{fancy}
+}
+
+% configure section headings
+% uppercase and normalsize are both required
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus
+    -.2ex}{2.3ex plus .2ex}{\bf\uppercase}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex plus -1ex minus
+    -.2ex}{1.5ex plus .2ex}{\bf}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-3.25ex plus
+    -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\paragraph{\@startsection
+  {paragraph}{4}{\z@}{3.25ex plus 1ex minus .2ex}{-1em}{\normalsize\bf}}
+\def\subparagraph{\@startsection
+  {subparagraph}{4}{\parindent}{3.25ex plus 1ex minus
+    .2ex}{-1em}{\normalsize\bf}}

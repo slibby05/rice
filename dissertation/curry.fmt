@@ -1,5 +1,14 @@
 %format free         = "\textbf{free} "
 %format fcase        = "\textbf{fcase} "
+%format expr        = "\mathcal{E} "
+%format ret         = "\mathcal{R} "
+%format asgn        = "\mathcal{A} "
+%format decl        = "\mathcal{D} "
+%format declare     = "\text{declare} "
+%format decfree     = "\text{free} "
+%format iblock       = "\mathcal{B} "
+%format ifunction    = "\mathcal{F} "
+%format forall       = "\forall "
 %format ...          = "\ldots "
 %format ->*          = "\rightarrow^* "
 %format EXEMPT       = "\bot "
@@ -7,6 +16,7 @@
 %format R            = "\textbf{R} "
 %format F            = "\textbf{F} "
 %format `elem`       = "\in "
+%format `notelem`    = "\not\in "
 %format `intersect`  = "\cap"
 %format ^*           = "^* "
 %format ^?           = "^? "
@@ -14,42 +24,113 @@
 %format Name_A       = Name"_{Arity}"
 %format sigma        = "\sigma"
 %format ->^* = "\rightarrow^*"
+
+%format a_1
+
+%format e_a
+%format e_b
 %format e_1
 %format e_1'
 %format e_2
 %format e_2'
+%format e_3
 %format e2' = e"_{2'}"
 %format e_11 = e"_{1,1}"
+%format e_12 = e"_{1,2}"
 %format e_1n = e"_{1,n}"
 %format e_21 = e"_{2,1}"
+%format e_22 = e"_{2,2}"
 %format e_2n = e"_{2,n}"
 %format e_n
+%format e_t
 %format e_f
 %format e_f'
 %format e_i
-%format e_i1 = e"_{i1}"
-%format e_ik = e"_{ik}"
+%format e_k
+%format e_i1 = e"_{i,1}"
+%format e_ik = e"_{i,k}"
+%format e_ki = e"_{k_i}"
+
 %format v_1
 %format v_2
+%format v_3
+%format v_4
+%format v_5
+%format v_6
 %format v_n
+%format v_k
+
+%format n_1
+%format n_2
+%format n_3
+%format n_k
+
+%format f_1
+%format f_2
+%format f_i
+%format f_j
 %format f_k
 %format f_n
 %format f_kn = "f_{k-n}"
 %format f_k1 = "f_{k-1}"
+
+%format g_n
+%format G_F
+%format g_B
+
+%format g_11 = "g_{1,1}"
+%format g_12 = "g_{1,2}"
+%format g_13 = "g_{1,3}"
+%format g_21 = "g_{2,1}"
+%format g_22 = "g_{2,2}"
+%format g_23 = "g_{2,3}"
+%format g_k1 = "g_{k,1}"
+%format g_k2 = "g_{k,2}"
+%format g_k3 = "g_{k,3}"
+
+%format end_1 = "end_1"
+%format end_2 = "end_2"
+%format end_i = "end_i"
+%format end_k = "end_k"
+
+%format z_end1 = z"_{end_1}"
+%format z_end2 = z"_{end_2}"
+%format z_endi = z"_{end_i}"
+%format z_endk = z"_{end_k}"
+
+%format ot = "\otimes"
+%format op = "\oplus"
+
 %format x_1
+%format x_2
 %format x_k
 %format x_k1 = "x_{k+1}"
+%format x_11 = "x_{1,1}"
+%format x_21 = "x_{2,1}"
+%format x_i1 = "x_{i,1}"
+%format x_n1 = "x_{n,1}"
+%format x_1k1 = "x_{1,k_1}"
+%format x_2k2 = "x_{2,k_2}"
+%format x_iki = "x_{i,k_i}"
+%format x_nkn = "x_{n,k_n}"
 %format x_n
 %format x_i1 = x"_{i1}"
 %format x_ik = x"_{ik}"
+
 %format C_1
+%format C_2
 %format C_k
+%format C_k1 = C"_{k+1}"
 %format C_i
 %format C_n
 %format C_i1 = C"_{i1}"
 %format C_ik = C"_{ik}"
+%format c_1
+%format c_2
+%format c_n
 %format b_1
 %format b_n
+
 %format p_0
 %format p_1
 %format p_2
@@ -59,25 +140,49 @@
 %format p_1n = p"_{1,n}"
 %format p_21 = p"_{2,1}"
 %format p_2n = p"_{2,n}"
+
 %format as_1
 %format as_2
+
 %format E_0
 %format E_1
 %format E_2
 %format E_i
 %format E_n
 %format E_n1 = E"_{-1}"
+
 %format pl_1 = "+_1"
 %format pl_2 = "+_2"
+
+%format pl_p = +"_{\text{prim}}"
+%format mi_p = -"_{\text{prim}}"
+%format le_p = <="_{\text{prim}}"
+%format eq_p = =="_{\text{prim}}"
+%format x_p  = x"_{\text{prim}}"
+%format y_p  = y"_{\text{prim}}"
+
+%format mkf_1
+%format mkf_2
+%format mkz_1
+%format mkz_2
+
+%format compLambda_1
 %format foldr_3 = "foldr_3"
 %format foldr_2 = "foldr_2"
 %format foldr_1 = "foldr_1"
 %format foldr_0 = "foldr_0"
 %format \* = "\bullet"
+%format \| = "\big\rvert"
+%format `vert` = " \vert "
+%format pcase          = "\textbf{pcase}"
 %format case_CT        = case"_{CaseType}"
 %format case_ct        = case"_{ct}"
 %format case_R         = case"_{R}"
 %format case_F         = case"_{F}"
+%format bold a         = "\textbf{"a"}"
+%format bold (a)       = "\textbf{"a"}"
+%format text a         = " \text{ " a " } "
+%format text (a)       = " \text{ " a " } "
 %format code a         = "\llbracket " a "\rrbracket "
 %format (code (a))     = "\llbracket " a "\rrbracket "
 %format codebr a       = "\llbracket " a "\rrbracket_{BR} "
@@ -86,9 +191,83 @@
 %format (codelit (a))  = "\llbracket " a "\rrbracket_{LIT} "
 %format set a         = "\{ " a "\} "
 %format (set (a))     = "\{ " a "\} "
+%format outline f n   = f"\#"n
+%format emptyspace   = "\ "
+%format sp   = "\ "
 %format emptyset       = "\emptyset "
-%format extend env v s = env"["v -> s"]"
+%format extend env v s = env"["v "\mapsto" s"]"
 %format (extend env v s) = env"["v "\mapsto" s"]"
 %format (extend env v (s)) = env"["v "\mapsto" s"]"
+%format (extend env (v) (s)) = env"["v "\mapsto" s"]"
+%format sub e (vs)  = (body f)"["vs"]"
+%format (rewriteRule a p r b) = a ->"_{"p,r"}" b
+%format (rewrite a p b) = a ->"_{"p"}" b
+%format (rewrite a p b) = a ->"_{"p"}" b
 %format `to` = "\mapsto"
+%format `f` = " \oplus "
+%format |-> = "\mapsto"
+%format :-> = "\mapsto"
 %format path e p = e"|_{"p"}"
+%format # = "\#"
+
+%format inlinable = "\mathbf{"I"}_"ifunction
+%format body = "\mathbf{"B"}_"ifunction
+%format useful = "\mathbf{"U"}_"ifunction
+%format simple = "\mathbf{"S"}_"ifunction
+%format cancels = "\mathbf{"C"}_"ifunction
+
+%format FLOAT = "\textbf{Let Floating}"
+%format FLOAT_LET = "\textbf{Let Floating (Let in Let)}"
+%format FLOAT_BLOCK = "\textbf{Let Floating (Block in Let)}"
+%format FLOAT_OR = "\textbf{Let Floating (Let in Or)}"
+%format FLOAT_APP = "\textbf{Let Floating (Let in APP)}"
+%format FLOAT_CASE = "\textbf{Let Floating (Let in APP)}"
+%format CASE_IN_CASE = "\textbf{Case in Case}"
+%format DOUBLE_APPLY = "\textbf{Double Apply}"
+%format CASE_APPLY = "\textbf{Case Apply}"
+%format STRING = "\textbf{String Constant}"
+%format BLOCKS = "\textbf{Blocks}"
+%format UNBOX = "\textbf{Unboxing}"
+%format FILL = "\textbf{fill cases}"
+%format FIX_PARTIAL_LT = "\textbf{Fix Parial Appl <}"
+%format FIX_PARTIAL_EQ = "\textbf{Fix Parial Appl =}"
+%format FIX_PARTIAL_GT = "\textbf{Fix Parial Appl >}"
+%format LET_CASE = "\textbf{Let Case}"
+%format VAR_CASE = "\textbf{Var Case}"
+%format ALIAS = "\textbf{Alias}"
+%format CASE_FOLDING = "\textbf{Case Folding}"
+%format LET_FOLDING = "\textbf{Let Folding}"
+%format CASE_CANCEL_CONS = "\textbf{Case Cancel Constructor}"
+%format CASE_CANCEL_LIT = "\textbf{Case Cancel Literal}"
+%format CASE_CANCEL_EXEMPT = "\textbf{Case Cancel } \bot"
+%format CASE_CANCEL_TRUE = "\textbf{Case Cancel Primitive True}"
+%format CASE_CANCEL_FALSE = "\textbf{Case Cancel Primitive False}"
+%format CASE_CANCEL = "\textbf{Case Cancel}"
+%format CASE_VAR = "\textbf{Case Var}"
+%format DEAD_CODE = "\textbf{Dead Code}"
+%format MISSING_VAR = "\textbf{Add Missing Variables}"
+%format UNAPPLY = "\textbf{Unapply}"
+%format UNAPPLY_LT = "\textbf{Unapply <}"
+%format UNAPPLY_EQ = "\textbf{Unapply =}"
+%format UNAPPLY_GT = "\textbf{Unapply >}"
+%format INLINE_CONS = "\textbf{Inline Constructor}"
+%format INLINE_PART = "\textbf{Inline Partial}"
+%format INLINE_LIT = "\textbf{Inline Literal}"
+%format INLINE_CASE = "\textbf{Inline Case in Case}"
+%format INLINE_BUILD = "\textbf{Inline foldr/build}"
+%format FOLD_BUILD = "\textbf{Deforest foldr/build}"
+%format BF_BUILD = "\textbf{Deforest build\_fold/build}"
+%format FOLD_BF = "\textbf{Deforest foldr/build\_fold}"
+%format BF_BF = "\textbf{Deforest build\_fold/build\_fold}"
+%format REDUCE_BASE = "\textbf{Reduce Base}"
+%format REDUCE_BRANCH = "\textbf{Reduce Branch}"
+%format REDUCE_LET = "\textbf{Reduce Let}"
+%format REDUCE_CANCELS = "\textbf{Reduce Cancels}"
+%format REDUCE_USEFUL = "\textbf{Reduce Useful}"
+%format REDUCE_SIMPLE = "\textbf{Reduce Simple}"
+%format CASE_CALL = "\textbf{Case Call}"
+%format ANF_CASE = "\textbf{ANF Case}"
+%format ANF_APP = "\textbf{ANF App}"
+%format ANF_OR1 = "\textbf{ANF ? 1}"
+%format ANF_OR2 = "\textbf{ANF ? 2}"
+%format CONSTANT_FOLDING = "\textbf{Constant Folding}"

@@ -8,8 +8,8 @@
 #define memory_init() GC_INIT()
 #define alloc(size) GC_MALLOC(size)
 #else
-#define alloc(size) calloc(1,size)
-#define memory_init()
+#define alloc(size) calloc(1,size); mem++
+#define memory_init() mem = 0;
 #endif
 
 #endif

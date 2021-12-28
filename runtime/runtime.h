@@ -145,6 +145,8 @@ extern field RET;
 // The only alternative is to pass it to every single function.
 extern Stack* bt_stack;
 
+// usued to print out the total number of memory allocations.
+extern unsigned long mem;
 
 // when I know I'm going to reduce an apply node, I already have the number of arguments
 // as part of the name.

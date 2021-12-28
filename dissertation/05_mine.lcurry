@@ -1,0 +1,1072 @@
+
+In this chapter we develop three new optimizations for Curry.
+First, Unboxing is an attempt to removed boxed values from our language.
+We discuss our implementation of primitive values and operations,
+and how explicitly representing the boxes around these values leads to optimizations.
+Second, Shortcutting is an attempt to remove the node created as the scrutinee of a case statement.
+In lazy functional languages like Haskell, this isn't a problem,
+but in Curry the scrutenee may be non-deterministic, and so we need a plan
+for dealing with that.
+Finally, Deforestation is a optimization for removing intermediate lists.
+This has been studied extensively in functional languages,
+but it has not been shown to be valid in the presence of non-determinism.
+We prove its validity in Curry,
+and give a formulation that can apply to combinator languages.
+
+
+\section{Unboxing}
+
+So far we've avoided talking about operations in Curry for 
+primitive data types |Int|, |Char|, and |Float|.
+This is primarily because all primitive values in Curry are boxed,
+and the choice of representing boxes has a pervasive effect on the compiler.
+Since we knew how we intended to implement unboxing, 
+we decided to use that representation from the beginning.
+
+We chose to follow the style of unboxing from Launchbury at al. \cite{unboxing}
+and represent all boxes explicitly in FlatCurry.
+This has several advantages, but one of the most important
+is that we can apply optimizations to the boxes themselves.
+
+Let's look at an example to see how this works.
+Consider the function to compute Fibonacci numbers.
+We will work with this example extensively in the next couple of optimizations.
+in an attempt to see how much we can optimize it.
+
+> fib :: Int -> Int
+> fib n = case  n <= 1 of
+>               True   -> n
+>               False  -> fib (n-1) + fib (n-2)
+
+After translating to A-Normal Form we have:
+
+> fib :: Int -> Int
+> fib n =  let cond = n <= 1
+>          in case  cond of
+>                   True   ->  n
+>                   False  ->  let n_1 = n-1
+>                              in let f_1 = fib n_1
+>                              in let n_2 = n-2
+>                              in let f_2 = fib n_2
+>                              in f_1 + f_2
+
+Unfortunately this function can't really be optimized.
+The |fib| function is recursive, so we can't reduce it,
+and |n-1| is a primitive operation.
+However, we end up using a lot of memory for this function.
+We create 8 nodes for each recursive call,
+and there's really no need for this.
+The problem is that each of our primitive operations must be represented as a node
+to have a uniform representation in Curry.
+
+\subsection{The transformation}
+
+The idea behind the unboxing transformation is that we represent every box around 
+primitive operations explicitly.
+The expression |1 + 2| is transformed into |Int 1 + Int 2|,
+and the |fib| function is transformed into:
+
+> fib :: Int -> Int
+> fib n =  let cond = n <= Int 1
+>          in case  cond of
+>                   True   ->  n
+>                   False  ->  let n_1 = n - Int 1
+>                              in let f_1 = fib n_1
+>                              in let n_2 = n - Int 2
+>                              in let f_2 = fib n_2
+>                              in f_1 + f_2
+
+This doesn't seem like we've actually helped at all.
+But the real improblem comes in the implementation of |x + y|, |x - y | and |x <= y|.
+Let's let at |x + y| first.
+We can implement this using a primative add operation. This will be translated into
+an add instruction at the C level.
+
+> x + y = case  x of
+>               Int x_p -> case  y of
+>                                Int y_p ->  let v = pl_p x_p y_p
+>                                            in Int v
+
+We can implement |x < y| in a similar fashion:
+
+> x <= y = case  x of
+>                Int x_p -> case  y of
+>                                 Int y_p -> le_p x_p y_p 
+
+The difference is that |le_p| needs to return a |True| or |False| value.
+We can implement this as \texttt{x\_prim <= y\_prim ? make\_Prelude\_True() : make\_Prelude\_False()}.
+Now we actually have something we can optimize.
+We still can't do a lot of with the recursive calls to |fib|
+but let's see what happens.
+We end up with the definition for |fib| in figure \ref{fig:fibOpt1}.
+The full derivation can be seen in the appendix.
+
+\begin{figure}[t]
+> fib n = case n of
+>               Int  v_2 -> let cond = le_p v_2 1
+>                            in case  cond
+>                                     True   ->  n
+>                                     False  -> let n_1 = mi_p v_2 1
+>                                                in let f_1 = fib (int n_1)
+>                                                in case  f_1 of
+>                                                         Int p_1 -> let n_2 = mi_p v_2 2
+>                                                                     in let f_2 = fib (int n_2)
+>                                                                     in case  f_2 of
+>                                                                              Int p_2 ->  let r = pl_p p_1 p_2
+>                                                                                          in Int r
+\caption{optimized |fib| after unboxing}
+\label{fig:fibOpt1}
+\end{figure}
+
+As we can see, the code is significantly longer,
+but now we've included the primitive operations in our code.
+The variables |v_2, n_1, n_2, p_1, p_2| are all primitive values, so we don't need to allocate
+any memory for them.
+Unfortunately there's still a problem.
+We're still allocating 1 node for |cond, f_1, f_2| and 2 nodes for the Int constructors.
+So, we're still allocating 5 nodes.
+This is an improvement, but we can certainly do better.
+
+\subsection{primitive conditions}
+
+The first optimization is that we really don't need to allocate memory for |cond|.
+|x <= y| really should be a primitive operation returning a boolean value,
+but this doesn't have an equivalent in FlatCurry.
+So we introduce the |pcase| construct.
+
+> pcase primCond of
+>       True -> e_t
+>       False -> e_f
+
+The |primCond| must be a primative condition expression, which is either |eq_p| or |le_p|,
+and the arguments must be primitive values.
+The semantics of |pcase| are exactly what you would expect,
+but now we can translate it into a simple \texttt{if} statement in C.
+
+\begin{verbatim}
+if([compile primCond])
+{
+    [compile e_t]
+}
+else
+{
+    [compile e_f]
+}
+\end{verbatim}
+
+We don't need to worry about the backtracking stack,
+because a primitive condition can't be non-deterministic.
+Now, we can elimiate the |cond| node.
+After implementing this construct the new version is in figure \ref{fig:fibOpt2}.
+Now we're down to 4 nodes.
+But we can still do better.
+The next challenge is unboxing parameters.
+
+\begin{figure}
+> fib n = case n of
+>               Int v_2 -> pcase le_p v_2 1
+>                                 True   ->  n
+>                                 False  -> let n_1 = mi_p v_2 1
+>                                            in let f_1 = fib (int n_1)
+>                                            in case  f_1 of
+>                                                     Int p_1 -> let n_2 = mi_p v_2 2
+>                                                                 in let f_2 = fib (int n_2)
+>                                                                 in case  f_2 of
+>                                                                          Int p_2 ->  let r = pl_p p_1 p_2
+>                                                                                      in Int r
+\caption{The |fib| function with primitive cases}
+\label{fig:fibOpt2}
+\end{figure}
+
+\subsection{Strictness Analysis}
+
+Unfortunately unboxing parameters is a little bit more complicated.
+Earlier we eliminated boxes from local variables in the function.
+However, if a parameter is unboxed, then we may need to store a primitive value as
+a child of a node.
+This requires a fundamental change to our node datatype.
+Fortuntaly C already has a mechanism for this.
+we use a union to tie integers, characters, floating point numbers, and Nodes together.
+The full definition for a node in our expression graph is now.
+
+\begin{verbatim}
+typedef union field
+{
+    struct Node*  n; //normal node child
+    union field*  a; //array child (for children[3])
+    unsigned long c; //primitive character
+    long          i; //primitive int
+    double        f; //primitive float
+} field ;
+
+typedef struct Node
+{
+    Int missing;
+    bool nondet;
+    Symbol* symbol;
+    field children[4];
+} Node;
+\end{verbatim}
+
+Now that we have the ability to store primitive values in a node,
+we need to figure out when storing a primitive value is actually valid.
+Fortunately this is a well studied problem 
+\cite{strictAbstract, strictProj, strictBack}.
+
+Lazy functional languages often try to remove laziness for efficiency reasons.
+We don't want to create an expression for a primitive value 
+if we're only going to deconstruct it.
+So, it becomes useful to know what parameters in a function must be evaluated,
+or what parameters in a function are strict.
+This strictness analysis has been a major focus of research in the lazy functional community.
+
+We implemented an earlier form of strictness analysis discovered by Mycroft \cite{strictAbstract}.
+We determine if a parameter is strict by abstract interpretation.
+This sounds complicated, but in reality it's actually a pretty easy idea.
+Each parameter is represented as a variable,
+and the body of the function is converted into a boolean expression.
+The translation is similar to \cite{strictAbstract},
+so we don't go through it here.
+There are newer ideas for strictness analysis \cite{strictProj, strictBack},
+but Mycroft's solution is sufficient for our purposes, so better implementations
+are outside the scope of this research.
+
+Once we know which arguments are strict we can split the function into an wrapper function
+and a worker function \cite{strictBack}.
+We can see this with |fib| in figure \ref{fig:fibOpt3}, and the optimized version in figure
+\ref{fig:fibOpt4}.
+Notice that |fib| is no longer recursive now, so we can inline it.
+After optimization we have the following definition of |fib#worker|.
+
+\begin{figure}
+> fib n = case n of
+>              Int v_2 -> fib#worker v_2
+>
+> fib#worker v_1 = let n = Int v_1
+>                  in case n of
+>                       Int v_2 -> 
+>                          in pcase le_p v_2 1
+>                                  True  -> n
+>                                  False -> let n_1 = mi_p v_2 1
+>                                           in let f_1 = fib (int n_1)
+>                                           in case f_1 of
+>                                                   Int p_1 -> let n_2 = mi_p v_2 2
+>                                                               in let f_2 = fib (int n_2)
+>                                                               in case f_2 of
+>                                                                       Int p_2 -> let r = pl_p p_1 p_2
+>                                                                                   in Int r
+\caption{The |fib| function after strictness analysis.}
+\label{fig:fibOpt3}
+\end{figure}
+
+\begin{figure}
+> fib#worker v_2 = 
+>   pcase  le_p v_2 1 of
+>          True  ->  Int v_1
+>          False ->  let n_1 = mi_p v_2 1
+>                    in let f_1 = fib#worker n_1
+>                    in case  f_1 of
+>                             Int p_1 ->  let n_2 = mi_p v_2 2
+>                                         in let f_2 = fib#worker n_2
+>                                         in case  f_2 of
+>                                                  Int p_2 ->  let r = pl_p p_1 p_2
+>                                                              in Int r
+\caption{The |fib| function after strictness analysis and optimization.}
+\label{fig:fibOpt4}
+\end{figure}
+
+We're down to allocating 2 nodes.
+We only need to allocate nodes for the calls to |fib#worker|.
+This means that we've reduced our memory consumption by 75\%.
+That's a huge improvement, but we still can do better.
+With the next optimization we look at how to remove the remaining allocations.
+
+\section{Shortcutting}
+
+In the last section were able to optimize the |fib| function from allocating 
+8 nodes per recursive call to only allocating 2 nodes per recursive call.
+However we were left with a problem that we can't solve by a code transformation.
+
+> let f_1 = fib#worker n_1
+> in case  f_1 of
+>          Int p_1 ->  ...
+
+This is unfortunate because we never use |f_1| after the |case| expression.
+It seems like we should be able to avoid constructing the node.
+In fact, implementations of functional languages do avoid this.
+Unfortunately we really do need a physical node.
+The reason is because |fib#worker n_1| could be non-deterministic.
+
+However, it's worth looking at an attempt to try to replace the node with a function call.
+One possibility would be to try to statically analyse |fib#worker| and determine if it's deterministic.
+This is a reasonable idea, but it has two major drawbacks.
+First, determining if a function is non-deterministic is undecidable,
+so the best we could do is an approximation.
+Second, even if |fib#worker| is deterministic, the expression |fib#worker n_1|
+could still be non-deterministic.
+So any sort of determinism analysis is going to fail for 
+any expression that contains a parameter to the function.
+This is going to be very restrictive for any optimization we can come up with.
+
+We need a node to hold the value for |fib#worker n_1|,
+but this value will only be used in the case statement.
+In fact, it's not possible for this node to be shared with any part of the expression graph.
+This leads to a new idea.
+If we need a node for |f_1| could we avoid allocating memory for that node.
+The answer is sometimes.
+
+The idea here is simple, but the implementation becomes tricky.
+We want to use a single, statically allocated node for every variable
+that's only used as the scrutinee of a case.
+
+There are two steps to the optimization.
+The first step is we mark every node that's only used as the scrutenee,
+and the second is to swap that variable for the statically allocated node
+during code generation.
+We call this node \texttt{RET} for return.
+
+Marking the node can be done in FlatCurry using GAS.
+The only change this rule has is to mark |x'| as a variable that cna be stored
+in the \texttt{RET} node.
+
+> CASE_CALL
+> let x = e_1 in case x of e_2  | x `notelem` e_1, e_2 => let x' = e_1 in case x' of e_2
+
+While this transformation is simple enough,
+It's important to ask whether it's valid.
+
+First we assume that |e_1| is a deterministic expression.
+In that case there is only one thing that could go wrong.
+It could be the case that |e_1| also reduces an expression that could be stored in \texttt{RET}.
+For example, consider the program:
+
+> f x = case  g x of
+>             True   -> False
+>             False  -> True
+>
+> main = case  f 3 of
+>              True -> 0
+>              False -> 1
+
+In the evaluation of |main|, we can store |f 3| in the \texttt{RET} node,
+but while we are evaluating |f 3| we store |g 3| in the same \texttt{RET} node.
+While this is concerning, it's not actually a problem.
+At the beginning of \texttt{f\_hnf}, we store all of the children of \texttt{root}
+as local variables, 
+and then when we've computed the value we overwrite the \texttt{root} node.
+Aside from the very start and end of the function, we never interact with the \texttt{root} node.
+So, even if we reuse \texttt{RET} in the middle of evaluating |f|, it doesn't actually
+affect the results.
+
+At a first attempt at code generation, it seems like we should be able to 
+store these marked variables in the \texttt{RET} node, and then 
+just call the appropriate \texttt{\_hnf} function.
+In fact this was the first idea we tried.
+The generated code for main is given in figure \ref{fig:RET1}
+
+\begin{figure}
+\begin{verbatim}
+void main_hnf(Node* root)
+{
+    set_f(RET, make_int(3));
+    Node* RET_forward = RET;
+    nondet = false;
+    while(true)
+    {
+        switch(RET_forward->tag)
+        {
+            ...
+            case True:
+                if(nondet)
+                    ...
+                set_int(root, 0);
+                return;
+                ...
+        }
+    }
+\end{verbatim}
+\caption{First attempt at compiling |main| with shortcutting.}
+\label{fig:RET1}
+\end{figure}
+
+This initial version actually works very well.
+If fact, for |fib#worker| we're able to remove the remaining 2 allocations.
+This is fantastic, and we'll come back to this point later,
+but before we celebrate we need to deal with a looming problem.
+
+\subsection{non-deterministic RET nodes}
+
+The problem with the scheme we've developed so far is that
+if \texttt{RET} is non-deterministic, then we may push it,
+or an expression containing it, onto the backtracking stack.
+This is a major problem with this optimization,
+because \texttt{RET} will almost certainly have been reused
+by the time backtracking occurs.
+
+This optimization was built on the idea that \texttt{RET}
+is only ever used in a single case statement.
+Therefore it's important that we never put it on the backtracking stack.
+We need to compromise on our initial idea.
+Initially we wanted to avoid allocating a node if a variable is used in a single case.
+Instead, we will only allocate a variable if \texttt{RET} is non-deterministic.
+This means that for deterministic expression we don't allocate any memory,
+but for non-deterministic expression we still have a persistent variable on the stack.
+This lead to the second implementation in figure \ref{fig:RET2}.
+
+\begin{figure}
+\begin{verbatim}
+void main_hnf(Node* root)
+{
+    set_f(RET, make_int(3));
+    Node* RET_forward = RET;
+    nondet = false;
+    while(true)
+    {
+        switch(RET_forward->tag)
+        {
+            ...
+            case True:
+                if(nondet)
+                {
+                    Node* backup = copy(RET);
+                    stack_push(bt_stack, root, main_(backup));
+                }
+                set_int(root, 0);
+                return;
+                ...
+        }
+    }
+\end{verbatim}
+\caption{Second attempt at compiling |main| with shortcutting.}
+\label{fig:RET2}
+\end{figure}
+
+\subsection{RET hnf functions}
+
+While this solution is better, it's still not correct.
+There are two things that can go wrong here.
+The first problem is that \texttt{RET} might have been reduced to a
+forwarding node, so it might not be responsible for the non-determinism,
+such as |case id (0 ? 1) of ...|.  There's clearly non-determinism here,
+but the |id| node isn't the cause of it, so it shouldn't be pushed on the backtracking stack.
+
+The other problem is that, if \texttt{RET} is a forwarding node, then the node it forwards
+to might have again reused \texttt{RET}.
+This is a much more serious problem,
+because then we would again push the wrong value on the backtracking stack.
+
+Finally, we still haven't avoided putting \texttt{RET} on the stack, because
+if \texttt{RET} is non-deterministic,
+then it will be pushed on as the left hand side of a stack frame.
+So, while we're reducing \texttt{RET}, we need to know what node to push on the stack.
+This means that both the caller and the callee need to know what
+node we created.
+
+This is starting to seem hopeless, how can we avoid creating nodes for deterministic
+expressions,
+but still only create a single node is the expression is non-deterministic
+that both the callee and caller agree on?
+The answer is that we need to change how \texttt{RET} nodes are reduced.
+Specifically we create a new reduction function that only handles nodes stored in \texttt{RET}.
+In the case of |f|, we would create a 
+\texttt{f\_hnf}, a \texttt{f\_\_hnf} and a \texttt{f\_RET\_hnf}.
+The third function only reduces |f| that has been stored in a \texttt{RET} node.
+
+The difference between \texttt{f\_hnf} and \texttt{f\_RET\_hnf} is that
+instead of passing the root node, we pass \texttt{Node* backup}.
+The \texttt{backup} node is where we'll store the contents of \texttt{RET}
+if we discover evaluating |f| is non-deterministic.
+At the end of the function, we return \texttt{backup}.
+This way both the callee and caller agree on \texttt{backup}.
+Furthermore since \texttt{backup} is a local variable,
+it's not affected if |f| reuses \texttt{RET} over the course of its evaluation.
+This leads to the definition for \texttt{f\_RET\_hnf} in figure \ref{fig:RET3}.
+
+\begin{figure}
+\begin{verbatim}
+Node* f_RET_hnf(Node* backup)
+{
+    Node* v1 = RET->children[0];
+    set_g(RET, v1);
+    Node* RET_forward = RET;
+    Node* g_backup = g_RET_hnf(NULL);
+    bool nondet = g_backup == NULL;
+    while(true)
+    {
+        nondet |= RET_forward->nondet;
+        switch(RET_forward->tag)
+        {
+            ...
+            case True:
+                if(nondet)
+                {
+                    if(!backup)
+                    {
+                        backup = (Node*)calloc(1,sizeof(Node));
+                    }
+                    set_False(backup);
+                    stack_push(bt_stack, backup, g_backup);
+                }
+                set_False(RET);
+                return backup;
+            ...
+        }
+    }
+\end{verbatim}
+\caption{Compiling |f| with shortcutting.}
+\label{fig:RET3}
+\end{figure}
+
+Now we finally have a working function.
+We only allocate memory if the expression is non-deterministic.
+If the expression is non-deterministic in multiple places,
+then we reuse that same \texttt{backup} node.
+
+This also works well if we have multiple reductions in a row.
+Suppose we have the following Curry code.
+
+> main = case  f 4 of
+>              True   -> False
+>              False  -> False
+>
+> f n = case  n of
+>             0 -> True
+>             _ -> f (n-1)
+
+In this case |f| is a recursive function,
+and so when we reduce |f 4|, we then have to immediately reduce |f 3|.
+But this is no problem at all, because we're reducing |f 4| with \texttt{f\_RET\_hnf}.
+Ignoring the complications of unboxing for the moment, we can generate the following code
+for the return of |f|.
+
+\begin{verbatim}
+Node* v2 = make_int(n-1)
+set_f(RET, v2);
+return f_RET_hnf(backup);
+\end{verbatim}
+
+\subsection{shortcutting results}
+
+Origonally shortcutting was formulated in the context of the Pakcs compiler
+\cite{reallyNeeded, shortcutting},
+which handled reduction a little differently then we do here.
+Instead of calling an hnf function directly,
+it had a giant lookup table, that would dispatch the node to be reduced 
+to the correct reduction predicate.
+The compiler would then take a single step.
+Shortcutting was an attempt to circumvent, or shortcut, this lookup table,
+and it produced code that's actually similar to what we have in RICE.
+Instead of having a monolithic \textbf{H} predicate that took
+any expression, and normalized it,
+the authors split it into several $\mathbf{H}_f$ predicates for each function $f$.
+This also had the effect that if you knew the argument that you were going to normalize,
+you could just call that function directly without ever having to construct the node.
+So, while we went about it a different way, we've achieved the same goal as the shortcutting paper.
+
+Before, we move onto our next optimization, we should look back at what we've done so far.
+Initially we had a |fib| function that allocated 8 nodes for every recursive call.
+Then, through unboxing, we were able to cut that down to a quarter, and only allocate
+2 nodes each call.
+Finally, using shortcutting, we were able to eliminate those two allocations.
+Before we would expect a substantial speedup by reducing memory consumption by 75\%,
+but removing those last two allocations is a difference in kind.
+The |fib| function runs in exponential time,
+and since each step allocates some memory, the original |fib| function
+allocated an exponential amount of memory on the heap.
+However, our fully optimized |fib| function only allocates a static node at startup time.
+We've moved from exponential memory allocated on the heap to constant space.
+While |fib| still runs in exponential time,
+It runs much faster, since it doesn't need to allocate memory.
+Surprisingly, |fib| is still just as efficient with non-deterministic arguments.
+if |n| is non-deterministic, then the wrapper function will evaluate |n|
+before calling the worker.
+
+Now that we've removed most of the implicitly allocated memory
+with unboxing and shortcutting, 
+we can now work on removing explicitly allocated memory
+with a technique from functional languages.
+
+\section{Deforestation}
+We now turn to our final optimization, deforestation.
+The goal of this optimization is to remove intermediate data structures.
+Programmers often write in a pipeline style when writing functional programs.
+For example, consider the program:
+
+> sumPrimes   =  sum . filter isPrime . enumFromTo 2
+
+While This style is concise and readable it isn't efficient.
+First we create a list of the first |n| integers excluding 1,
+then we create a new list of all of the integers that are prime,
+finally we sum the values in that list.
+It would be much more efficient to compute this sum directly.
+
+> sumPrimes n = go 2 n
+>  where  go k n
+>         | k >= n     = 0
+>         | isPrime k  = k + go (k+1) n
+>         | otherwise  = go (k+1) n
+
+
+This pipeline pattern is pervasive in functional programming,
+so it's worth understanding and optimizing it.
+In particular it would be nice to eliminate the two intermediate lists
+created here.
+This is the goal of deforestation.
+
+\subsection{The Original Scheme}
+Deforestation has actually gone through several forms throughout it's history.
+The original optimization proposed by Phillip Wadler \cite{wadler_deforest}
+was very general but it required a complicated algorithm, and it could fail to terminate.
+There have been various attempts to improve this algorithm \cite{turchin_supercompiler} and 
+\cite{wadler_ferguson_deforest}
+that have focused on restricting the form of programs.
+
+An alternative was proposed by Gill in his dissertation \cite{gill_dissertation, shortcut_deforest}
+called foldr-build deforestation or short-cut deforestation. 
+This approach is much simpler, always terminates, and has a nice correctness proof,
+but it comes at the cost of generality.
+Foldr-build deforestation only works with functions that produce and consume lists.
+Still, lists are common enough in functional languages that this optimization has proven to be effective.
+
+Since then foldr-build deforestation has been extended to stream fusion \cite{steam_fustion}.
+While this optimization is able to cover more cases than foldr-build deforestation,
+it relies on more advanced compiler technology.
+
+The foldr-build optimization itself is actually very simple.
+It relies on an observation about the structure of a list.
+All lists in Curry are built up from cons and nil cells.
+The list |[1,2,3,4]| is really |1 : 2 : 3 : 4 : []|.
+One really common list processing technique is a fold.
+A fold takes a binary operation and a starting element, and reduces a list to a single value.
+In Curry the |foldr| function is defined as
+
+> foldr :: (a -> b -> b) -> b -> [a] -> b
+> foldr `f` z []      = z
+> foldr `f` z (x:xs)  = x `f` foldr f z xs
+
+As an example, we can define the |sum| function as |sum xs = foldr (+) 0|.
+To see what this is really doing we can unroll the recursion.
+Suppose we evaluate |foldr (+) 0 [1,2,3,4,5]|, then we have:
+
+> foldr (+) 0 [1,2,3,4,5]
+> => 1 + foldr (+) 0 [2,3,4,5]
+> => 1 + 2 + foldr (+) 0 [3,4,5]
+> => 1 + 2 + 3 + foldr (+) 0 [4,5]
+> => 1 + 2 + 3 + 4 + foldr (+) 0 [5]
+> => 1 + 2 + 3 + 4 + 5 + foldr (+) 0 []
+> => 1 + 2 + 3 + 4 + 5 + 0
+
+But wait, this looks very similar to our construction of a list.
+
+> 1  :  2  :  3  :  4  :  5  :  []
+> 1  +  2  +  3  +  4  +  5  +  0
+
+We've just replaced that |:| with |+| and the |[]| with |0|.
+If the compiler can find where we will just be replacing |:| with another function,
+then we don't need to construct the list.
+On its own, this is a very hard problem, but we can help the compiler along.
+We just need a standard way to construct a list.
+This can be done with the |build| function.
+
+> build :: (forall b (a -> b -> b) -> b -> b) -> [a]
+> build g = g (:) []
+
+The |build| function takes a function that constructs a list.
+This is a little convoluted at first, but the idea is to 
+take a function that creates a list, and turn it into a builder function.
+We do this by replacing every use of |:| with |c|
+and every use of |[]| with |n|, 
+then we can construct the list by calling |build| on our builder function.
+
+As an example let's look at the function |enumFromTo a b| that constructs
+a list of integers from |a| to |b|.
+> enumFromTo a b
+>  | a > b      = []
+>  | otherwise  = a : enumFromTo (a+1) b
+
+We can turn this into a build function.
+> enumFromTo a b = build (enumFromTo_build a b)
+> enumFromTo_build a b c n
+>  | a > b      = n
+>  | otherwise  = a `c` enumFromTo_build (a+1) b c n
+
+We can create build functions for several list creation functions
+in the standard library.
+So it looks like we're ready to apply deforestation to Curry.
+Unfortunately there are two problems we need to solve.
+The first is an implementation problem,
+and the second is a theoretical problem.
+First, while we can apply foldr/build deforestation, we can't actually optimize the results.
+Second, we still need to show it's valid for curry.
+
+\subsection{The Combinator Problem}
+
+Let's look back at the motivating example,
+and see how it could be optimized in Haskell,
+or any language that can inline lambda expressions.
+The derivation in figure \ref{fig:sumPrimes_deforest} comes from the 
+original paper \cite{shortcutDeforestation}.
+
+\begin{figure}
+> sumPrimes m = sum (filter isPrime (enumFromTo 2 m))
+> =>
+> sumPrimes m = foldr (\x y -> x + y) 0 
+>                 (build (\c n -> foldr (\x y -> if isPrime x then x `c` y else y) n)
+>                  (build enumFromTo_build 2 m))
+> =>
+> sumPrimes m = foldr (\x y -> x + y) 0 
+>                 (build (\c n -> (enumFromTo_build 2 x) (\x y -> if isPrime x then x `c` y else y) n))
+> =>
+> sumPrimes m = enumFromTo_build 2 m (\x y -> if isPrime x then (\x y -> x + y) x y else y) 0
+> =>
+> sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
+>   where enumToFrom_build k m c z =  if k > m 
+>                       then z
+>                       else c k (enumToFrom_build (k+1) m c z)
+> =>
+> sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
+>   where enumToFrom_build k m c z =  if k > m 
+>                                     then z
+>                                     else (\x y -> if isPrime x then x + y else y) 
+>                                             k (enumToFrom_build (k+1) m c z)
+> =>
+> sumPrimes m = enumToFrom_build 2 m
+>   where enumToFrom_build k m =  if k > m 
+>                                 then z
+>                                 else (\x y ->  if isPrime x then x + y else y)
+>                                        k (enumToFrom_build (k+1) m c z)
+> =>
+> sumPrimes m = enumToFrom_build 2 m
+>   where enumToFrom_build k m =  if k > m 
+>                                 then z
+>                                 else  if isPrime k 
+>                                       then x + (enumToFrom_build (k+1) m c z) 
+>                                       else (enumToFrom_build (k+1) m c z)
+\caption{Optimization derivation for for shortcut deforestation}
+\label{fig:sumPrimes_deforest}
+\end{figure}
+
+This looks good, in fact we obtained the original expression we were trying for.
+Unfortunately we don't get the same optimization in Rice.
+The problem is actually the definition of |filter|.
+
+> filter f = build (\c n -> foldr (\x y -> if f x then x `c` y else y) n)
+
+Functions that transform lists, such as |filter|, |map|, and |concat|,
+are written in this style of a build applied to a fold.
+Unfortunately this doesn't work well with our inliner.
+Since we don't inline lambda expressions, and since reductions
+can only be applied to let bound variables, we simply can't do this reduction.
+Instead we need a new solution.
+
+\subsection{Solution build\_fold}
+
+Our solution to this problem is to introduce a new combinator for transforming lists.
+We call this |build_fold| since it is a build applied to a fold.
+
+> build_fold :: ((c -> b -> b) -> (a -> b -> b)) -> (b -> b) -> [a] -> b
+> build_fold mkf mkz xs = foldr (mkf (:)) (mkz []) xs
+
+The ides behind this combinator is a combination of a build and a fold.
+This function was designed to be easily composable with both build and fold.
+Ideally it could fit in the middle of build and fold and still reduce.
+As and example:
+> foldr (+) 0 (build_fold filter_mkf filter_mkz (build enumFromTo_build))
+
+Ideally this function should reduce into something relatively efficient,
+Furthermore we wanted |build_fold| to compose nicely with itself.
+For example, |map f . map g| should compose to something like |map (f . g)|.
+
+We achieve this by combining pieces of both |build| and |foldr|.
+The two functions |mkf| and |mkz| make the |f| and |z| functions from fold.
+However, the take |c| and |n| as arguments similar to |build|.
+The idea is that we |mkf| takes an |f| from |foldr| as a parameter,
+and returns a new |f|.
+The |map| and |filter| implementations are given below.
+
+> map f = build_fold (map_mkf f) map_mkz
+> map_mkf f c x y = f x `c` y
+> map_mkz n = n
+
+
+> filter p = build_fold (filter_mkc p) filter_mkz
+> filter_mkf p c x y = if p x then x `c` y else y
+> filter_mkz n = n
+
+The purpose for the convoluted definition of |build_fold| is that
+it plays nicely with |build| and |foldr|.
+We have the following three theorems about |build_fold|, which we will prove later.
+These are analogous to the |foldr/build| theorem.
+
+> build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
+> foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
+
+Now that we've removed all of the lambdas form our definitions,
+we can look at the implementation.
+
+\subsection{implementation}
+
+This turned out to be one of the easiest optimizations to implement.
+The implementation is entirely in GAS, and it proceeds in two steps.
+First we find any case where a |build| or |build_fold|
+is used exclusively in either a |build_fold| or |fold|.
+If this is the case, then we inline the variable into it's single use.
+This temporarily takes our expression out of A-Normal Form,
+but we will restore that with he next optimization.
+This is the actual deforesting transformation,
+and it simply applies either the |foldr/build| theorem,
+or one of the three |build_fold| theorems from above.
+The definitions are given in figure \ref{fig:deforest}
+The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
+
+\begin{figure}
+> INLINE_BUILD
+> let x = build g in e             | path e p = foldr _ _ x       => extend e [p,2] (build g)
+> let x = build g in e             | path e p = build_fold _ _ x  => extend e [p,2] (build g)
+> let x = build_fold mkf mkz in e  | path e p = foldr f z x       => extend e [p,2] (build_fold mkf mkz)
+> let x = build_fold mkf mkz in e  | path e p = build_fold _ _ x  => extend e [p,2] (build_fold mkf mkz)
+>
+> FOLD_BUILD
+> foldr f z (build g)                                 =>  g f z
+> BF_BUILD
+> build_fold mkf mkz (build g)                        =>  build (\c n -> g (mkf c) (mkz n))
+> FOLD_BF
+> foldr f z (build_fold mkf mkz xs)                   =>  let f_1 = mkf f
+>                                                         in let z_1 = mkz z
+>                                                         in foldr f_1 z_1 xs
+> BF_BF
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs)  =>  let f_1 = mkf_2 . mkf_1
+>                                                         in let z_1 = mkz_2 . mkz_1
+>                                                         in build_fold f_1 z_1 xs
+\caption{The deforestation optimization. \\
+         The lambda in the build rule is a call to a known function.
+         the lets are added to keep the expression in A-Normal Form.}
+\label{fig:deforest}
+\end{figure}
+
+
+\begin{figure}
+> let v_1 = enumFromTo 2 n
+> in let v_2 = filter isPrime v_1
+> in sum v_2
+> => REDUCE_USEFUL
+> let v_1 = build enumFromTo_build 2 n
+> in let v_2 = build_fold (filter_mkf isPrime) id v_1
+> in foldr (+) 0 v_2
+> => INLINE_BUILD
+> let v_1 = build enumFromTo_build 2 n
+> in let v_2 = 
+> in foldr (+) 0 (build_fold (filter_mkf isPrime) id v_1)
+> => BF_BUILD
+> let v_1 = build enumFromTo_build 2 n
+> in let v_2 = build_fold (filter_mkf isPrime) id v_1
+> in foldr (+) 0 
+>   (build (mk_build (enumFromTo_build 2 n) (filter_mkf isPrime) id)
+> => BF_BUILD
+> mk_build (enumFromTo_build 2 n) (filter_mkf isPrime) id (+) 0 
+> => ANF
+> let  f = filter_mkf isPrime (+)
+>      z = id 0
+> in enumFromTo_build 2 n f z
+> => INLINE_LIT
+> let f = filter_mkf isPrime (+)
+> in enumFromTo_build 2 n f 0
+\caption{Derivation for |sumPrimes|}
+\label{fig:sumOpt}
+\end{figure}
+
+So far we've done a decent job.
+It's not as efficient as the Haskell version,
+but that's not surprising.
+However, we can still improve this.
+The main problem here is that we can't optimize a partial application.
+This is unfortunate, because the |build_fold|
+function tends to create large expressions of partially applied functions.
+Fortunately we've already solved this problem earlier in our compiler.
+We already have a way to detect if an expression is partially applied,
+so, in the post processing phase, we do a scan for any partially applied functions.
+If we find one, then we outline it, and attempt to optimize it.
+If we can't optimize it at all, then we do nothing.
+Otherwise, we make a new outlined function, and replace the call to the partially applied function
+to the outlined function.
+This would actually be worth doing even if we didn't implement deforestation.
+
+So, with function outlining our final optimized code is given below.
+
+> sumPrimes n = enumFromTo_build 2 n f' 0
+>
+> f' x y = if isPrime x then x + y else y
+>
+> enumFromTo_build a b c n
+>  | a > b      = n
+>  | otherwise  = a `c` enumFromTo_build (a+1) b c n
+
+This certianly isn't perfect, but it's much closer to what we were hoping for.
+And combining this with unboxing and shortcutting gives us some very efficient code.
+While these results are very promising, we still need to know if deforestation is even valid for Curry.
+
+\subsection{Correctness}
+First we show that the |build_fold| theorems are valid for a deterministic subset of Curry
+using the same reasoning as the original foldr/build rule.
+
+\begin{theorem}
+For any deterministic |f|, |z|, |g|, |mkf|, and |mkz|,
+the following equations hold.
+> build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
+> foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
+\end{theorem}
+
+\begin{proof}
+Recall that the free theorem for |build| is
+> (forall (a : A) (forall (b : B) h (f a b) = f' a (h b))) =>
+> forall (b : B) h (g_B f b) = g_B' f' (h b)
+
+Now substituting |build_fold mkf mkz| for |h|, |(:)| for |f| and |mkf (:)| for |f'|.
+From the definition of |build_fold| we have
+|build_fold mkf mkz (a : b) = (mkf (:)) a (build_fold mkf mkz b)|\\
+and |build_fold mkf mkz [] = mkz []|.
+Therefore we have |build_fold mkf mkz (g (:) b) = g (mkf (:)) (build_fold mkf mkz b)|\\
+This gives us the result
+> build_fold mkf mkz (build g) = g (mkf (:)) (mkz [])
+Finally, working backwards from the definition of |build| we have.
+> build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
+
+
+
+Again with |foldr|\\
+if |forall (a : A) (forall (b : B) b (x op y) = (a x) ot (b y)| and |b u = u'|\\
+then |b . fold op u = fold ot u' . (map a)|\\
+Here we take |b = build_fold mkf mkz|, |op = f|, and |ot = mkf f| |a = id|\\
+then the statment becomes\\
+$\ $\\
+if |build_fold mkf mkz (f x y) = (mkf f) x (build_fold mkf mkz y)|\\
+and |build_fold mkf mkz [] = mkz []|\\
+then |build_fold mkf mkz . fold f z = fold (mkf f) (mkz z)|\\
+$\ $\\
+Since both conditions follow directly from the definition of |build_fold| we are left with
+> build_fold mkf mkz . fold f z = fold (mkf f) (mkz z)
+Which is exactly what we wanted.
+Free theorems are fun!
+
+Finally for |build_fold/build_fold| rule
+suppose we have the expression
+> foldr f z (build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs))
+by the previous result we have 
+> foldr (mkf_1 f) (mkz_1 z) (build_fold mkf_2 mkz_2 xs)
+> => foldr (mkf_2 (mkf_1 f)) (mkz_2 (mkz_1 z)) xs
+> => foldr ((mkf_2 . mkf_1) f) ((mkz_2 . mkz_1) z) xs
+> => foldr f z (build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs)
+Which establishes our result.
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1)
+
+\end{proof}
+
+While this gives us confidence that this is a useful optimization.
+Unfortunately, as we've already seen, equations reasoning doesn't always apply in Curry.
+In fact, as they are currently stated, it's not surprising that these rules don't hold in Curry.
+However, with a few assumptions, we can remedy this problem.
+First, we need to rewrite our rules so that the reduced expression is in A-Normal form.
+
+> build_fold mkf mkz (build g) =  let g' = (\c n ->  let  f = mkf c
+>                                                         z = mkz n
+>                                                    in   g f z)
+>                                 in build g'
+> foldr f z (build_fold mkf mkz xs) =  let  f' = mkf f
+>                                           z' = mkz z
+>                                      in   foldr f' z' xs
+> build_fold mkf1 mkz2 (build_fold mkf2 mkz2 xs) =  let  mkf = mkf1 . mkf2
+>                                                        mkz = mkz1 . mkz2
+>                                                   in   build_fold mkf mkz xs
+
+Now we are ready to state our result.
+\begin{theorem}
+suppose |f|, |z|, |g|, |mkf|, and |mkz| are all functions
+who's right had side is an expression in A-Normal form,
+then the following reductions are valid.
+> build_fold mkf mkz (build g) =  let g' = (\c n ->  let  f = mkf c
+>                                                         z = mkz n
+>                                                    in   g f z)
+>                                 in build g'
+> foldr f z (build_fold mkf mkz xs) =  let  f' = mkf f
+>                                           z' = mkz z
+>                                      in   foldr f' z' xs
+> build_fold mkf1 mkz2 (build_fold mkf2 mkz2 xs) =  let  mkf = mkf1 . mkf2
+>                                                        mkz = mkz1 . mkz2
+>                                                   in   build_fold mkf mkz xs
+
+\end{theorem}
+
+\begin{proof}
+We show the result for foldr/build, and the rest are similar calculations.
+We intend to show that for any |f|, |z|, and |g| that
+> fold f z (build g (:) []) == g f z
+
+We proceed in a manner similar to \cite{freeTheoremsCurry}.
+First notice that |build g (:) []| is constructing a list.
+However, since |g| is potentially non-deterministic, and it might fail,
+when normalizing this expression we may have a non-deterministic collection of lists.
+Let's make this explicit.
+
+> build g (:) [] = g_11 : g_12 : g_13 : ... end_1
+>                ? g_21 : g_22 : g_23 : ... end_2
+>                  ...
+>                ? g_k1 : g_k2 : g_k3 : ... end_k
+>   where end_i = [] ? EXEMPT
+
+Here we have a collection of |k| lists,
+and each list ends with either the empty list, or the computation may have failed along the way.
+Therefore, |end_i| may be either |[]| or |EXEMPT|.
+In fact it might be the case that an entire list is |EXEMPT|,
+but this is okay, because that would still fit this form.
+
+Now, let's see what happens when we normalize the entire expression.
+Recall that function application distributes over choice.
+That is |f (a ? b) = f a ? f b|.
+
+> foldr `f` z (build g (:) []) 
+>   =  foldr `f` z (  g_11 : g_12 : g_13 : ... end_1 ? 
+>                     g_21 : g_22 : g_23 : ... end_2 ? 
+>                     ...
+>                     g_k1 : g_k2 : g_k3 : ... end_k)
+>   =  foldr `f` z (  g_11 : g_12 : g_13 : ... end_1) ? 
+>      foldr `f` z (  g_21 : g_22 : g_23 : ... end_2) ? 
+>                     ...
+>      foldr `f` z (  g_k1 : g_k2 : g_k3 : ... end_k)
+>   =  (g_11 `f` g_12 `f` g_13 `f` ... z_end1) ? 
+>      (g_21 `f` g_22 `f` g_23 `f` ... z_end2) ? 
+>       ...
+>      (g_k1 `f` g_k2 `f` g_k3 `f` ... z_endk)
+>        where z_endi = if end_i == failed then failed else z
+>   =  g `f` z
+
+This proves the result.
+
+\end{proof}
+
+Note that while this does prove the result, there's still some interesting points here.
+First we never made any assumptions about |f| or |z|.
+In fact, we didn't really make any assumptions about |g|,
+but we did at least give an explicit form for it's values.
+This form is guaranteed by the type, and this looks like a promising direction
+for future explorations into parametricity for functional logic programming.
+
+Second, it should be noted that while it branches in |g| that produce |EXEMPT| don't necessarily
+fail when evaluated.
+If |f| is strict, then any failure in the list will cause the entire branch to fail,
+but consider the program
+> foldr (\x y -> 1) 0 (build (\c n -> 0 `c` 1 `c` EXEMPT))
+
+While evaluating build by itself to normal form would produce a failure,
+since the tail of the list is |EXEMPT|, since the |f| in |foldr| never looks at either of it's arguments,
+this branch of the computation can still return a result.
+
+
+In this chapter we've developed three optimizations to help reduce the memory allocated by
+Curry programs.
+These optimizations seem effective, and we've shows why they're correct,
+but we still need to find out how effective they are.
+In the next chapter we show a small bechmarking suite to test the efficacy of these optimizations,
+and show the results of each optimization, and in combination.
+We then discuss possible future directions for this research.

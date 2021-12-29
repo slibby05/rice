@@ -1,0 +1,310 @@
+
+\section{Results}
+
+Now that we've finally implemented all of the optimizations, we need 
+to see if they were actually effective.
+Before we can look at the results, we need to discuss methodology.
+The tests we ran aren't extensive.
+We're not trying to show characterize every area of this compiler's performance,
+we just want a general idea of the time and memory consumption.
+While a more extensive test that looks at finer details like pipeline stalls
+and cache misses would be interesting, and no doubt, informative,
+we are really only concerned with two characteristics.
+How long did the program take to run?
+How many allocations were made by the program?
+
+There are many ways to measure memory allocation and execution time.
+For memory allocation, we could estimate the memory using the operating system,
+or we could use a tool like valgrind to find the number of allocations,
+However, and even simpler solution is just to keep a count of the number
+of times we create a node.
+This is simple to implement, and doesn't effect the run-time performance noticeably,
+so for measuring memory allocation, we instrumented the run time system
+to report how many nodes are created.
+For measuring time we took the approach from \cite{wrongData},
+and ran the programs multiple times, while taking the fastest result.
+We also ran the program in multiple different environments on multiple machines.
+
+\subsection{Tests}
+
+In order to determine how effective our optimizations are,
+we've developed a small suite of test programs that are meant to test both
+deterministic and non-deterministic programs.
+This suit is loosely based on the suite used to test the Kics2 compiler \cite{kics2}.
+However, we've made a few alterations.
+We've added several programs to test non-determinism,
+and we've removed or modified programs that used functional patterns
+as that was not part of the Rice compiler.
+
+We split the functions into tree groups:
+Numeric computations meant to test unboxing;
+list computations meant to test deforestation;
+and non-deterministic computations.
+
+\begin{itemize}
+
+\item \textbf{numeric computations:}
+
+\begin{itemize}
+\item \textbf{fib} is the Fibonacci program from chapter 5.
+We test it with both deterministic and non-deterministic input.
+
+\item \textbf{tak} computes a long mutually recursive function with many numeric calculations.\
+\end{itemize}
+
+\item \textbf{non-deterministic computations:}
+
+\begin{itemize}
+\item \textbf{cent} attempts to find all expressions
+containing the numbers 1 to 5 that evaluate to 100.
+
+\item \textbf{half} computes half of a number defined using piano arithmetic.
+> half n | x + x == n = x
+>  where x free
+
+\item \textbf{perm} computes all of the permutations of a list.
+
+\item \textbf{queens\_perm} computes solutions to the n-queens problem
+by permuting a list, and checking if it's a valid solution.
+
+\item \textbf{sort} sorts a list using by finding a sorted permutation.
+\end{itemize}
+
+
+\item \textbf{deforestation:}
+
+\begin{itemize}
+\item \textbf{queens\_det} computes solutions to the n-queens problem
+using a backtracking solution and list comprehension.
+
+\item \textbf{reverse\_builtin} reverses a list using the built in reverse function.
+
+\item \textbf{reverse\_foldr} reverses a list using a reverse function written as a fold.
+
+\item \textbf{reverse\_prim} reverses a list using the built in reverse function and primitive numbers.
+
+\item \textbf{sum\_squares} computes |sum . map squre . filter odd . enumFromTo 1|.
+
+\item \textbf{buildFold} computes a long chain of list processing functions.
+
+\item \textbf{primes} computes a list of primes.
+
+\item \textbf{sieve} computes |sumPrimes| from Chapter 5.
+\end{itemize}
+
+\end{itemize}
+
+\subsection{Results}
+
+The results for running the tests are given if figure \ref{fig:time} for timing,
+and \ref{fig:memory} for memory.
+While we attempted to be as fair in our assessments as possible,
+there are some cases where we couldn't include a compiler.
+Either because it was taking too long, or it used too much memory,
+and was killed by the operation system.
+For the timing results we include Kics2 and Pakcs when we can,
+however neither compiler offers a way to see how much memory was used
+during computation.
+So, they are not included in the memory results.
+It is worth noting that several programs running in Kics2
+were killed by the operation system for using too much memory.
+
+There is also a much more interesting problem.
+In some cases we simply can't compare the optimized code.
+The optimized code runs so fast that the we can't accurately time them.
+
+We'll look at |fib| in particular, because it illustrates this problem particularly well.
+The algorithm for |fib| is an exponential time algorithm.
+Specifically it runs in $O(1.61^{n})$.
+This means that |fib n| runs rough 1.61 time as fast as |fib (n+1)|.
+In running our example with a non-deterministic input,
+both Kics2 and Pakcs were only able to run up to |fib 27|.
+In contrast fully optimized Rice was able to run |fib 42| in about the same amount of time.
+So using this as a very rough approximation
+we have that our optimized code is running $1.61^{15} \approx 1000$ times as fast.
+
+This is a very impressive speedup, but we've already discussed the reason for it.
+After we applied unboxing and shortcutting, we were able eliminate all 
+but a constant number of heap allocations from the program.
+This would be a great result on it's own, but it gets even better when we compare it to GHC.
+Compiling the same |fib| algorithm on GHC produced code
+that ran about twice as fast as our optimized Rice code,
+and when we turned off Optimizations for GHC we ran faster by a factor of 8.
+It's not surprising to us that our code ran slower than GHC.
+In fact, we would be shocked if it managed to keep up.
+What is surprising, and encouraging, is that we were competitive at all.
+It suggests that Curry isn't inherently slower and Haskell.
+We believe that a more mature Curry compiler could run as fast as GHC on most, if not all,
+deterministic functions.
+
+
+
+\begin{figure}
+\begin{tabular}{||l||r||r||r||}
+\hline
+ & fib & fib\_nondet & tak \\
+\hline
+pakcs    & 25.900 & 30.244 & 6867.545 \\
+kics2    &        &        &          \\
+unopt    &        &        &          \\
+basic    &        &        &          \\
+unbox    &        &        &          \\
+shortcut &        &        &          \\
+deforest &        &        &          \\
+all      &        &        &          \\
+\hline
+\end{tabular}
+
+\begin{tabular}{||l||r||r||r||r||r||}
+\hline
+ & cent & half & perm & queens\_perm  & sort \\
+\hline
+pakcs    & 65.630 & 983.572 & 45.102 & 568.812 & 212.331 \\
+kics2    &        &         &        &         &         \\
+unopt    &        &         &        &         &         \\
+basic    &        &         &        &         &         \\
+unbox    &        &         &        &         &         \\
+shortcut &        &         &        &         &         \\
+deforest &        &         &        &         &         \\
+all      &        &         &        &         &         \\
+\hline
+\end{tabular}
+
+
+\begin{tabular}{||l||r||r||r||r||r||r||r||r||}
+\hline
+         & queens\_det & rev     & rev\_fold & rev\_prim & sum\_squares & buildFold & primes   & sieve  \\
+\hline
+pakcs    &    1051.782 &         &   262.144 &    27.963 &       33.486 &           & 7097.473 & 2845.308 \\
+kics2    &             &         &           &           &              &           &          &          \\
+unopt    &             &         &           &           &              &           &          &          \\
+basic    &             &         &           &           &              &           &          &          \\
+unbox    &             &         &           &           &              &           &          &          \\
+shortcut &             &         &           &           &              &           &          &          \\
+deforest &             &         &           &           &              &           &          &          \\
+all      &             &         &           &           &              &           &          &          \\
+\hline
+\end{tabular}
+\caption{Results for running time}
+\label{fig:timeList}
+\end{figure}
+
+\begin{figure}
+\begin{tabular}{||l||c||c||c||c||c||c||}
+\hline
+                      & unopt & basic & unbox & shortcut & deforest & all \\
+\hline
+fib                   &       &       &       &          &          &     \\
+tak                   &       &       &       &          &          &     \\
+cent                  &       &       &       &          &          &     \\
+half                  &       &       &       &          &          &     \\
+perm                  &       &       &       &          &          &     \\
+queens\_perm          &       &       &       &          &          &     \\
+sort                  &       &       &       &          &          &     \\
+queens\_det           &       &       &       &          &          &     \\
+reverse\_builtin      &       &       &       &          &          &     \\
+reverse\_foldr        &       &       &       &          &          &     \\
+reverse\_prim         &       &       &       &          &          &     \\
+sum\_squares          &       &       &       &          &          &     \\
+buildFold             &       &       &       &          &          &     \\
+primes                &       &       &       &          &          &     \\
+sieve                 &       &       &       &          &          &     \\
+\hline
+\end{tabular}
+\caption{Results for memory allocations.}
+\label{fig:memory}
+\end{figure}
+
+
+
+\section{Conclusion}
+
+These results were honestly significantly better than we ever expected with this project.
+Initially we hoped to compete with Kics2, since it was leveraging GHC's optimizer
+to produce efficient code.
+However, we found that not only could be beat Kics2 in all cases.
+In many cases the results were simply incomparable,
+and in some cases we were even able to compete with GHC itself.
+Furthermore, we've shown that the memory optimizations really were effective for Curry programs.
+This isn't much of a surprise.
+Allocating less memory is a good strategy for making programs run faster.
+It is good to know that the presence of non-determinism doesn't affect this commonly head belief.
+
+It's a little more surprising that these optimizations all turned out to be valid in Curry.
+In fact, a surprising number of Optimizations are valid in Curry under suitable conditions.
+This might not seem that significant, until we look at what optimizations aren't valid.
+For example, common sub-expression elimination was not included in this compiler.
+The reason is that it simply isn't a valid Curry transformation.
+It introduces sharing where none existed.
+If the common sub-expression is non-deterministic, but we will change the set of results.
+On the other hand, common sub-expression elimination is fairly innocuous in most other languages.
+
+\subsection{Future Work}
+
+Most currys are made form curry powder and coconut milk,
+however our Curry was mostly made from low hanging fruit.
+As nice as our results are,
+we would like to see this work extended in the future.
+We believe that a better inliner and strictness analyzer
+would go a long way to producing more efficient code.
+
+In fact a general theory of inlining in Curry would be hugely beneficial.
+One of the biggest drawbacks to this compiler is that we can't represent 
+lambda expressions in FlatCurry, and inline them.
+However before we could even attempt this,
+we would need to know when it's safe to inline a lambda in Curry.
+
+We would also like to move from short-cut deforestation to stream fusion.
+This should be possible, but it would require a more sophisticated strictness analyzer,
+and we may not be able to get away with our combinator approach.
+
+We would also like to see the development of new, Curry specific, optimizations.
+Right now the |?| operator acts as a hard barrier.
+We can move let bound variables outside of it, but don't move the choice itself.
+However, there may be an option for using pull-tabbing or bubbling
+to move the choice to make room for more optimizations.
+
+Finally, developing a better run-time system also be an important improvement.
+While we did work to make sure our run time system was efficient,
+it could certainly be better.
+Integrating this work with the Sprite \cite{sprite} compiler might solve this issue.
+
+\subsection{Conclusion and Related Work}
+
+We have presented the Rice Optimizing Curry compiler.
+The compiler was primarily built to test the effectiveness of various optimizations on Curry programs,
+but in testing these optimizations, we've also built
+an efficient evaluation method for backtracking Curry programs,
+as well as a general system for describing and implementing optimizations.
+The compiler itself is written in Curry.
+
+The implementation of the GAS system was instrumental in developing optimizations for this compiler.
+It not only allowed us to implement optimizations more efficiently,
+but also to test new optimizations,
+through optimization derivations, discover which optimizations were effective,
+which were never used, and which were wrong.
+This greatly simplified debugging optimizations,
+but it also allowed us to test more complicated optimizations.
+Often we would just try an idea to see what code it produced,
+and if it fired in unintended places.
+It's difficult to overstate just how useful this system was in the compiler.
+
+While the run-time system was not the primary focus of this dissertation,
+we were able to produce some useful results.
+The path compression theorem,
+and the resulting improvement to backtracking
+is a significant to the current state-of-the-art for backtracking Curry programs.
+
+When starting this project, shortcutting was already known
+to be valid for functional logic programs.
+It was developed for them specifically.
+However, it was a nice surprise to find that
+unboxing, and deforestation were both valid in Curry.
+It was even more remarkable that with some simple restrictions
+we could make inlining and reduction valid in Curry as well.
+
+We believe that this work is a good start for optimizing Curry compilers,
+and we would like to see it continue.
+After having a taste of optimized Curry, we want to turn up the heat,
+and deliver an even hotter dish.
+But for now, we've made a tasty Curry with Rice.

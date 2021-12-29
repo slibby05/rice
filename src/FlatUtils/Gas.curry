@@ -96,7 +96,7 @@ runOpts opt p e = do v <- curVar
 
 reconstruct :: Expr -> [Step] -> String
 reconstruct _ [] = ""
-reconstruct e ((rule, p, rhs):steps) = "=>_"++rule++" "++(show (reverse p))++"\n" ++
+reconstruct e ((rule, p, rhs):steps) = "=> "++rule++" "++(show (reverse p))++"\n" ++
                                        pPrint (ppExp (Options 2 QualNone "") e')++"\n" ++
                                        reconstruct e' steps
  where e' = replace e (reverse p) rhs

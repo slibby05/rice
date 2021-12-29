@@ -220,7 +220,9 @@ strict _ (Var _)     = False
 strict _ (Lit _)     = False
 strict _ (Or _ _)    = False
 strict x (Typed e _) = strict x e
-strict x (Let vs e)  = length (filter (strict x) (e : map snd vs)) == 1
+strict x (Let vs e)  = let es = e : map snd vs
+                       in sum (map (uses x) es) == 1 && 
+                          length (filter (strict x) es) == 1
 strict x (Free _ e)  = strict x e
 
 strict x (Comb _ n es) = isApply && not (any (hasVar x) (tail es))

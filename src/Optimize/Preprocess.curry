@@ -48,7 +48,7 @@ showPreprocess dt ft f
                      let e        = funcBody f
                      putStrLn (pPrint (ppExp (Options 2 QualNone "") e))
                      let e1 = box e
-                     putStrLn "=> unbox"
+                     putStrLn "=> UNBOX"
                      putStrLn (pPrint (ppExp (Options 2 QualNone "") e1))
                      tunbox <- time
                      let (e2, w1, _) = showWork (canonize ft) (-1) e1
@@ -145,20 +145,20 @@ showPreprocess dt ft f
 -- NOTE: you can't float a let out of the branch of a case.
 -- it could use the variabled defined in the pattern
 float :: Opt
-float _ (Let [(x,l@(Let _ _))] e)           = (traverse x e l, "float 1'", 0)
-float _ (Let [(x,l@(Free _ _))] e)          = (traverse x e l, "float 2'", 0)
-float _ (Let (as++[(x,Let vs e1)]++bs) e2)  = (letBlocks, "float 1",0)
+float _ (Let [(x,l@(Let _ _))] e)           = (traverse x e l, "FLOAT_LET", 0)
+float _ (Let [(x,l@(Free _ _))] e)          = (traverse x e l, "FLOAT_LET", 0)
+float _ (Let (as++[(x,Let vs e1)]++bs) e2)  = (letBlocks, "FLOAT BLOCK",0)
  where letBlocks = fst $ makeBlocks ((x,e1):vs++as++bs) e2
-float _ (Let (as++[(x,Free vs e1)]++bs) e2) = (Free vs letBlocks, "float 2",0)
+float _ (Let (as++[(x,Free vs e1)]++bs) e2) = (Free vs letBlocks, "FLOAT BLOCK",0)
  where letBlocks = fst $ makeBlocks ((x,e1):as++bs) e2
-float _ (Or (Let vs e1) e2)                 = (Let vs (Or e1 e2), "float 3",0)
-float _ (Or e1 (Let vs e2))                 = (Let vs (Or e1 e2), "float 4",0)
-float _ (Or (Free vs e1) e2)                = (Free vs (Or e1 e2), "float 5",0)
-float _ (Or e1 (Free vs e2))                = (Free vs (Or e1 e2), "float 6",0)
-float _ (Comb ct n (as++[Let vs e]++bs))    = (Let vs (Comb ct n (as++[e]++bs)), "float 7",0)
-float _ (Comb ct n (as++[Free vs e]++bs))   = (Free vs (Comb ct n (as++[e]++bs)), "float 8",0)
-float _ (Case ct (Let vs e) bs)             = (Let vs (Case ct e bs), "float 9",0)
-float _ (Case ct (Free vs e) bs)            = (Free vs (Case ct e bs), "float 10",0)
+float _ (Or (Let vs e1) e2)                 = (Let vs (Or e1 e2), "FLOAT_OR",0)
+float _ (Or e1 (Let vs e2))                 = (Let vs (Or e1 e2), "FLOAT_OR",0)
+float _ (Or (Free vs e1) e2)                = (Free vs (Or e1 e2), "FLOAT_OR",0)
+float _ (Or e1 (Free vs e2))                = (Free vs (Or e1 e2), "FLOAT_OR",0)
+float _ (Comb ct n (as++[Let vs e]++bs))    = (Let vs (Comb ct n (as++[e]++bs)), "FLOAT_APP",0)
+float _ (Comb ct n (as++[Free vs e]++bs))   = (Free vs (Comb ct n (as++[e]++bs)), "FLOAT_APP",0)
+float _ (Case ct (Let vs e) bs)             = (Let vs (Case ct e bs), "FLOAT_CASE",0)
+float _ (Case ct (Free vs e) bs)            = (Free vs (Case ct e bs), "FLOAT_CASE",0)
 
 traverse x e l = case l of
                       (Let vs e')  -> Let vs (traverse x e e')
@@ -209,10 +209,10 @@ traverse x e l = case l of
 
 flatten :: Opt
 flatten (x,_) (Case r1 (Case r2 e b2) b1) = let (b2', x') = renameCases x r1 b1 b2
-                                            in  (Case r2 e b2', "flatten 1", x'-x)
-flatten _     (applyf (applyf f as) bs)   = (applyf f (as++bs), "flatten 2",0)
+                                            in  (Case r2 e b2', "CASE_IN_CASE", x'-x)
+flatten _     (applyf (applyf f as) bs)   = (applyf f (as++bs), "DOUBLE_APPLY",0)
 flatten _     (applyf (Case r e bs) xs)   = 
-            (Case r e [Branch p (applyf e' xs) | (Branch p e') <- bs], "flatten 3",0)
+            (Case r e [Branch p (applyf e' xs) | (Branch p e') <- bs], "CASE_APPLY",0)
 
 -- case (case e2 [p2 -> b2]) of [p1 -> b1]
 -- => 
@@ -240,9 +240,9 @@ renameBranches n (Branch p e : bs) = let (e',n') = rename n id e
 ------------------------------------------------------------------------------
 makeStrLit :: Opt
 makeStrLit _ e@(strCons c cs)
- | cs =:= strNil = (strConst [c],   "String Constant 1", 0)
+ | cs =:= strNil = (strConst [c],   "STRING", 0)
 makeStrLit _ e@(strCons c cs)
- | cs =:= strConst x = (strConst (c:x), "String Constant 2", 0)
+ | cs =:= strConst x = (strConst (c:x), "STRING", 0)
   where x free
 
 strCons c str = Comb ConsCall ("Prelude",":") [Lit (Charc c), str]
@@ -298,7 +298,7 @@ strConst x = Comb ConsCall ("StringConst",x) []
 --
 blocks :: Opt
 blocks _ (Let es@(_:_:_) e)
- | changed = (e', "blocks", 0)
+ | changed = (e', "BLOCKS", 0)
   where (e', changed) = makeBlocks es e
 
 
@@ -321,9 +321,9 @@ blocks _ (Let es@(_:_:_) e)
 
 alias :: Opt
 alias _ (Let (as++[(v, Var y)]++bs) e)
- | v == y       = (Let (as++[(v,loop)]++bs) e, "alias", 0)
- | otherwise    = (suby (Let (as++bs) e), "alias", 0)
-  where loop = Comb ConsCall ("","LOOP") []
+ | v == y       = (Let (as++[(v,loop)]++bs) e, "ALIAS", 0)
+ | otherwise    = (suby (Let (as++bs) e), "ALIAS", 0)
+  where loop = Comb FuncCall ("Prelude","loop") []
         suby = sub ((v, Var y) @> idSub)
 
 ------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ alias _ (Let (as++[(v, Var y)]++bs) e)
 --     (C x1 x2) -> ... (C x1 x2) ...
 caseVar :: Opt
 caseVar _ (Case ct (Var x) bs)
- | hasVar x (Case ct z bs) = (Case ct (Var x) (map (repCaseVar x) bs), "caseVar",0)
+ | hasVar x (Case ct z bs) = (Case ct (Var x) (map (repCaseVar x) bs), "CASE_VAR",0)
  where z = (Lit (Intc 0)) -- dummy expression that doesn't contain x
 
 repCaseVar :: VarIndex -> BranchExpr -> BranchExpr
@@ -365,9 +365,9 @@ fixLets = float ? blocks
 fixPartFunc :: FunTable -> Opt
 fixPartFunc ft _ (Comb ct f es)
  | missed = case compare a (length es) of
-                 LT -> (applyf (Comb (miss ct 0) f es1) es2, "fixPartial <",  0)
-                 EQ -> (Comb (miss ct 0) f es,               "fixPartial ==", 0)
-                 GT -> (Comb (miss ct (a - length es)) f es, "fixPartial >",  0)
+                 LT -> (applyf (Comb (miss ct 0) f es1) es2, "FIX_PARTIAL_LT", 0)
+                 EQ -> (Comb (miss ct 0) f es,               "FIX_PARTIAL_EQ", 0)
+                 GT -> (Comb (miss ct (a - length es)) f es, "FIX_PARTIAL_GT", 0)
  where a = arity ft f
        missed = shouldMiss ct /= a - length es
        (es1,es2) = splitAt a es
@@ -395,7 +395,7 @@ miss (ConsPartCall _) a = if a == 0 then ConsCall else ConsPartCall a
 
 fillCases :: DataTable -> Opt
 fillCases dt _ (Case ct e bs)
- | not (null exempts) = (Case ct e (bs++exempts), "fill case", 0)
+ | not (null exempts) = (Case ct e (bs++exempts), "FILL", 0)
        -- We can get away with having the wrong arity, because
        -- these branches are always a failure, so we should
        -- never bind variables to them anyway
@@ -429,9 +429,9 @@ missingBranches dt bs
 unapply :: Opt
 unapply (n,_) (applyf (Comb pcall f es) as)
  = case compare m (length as) of
-        LT -> (Let [(n, Comb (call pcall) f (es++as1))] (applyf (Var n) as2), "unapply <", 1)
-        EQ -> (Comb (call pcall) f (es++as),                                  "unapply =", 0)
-        GT -> (Comb (partcall pcall (m-length as)) f (es++as),                "unapply >", 0)
+        LT -> (Let [(n, Comb (call pcall) f (es++as1))] (applyf (Var n) as2), "UNAPPLY_LT", 1)
+        EQ -> (Comb (call pcall) f (es++as),                                  "UNAPPLY_EQ", 0)
+        GT -> (Comb (partcall pcall (m-length as)) f (es++as),                "UNAPPLY_GT", 0)
  where m = missing pcall
        (as1, as2) = splitAt (missing pcall) as
        missing (FuncPartCall x) = x

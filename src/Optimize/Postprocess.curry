@@ -46,8 +46,8 @@ renameFunc (Func n a v t (Rule vs e))  = Func n a v t (Rule ps (fst (rename nv s
 
 showPostprocess :: FunTable -> [FuncDecl] -> IO [FuncDecl]
 showPostprocess ft fs = do putStrLn (const "()" $## ft)
-                           fs2 <- loopIO (outline ft) 0 fs
-                           let fs1 = loop rootCases 0 fs1
+                           fs1 <- loopIO (outline ft) 0 fs
+                           fs2 <- return $ loop rootCases 0 fs1
                            fs3 <- mapM (showPostExpr ft) fs2
                            return (map renameFunc fs3)
 
@@ -68,7 +68,7 @@ showPostExpr ft f
                      putStr w3
                      tfixLet <- time
                      let e4 = uncaseVar e3
-                     putStrLn "=> fix CaseVar"
+                     putStrLn "=> UNDO_CASE_VAR"
                      putStrLn $ showExpr e4
                      tuncasevar <- time
                      let (e5,w5,_) = showWork caseCall (-1) e4
@@ -92,10 +92,13 @@ caseCall _ (Let [(v,ve)] e@(has (Case _ (Var v) _)))
  & uses v e == 1 
  & uses v ve == 0 
  & not (isApply ve)
- = (Let [(-(v+1),ve)] (sub ((v,Var (-(v+1))) @> idSub) e), "case call", 0)
+ = (Let [(-(v+1),ve)] (sub ((v,Var (-(v+1))) @> idSub) e), "CASE_CALL", 0)
   where isApply e = case e of 
                          Comb _ ("Prelude","apply") _ -> True
                          _                            -> False
+
+--turn of shortcutting
+--caseCall _ _ = failed
 
 --------------------------------------------------------------------
 -- move nested control flow

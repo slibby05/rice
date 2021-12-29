@@ -13,7 +13,7 @@ import List (maximum)
 veryTrivial :: Expr -> Bool
 veryTrivial (Var _)      = True
 veryTrivial (Lit _)      = True
-verytrivial (Comb _ n _) = n == ("","primCond")
+veryTrivial (Comb _ n _) = n == ("","primCond")
 veryTrivial (Let _ _)    = False
 veryTrivial (Free _ _)   = False
 veryTrivial (Or _ _)     = False
@@ -35,12 +35,12 @@ trivial (Comb FuncCall n _)         = n == ("","primCond")
 
 toANF :: (Expr -> Bool) -> Opt
 toANF triv (n,_) (Case ct e bs)
- | not (triv e) = (Let [(n,e)] (Case ct (Var n) bs), "ANF 1", 1)
+ | not (triv e) = (Let [(n,e)] (Case ct (Var n) bs), "ANF_CASE", 1)
 
 toANF triv (n,_) (Comb ct n1 (as++[e]++bs))
- | all triv as && not (triv e) = (Let [(n,e)] (Comb ct n1 (as++[Var n]++bs)), "ANF 2", 1)
+ | all triv as && not (triv e) = (Let [(n,e)] (Comb ct n1 (as++[Var n]++bs)), "ANF_APP", 1)
 
 toANF triv (n,_) (Or e1 e2)
- | not (triv e1) = (Let [(n,e1)] (Or (Var n) e2), "ANF 3", 1)
- | not (triv e2) = (Let [(n,e2)] (Or e1 (Var n)), "ANF 4", 1)
+ | not (triv e1) = (Let [(n,e1)] (Or (Var n) e2), "ANF_OR1", 1)
+ | not (triv e2) = (Let [(n,e2)] (Or e1 (Var n)), "ANF_OR2", 1)
 

@@ -10,7 +10,6 @@ import FlatUtils.FlatUtils
 import FlatUtils.DataTable (exempt)
 import Optimize.FunTable
 import Optimize.Primitives (primCond, primCase, fromBool)
---import Control.SetFunctions
 
 -- I'm only inlining constructor, or partial applications, because those are the only ones that cancle.
 -- inlining a function application would be pointless.
@@ -36,9 +35,9 @@ import Optimize.Primitives (primCond, primCase, fromBool)
 -- e[x -> C v1 v2 ... vn]
 inline :: Opt
 inline _ (Let [(x, f@(Comb ct _ _))] e)
- | (isCons ct || isPart ct) & nonRecursive x f = (sub ((x,f) @> idSub) e, "inline 1", 0)
+ | (isCons ct || isPart ct) & nonRecursive x f = (sub ((x,f) @> idSub) e, "INLINE_CONS", 0)
 
-inline _ (Let [v@(_, Lit _)] e) = (sub (v @> idSub) e, "inline 2", 0)
+inline _ (Let [v@(_, Lit _)] e) = (sub (v @> idSub) e, "INLINE_LIT", 0)
 
 -- If we have let x = case .... in ... case x of ....
 -- Then we could inline x and have a double case statement
@@ -56,18 +55,18 @@ inline _ (Let [v@(_, Lit _)] e) = (sub (v @> idSub) e, "inline 2", 0)
 --
 -- This is pretty much the only downside to using ANF that I've found.
 inline _ (Let [v@(x, Case _ _ _)] e)
- | strict x e = (sub (v @> idSub) e, "inline 3", 0)
+ | strict x e & uses x e == 1 = (sub (v @> idSub) e, "INLINE_CASE", 0)
 
 -- inline so I can apply fold/build deforestation.
 -- This tecnically breaks the ANF invarient, but deforestation should restore that immedeatly afterwards.
-inline _ (Let [v@(x, build_ _)] e@(has (foldr_ _ _ (Var x))))
- | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build)", 0)
-inline _ (Let [v@(x, build_ _)] e@(has (build_fold_ _ _ (Var x))))
- | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build)", 0)
-inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (foldr_ _ _ (Var x))))
- | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build_fold)", 0)
-inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
- | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build)", 0)
+-- inline _ (Let [v@(x, build_ _)] e@(has (foldr_ _ _ (Var x))))
+--  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build)", 0)
+-- inline _ (Let [v@(x, build_ _)] e@(has (build_fold_ _ _ (Var x))))
+--  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build)", 0)
+-- inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (foldr_ _ _ (Var x))))
+--  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build_fold)", 0)
+-- inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
+--  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build_fold)", 0)
 
 -- CaseFolding 
 -- let t = case e of
@@ -77,7 +76,7 @@ inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
 --         C1 a -> e11
 --         C2 b -> e22
 -- ==>
--- case (C1 e) of
+-- case e of
 --      C1 a -> let t1 = e1[x->a] e11[t->t1]
 --      C2 b -> let t2 = e2[y->b] e22[t->t2]
 --
@@ -95,10 +94,9 @@ inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
 --                           t2 = t21
 --               C2 y -> let t1 = e12
 --                           t2 = e22
--- in e
--- case (C1 e) of
---      C1 a -> let t1 = e1[x->a] e11[t->t1]
---      C2 b -> let t2 = e2[y->b] e22[t->t2]
+-- in case e of
+--         C1 a -> let t1 = e1[x->a] e11[t->t1]
+--         C2 b -> let t2 = e2[y->b] e22[t->t2]
 --
 -- Note this *must* be a let with a single case
 -- otherwise t is used in multiple places
@@ -120,7 +118,7 @@ inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
 
 caseFold :: Opt
 caseFold (n,_) (Let [(t,Case ct e bs')] (Case ct e bs))
- | not (any (hasVar t . branchExpr) bs') = (Case ct e comBs, "Case Fold 1", length bs)
+ | not (any (hasVar t . branchExpr) bs') = (Case ct e comBs, "CASE_FOLDING", length bs)
   where comBs = zipWith3 comBranch bs bs' [n..]
         comBranch (Branch (Pattern p vs) e1) (Branch (Pattern _ vs') e1') k
            = Branch (Pattern p vs) (Let [(k, sub (listSub vs' vs) e1')] 
@@ -132,7 +130,7 @@ caseFold (n,_) (Let [(t,Case ct e bs')] (Case ct e bs))
 caseFold (n,_) (Let [v@(t,_)] c@(Case _ e _))
  | checksVar t c
  = let (c',dn) = pushIn n v c
-   in (c', "Case Fold 2", dn-n)
+   in (c', "LET_FOLDING", dn-n)
 
 
 -- We could get unlucky and have
@@ -150,7 +148,7 @@ caseFold (n,_) (Let [v@(t,_)] c@(Case _ e _))
 -- let v2 = e2 in let v1 = e1 in ... =>
 -- let v1 = e1 in let v2 = e2 in ...
 caseFold (n,_) (Let [v@(t,_)] e)
- | letCase t e = let (c',dn) = pushIn n v e in (c', "Case Fold 3 let shuffeling", dn-n)
+ | letCase t e = let (c',dn) = pushIn n v e in (c', "LET_FOLDING", dn-n)
 
 
 letCase :: VarIndex -> Expr -> Bool
@@ -191,13 +189,13 @@ pushIn k v@(x,_) o@(Or e1 e2)
  | otherwise              = (o, k)
 
 pushIn k v@(x,_) c@(Case ct e bs)
- | hasVar x e = addLet k v c
- | otherwise  = let (bs',k') = foldr pushBranch ([],k) bs
-                in (Case ct e bs', k')
+ | checksVar x c = let (bs',k') = foldr pushBranch ([],k) bs
+                   in (Case ct e bs', k')
+ | otherwise     = addLet k v c
   where pushBranch (Branch p be) (bs,n) = let (e',n') = pushIn n v be
                                           in (Branch p e' : bs, n')
-
 pushIn k v (Typed e t) = pushIn k v e
+
 
 addLet :: VarIndex -> (VarIndex,Expr) -> Expr -> (Expr,VarIndex)
 addLet k (v,ve) e = let (ve',k') = rename (k+1) ((v,k) @> id) ve
@@ -212,12 +210,16 @@ addLet k (v,ve) e = let (ve',k') = rename (k+1) ((v,k) @> id) ve
 -- in e1
 caseCancel :: Opt
 caseCancel _ (Case _ c@(Comb ConsCall n es) (_++[Branch (Pattern n vs) e]++_))
- = (subGrounded e vs es, "case cancel CONS", 0)
+ = (subGrounded e vs es, "CASE_CALCEL_CONS", 0)
 
-caseCancel _ (Case _ (Lit l) (_++[Branch (LPattern l) e]++_)) = (e, "case cancel LIT", 0)
-caseCancel _ (Case _ (Comb ConsCall ("","EXEMPT") []) _)      = (exempt, "case cancel EXEMPT", 0)
-caseCancel _ (primCase _ (fromBool True)  t _) = (t, "case cancel PrimCond True",  0)
-caseCancel _ (primCase _ (fromBool False) _ f) = (f, "case cancel PrimCond False",  0)
+-- used for turning off inlining
+--caseCancel _ (Case _ c@(Comb ConsCall n es) (_++[Branch (Pattern n vs) e]++_))
+-- | not (snd n `elem` ["int","char","float"]) = (subGrounded e vs es, "case cancel CONS", 0)
+
+caseCancel _ (Case _ (Lit l) (_++[Branch (LPattern l) e]++_)) = (e, "CASE_CANCEL_LIT", 0)
+caseCancel _ (Case _ (Comb ConsCall ("","EXEMPT") []) _)      = (exempt, "CASE_CANCEL_EXEMPT", 0)
+caseCancel _ (primCase _ (fromBool True)  t _) = (t, "CASE_CANCEL_TRUE",  0)
+caseCancel _ (primCase _ (fromBool False) _ f) = (f, "CASE_CANCEL_FALSE",  0)
 
 subGrounded :: Expr -> [VarIndex] -> [Expr] -> Expr
 subGrounded e vs es = lets (sub gsub e)
@@ -251,30 +253,30 @@ subGrounded e vs es = lets (sub gsub e)
 -- but if the function is defined with build, then we don't want to get rid of that.
 reduce :: FunTable -> Opt
 reduce funs (n,True) b@(Comb FuncCall f _)
- | inlinable funs f = (b', "reduce base", dn)
+ | inlinable funs f = (b', "REDUCE_BASE", dn)
   where (b', dn) = makeReduce funs n b
 
 reduce funs (n,_) (Let [(x,b@(Comb FuncCall f _))] e)
  | inlinable funs f 
- & useful funs False x e = (Let [(x,b')] e, "reduce let useful", dn)
+ & useful funs False x e = (Let [(x,b')] e, "REDUCE_USEFUL", dn)
   where (b', dn)   = makeReduce funs n b
 
 -- without this I don't inline id?
 reduce funs (n,_) (Let [(x,b@(Comb FuncCall f _))] e)
- | simple funs f = (Let [(x,b')] e, "reduce let simple", dn)
+ | simple funs f = (Let [(x,b')] e, "REDUCE_SIMPLE", dn)
   where (b', dn) = makeReduce funs n b
 
 reduce funs (n,_) (Let [(x,b@(Comb FuncCall f es))] e)
  | inlinable funs f
- & cancels funs f (map isConsExpr es) = (Let [(x,b')] e, "reduce let cancels", dn)
+ & cancels funs f (map isConsExpr es) = (Let [(x,b')] e, "REDUCE_CANCELS", dn)
   where (b', dn) = makeReduce funs n b
 
 reduce funs (n,_) (Let vs b@(Comb FuncCall f _))
- | inlinable funs f = (Let vs b', "reduce let", dn)
+ | inlinable funs f = (Let vs b', "REDUCE_LET", dn)
   where (b', dn) = makeReduce funs n b
 
 reduce funs (n,_) (Case ct e (as++[Branch p b@(Comb FuncCall f _)]++bs))
- | inlinable funs f = (Case ct e (as++[Branch p b']++bs), "reduce branch", dn)
+ | inlinable funs f = (Case ct e (as++[Branch p b']++bs), "REDUCE_BRANCH", dn)
   where (b', dn) = makeReduce funs n b
 
 isConsExpr :: Expr -> Bool
@@ -308,14 +310,14 @@ useful funs inLet x (Comb ct n es) = inlinable funs n && mightReduce && any (use
 -- ==>
 -- e2
 deadCode :: Opt
-deadCode _ (Free [] e) = (e, "dead code 1", 0)
-deadCode _ (Let [] e) = (e, "dead code 2", 0)
+deadCode _ (Free [] e) = (e, "DEAD_CODE", 0)
+deadCode _ (Let [] e) = (e, "DEAD_CODE", 0)
 deadCode _ (Free (as++[v]++bs) e)
- | not (hasVar v e) = (Free (as++bs) e, "dead code 3", 0)
+ | not (hasVar v e) = (Free (as++bs) e, "DEAD_CODE", 0)
 deadCode _ (Let [(v,_)] e)
- | not (hasVar v e) = (e, "dead code 4", 0)
+ | not (hasVar v e) = (e, "DEAD_CODE", 0)
 deadCode _ (Let [(x,e)] (Var x))
- | not (hasVar x e) = (e, "dead code 5", 0)
+ | not (hasVar x e) = (e, "DEAD_CODE", 0)
 
 
 
@@ -323,16 +325,16 @@ deadCode _ (Let [(x,e)] (Var x))
 -- fold/build deforestation
 --------------------------------
 deforest :: Opt
-deforest _ (foldr_ f z (build_ g)) = (applyf g [f,z], "fold/build", 0)
+deforest _ (foldr_ f z (build_ g)) = (applyf g [f,z], "FOLD_BUILD", 0)
 deforest (n,_) (foldr_ f z (build_fold_ mkf mkz xs)) 
  = (Let [(n, applyf mkf [f])]
     (Let [(n+1, applyf mkz [z])]
-     (foldr_ (Var n) (Var (n+1)) xs)), "fold/build_fold", 2)
+     (foldr_ (Var n) (Var (n+1)) xs)), "FOLD_BF", 2)
 deforest (n,_) (build_fold_ mkc mkn (build_ g)) 
  = (Let [(n, mk_build_ g mkc mkn)]
-    (build_ (Var n)), "build_fold/build", 1)
+    (build_ (Var n)), "BF_BUILD", 1)
 deforest (n,_) (build_fold_ mkf1 mkz1 (build_fold_ mkf2 mkz2 xs)) 
  = (Let [(n, comp mkf2 mkf1)]
     (Let [(n+1, comp mkz2 mkz1)]
-     (build_fold_ (Var n) (Var (n+1)) xs)), "build_fold/build_fold", 2)
+     (build_fold_ (Var n) (Var (n+1)) xs)), "BF_BF", 2)
 

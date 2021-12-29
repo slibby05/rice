@@ -157,7 +157,6 @@ showExpr = pPrint . ppExp (Options 2 QualNone "")
 showFun :: FuncDecl -> String
 showFun = pPrint . ppFuncDecl (Options 2 QualNone "")
 
-opts :: FunTable -> Opt
 opts ft = caseCancel
         ? deforest
         ? deadCode

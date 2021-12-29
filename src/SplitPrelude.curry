@@ -9,7 +9,7 @@ import FlatCurry.Goodies (progFuncs, funcName, progTypes, branchExpr,
                           updProgFuncs, isExternal, updQNamesInTypeExpr, updQNamesInRule)
 import List (splitOn)
 import FlatCurry.Files  (writeFlatCurryFile, readFlatCurry, readFlatCurryFile)
---import FlatUtils.ReplacePrim (mergePrelude)
+import FlatUtils.FlatUtils (primType,primCon)
 import Data.Map (Map(..), lookup, fromList, member)
 import Maybe (fromJust)
 
@@ -123,16 +123,16 @@ mergePrelude prelude prim = updProgFuncs (const (preludeFuns++primFuns)) prelude
 updType :: TypeExpr -> TypeExpr
 updType t = updQNamesInTypeExpr primType t
  where primType n  = case n of
-                          ("prim","C")      -> ("Prelude","Char")
-                          ("prim","I")      -> ("Prelude","Int")
-                          ("prim","F")      -> ("Prelude","Float")
+                          ("prim","C")      -> primType "char"
+                          ("prim","I")      -> primType "int"
+                          ("prim","F")      -> primType "float"
                           (_,x)             -> ("Prelude", repType x)
 updRule :: Rule -> Rule
 updRule r = updQNamesInRule primRule r
  where primRule n  = case n of
-                          ("prim","C")               -> ("","char")
-                          ("prim","I")               -> ("","int")
-                          ("prim","F")               -> ("","float")
+                          ("prim","C")               -> primCon "char"
+                          ("prim","I")               -> primCon "int"
+                          ("prim","F")               -> primCon "float"
                           (_,x)                      -> ("Prelude",removeRep x)
 
 repType :: String -> String
@@ -279,6 +279,7 @@ preludeBase = ["$",
                "foldr",
                "build",
                "build_fold",
+               "loop",
                "mk_build",
                "PEVAL"]
 

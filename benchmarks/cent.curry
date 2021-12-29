@@ -10,8 +10,9 @@ eval (Num x) = x
 eval (x :+ y) = eval x + eval y
 eval (x :- y) = eval x - eval y
 eval (x :* y) = eval x * eval y
-eval (x :/ y) = case y' > 0 && x' `mod` y' == 0 of
-                     True -> x' `div` y'
+eval (x :/ y) = let cond = x' `mod` y' == 0
+                in case y' > 0 && cond of
+                        True -> x' `div` y'
  where x' = eval x
        y' = eval y
 
@@ -38,8 +39,8 @@ mkExp xs@(_:_) = case split xs of
 
 run :: [Int] -> Exp
 run xs = let e = mkExp (perm xs)
-         in case eval e of
-                 100 -> e
+         in fcase eval e of
+                  100 -> e
 
 main :: Exp
 main = run [1..5]

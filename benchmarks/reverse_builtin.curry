@@ -1,5 +1,3 @@
-module ReverseBuiltin where
-
 
 data Nat = O | S Nat
 
@@ -29,5 +27,5 @@ isList [] = True
 isList (x:xs) = isList xs
 
 
-main = isList (reverse (natList nat16M))
+main = isList (reverse (natList nat4M))
 

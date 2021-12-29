@@ -1,4 +1,3 @@
-module Half where
 
 data Peano = O | S Peano
 
@@ -19,4 +18,7 @@ half y | equal (add x x) y = x where x free
 
 
 main = equal (toPeano 5000) (half (toPeano 10000))
+main0 = equal (toPeano 5) (half (toPeano 10))
+main1 = equal (toPeano 50) (half (toPeano 100))
+main2 = equal (toPeano 500) (half (toPeano 1000))
 

@@ -42,6 +42,10 @@
 
 \tableofcontents
 
+\chapter{Introduction}
+
+%include 00_introduction.lcurry
+
 \chapter{Mathematical Background}
 
 %include 01_Rewriting.lcurry
@@ -65,6 +69,16 @@
 \chapter{Conclusion}
 
 %include 06_conclusion.lcurry
+
+\appendix
+
+\chapter{Derivation of fib}
+
+%include A1_fib.lcurry
+
+\chapter{Benchmarks Programs}
+
+%include A2_benchmarks.lcurry
 
 \bibliographystyle{plain}
 \bibliography{bibliography}

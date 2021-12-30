@@ -1,5 +1,112 @@
 
-\section{Introduction}
-\subsection{Why Curry}
-\subsection{Current compliers}
+With all of the chaos in the world today,
+sometimes it's nice to just relax and make a nice Curry.
+But people today are impatient.
+They can't wait; they want their Curry fast.
+This is a problem, because Curry has historically been considered slow.
+Some have considered it unusably slow,
+which is a shame, because Curry is actually a great languguage,
+and can solve many problems well.
+In this dissertation we aim to recitify the problem
+of Curry taking too long.
+We present the RICE Curry compiler,
+and show how it can deliver a fast, satisfying, Curry.
+
+\subsection{Why Curry?}
+
+Functional logic programming is a very powerful technique for
+expressing complicated ideas in a simple form.
+Curry implements these ideas with a clean, easy to read syntax,
+which is similar to Haskell, a well known functional programming language.
+It's also lazy, so evaluation of Curry programs is similar to Haskell as well.
+Curry extends Haskell with two new concepts.
+First, there are non-deterministic functions, such as ``|?|''.  
+Semantically |a ? b| will evaluate
+|a| and |b| and will return both answers to the user.
+Second, there are free, or logic, variables, which are also called logic variable by some authors.
+A free variable is a variable that is not in the scope of the current function.
+The value of a free variable is not defined, but it may be constrained.
+
+Consider the following Curry code for solving n-queens:
+> queens = isEmpty (set1 unsafe p) = p
+>  where p = permute [1..n]
+> 
+> unsafe (xs++[a]++ys++[b]++zs) = abs (a-b) =:= length ys
+
+
+In the |unsafe| function the input list is broken into 5 pieces.
+Two of the pieces, |a| and |b|, are lists with a single element.
+The sublists, |xs|, |ys|, and |zs| are free to be as long as they want.
+However, We've constrained the total list |xs++[a]++ys++[b]++zs|
+to be the same as the argument.
+The effect is that |a| and |b| are arbitrary elements in the list,
+and |ys| is the list of elements between |a| and |b|.
+
+Free variables are given concrete values in Curry programs through narrowing.
+The semantics of narrowing and non-determinism in Curry are given by 
+Antoy et al. \cite{Needed}
+
+\subsection{Current Compilers}
+
+There are currently two mature Curry compilers, Pakcs \cite{pakcs} and Kics2 \cite{kics2}.
+Pakcs compiles Curry to Prolog in an effort to leverage Prolog's non-determinism and free variables.
+Kics2 compiles Curry to Haskell in an effort to leverage Haskell's
+higher order functions and optimizing compiler.
+Both compilers have their advantages.
+Pakcs tends to perform better on non-deterministic expressions with free variables,
+where Kics2 tends to perform much better on deterministic expressions.
+Unfortunately neither of these compilers perform well in both circumstances.
+
+Sprite \cite{sprite}, an experimental compiler, aims to fix these inefficiencies.
+The strategy is to compile to a virtual assembly language, known as LLVM.
+So far, Sprite has shown promising improvements over both Pakcs and Kics2 in performance,
+but it is not a mature compiler.
+
+One major disadvantage of all three compilers is that they all
+attempt to pass off optimization to another compiler.
+Pakcs attempts to have Prolog optimize the non-deterministic code;
+Kics2 attempts to use Haskell to optimize
+deterministic code; and Sprite attempts to use LLVM to optimize the low level code.
+Unfortunately none of these approaches works very well.
+While some implementations of Prolog can optimize non-deterministic expressions,
+they have no concept of higher order functions,
+so there are many optimizations that cannot be applied.
+Kics2 is in a similar situation.  
+In order to incorporate non-deterministic computations in Haskell, 
+a significant amount of code must be threaded through each computation.
+This means that any non-deterministic expression cannot be optimized in Kics2.
+Finally, since LLVM doesn't know about either higher order functions or non-determinism,
+it loses many easy opprotunities for optimization.
+
+Curry programs have one last hope for efficient execution.
+Recently, many scientists \cite{peval, offline_peval} 
+have developed a strong theory of partial evaluation for functional logic programs.
+While these results are interesting, partial evaluation is not currently automatic in Curry.
+Guidance is required from the programmer to run the optimization.
+Furthermore, the optimization fails to optimize several common programs.
+
 \subsection{The Need for Optimizations}
+
+So far, none of these approaches have included the large body 
+of work on program optimizations.
+\cite{optimizationAllen, dataflowAllen, dominatorFlow, dataflowKildall,
+dragon, continuationsAppel, compilersAppel, orbit, ssa, ssaOptimizations, ssaVariable,
+rabbit, stg, ANormal, lambdaRename, ultimateGoto,
+deforestationWadler, shortcutDeforestation, haskellInliner}
+This leads to the inescapable conclusion that Curry needs an optimizer.
+We propose a new compiler environment for developing and testing optimizations.
+The Reduction Inspired Compiler Environment (RICE) Curry compiler.
+This compiler is intended to make developing new optimizations for Curry as simple as possible.
+We test this idea by developing several common optimizations for the RICE compiler.
+Furthermore we implement three specific optimizations for Curry, 
+Unboxing \cite{unboxing}, Shortcutting \cite{shortcutting}, and Deforestation \cite{shortcutDeforestation}.
+We chose these optimizations specifically because they focus on reducing the amount of memory
+consumed by programs, which is a common problem for Curry programs \cite{proposal}.
+
+The rest of this dissertation is organized as follows:
+chapter 2 presents the mathematical background of Term and Graph Rewriting;
+chapter 3 presents the Curry Language and its semantics;
+chapter 4 introduces the GAS system for implementing optimizations;
+chapter 5 discusses the implementation of several common optimizations;
+chapter 6 discusses the implementation of Unboxing, Shortcutting, and Deforestation;
+and chapter 7 concludes by discussing results and future work.

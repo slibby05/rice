@@ -1,0 +1,460 @@
+
+The full derivation of the |fib#worker| function.
+
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= (Int 1)
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in let v_4 = v_1 - Int 2
+>     in let v_6 = fib v_4 
+>     in v_5 + v_6
+> => REDUCE_USEFUL [-1,-1,1,-1,-1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in let v_4 = v_1 - Int 2
+>     in let v_6 = case v_4 of
+>              Int v_9 -> fib#worker v_9
+>     in v_5 + v_6
+> => REDUCE_LET [-1,-1,1,-1,-1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in let v_4 = v_1 - Int 2
+>     in let v_6 = case v_4 of
+>              Int v_9 -> fib#worker v_9
+>     in case v_5 of
+>       Int v_12 -> case v_6 of
+>           Int v_13 -> let v_14 = v_12 pl_p v_13 in Int v_14
+> => INLINE_CASE [-1,-1,1,-1,-1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in let v_4 = v_1 - Int 2
+>     in case v_5 of
+>       Int v_12 -> case (case v_4 of
+>             Int v_9 -> fib#worker v_9) of
+>           Int v_13 -> let v_14 = v_12 pl_p v_13 in Int v_14
+> => CASE_IN_CASE [-1,-1,1,-1,-1,-1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in let v_4 = v_1 - Int 2
+>     in case v_5 of
+>       Int v_12 -> case v_4 of
+>           Int v_9 -> let v_16 = fib#worker v_9
+>             in case v_16 of
+>               Int v_13 -> let v_15 = v_12 pl_p v_13 in Int v_15
+> => LET_FOLDING [-1,-1,1,-1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> let v_17 = v_1 - Int 2
+>         in case v_17 of
+>           Int v_9 -> let v_16 = fib#worker v_9
+>             in case v_16 of
+>               Int v_13 -> let v_15 = v_12 pl_p v_13 in Int v_15
+> => REDUCE_USEFUL [-1,-1,1,-1,-1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> let v_17 = case v_1 of
+>                        Int v_20 -> case (Int 2) of
+>                            Int v_21 -> let v_22 = v_20 mi_p v_21 in Int v_22
+>         in case v_17 of
+>           Int v_9 -> let v_16 = fib#worker v_9
+>             in case v_16 of
+>               Int v_13 -> let v_15 = v_12 pl_p v_13 in Int v_15
+> => CASE_CANCEL_CONS [-1,-1,1,-1,-1,0,0,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> let v_17 = case v_1 of
+>                        Int v_20 -> let v_22 = v_20 mi_p 2 in Int v_22
+>         in case v_17 of
+>           Int v_9 -> let v_16 = fib#worker v_9
+>             in case v_16 of
+>               Int v_13 -> let v_15 = v_12 pl_p v_13 in Int v_15
+> => INLINE_CASE [-1,-1,1,-1,-1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> case (case v_1 of
+>             Int v_20 -> let v_22 = v_20 mi_p 2 in Int v_22) of
+>           Int v_9 -> let v_16 = fib#worker v_9
+>             in case v_16 of
+>               Int v_13 -> let v_15 = v_12 pl_p v_13 in Int v_15
+> => CASE_IN_CASE [-1,-1,1,-1,-1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_26 = let v_22 = v_20 mi_p 2 in Int v_22
+>             in case v_26 of
+>               Int v_9 -> let v_23 = fib#worker v_9
+>                 in case v_23 of
+>                   Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => FLOAT_LET [-1,-1,1,-1,-1,0,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_22 = v_20 mi_p 2
+>             in let v_26 = Int v_22
+>             in case v_26 of
+>               Int v_9 -> let v_23 = fib#worker v_9
+>                 in case v_23 of
+>                   Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => INLINE_CONS [-1,-1,1,-1,-1,0,0,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_22 = v_20 mi_p 2
+>             in case (Int v_22) of
+>               Int v_9 -> let v_23 = fib#worker v_9
+>                 in case v_23 of
+>                   Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => CASE_CANCEL_CONS [-1,-1,1,-1,-1,0,0,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = fib v_3
+>     in case v_5 of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_22 = v_20 mi_p 2
+>             in let v_23 = fib#worker v_22
+>             in case v_23 of
+>               Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => REDUCE_USEFUL [-1,-1,1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in let v_5 = case v_3 of
+>              Int v_28 -> fib#worker v_28
+>     in case v_5 of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_22 = v_20 mi_p 2
+>             in let v_23 = fib#worker v_22
+>             in case v_23 of
+>               Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => INLINE_CASE [-1,-1,1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in case (case v_3 of
+>         Int v_28 -> fib#worker v_28) of
+>       Int v_12 -> case v_1 of
+>           Int v_20 -> let v_22 = v_20 mi_p 2
+>             in let v_23 = fib#worker v_22
+>             in case v_23 of
+>               Int v_24 -> let v_25 = v_12 pl_p v_24 in Int v_25
+> => CASE_IN_CASE [-1,-1,1,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = v_1 - Int 1
+>     in case v_3 of
+>       Int v_28 -> let v_34 = fib#worker v_28
+>         in case v_34 of
+>           Int v_12 -> case v_1 of
+>               Int v_29 -> let v_30 = v_29 mi_p 2
+>                 in let v_31 = fib#worker v_30
+>                 in case v_31 of
+>                   Int v_32 -> let v_33 = v_12 pl_p v_32 in Int v_33
+> => REDUCE_USEFUL [-1,-1,1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = case v_1 of
+>                  Int v_37 -> case (Int 1) of
+>                      Int v_38 -> let v_39 = v_37 mi_p v_38 in Int v_39
+>     in case v_3 of
+>       Int v_28 -> let v_34 = fib#worker v_28
+>         in case v_34 of
+>           Int v_12 -> case v_1 of
+>               Int v_29 -> let v_30 = v_29 mi_p 2
+>                 in let v_31 = fib#worker v_30
+>                 in case v_31 of
+>                   Int v_32 -> let v_33 = v_12 pl_p v_32 in Int v_33
+> => CASE_CANCEL_CONS [-1,-1,1,0,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> let v_3 = case v_1 of
+>                  Int v_37 -> let v_39 = v_37 mi_p 1 in Int v_39
+>     in case v_3 of
+>       Int v_28 -> let v_34 = fib#worker v_28
+>         in case v_34 of
+>           Int v_12 -> case v_1 of
+>               Int v_29 -> let v_30 = v_29 mi_p 2
+>                 in let v_31 = fib#worker v_30
+>                 in case v_31 of
+>                   Int v_32 -> let v_33 = v_12 pl_p v_32 in Int v_33
+> => INLINE_CASE [-1,-1,1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case (case v_1 of
+>         Int v_37 -> let v_39 = v_37 mi_p 1 in Int v_39) of
+>       Int v_28 -> let v_34 = fib#worker v_28
+>         in case v_34 of
+>           Int v_12 -> case v_1 of
+>               Int v_29 -> let v_30 = v_29 mi_p 2
+>                 in let v_31 = fib#worker v_30
+>                 in case v_31 of
+>                   Int v_32 -> let v_33 = v_12 pl_p v_32 in Int v_33
+> => CASE_IN_CASE [-1,-1,1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_47 = let v_39 = v_37 mi_p 1 in Int v_39
+>         in case v_47 of
+>           Int v_28 -> let v_40 = fib#worker v_28
+>             in case v_40 of
+>               Int v_41 -> case v_1 of
+>                   Int v_42 -> let v_43 = v_42 mi_p 2
+>                     in let v_44 = fib#worker v_43
+>                     in case v_44 of
+>                       Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => FLOAT_LET [-1,-1,1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_47 = Int v_39
+>         in case v_47 of
+>           Int v_28 -> let v_40 = fib#worker v_28
+>             in case v_40 of
+>               Int v_41 -> case v_1 of
+>                   Int v_42 -> let v_43 = v_42 mi_p 2
+>                     in let v_44 = fib#worker v_43
+>                     in case v_44 of
+>                       Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => INLINE_CONS [-1,-1,1,0,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in case (Int v_39) of
+>           Int v_28 -> let v_40 = fib#worker v_28
+>             in case v_40 of
+>               Int v_41 -> case v_1 of
+>                   Int v_42 -> let v_43 = v_42 mi_p 2
+>                     in let v_44 = fib#worker v_43
+>                     in case v_44 of
+>                       Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => CASE_CANCEL_CONS [-1,-1,1,0,-1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> case v_1 of
+>               Int v_42 -> let v_43 = v_42 mi_p 2
+>                 in let v_44 = fib#worker v_43
+>                 in case v_44 of
+>                   Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => CASE_VAR [-1,-1,1]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> case (Int v_37) of
+>               Int v_42 -> let v_43 = v_42 mi_p 2
+>                 in let v_44 = fib#worker v_43
+>                 in case v_44 of
+>                   Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => CASE_CANCEL_CONS [-1,-1,1,0,-1,-1,0]
+> let v_1 = Int v_2
+> in let v_7 = v_1 <= Int 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> let v_43 = v_37 mi_p 2
+>             in let v_44 = fib#worker v_43
+>             in case v_44 of
+>               Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => REDUCE_USEFUL [-1]
+> let v_1 = Int v_2
+> in let v_7 = case v_1 of
+>          Int v_50 -> case (Int 1) of
+>              Int v_51 -> v_50 le_p v_51
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> let v_43 = v_37 mi_p 2
+>             in let v_44 = fib#worker v_43
+>             in case v_44 of
+>               Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => CASE_CANCEL_CONS [-1,0,0]
+> let v_1 = Int v_2
+> in let v_7 = case v_1 of
+>          Int v_50 -> v_50 le_p 1
+> in case v_7 of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> let v_43 = v_37 mi_p 2
+>             in let v_44 = fib#worker v_43
+>             in case v_44 of
+>               Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => INLINE_CASE [-1]
+> let v_1 = Int v_2
+> in case (case v_1 of
+>     Int v_50 -> v_50 le_p 1) of
+>   True -> v_1
+>   False -> case v_1 of
+>       Int v_37 -> let v_39 = v_37 mi_p 1
+>         in let v_40 = fib#worker v_39
+>         in case v_40 of
+>           Int v_41 -> let v_43 = v_37 mi_p 2
+>             in let v_44 = fib#worker v_43
+>             in case v_44 of
+>               Int v_45 -> let v_46 = v_41 pl_p v_45 in Int v_46
+> => CASE_IN_CASE [-1]
+> let v_1 = Int v_2
+> in case v_1 of
+>   Int v_50 -> let v_60 = v_50 le_p 1
+>     in case v_60 of
+>       True -> v_1
+>       False -> case v_1 of
+>           Int v_52 -> let v_53 = v_52 mi_p 1
+>             in let v_54 = fib#worker v_53
+>             in case v_54 of
+>               Int v_55 -> let v_56 = v_52 mi_p 2
+>                 in let v_57 = fib#worker v_56
+>                 in case v_57 of
+>                   Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59
+> => CONDITION_FOLD [-1,0]
+> let v_1 = Int v_2
+> in case v_1 of
+>   Int v_50 -> pcase v_50 le_p 1 of
+>       True -> v_1
+>       False -> case v_1 of
+>           Int v_52 -> let v_53 = v_52 mi_p 1
+>             in let v_54 = fib#worker v_53
+>             in case v_54 of
+>               Int v_55 -> let v_56 = v_52 mi_p 2
+>                 in let v_57 = fib#worker v_56
+>                 in case v_57 of
+>                   Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59
+> => CASE_VAR [-1]
+> let v_1 = Int v_2
+> in case v_1 of
+>   Int v_50 -> pcase v_50 le_p 1 of
+>       True -> Int v_50
+>       False -> case (Int v_50) of
+>           Int v_52 -> let v_53 = v_52 mi_p 1
+>             in let v_54 = fib#worker v_53
+>             in case v_54 of
+>               Int v_55 -> let v_56 = v_52 mi_p 2
+>                 in let v_57 = fib#worker v_56
+>                 in case v_57 of
+>                   Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59
+> => CASE_CANCEL_CONS [-1,0,2]
+> let v_1 = Int v_2
+> in case v_1 of
+>   Int v_50 -> pcase v_50 le_p 1 of
+>       True -> Int v_50
+>       False -> let v_53 = v_50 mi_p 1
+>         in let v_54 = fib#worker v_53
+>         in case v_54 of
+>           Int v_55 -> let v_56 = v_50 mi_p 2
+>             in let v_57 = fib#worker v_56
+>             in case v_57 of
+>               Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59
+> => INLINE_CONS []
+> case (Int v_2) of
+>   Int v_50 -> pcase v_50 le_p 1 of
+>       True -> Int v_50
+>       False -> let v_53 = v_50 mi_p 1
+>         in let v_54 = fib#worker v_53
+>         in case v_54 of
+>           Int v_55 -> let v_56 = v_50 mi_p 2
+>             in let v_57 = fib#worker v_56
+>             in case v_57 of
+>               Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59
+> => CASE_CANCEL_CONS []
+> pcase v_2 le_p 1 of
+>   True -> Int v_2
+>   False -> let v_53 = v_2 mi_p 1
+>     in let v_54 = fib#worker v_53
+>     in case v_54 of
+>       Int v_55 -> let v_56 = v_2 mi_p 2
+>         in let v_57 = fib#worker v_56
+>         in case v_57 of
+>           Int v_58 -> let v_59 = v_55 pl_p v_58 in Int v_59

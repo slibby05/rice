@@ -51,12 +51,6 @@
 %format e_ik = e"_{i,k}"
 %format e_ki = e"_{k_i}"
 
-%format v_1
-%format v_2
-%format v_3
-%format v_4
-%format v_5
-%format v_6
 %format v_n
 %format v_k
 
@@ -237,6 +231,7 @@
 %format ALIAS = "\textbf{Alias}"
 %format CASE_FOLDING = "\textbf{Case Folding}"
 %format LET_FOLDING = "\textbf{Let Folding}"
+%format CONDITION_FOLD = "\textbf{Create pcase}"
 %format CASE_CANCEL_CONS = "\textbf{Case Cancel Constructor}"
 %format CASE_CANCEL_LIT = "\textbf{Case Cancel Literal}"
 %format CASE_CANCEL_EXEMPT = "\textbf{Case Cancel } \bot"
@@ -271,3 +266,65 @@
 %format ANF_OR1 = "\textbf{ANF ? 1}"
 %format ANF_OR2 = "\textbf{ANF ? 2}"
 %format CONSTANT_FOLDING = "\textbf{Constant Folding}"
+
+
+%format v_0
+%format v_1
+%format v_2
+%format v_3
+%format v_4
+%format v_5
+%format v_6
+%format v_7
+%format v_8
+%format v_9
+%format v_10
+%format v_11
+%format v_12
+%format v_13
+%format v_14
+%format v_15
+%format v_16
+%format v_17
+%format v_18
+%format v_19
+%format v_20
+%format v_21
+%format v_22
+%format v_23
+%format v_24
+%format v_25
+%format v_26
+%format v_27
+%format v_28
+%format v_29
+%format v_30
+%format v_31
+%format v_32
+%format v_33
+%format v_34
+%format v_35
+%format v_36
+%format v_37
+%format v_38
+%format v_39
+%format v_40
+%format v_41
+%format v_42
+%format v_43
+%format v_44
+%format v_45
+%format v_46
+%format v_47
+%format v_48
+%format v_49
+%format v_50
+%format v_51
+%format v_52
+%format v_53
+%format v_54
+%format v_55
+%format v_56
+%format v_57
+%format v_58
+%format v_59

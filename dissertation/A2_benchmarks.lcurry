@@ -1,0 +1,289 @@
+
+\section{buildFold}
+> f :: Int -> Int
+> f =  foldr (+) 0 .
+>      map (1+) .
+>      map (1+) .
+>      map (1+) .
+>      map (1+) .
+>      map (1+) .
+>      map (1+) .
+>      map (1+) .
+>      enumFromTo 1
+> 
+> main :: Int
+> main = f 10000000
+
+\pagebreak
+\section{cent}
+
+> data Exp  = Exp :+ Exp
+>           | Exp :- Exp
+>           | Exp :* Exp
+>           | Exp :/ Exp
+>           | Num Int
+> 
+> eval :: Exp -> Int
+> eval (Num x)   = x
+> eval (x :+ y)  = eval x + eval y
+> eval (x :- y)  = eval x - eval y
+> eval (x :* y)  = eval x * eval y
+> eval (x :/ y)
+>  | y' > 0 & x' `mod` y' == 0 = x' `div` y'
+>   where  x' = eval x
+>          y' = eval y
+> 
+> split :: [a] -> ([a],[a])
+> split (x:xs@(_:_))  = ([x],xs) 
+>                     ? case  split xs of 
+>                             (ys,zs) -> (x:ys,zs)
+> 
+> insert :: a -> [a] -> [a]
+> insert x []      = [x]
+> insert x (y:ys)  = x:y:ys ? y : (insert x ys)
+> 
+> perm :: [a] -> [a]
+> perm []      = []
+> perm (x:xs)  = insert x (perm xs)
+> 
+> mkExp :: [Int] -> Exp
+> mkExp [n]       = Num n
+> mkExp xs@(_:_)  = case  split xs of
+>                         (ys,zs) -> let  e1 = mkExp ys
+>                                         e2 = mkExp zs
+>                                    in   e1 :+ e2 ?
+>                                         e1 :- e2 ?
+>                                         e1 :* e2 ?
+>                                         e1 :/ e2 
+> 
+> run :: [Int] -> Exp
+> run xs =  let e = mkExp (perm xs)
+>           in fcase  eval e of
+>                     100 -> e
+> 
+> main :: Exp
+> main = run [1..5]
+
+\pagebreak
+\section{fib}
+> fib :: Int -> Int
+> fib n = 
+>  | n <= 1 = n 
+>  | otherwise = fib (n-1) + fib (n-2)
+> 
+> main :: Int
+> main = fib 27
+
+\pagebreak
+\section{fib\_nondet}
+> fib :: Int -> Int
+> fib n = 
+>  | n <= 1 = n 
+>  | otherwise = fib (n-1) + fib (n-2)
+> 
+> main :: Int
+> main = fib (27 ? 1)
+
+\pagebreak
+\section{half}
+> data Peano = O | S Peano
+> 
+> toPeano :: Int -> Peano
+> toPeano n = if n==0 then O else S (toPeano (n-1))
+> 
+> equal :: Peano -> Peano -> Bool
+> equal O      O      = True
+> equal (S p)  (S q)  = equal p q
+> equal (S _)  O      = False
+> equal O      (S _)  = False
+> 
+> add :: Peano -> Peano -> Peano
+> add O      p = p
+> add (S p)  q = S (add p q)
+> 
+> half y | equal (add x x) y = x
+>  where x free 
+> 
+> main = equal (toPeano 5000) (half (toPeano 10000))
+
+
+\pagebreak
+\section{perm}
+> insert :: a -> [a] -> [a]
+> insert x []      = [x]
+> insert x (y:ys)  = x:y:ys ? y : (insert x ys)
+> 
+> perm :: [a] -> [a]
+> perm []      = []
+> perm (x:xs)  = insert x (perm xs)
+> 
+> main :: [Int]
+> main = perm [1..9]
+
+\pagebreak
+\section{primes}
+
+> sieve :: [Int] -> [Int]
+> sieve (n:ns) = filter (\x -> mod x n /= 0) ns
+> 
+> primes :: [Int]
+> primes = map head (iterate sieve (iterate (+1) 2))
+> 
+> main = primes!!12569
+
+\pagebreak
+\section{queens\_det}
+
+> queens nq = length (gen nq)
+>  where
+>   gen :: Int -> [[Int]]
+>   gen n =  if n==0
+>            then [[]]
+>            else [ (q:b) |  b <- gen (n-1), 
+>                            q <- [1..nq], 
+>                            safe q 1 b]
+> 
+> safe :: Int -> Int -> [Int] -> Bool
+> safe _ _ []     =  True
+> safe x d (q:l)  =  x /= q && 
+>                    x /= q+d && 
+>                    x /= q-d && 
+>                    safe x (d+1) l
+> 
+> main = queens 11
+
+\pagebreak
+\section{queens\_perm}
+> insert :: a -> [a] -> [a]
+> insert x []      = [x]
+> insert x (y:ys)  = x:y:ys ? y : (insert x ys)
+> 
+> perm :: [a] -> [a]
+> perm []      = []
+> perm (x:xs)  = insert x (perm xs)
+> 
+> valid :: Int -> Int -> [Int] -> Bool
+> valid _ _   []      =  True
+> valid q dq  (c:cs)  =  abs (c - q) /= dq &
+>                        valid q (dq+1) cs &
+>                        valid c 1 cs
+> 
+> main :: [Int]
+> main = case  perm [1..9] of
+>              (q:qs) -> valid q 1 qs &> (q:qs)
+
+
+\pagebreak
+\section{rev}
+> data Nat = O | S Nat
+> 
+> add O      n  = n
+> add (S x)  y  = S (add x y)
+> 
+> double x = add x x
+> 
+> mult O      _  = O
+> mult (S x)  y  = add y (mult x y)
+> 
+> two       = S (S O)
+> four      = double two
+> nat16     = mult four four
+> nat256    = mult nat16 nat16
+> nat4096   = mult nat256 nat16
+> nat16384  = mult nat4096 four
+> nat1M     = mult nat16384 (mult nat16 four)
+> nat4M     = mult nat16384 nat256
+> nat16M    = mult nat4M four
+> 
+> natList O = []
+> natList (S x) = (S x) : (natList x)
+> 
+> isList [] = True
+> isList (x:xs) = isList xs
+> 
+> main = isList (reverse (natList nat4M))
+
+\pagebreak
+\section{reverse\_fold}
+
+> reverse' :: [a] -> [a]
+> reverse' xs = foldr (flip (.) . (:)) id xs []
+> 
+> list :: [Int]
+> list = [1..(1024*256)]
+> 
+> main :: Int
+> main = length (reverse' list)
+
+\pagebreak
+\section{reverse\_prim}
+
+> list :: [Int]
+> list = [1..(1024*256)]
+> 
+> main :: Int
+> main = length (reverse list)
+
+\pagebreak
+\section{sieve}
+
+> isPrime :: Int -> Bool
+> isPrime x 
+>  | x < 2      = False
+>  | x == 2     = True
+>  | otherwise  = all ((/=0) . (x `mod`)) [2..x-1]
+> 
+> sum :: [Int] -> Int
+> sum = foldr (+) 0
+> 
+> main :: Int
+> main = (sum $ filter isPrime $ [1..20000])
+
+\pagebreak
+\section{sort}
+
+> sorted :: [Int] -> Bool
+> sorted []        = True
+> sorted [_]       = True
+> sorted (x:y:xs)  = x < y & sorted (y:xs)
+> 
+> perm :: [Int] -> [Int]
+> perm []      = []
+> perm (x:xs)  = insert x (perm xs)
+> 
+> insert :: Int -> [Int] -> [Int]
+> insert x []      = [x]
+> insert x (y:ys)  = x:y:ys
+> insert x (y:ys)  = y : (insert x ys)
+> 
+> sort :: [Int] -> [Int]
+> sort xs = let p = perm xs
+>           in sorted p &> p
+> 
+> main :: [Int]
+> main = sort (reverse [1..14])
+
+\pagebreak
+\section{sum\_squares}
+> sum :: [Int] -> Int
+> sum = foldr (+) 0
+> 
+> square :: Int -> Int
+> square x = x * x
+> 
+> odd :: Int -> Bool
+> odd x = x `mod` 2 == 0
+> 
+> main = sum $ map square $ filter odd $ [1..200000]
+
+\pagebreak
+\section{tak}
+
+> tak :: Int -> Int -> Int -> Int
+> tak x y z =  if x <= y 
+>              then z
+>              else tak  (tak (x-1) y z)
+>                        (tak (y-1) z x)
+>                        (tak (z-1) x y)
+> 
+> main = tak 33 17 8

@@ -149,7 +149,7 @@ basic    &        &             &          \\
 unbox    &        &             &          \\
 shortcut &        &             &          \\
 deforest &        &             &          \\
-all      &        &             &          \\
+all      &  0.004 &       0.004 &    0.945 \\
 \hline
 \end{tabular}
 
@@ -164,7 +164,7 @@ basic    &        &         &        &               &         \\
 unbox    &        &         &        &               &         \\
 shortcut &        &         &        &               &         \\
 deforest &        &         &        &               &         \\
-all      &  0.433 &         &        &               &         \\
+all      &  0.433 &   0.531 &  0.625 &         0.160 &   0.241 \\
 \hline
 \end{tabular}
 
@@ -173,14 +173,14 @@ all      &  0.433 &         &        &               &         \\
 \hline
          & queens\_det & rev     & rev\_fold & rev\_prim & sum\_squares & buildFold & primes   & sieve  \\
 \hline
-pakcs    &    1051.782 &     OoM &   262.144 &    27.963 &       33.486 &       OoM & 7097.473 & 2845.308 \\
-kics2    &       1.070 &   0.790 &     0.170 &     0.180 &        0.080 &    13.980 &   26.200 &    3.170 \\
+pakcs    &    1051.782 &     OoM &   262.144 &    27.963 &       33.486 &       OoM & 6480.616 & 2845.308 \\
+kics2    &       1.070 &   0.790 &     0.170 &     0.180 &        0.080 &    13.980 &   31.360 &    3.170 \\
 unopt    &             &         &           &           &              &           &          &          \\
 basic    &             &         &           &           &              &           &          &          \\
 unbox    &             &         &           &           &              &           &          &          \\
 shortcut &             &         &           &           &              &           &          &          \\
 deforest &             &         &           &           &              &           &          &          \\
-all      &             &         &           &           &              &           &          &          \\
+all      &       0.323 &   0.288 &    0.028  &     0.025 &        0.011 &     0.580 &    0.625 &    1.030 \\
 \hline
 \end{tabular}
 \caption{Results for running time}
@@ -197,34 +197,34 @@ basic    &        &             &          \\
 unbox    &        &             &          \\
 shortcut &        &             &          \\
 deforest &        &             &          \\
-all      &        &             &          \\
+all      &     11 &           4 &  4       \\
 \hline
 \end{tabular}
 
 \begin{tabular}{||l||r||r||r||r||r||}
 \hline
-         & cent     & half    & perm   & queens\_perm  & sort \\
+         & cent     & half     & perm    & queens\_perm  & sort \\
 \hline
-unopt    & 18276630 &         &        &               &         \\
-basic    &          &         &        &               &         \\
-unbox    &          &         &        &               &         \\
-shortcut &          &         &        &               &         \\
-deforest &          &         &        &               &         \\
-all      &          &         &        &               &         \\
+unopt    &          &          &         &               &          \\
+basic    &          &          &         &               &          \\
+unbox    &          &          &         &               &          \\
+shortcut &          &          &         &               &          \\
+deforest &          &          &         &               &          \\
+all      & 18276630 & 25120033 & 1880786 &       6099651 & 11949170 \\
 \hline
 \end{tabular}
 
 
 \begin{tabular}{||l||r||r||r||r||r||r||r||r||}
 \hline
-         & queens\_det & rev     & rev\_fold & rev\_prim & sum\_squares & buildFold & primes   & sieve  \\
+         & queens\_det & rev      & rev\_fold & rev\_prim & sum\_squares & buildFold & primes   & sieve  \\
 \hline
-unopt    &             &         &           &           &              &           &          &          \\
-basic    &             &         &           &           &              &           &          &          \\
-unbox    &             &         &           &           &              &           &          &          \\
-shortcut &             &         &           &           &              &           &          &          \\
-deforest &             &         &           &           &              &           &          &          \\
-all      &             &         &           &           &              &           &          &          \\
+unopt    &             &          &           &           &              &           &          &          \\
+basic    &             &          &           &           &              &           &          &          \\
+unbox    &             &          &           &           &              &           &          &          \\
+shortcut &             &          &           &           &              &           &          &          \\
+deforest &             &          &           &           &              &           &          &          \\
+all      &    17858521 & 12624889 &   1310732 &   1310734 &       600007 &  30000008 & 16373478 & 63922711 \\
 \hline
 \end{tabular}
 \caption{Results for memory usage}

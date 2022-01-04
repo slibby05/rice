@@ -655,7 +655,7 @@ author = {Heinrich Hussmann},
 } 
 
 % first description of most common optimizations that I know of
-@article{optminzationAllen,
+@article{optimizationAllen,
   author    = {F.E. Allen},
   title     = {{Program optimization}},
   journal   = {Annual Review in Automatic Programming},
@@ -761,6 +761,17 @@ author = {Heinrich Hussmann},
   url       = {http://doi.acm.org/10.1145/99370.99385},
   publisher = {ACM},
 } 
+
+@inproceedings{evalApply,
+author = {Peyton Jones, Simon},
+title = {How to make a fast curry: push/enter vs eval/apply},
+booktitle = {International Conference on Functional Programming},
+year = {2004},
+month = {September},
+url = {https://www.microsoft.com/en-us/research/publication/make-fast-curry-pushenter-vs-evalapply/},
+pages = {4-15},
+edition = {International Conference on Functional Programming},
+}
 
 % a normal form
 @inproceedings{ANormal,
@@ -964,6 +975,17 @@ note = {Unpublished draft},
   address    = {New York, NY, USA},
 } 
 
+@article{haskellOpt,
+author = {Peyton Jones, Simon and Santos, Andre},
+title = {A transformation-based optimiser for Haskell},
+year = {1997},
+month = {October},
+url = {https://www.microsoft.com/en-us/research/publication/a-transformation-based-optimiser-for-haskell/},
+journal = {Science of Computer Programming},
+volume = {32},
+number = {1},
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % curry specific optimizations
@@ -976,6 +998,25 @@ note = {Unpublished draft},
   author = {Bj{\"o}rn Peem{\"o}ller},
   year   = 2016,
 }
+
+@inproceedings{offline_peval,
+  author    = {Ramos, J. Guadalupe and Silva, Josep and Vidal, Germ\'{a}n},
+  title     = {{An Offline Partial Evaluator for Curry Programs}},
+  booktitle = {Proceedings of the 2005 ACM SIGPLAN Workshop on Curry and Functional Logic Programming},
+  series    = {WCFLP '05},
+  year      = {2005},
+  isbn      = {1-59593-069-8},
+  location  = {Tallinn, Estonia},
+  pages     = {49--53},
+  numpages  = {5},
+  url       = {http://doi.acm.org/10.1145/1085099.1085109},
+  doi       = {10.1145/1085099.1085109},
+  acmid     = {1085109},
+  publisher = {ACM},
+  address   = {New York, NY, USA},
+  keywords  = {narrowing, offline partial evaluation},
+} 
+
 
 @inproceedings{offlinePeval,
   author    = {Ramos, J. Guadalupe and Silva, Josep and Vidal, Germ\'{a}n},
@@ -994,6 +1035,12 @@ note = {Unpublished draft},
   address   = {New York, NY, USA},
   keywords  = {narrowing, offline partial evaluation},
 } 
+
+@article{foldUnfold,
+    author = {Moreno, Ginés},
+    title  = {Transformation Rules and Strategies for Functional‐Logic Programs}
+    year = {2002}
+}
 
 @article{secd,
   author  = {Landin, Peter},
@@ -1498,5 +1545,14 @@ series = {PLPV '10}
   author = {Libby, Steven},
   title = {Making Curry with Rice: An Optimizing Compiler for Curry},
   school = {Portland State University},
-  year      = {2012},
+  year      = {2022},
 }
+
+
+@unpublished{proposal,
+  author = {Libby, Steven},
+  title = {Cooking with Gas:\\Making an Optimizing Curry Compiler},
+  school = {Portland State University},
+  year = {2019},
+}
+

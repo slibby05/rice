@@ -84,6 +84,17 @@
 > main :: Int
 > main = fib (27 ? 1)
 
+\section{fib\_det}
+
+
+> fib :: Int -> Int
+> fib n = 
+>  | n <= 1 = n 
+>  | otherwise = fib (n-1) + fib (n-2)
+> 
+> main :: Int
+> main = fib 27
+
 \pagebreak
 \section{half}
 > data Peano = O | S Peano
@@ -129,7 +140,7 @@
 > primes :: [Int]
 > primes = map head (iterate sieve (iterate (+1) 2))
 > 
-> main = primes!!12569
+> main = primes!!4000
 
 \pagebreak
 \section{queens\_det}

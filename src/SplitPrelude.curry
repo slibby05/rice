@@ -121,8 +121,8 @@ mergePrelude prelude prim = updProgFuncs (const (preludeFuns++primFuns)) prelude
        makePrim (Func n a v t r) = Func (updName n) a v (updType t) (updRule r)
 
 updType :: TypeExpr -> TypeExpr
-updType t = updQNamesInTypeExpr primType t
- where primType n  = case n of
+updType t = updQNamesInTypeExpr toPrimType t
+ where toPrimType n  = case n of
                           ("prim","C")      -> primType "char"
                           ("prim","I")      -> primType "int"
                           ("prim","F")      -> primType "float"

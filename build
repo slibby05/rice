@@ -3,9 +3,7 @@
 cypm install
 
 cp -r runtime ~/.rice
-cd ~/.rice
 
-./compile
 
 cd benchmarks
 ./runBenchmarks

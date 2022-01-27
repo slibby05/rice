@@ -2,13 +2,8 @@
 
 cypm install
 
-mkdir ~/.rice
-
-cp runtime/* ~/.rice
-
-cd src
-pakcs :l SplitPrelude :eval run :q
-cd ..
+cp -r runtime ~/.rice
+cd ~/.rice
 
 ./compile
 

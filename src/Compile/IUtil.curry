@@ -8,8 +8,7 @@ module Compile.IUtil (FunPos, updateVars, descend, pathName,
                       getTag, toName,
                       nameMangle, mangle, uninstance) where
 
-import FlatUtils.FlatRewrite (Path)
-import Util ((++-),(&&-),mergeMap)
+import Util (Path,(++-),(&&-),mergeMap)
 import ICurry.Types 
 import List (intercalate, isPrefixOf, splitOn)
 import Sort (sort)

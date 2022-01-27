@@ -10,6 +10,7 @@ import FlatUtils.FlatUtils
 import FlatUtils.DataTable (exempt)
 import Optimize.FunTable
 import Optimize.Primitives (primCond, primCase, fromBool)
+import Optimize.Flags (run_deforest, run_unboxing)
 
 -- I'm only inlining constructor, or partial applications, because those are the only ones that cancle.
 -- inlining a function application would be pointless.
@@ -59,14 +60,14 @@ inline _ (Let [v@(x, Case _ _ _)] e)
 
 -- inline so I can apply fold/build deforestation.
 -- This tecnically breaks the ANF invarient, but deforestation should restore that immedeatly afterwards.
--- inline _ (Let [v@(x, build_ _)] e@(has (foldr_ _ _ (Var x))))
---  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build)", 0)
--- inline _ (Let [v@(x, build_ _)] e@(has (build_fold_ _ _ (Var x))))
---  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build)", 0)
--- inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (foldr_ _ _ (Var x))))
---  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build_fold)", 0)
--- inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
---  | uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build_fold)", 0)
+inline _ (Let [v@(x, build_ _)] e@(has (foldr_ _ _ (Var x))))
+ | run_deforest & uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build)", 0)
+inline _ (Let [v@(x, build_ _)] e@(has (build_fold_ _ _ (Var x))))
+ | run_deforest & uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build)", 0)
+inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (foldr_ _ _ (Var x))))
+ | run_deforest & uses x e == 1 = (sub (v @> idSub) e, "inline 4 (fold/build_fold)", 0)
+inline _ (Let [v@(x, build_fold_ _ _ _)] e@(has (build_fold_ _ _ (Var x))))
+ | run_deforest & uses x e == 1 = (sub (v @> idSub) e, "inline 4 (build_fold/build_fold)", 0)
 
 -- CaseFolding 
 -- let t = case e of
@@ -210,6 +211,7 @@ addLet k (v,ve) e = let (ve',k') = rename (k+1) ((v,k) @> id) ve
 -- in e1
 caseCancel :: Opt
 caseCancel _ (Case _ c@(Comb ConsCall n es) (_++[Branch (Pattern n vs) e]++_))
+ | run_unboxing || not (snd n `elem` ["int","char","float"])
  = (subGrounded e vs es, "CASE_CALCEL_CONS", 0)
 
 -- used for turning off inlining

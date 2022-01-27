@@ -15,6 +15,7 @@ import Optimize.Postprocess (postprocess, showPostprocess)
 import Optimize.FunTable (FunTable, addEntry, showTable)
 import Optimize.ANF (trivial, toANF)
 import Optimize.Primitives (condFold, constantFold)
+import Optimize.Flags (run_basic)
 import Control.Findall
 import Debug (trace)
 import Time (getClockTime, clockTimeToInt)
@@ -157,7 +158,8 @@ showExpr = pPrint . ppExp (Options 2 QualNone "")
 showFun :: FuncDecl -> String
 showFun = pPrint . ppFuncDecl (Options 2 QualNone "")
 
-opts ft = caseCancel
+opts ft | run_basic 
+        = caseCancel
         ? deforest
         ? deadCode
         ? constantFold

@@ -18,6 +18,7 @@ import Optimize.Inline
 import Optimize.Preprocess
 import Optimize.Primitives
 import Optimize.FunTable
+import Optimize.Flags (run_shortcutting)
 import Util
 import Control.Findall
 import List (delete, (\\), nub)
@@ -71,8 +72,11 @@ showPostExpr ft f
                      putStrLn "=> UNDO_CASE_VAR"
                      putStrLn $ showExpr e4
                      tuncasevar <- time
-                     let (e5,w5,_) = showWork caseCall (-1) e4
+                     let (e5,w5,_) = showWork alias (-1) e4
                      putStr w5
+                     talias <- time
+                     let (e6,w6,_) = showWork caseCall (-1) e5
+                     putStr w6
                      tcasecall <- time
                      putChar '\n'
                      putStrLn (showFun ft (funcName f))
@@ -81,21 +85,24 @@ showPostExpr ft f
                      putStrLn ("anf time: " ++ show (tanf-tunapp))
                      putStrLn ("fix let time: " ++ show (tfixLet-tunapp))
                      putStrLn ("fix CaseVar time: " ++ show (tuncasevar-tfixLet))
-                     putStrLn ("case call time: " ++ show (tcasecall-tuncasevar))
+                     putStrLn ("alias time: " ++ show (talias-tuncasevar))
+                     putStrLn ("case call time: " ++ show (tcasecall-talias))
                      putStrLn ("total time: " ++ show (tcasecall-t) ++ "\n")
-                     return (updFuncBody (const e5) f)
+                     return (updFuncBody (const e6) f)
  where showExpr = pPrint . ppExp (Options 2 QualNone "")
 
 caseCall :: Opt
 caseCall _ (Let [(v,ve)] e@(has (Case _ (Var v) _)))
- | v >= 0
+ | run_shortcutting
+ & v >= 0
  & uses v e == 1 
  & uses v ve == 0 
- & not (isApply ve)
+ & isKnownFunction ve
  = (Let [(-(v+1),ve)] (sub ((v,Var (-(v+1))) @> idSub) e), "CASE_CALL", 0)
-  where isApply e = case e of 
-                         Comb _ ("Prelude","apply") _ -> True
-                         _                            -> False
+  where isKnownFunction e = case e of 
+                                 Comb ct n _ -> isFunc ct & 
+                                                isApp ct & 
+                                                n /= ("Prelude","apply")
 
 --turn of shortcutting
 --caseCall _ _ = failed

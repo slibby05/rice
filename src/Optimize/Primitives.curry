@@ -55,7 +55,7 @@ condCase ct e t f =
     (Case ct primCond [Branch (Pattern ("","primCond")     []) e,
                        Branch (Pattern ("Prelude","True")  []) t,
                        Branch (Pattern ("Prelude","False") []) f],
-                       "condition fold",
+                       "CONDITION_FOLD",
                        0)
 
 

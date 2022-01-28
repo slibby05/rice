@@ -2,7 +2,7 @@ module Compile.CommonC where
 
 import Prelude hiding (lookup)
 import Sort (sort)
-import FlatUtils.FlatRewrite (Path)
+import Util (path)
 import ICurry.Types
 import Compile.IUtil
 import Data.Map (lookup)
@@ -174,9 +174,7 @@ showConsCase pos v bs call block retFunction
   = cblock 
     (
       ["bool nondet = false;"] ++
-      [field (abs v) .= "(field)"++scall ret_call ["NULL"] | ret_call <- call] ++
-      ["RET_forward = RET;" | ret_call <- call] ++
-      ["nondet" .= (var (abs v) ++".n") .!= "NULL;" | ret_call <- call] ++
+      nondetCode call ++
       cwhile "true"
       (
         ["nondet" .|= nondet (fwd v) ++ ";"] ++
@@ -198,6 +196,15 @@ showConsCase pos v bs call block retFunction
                    else freeCaseBlock v cons
        bs' = filter (\(IConsBranch (m,c,_) _ _) -> (m++c) /= "") bs
        btype = case bs of (IConsBranch ("",c,_) _ _ : _) -> "_"++c
+       nondetCode []           = []
+       nondetCode (ret_call:_) = [field (abs v) .= "(field)"++scall ret_call ["NULL"],
+                                  "RET_forward = RET;"] ++
+                                 cif ( node (abs v) .!= "NULL")
+                                 [
+                                    "nondet = true;",
+                                    scall "memcpy" [node (abs v), "RET.n", "sizeof(Node)"]
+                                 ]
+                      
 
 
 showConsBranch :: FunPos -> IVarIndex -> ShowBlock -> Bool -> IConsBranch -> [String]
@@ -301,6 +308,13 @@ setExpr _   (ICCall c es)     _
                                         Nothing -> [setComb c es]
 setExpr _   (IFPCall f n es)  _  = [setPartComb f n es]
 setExpr _   (ICPCall c n es)  _  = [setPartComb c n es]
+
+-- used to turn of the automatic evaluation of known funcitons
+--setExpr _   (IFCall f es) retFun
+-- | isApply f                     = [scall ("set_apply"++show (length es-1)) ("root":map showExpr es)]
+-- | otherwise                     = case lookup f primOps of
+--                                        Just (_,set,typ) -> set "root" (map (showPrim typ) es)
+--                                        Nothing -> [setComb f es]
 
 setComb :: IQName -> [IExpr] -> CStmt
 setComb f es = scall ("set_"++mangle f) ("root" : (map showExpr es) ++ ["0"])

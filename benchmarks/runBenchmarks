@@ -17,7 +17,7 @@ do
     echo "******************************" >> rice.out
     echo ${V%.*} >> rice.out
     echo "******************************" >> rice.out
-    rice -d -f -o -i ${V%.*} >> rice.out
+    rice -d -f -o -i ${V%.*} | tee -a rice.out
 done
 
 for V in $(ls *.curry)

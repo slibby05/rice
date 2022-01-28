@@ -80,7 +80,7 @@ newer name = do f <- origonalFile
                 exists <- doesFileExist fopt
                 if exists 
                  then 
-                    liftM2 (>) (getModificationTime fopt) (getModificationTime f) 
+                    liftM2 (>=) (getModificationTime fopt) (getModificationTime f) 
                  else 
                     return False
  where origonalFile

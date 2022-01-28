@@ -2,7 +2,7 @@ module Compile.CommonC where
 
 import Prelude hiding (lookup)
 import Sort (sort)
-import Util (path)
+import Util
 import ICurry.Types
 import Compile.IUtil
 import Data.Map (lookup)

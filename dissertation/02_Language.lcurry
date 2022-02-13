@@ -26,7 +26,8 @@ First, let's consider an example of a permutation function.
 This is not the only way to permute a list in Haskell,
 and you could easily argue that it's not the most elegant way,
 but I chose it for two reasons.
-There is no syntactic sugar and no libraries hiding any of the computations,
+There is no syntactic sugar,
+and the only two library functions are |concat| and |map|, both very common functions.
 and the algorithm for permuting a list is similar to the algorithm we will use in Curry.
 
 > perms         :: [a] -> [[a]]
@@ -155,8 +156,8 @@ Curry also allows for declaring new infix operators.
 In fact, Curry really only adds two new pieces of syntax to Haskell, \textbf{fcase} and \textbf{free}.
 However, the main difference between Curry and Haskell is not immediately clear from the syntax.
 Curry allows for overlapping rules and free variables.
-Specifically Curry is a Limited Overlapping Inductively Sequential (LOIS) Rewrite system.
-Haskell, on the other hand, requires all rules to be non-overlapping.
+Specifically Curry programs are represented as Limited Overlapping Inductively Sequential (LOIS) Rewrite systems.
+On the other hand, Haskell programs are transformed into non-overlapping systems.
 
 To see the difference consider the usual definition of factorial.
 
@@ -167,7 +168,7 @@ To see the difference consider the usual definition of factorial.
 This seems like an innocuous Haskell program, 
 however It's non-terminating for every possible input for Curry.
 The reason is that |fac 0| could match either rule.
-In Haskell all defining equations are ordered sequentially. 
+In Haskell all defining equations are ordered sequentially,
 which results in control flow similar to the following C implementation.
 \begin{verbatim}
 int fac(int n)
@@ -207,7 +208,8 @@ This means that |fac 0| reduces to both |1| and |fac (-1)|.
 Exactly how Curry reduces an expression non-deterministically will be discussed throughout this dissertation,
 but for now we can think in terms of sets.
 If the expression |e -> e_1| and |e -> e_2|,
-|e_1 ->* v_1| and |e_2 ->* v_2|, then |e ->* {v_1, v_2}|.
+|e_1 ->* v_1| and |e_2 ->* v_2|, then 
+|e ->* {v_1, v_2}|.\footnote{This should really be thought of as a multiset, since it's possible for |v_1| and |v_2| to be the same value.}
 
 This addition of non-determinism can lead to problems if we're not careful.
 Consider the following example:\\
@@ -229,1274 +231,751 @@ is known as run-time choice semantics. \cite{callTimeChoice}.
 The alternative to this is call-time choice semantics.
 When a non-deterministic expression is reduced,
 all instances of the expression take the same value.
-One way to enforce this is to use graph rewriting instead of term rewriting.
+One way to enforce this is to represent expressions as graphs instead of terms.
 Since no expressions are ever duplicated, all instances of |coin| will reduce the same way.
 This issue of run-time choice semantics will appear throughout the compiler.
 
 
+\subsection{FlatCurry}
 
-\subsection{Flat Curry}
+The first step in the compiler pipeline is to parse a Curry program into \gls{FlatCurry}.
+The definition is given in figure \ref{fig:flatSyntax}.
+The FlatCurry language is the standard for representing Curry programs
+in compilers \cite{pakcs, kics2, kics2phd, sprite}, 
+and has been used to define the semantics of Curry programs \cite{currySemantics}.
 
-One of the earliest steps in the compilation process is to form definitional trees out of Curry functions.
-These trees are then turned into an intermediate representation where each branch of the Tree
-is replaced by a case expression.
-This IR is called FlatCurry \cite{currySemantics},
-and we will be working exclusively with FlatCurry Programs.
-FlatCurry is a simple language to represent Curry programs.
-All syntactic sugar has been removed, and we are left with a language similar to Haskell's Core.
-The syntax is given in figure \ref{fig:flatSyntax}.
-It has been modified from the original in two ways.
-First, the original relied on transforming free variables into non-determinism.
-Since I do not use that transformation in my compiler, I represent free variables explicitly with a
-|let ... free| expression.
-The second change is a little more substantial.
-I've added an expression |EXEMPT| to represent failure.
-This comes with the assumption no |case| expressions have missing branches.
-While this is not common in Curry compilers,
-It's easy enough to enforce, and leads to an easier implementation.
-It also allows for more optimizations.
-An example of the |fac| function in both Curry and FlatCurry is given in figure \ref{fig:flatFac}
 
-\begin{figure}[h]
-\textbf{Curry}
-> fac 0 = 1
-> fac n = n * fac (n-1)
-\textbf{FlatCurry}\\
 
-> fac v_1 = (case v_1 of 0 -> 1) ? (v_1 * fac (v_1-1))
+The semantics of Curry have already been studied extensively \cite{currySemantics},
+so we informally recall some of the more important points.
+A FlatCurry program consists of datatype and function definitions.
+For simplicity we assume that all programs are self contained,
+because the module system isn't relevant to our work.
+However, the Rice compiler does support modules.
+A FlatCurry function contains a single rule, 
+which is responsible for pattern matching and rewriting an expression.
+Pattern matching is converted into case and choice expressions as defined in \cite{patternCase}.
+A function returns a new expression graph constructed out of |let, free, f_k, C_k, ?, l, v|
+expressions.
 
-\caption{the factorial function in Curry and FlatCurry}
-\label{fig:flatFac}
-\end{figure}
-
-\begin{figure}
-
-> f           =>  f v_1 v_2 ... v_n = e
-> e           =>  v                                        Variable
->             |   l                                        Literal
->             |   e :: t                                   Typed
->             |   e_1 ? e_2                                Choice
->             |   EXEMPT                                   Failed
->             |   f_k e_1 e_2 ... e_n                      Function Application
->             |   C_k e_1 e_2 ... e_n                      Constructor Application
->             |   let v_1 = e_2 ... v_n = e_n in e         Variable Declaration
->             |   let v_1, v_2, ... v_n free in e          Free Variable Declaration
->             |   case e of {p_1 -> e_1; ... p_n -> e_n}   Case Expression
-> p           =>  C v_1 v_2 ... v_n                        Constructor Pattern
->             |   l                                        Literal Pattern
-\caption{FlatCurry
-This is largely the same as other presentations \cite{currySemantics,icurry}
-but we have elected to add more information that will become relevant for optimizations later.}
-\label{fig:flatSyntax}
-\end{figure}
+Our presentation of FlatCurry differs from \cite{currySemantics} in three notable ways.
+First, function and constructor applications
+contain a count of the arguments they still need in order to be fully applied.
+The application |f_k e_1 e_2 ... e_n| means that |f| is applied to |n| arguments,
+but it needs |k| more to be fully applied,
+so the arity of |f| is |n+k|.
+Second, we include |let {v} free| to represent free variables.
+This was not needed in \cite{currySemantics, kics2} because free variables we translated
+to non-deterministic generators.
+Since we narrow free variables instead of doing this transformation, 
+we must represent free variables in FlatCurry.
+Finally, we add an explicit failure expression |EXEMPT| to represent a branch
+that is not present in the definitional tree.
+While this is meant to simply represent a failing computation,
+we've also occasionally found it useful in optimization.
 
 \subsection{Evaluation}
 
-We'll start off with a small interpreter for a first order functional language.
-Then we'll make incremental improvements until we have all of the features of Curry.
-It's important to start here, because each time we add a feature,
-it may interact with features that came before.
+Each program contains a special function |main| that takes no arguments.
+The program executes by reducing the expression |main| 
+to a 
+\gls{CNF}\footnote{This is constructor normal form, and not simply a normal form,
+              because a failing expression, like |head []|, is a normal form,
+              since it can't be rewritten, but it contains a function at the root.} 
+as defined in figure \ref{fig:normalForm}.
+Similar to Kics2, Pakcs, and Sprite, \cite{kics2, pakcs, sprite}
+we compute constructor normal form by first reducing the |main| to \gls{HCF}.
+That is where the expression is rooted by a constructor.
+Then each child of the root is reduced to \gls{CNF}.
 
-Let's look at the first interpreter.
-The goal is to rewrite a term in our language to normal form.
-In this language, a normal form is simple.  It can consist of Constructors, Literals, and nothing else.
+\begin{figure}
 
+> f           =>  f {v} = e
+> e           =>  v                                        Variable
+>             |   l                                        Literal
+>             |   e_1 ? e_2                                Choice
+>             |   EXEMPT                                   Failed
+>             |   f_k {e}                                  Function Application
+>             |   C_k {e}                                  Constructor Application
+>             |   let {v = e} in e                         Variable Declaration
+>             |   let {v} free in e                        Free Variable Declaration
+>             |   case e of {p -> e}                       Case Expression
+> p           =>  C {v}                                    Constructor Pattern
+>             |   l                                        Literal Pattern
+\caption{Syntax definition for FlatCurry\\
+This is largely the same as other presentations \cite{currySemantics,icurry}
+but we have elected to add more information that will become relevant for optimizations later.
+The notation |{e}| refers to a variable length list |e_1 e_2 ... e_n|.}
+\label{fig:flatSyntax}
+\end{figure}
+
+\begin{figure}
 > n =>  l                literal
 >   |   C_k n_1 ... n_k  constructor
+\caption{constructor normal forms in FlatCurry.\\
+         A CNF is an expression that contains only constructor and literal symbols.
+         All CNFs are normal forms in our system.}
+\label{fig:normalForm}
+\end{figure}
 
-In a lazy language, to compute an expression to normal form, we first compute head normal form.
-Head normal form is just the restriction that the root of the expression must be a constructor or literal.
-That is, the \textit{head} is in normal form.
+Most of the work of evaluation is reducing an expression to head constructor form.
+Kics2 and Pakcs are able to transform FlatCurry programs into an equivalent rewrite
+system, and reduce expressions using graph rewriting \cite{kics2, pakcs}.
+The transformation simply created a new function for every nested case expression.
+This created a series of tail calls for larger functions.
 
-So the algorithm for computing an expression to normal form is 
+To see this transformation in action, we can examine the FlatCurry function |==| on lists \ref{fig:eqList}.
+This function is \gls{inductively sequential}, however both Pakcs and Kics2 will transform it
+into a series of flat function calls with a single case at the root.
+Since this would drastically increase the number of function calls, we avoid this transformation.
+It would also defeat much of the purpose of an optimizing compiler 
+if we weren't allowed to inline functions.
 
-> nf :: Expr -> Expr
-> nf e = case  hnf e of
->              C e_1 e_2 ... e_n  -> C (nf e_1) (nf e_2) ... (nf e_n)
->              l                  -> l
+\begin{figure}
+Original FlatCurry representation of |==| on lists.
+> (==) v_2 v_3 = case  v_2 of
+>                    [] -> case  v_3 of
+>                                [] -> True
+>                                v_4 : v_5 -> False
+>                    v_6 : v_7 -> case  v_3 of
+>                                     [] -> False
+>                                     v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
-We can build a simple interpreter for a first order language by giving the |hnf| function.
-
-> hnf :: Expr -> Expr
-> hnf (code l)                       =  l
-> hnf (code (e :: t))                =  hnf e
-> hnf (code (C e_1 ... e_n))         =  C e_1 ... e_n
-> hnf (code (f e_1 ... e_n))         =  let  v_1 ... v_n = vars f
->                                            e_f = body f
->                                            sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                       in   hnf (sigma e_f)
-> hnf (code (let v_1 = e_1 in e))    =  let  sigma = {v_1 -> e_1}
->                                       in   hnf (sigma e)
-> hnf (code (case e of bs))
->  | hnf (code e) = l                =  let  (l -> e) `elem` bs
->                                       in   hnf e
->  | hnf (code e) = (C e_1 ... e_n)  =  let  (C v_1 ... v_n -> e) `elem` bs
->                                            sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                       in   hnf (sigma e)
-
-Notice that we don't need to interpret a variable, since they will all be replaced by substitutions.
-While this interpreter is compact, it suffers from a number of problems.
-One is that we can't handle recursive definitions in let expressions.
-Recursive functions are allowed, but a recursive let expression will crash the interpreter.
-The second problem is that we aren't actually using lazy evaluation.
-Since we may copy terms by performing a substitution, we may reevaluate the same expression multiple times.
-
-We can get around this by moving to graph rewriting.
-Surprisingly, not much changes for the interpreter.
-The only real change is that all expressions are graphs,
-and make substitution work by pointer redirection.
-Now our interpreter is lazy and will work correctly with recursive let bindings.
-Even mutually recursive let bindings are still fine.
-This also solves the problem of enforcing call time choice semantics.
-
-There is one issue with graph rewriting that requires a little more care.
-A \textit{collapsing rule} is a function that returns a single variable.
-A simple example is the |id| function, but collapsing rules can be much more complicated
-as shown by the following |sum| function.
-
-> sum xs acc = case  xs of
->                    []      -> acc
->                    (y:ys)  -> sum ys (y+acc)
-
-The first branch of the case statement here is collapsing.
-Collapsing rules will cause several problems throughout this compiler,
-but the first one we need to deal with is sharing.
-Suppose we have the following expression graph:
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$sum$} \xyS{dl} \xyS{dr}& & \xynode{$f$} \xyS{dl} \\
-      & \xynode{$[]$} & & \xynode{$n$} \\
-  }
-}
-\end{mdframed}
+Transformed FlatCurry representation of |==| on lists.
+> (==) v_2 v_3 = case  v_2 of
+>                    [] -> eqListNil v_3
+>                    v_6 : v_7 -> eqListCons v_3 v_6 v_7
+> eqListNil v_3 = case  v_3 of
+>                      [] -> True
+>                      v_4 : v_5 -> False
+> eqListCons v_3 v_6 v_7 = case  v_3 of 
+>                             [] -> False
+>                             v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
 
-Now, if we reduce |sum [] n| to |n|, then we have a problem.
-Do we overwrite the |sum| node with the value of |n|?
-This seems like it would be a problem.  After all we'd need to copy the expression, which
-was the very thing that graph rewriting was supposed to help us avoid.
-However, there's another possibility.
-According to our evaluation strategy we must evaluate |n| to head normal form.
-So, we can evaluate |n|, and then copy the value of the constructor over to the |sum| node.
-This is the strategy use by GHC \cite{GHC}.
-
-Unfortunately, this strategy of copying the constructor is also going to fail.
-The problem here is non-determinism.
-The |?| operator is a non-deterministic collapsing functions that is used heavily throughout Curry.
-We will justify why copying can't work in the next section,
-but for now we can find a solution using forwarding nodes.
-A forwarding node is very simple.
-It's just a node with a single child that we represent as |(FORWARD e)|.
-We can think of forwarding nodes like references in other languages.
-Now, we expand the interpreter by replacing every collapsing rule with a forwarding node.
-For example, the |sum| function now becomes:
-> sum xs acc = case  xs of
->                    []      -> FORWARD acc
->                    (y:ys)  -> sum ys (y+acc)
-
-With this we can extend our interpreter to graph rewriting.
-
-> hnf :: Expr -> Expr
-> hnf (code l)                        =  l
-> hnf (code (e :: t))                 =  FORWARD (hnf (code e))
-> hnf (code (C e_1 ... e_n))          =  C e_1 ... e_n
-> hnf (code (f e_1 ... e_n))          =  let  v_1 ... v_n = vars f
->                                             e_f = body f
->                                             sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                        in   hnf (sigma e_f)
-> hnf (code (FORWARD e))              =  FORWARD (hnf (code e))
-> hnf (code (let v_1 = e_1 in e))     =  let  sigma = {v_1 -> e_1}
->                                        in   hnf (sigma e)
-> hnf (case e of bs)
->  | e == (code (FORWARD e'))         =  FORWARD (hnf (code (case e' of bs)))
->  | hnf e == (code l)                =  let  (l -> e) `elem` bs
->                                        in   hnf e
->  | hnf e == (code (C e_1 ... e_n))  =  let  (C v_1 ... v_n -> e) `elem` bs
->                                             sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                        in hnf (sigma e)
-
+\caption{Transformation of FlatCurry |==| function into a flat representation
+         for Pakcs and Kics2.}
+\label{fig:eqList}
+\end{figure}
 
 \subsection{Non-determinism}
 
-The next problem is to add non-determinism.
-The change to the interpreter is small.
-We only need to add a two types of expression, |e_1 ? e_2| and |EXEMPT|.
-However, we now need to find a strategy for evaluating non-deterministic expressions.
 
-This has recently been the subject of a lot of research.
-Currently there are four options for representing non-determinism.
-Backtracking, Copying, Pull-tabbing, and Bubbling.
-All of these options are incomplete in their naive implementations.
-However, all of them can be made complete. \cite{fairScheme}
+Currently there are three approaches to evaluating non-deterministic expression in Curry:
+\gls{backtracking}, \gls{Pull-Tabbing}\cite{pulltab}, and \gls{Bubbling}\cite{bubbling}.
+At this time there are complete strategies for evaluating Curry programs,
+so we have elected to use backtracking.
+It is the simplest to implement, and it's well understood.
 
-Backtracking is conceptually the simplest mechanism for non-determinism.
-We evaluate an expression normally,
-and every time we hit a choice operator, we pick one option.
-If we finish the computation, either by producing an answer or failing,
-then we undo each of the computations until the last choice expression.
-We continue until we've tried every possible choice.
+In our system, backtracking is implemented in the usual way.
+When an expression rooted by a node |n| with label by |f| 
+is rewritten to an expression rooted by |e|,
+we push the rewrite |(n,n_f,Continue)| onto a backtracking stack, where |n_f|
+is a copy of the original node labeled by |f|.
+If the expression is labeled by a choice |e_1 ? e_2|, and it is rewritten to the left hand side |e_1|,
+then we push |(n, n_q, Stop)| onto the backtracking stack to denote that this 
+was an alternative, and we should stop backtracking.
 
-There are a few issues with backtracking.
-Aside from being incomplete, a naive backtracking implementation relies on
-copying each node as we evaluate it, so we can undo the computation.
-Solving incompleteness is a simple matter of using iterative deepening
-instead of backtracking.
-This poses its own set of issues, such as how to avoid producing the same answer multiple times,
-however these are not difficult problems to solve.
-The issue of copying every node we evaluate is a bigger issue, as it
-directly competes with any attempt to build an optimizing compiler.
-However, we'll show how we can avoid creating many of these backtracking nodes.
+Unfortunately, while \gls{backtracking} is well defined for rewriting systems,
+our representation of FlatCurry programs isn't a graph rewrite system.
+This is because we don't flatten our FlatCurry functions like Pakcs and Kics2.
+As an example of why FlatCurry programs aren't a graph rewriting system,
+consider the FlatCurry function |weird| \ref{fig:weird}.
+This function defines a local variables |x| which is used in a case expression.
+If this were a rewrite system, then we would be able to translate the
+|case| expression into pattern matching, but a rule can't pattern match on a locally defined variable.
+We show the reduction of |wierd| in figure \ref{fig:weirdEval}.
 
-The following three mechanisms are all based on the idea of copying part of the expression graph.
-All of them are incomplete with a naive implementation, however
-they can all be made complete using the fair scheme \cite{fairScheme}.
-I'll demonstrate each of these mechanisms with the following expression.
+\begin{figure}
+> weird = let x = False ? True
+>         in case  x of
+>                  False -> True
+>                  True -> False
+\caption{The function |weird|\\
+         This can't be expressed as rewrite rules, because the expression
+         we're pattern matching on is defined locally.}
+\label{fig:weird}
+\end{figure}
 
-> let x = 0 ? 1
-> in sqrt ((x * x) + x)
-
+\begin{figure}
 \noindent
-This expression has the following graph:
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$sqrt$} \xyS{d} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{$?$} \xyD{dl} \xyU{dr} \\
-    \xynode{0} &  & \xynode{1}
-  }
-}
-\end{mdframed}
-
-Copying is a different take on non-determinism.
-The idea is straightforward.
-Any time we encounter a choice node in an expression, move the choice node up to the root
-of the graph, and copy every node that was on the path to that choice.
-We can see the results of copying on our expression below.
-
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$sqrt$} \xyS{d} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{?} \xyD{dl} \xyU{dr} \\
-    \xynode{0} &  & \xynode{1}
-  }
-
-  \hspace*{8em}
-  \graphxy{
-      & & & \xynode{?} \xyD{dl} \xyU{dr} \\
-      & & \xynode{$sqrt$} \xyS{d}                & &  \xynode{$sqrt$} \xyS{d} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl}       & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} & & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{0}                                                    & & \xynode{1}\\
-  }
-
-}
-\end{mdframed}
-
-The advantage to copying is its simplicity.
-We just move the non-determinism to the root, and copy everything on the way up.
-This is simple to do, and we end up with an expression of the form |answer ? answer ? answer ...|.
-The down side is that we must copy the entire expression.
-This usually leads to a lot of wasted copying.  Especially if one of the branches of the choice will fail.
-
-Pull-tabbing is the other extreme for moving non-determinism.
-Instead of moving the choice node to the root of the graph, we move the choice node up one level.
-\cite{pulltab}
-A naive implementation of pull-tabbing isn't even valid, 
-so an identifier must be included for each variable to represent which branch it is on.
-There is a significant cost to keeping track of these identifiers.
-
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$sqrt$} \xyS{d} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{?} \xyD{dl} \xyU{dr} \\
-    0 \bullet &                                         & \xynode{1} 
-  }
-
-  \hspace*{8em}
-  \graphxy{
-      & & & \xynode{$sqrt$} \xyS{d} \\
-      & & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & & \xynode{?} \xyD{dl} \xyU{dr} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} & \xynode{?} \xyD{dl} \xyU{dr} & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{0}                                                    & & \xynode{1}\\
-  }
-}
-\end{mdframed}
-
-Bubbling is a more sophisticated approach to moving non-determinism.
-Instead of moving the choice node to the root, we move it to its dominator. \cite{bubblingCorrect}
-Bubbling is always valid, and we aren't copying the entire graph.
-Unfortunately, computing dominators at runtime is expensive.
-There are strategies of keeping track of the current dominator, \cite{bubblingPractical}
-but as of this time, there are no known bubbling implementations.
-
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$sqrt$} \xyS{d} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{?} \xyD{dl} \xyU{dr} \\
-    0 \bullet &                                         & \xynode{1} 
-  }
-
-  \hspace*{8em}
-  \graphxy{
-      & & & \xynode{$sqrt$} \xyS{d} \\
-      & & & \xynode{?} \xyD{dl} \xyU{dr} \\
-      & & \xynode{$+$} \xyD{dl} \xyU{ddl}       & & \xynode{$+$} \xyD{dl} \xyU{ddl} \\
-      & \xynode{$*$} \xyU{d} \xyD{d} & & \xynode{$*$} \xyU{d} \xyD{d} \\
-      & \xynode{0}                                                    & & \xynode{1}\\
-  }
-}
-\end{mdframed}
+\begin{itemize}
+   \item We start with a root |r| labeled by |weird|.
+   \item Node |n_1| labeled by |?| is created with children |[False, True]|.
+   \item |n_1| is rewritten to |False| and |(n_1,True,Stop)| is pushed on the backtracking stack.
+   \item |r| is rewritten to |True| and |(r,weird,Continue)| is pushed on the backtracking stack.
+   \item |r| is a constructor normal form.
+   \item backtracking to the closest alternative.
+   \item The backtracking stack is |[(r,weird,Continue), (n_1, True, Stop)]|.
+   \item reduce |r|.
+   \item Node |n_2| labeled by |?| is created with children |[False, True]|.
+   \item $\ldots$
+\end{itemize}
+\caption{Evaluation of the function |weird|.}
+\label{fig:weirdEval}
+\end{figure}
 
 
-We've elected to implement non-determinism using backtracking for a few reasons.
-It is the simplest one to implement, and it is known to be efficient.
-In order for backtracking to work, we need to augment the interpreter with a stack.
-We'll keep things simple.  A stack will be a list of \texttt{frames}.
-Each frame will represent a single rewrite, and a bit to mark if this rewrite was the result of a choice.
+We've entered an infinite loop of computing the same rewrite.
+The problem is that when we're backtracking,
+and replacing nodes with their original versions, we're going too far
+back in the computation.
+In this example, when backtracking |weird|, we want to backtrack to a point
+where |x| has been created, and we just want to evaluate the case again.
 
-> type Frame = (Expr, Expr, Bool)
-> type Stack = [Frame]
+We solve this problem by creating a new function for each case expression in our original function.
+Figure \ref{fig:caseFuncs} show an example for |weird| and |==| which were defined above.
+This is actually very similar to how Pakcs and Kics2 transformed their programs into
+rewrite systems by flattening them.
+The difference is that we don't need to make any extra function calls unless
+we are already backtracking.
+There is no efficiency cost in either time or space with our solution.
+The only cost is a little more complexity in the code generator,
+and an increase in the generated code size.
+This seems like an acceptable trade off, 
+since our programs are still similar in size to equivalent programs compiled with GHC.
+
+\begin{figure}
+> weird =  let x = False ? True
+>          in case  x of
+>                   False -> True
+>                   True -> False
+>
+> weird_1 x = case  x of
+>                   False -> True
+>                   True -> False
+>
+> (==) v_2 v_3 = case  v_2 of
+>                      []         -> case  v_3 of
+>                                          [] -> True
+>                                          v_4 : v_5 -> False
+>                      v_6 : v_7  -> case  v_3 of
+>                                          [] -> False
+>                                          v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
+>
+> eqList_1 v_3 = case  v_3 of
+>                      [] -> True
+>                      v_4 : v_5 -> False
+>
+> eqList_2 v_6 v_7 v_3 = case  v_3 of
+>                              [] -> False
+>                              v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
+\caption{Functions at case for |weird| and |==| for lists.}
+\label{fig:caseFuncs}
+\end{figure}
 
 
-We define an auxiliary function |push| to handle the stack.
-The idea is that if we rewrite an expression,
-then we push a frame with the rewrite and the original expression.
-This avoids cluttering the code with |hnf bt e@(code (...))|.
 
-> hnf bt e = let e' = ...
->            in push e' bt
->  where push exp stack = (exp, (exp, e, False) : stack)
+As far as we're aware, this is a novel approach for improving the efficiency of backtracking
+in rewriting systems.
+The correctness of this method follows 
+from the redex contraction theorem, which is proved later.
 
-The |pushChoice| is defined similarly, except the frame is |(exp, e, True)| since it's a choice frame.
-
-> hnf :: Stack -> Expr -> (Expr, Stack)
-> hnf bt (code (EXEMPT))                 =  (EXEMPT, bt)
-> hnf bt (code l)                        =  (l, bt)
-> hnf bt (code (e :: t))                 =  let (e',bt') = FORWARD (hnf bt (code e))
->                                           in  (FORWARD e', bt')
-> hnf bt (code (C e_1 ... e_n))          =  (C e_1 ... e_n, bt)
-> hnf bt (code (f e_1 ... e_n))          =  let  v_1 ... v_n = vars f
->                                                e_f = body f
->                                                sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                                (e_f',bt') = hnf bt (sigma e_f)
->                                           in   push e_f' bt'
-> hnf bt (code (FORWARD e))              =  let  (e',bt') = hnf bt e
->                                           in   push (FORWARD e') bt'
-> hnf bt (code (e_1 ? e_2))              =  let  (e_1',bt') = hnf bt e_1
->                                           in   pushChoice (FORWARD e_1') bt')
-> hnf bt (code (let v_1 = e_1 in e))     =  let  sigma = {v_1 -> e_1}
->                                           in   hnf bt (sigma e)
-> hnf bt (code (case e of bs))
->  | e == (code (FORWARD e'))              =  let  (e',bt') = (hnf bt (code (case e' of bs)))
->                                             in   push (FORWARD e') bt'
->  | hnf e == ((code l),bt')               =  let  (l -> be) `elem` bs
->                                                  (e',bt') = hnf bt be
->                                             in   push e' bt'
->  | hnf e == ((code (C e_1 ... e_n),bt')  =  let  (C v_1 ... v_n -> be) `elem` bs
->                                                  sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                                  (e', bt') = hnf bt (sigma be)
->                                             in   push e' bt'
-
-
-Notice that we don't need to push values in head normal from onto the stack, since there is no evaluation.
-We also don't push let expressions onto the stack, since they already represent an expression graph.
-
-Due to our recursive evaluation of a |case| expression with a forwarding node,
-we may add several \textit{phantom rewrites} to the backtracking stack.
-For example if we have |case (FORWARD (FORWARD ... e))|, we'll add one frame for every forwarding node.
-They do not affect the semantics because 
-|e'| will have another frame higher in the stack that will undo that rewrite.
-This can be proved by induction on the derivation of |e'|.
-In practice we evaluate the case expression with forwarding nodes iteratively,
-so these phantom rewrites are never added to the stack.
-This will be discussed further in the next section.
-
-To justify the use of forwarding nodes from the last section consider the expression
-|(A ? B) ? C| for some constructors |A,B,C|,
-If we are backtracking, and attempting to copy values onto the stack,
-then there is no way produce only the three required answers with copying.
-The problem is that, in the first evaluation we will replace both |?| nodes with a copy of |A|.
-So, we start with the expression graph:
-
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & & \xynode{$?_1$} \xyS{dl} \xyS{dr} \\
-      & & \xynode{$?_0$} \xyS{dl} \xyS{dr} & & \xynode{$C_0$}\\
-      & \xynode{$A_0$} & & \xynode{$B_0$} \\
-  }
-}
-\end{mdframed}
-
-After evaluating the expression we'll end up with the following graph and stack.
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & & \xynode{$A_2$} \\
-      & & \xynode{$A_1$} & & \xynode{$C_0$}\\
-      & \xynode{$A_0$} & & \xynode{$B_0$} \\
-  }
-}
-\end{mdframed}
-
-{%
-%format q_0 = "?_0"
-%format q_1 = "?_1"
-> [(A_2, (q_0 q_1 C_0), True), (A_1, (A_0 q_0 B_0), True)]
-
-This looks fine, but remember that any node pushed on the backtracking stack is a copy
-of the original node.
-So the |q_0| in the first frame does not refer to the |q_0| in the second frame.
-Ultimately copying will lead to either terminating programs failing to produce valid answers,
-or producing duplicate answers.
-Neither one of these options are acceptable, so we are forced to use forwarding nodes.
-}
 
 \subsection{Free Variables}
 
-Now that we've developed a semantics for non-determinism, free variables and narrowing are
-pretty easy to implement.  We add a new type of node.  |FREE| represents a free variable.
-We use |:=| as a destructive update operation, 
-so that we can replace a free variable with a different expression.
+Free variables are similar to non-deterministic expressions.
+In fact, in both Kics2 and Sprite \cite{kics2,sprite} they are replaced
+by non-deterministic generators of the appropriate type \cite{freeVar}.
+However, in Rice, free variables are instantiated by narrowing.
+If a free variable is the scrutinee of a case expression, then 
+we push copies of the remaining patterns onto the stack along with another 
+copy of the variable.
+If the free variable is replaced by a constructor with arguments, such as |Just|,
+then we instantiate the arguments with free variables.
 
-> hnf :: Stack -> Expr -> (Expr, Stack)
-> hnf bt (code (EXEMPT))                 =  (EXEMPT, bt)
-> hnf bt (code l)                        =  (l, bt)
-> hnf bt (code (e :: t))                 =  let (e',bt') = FORWARD (hnf bt (code e))
->                                           in  (FORWARD e', bt')
-> hnf bt (code (C e_1 ... e_n))          =  (C e_1 ... e_n, bt)
-> hnf bt (code (FREE))                   =  (FREE, bt)
-> hnf bt (code (f e_1 ... e_n))          =  let  v_1 ... v_n = vars f
->                                                e_f = body f
->                                                sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                                (e_f',bt') = hnf bt (sigma e_f)
->                                           in   push e_f' bt'
-> hnf bt (code (FORWARD e))              =  let  (e',bt') = hnf bt e
->                                           in   push (FORWARD e') bt'
-> hnf bt (code (e_1 ? e_2))              =  let  (e_1',bt') = hnf bt e_1
->                                           in   pushChoice (FORWARD e_1') bt')
-> hnf bt (code (let v_1 = e_1 in e))     =  let  sigma = {v_1 -> e_1}
->                                           in   hnf bt (sigma e)
-> hnf bt (code (case e of bs))
->  | e == (code (FORWARD e'))              =  let  (e',bt') = (hnf bt (code (case e' of bs)))
->                                                  fwd = FORWARD e'
->                                             in   push (FORWARD e') bt'
->  | e == (code (FREE))                    =  let  {C_1 ... -> _, ...,  C_n ... -> _} = bs
->                                                  e_1 = C_1 FREE ... FREE
->                                                  ...
->                                                  e_n = C_n FREE ... FREE
->                                                  e := e_1 ? ... ? e_n
->                                             in   hnf bt (code (case e of bs))
->  | hnf e == ((code l),bt')               =  let  (l -> be) `elem` bs
->                                                  (e',bt') = hnf bt be
->                                             in   push e' bt'
->  | hnf e == ((code (C e_1 ... e_n),bt')  =  let  (C v_1 ... v_n -> be) `elem` bs
->                                                  sigma = {v_1 -> e_1, ... v_n -> e_n}
->                                                  (e', bt') = hnf bt (sigma be)
->                                             in   push e' bt'
 
+\begin{figure}
+> data Light = Red | Yellow | Green
+>
+> change x = case  x of
+>                  Red     -> Green
+>                  Green   -> Yellow 
+>                  Yellow  -> Red
+\caption{A simple traffic light program}
+\label{fig:light}
+\end{figure}
+
+This is easier to see with an example.
+Consider the traffic light function in figure \ref{fig:light}.
+The |change| function moves the light from |Red| to |Green| to |Yellow|.
+When calling this function with a free variable, we have the derivation below in figure \ref{fig:lightEval}.
+
+\begin{figure}
+%{
+%format free = "\Varid{free}"
+\begin{itemize}
+   \item We start with root |r| labeled by |change|, with a child |x| labeled by |free|.
+   \item |x| is rewritten to |Red| and |(x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)| 
+         are all pushed on the stack
+   \item |r| is rewritten to |Green|, and |(r,change, Continue)| is pushed on the stack
+   \item |r| is a constructor normal form
+   \item backtracking to the closest alternative
+   \item backtracking stack is 
+         |[(r,change,Continue), (x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)]|.
+   \item reduce |r|
+   \item |x| is labeled by |Green|
+   \item |r| is rewritten to |Yellow|, and |(r,change, Continue)| is pushed on the stack
+   \item |r| is a constructor normal form
+   \item backtracking to the closest alternative
+   \item backtracking stack is 
+         |[(r,change,Continue), (x,Yellow,Stop), (x,free,Continue)]|
+   \item reduce |r|
+   \item |x| is labeled by |Yellow|
+   \item |r| is rewritten to |Red|, and |(r,change, Continue)| is pushed on the stack
+   \item |r| is a constructor normal form
+   \item backtracking to the closest alternative
+   \item backtracking stack is 
+         |[(r,change,Continue), (x,free,Continue)]|
+   \item The stack is empty, and there are no alternatives.
+\end{itemize}
+%}
+\caption{Evaluation of |change x where x free|}
+\label{fig:lightEval}
+\end{figure}
 
 \subsection{Higher Order Functions}
 
-The last feature we need to add is higher order functions.
-This is typically done with defunctionalization. \cite{defunctionalization}.
-The idea is simple. We add a new function called |apply| with the definition.
-
-> apply f x = f x
-
-This means that our system is no longer strictly a rewriting system.
-But this also introduces a new problem.  What is |f|?
-If we look closely we see that |f| actually has two different meanings.
-On the left hand side |f| is a symbol that is passed to apply,
-however on the right hand side |f| is a function that needs to be reduced.
-
-We make this definition precise by introducing a \textit{partial application}.
-If |f| is a function symbol with arity |n|, then |f_k| where |k <= n| is the partial application
+Now that we have a plan for the logic features of Curry, we move on to higher order functions.
+This subject has been extensively studied by the function languages community,
+and we take the approach of \cite{fastCurry}.
+Higher order functions are represented using defunctionalization \cite{defunctionalization}.
+Recall that in FlatCurry, an expression $\glssymbol{f_k}$ represents a partial application
 that is missing |k| arguments.
-For example, |pl_2| represents the usual |+| function, but it is missing two arguments.
-We can then apply it to arguments with |apply (apply pl_2 2) 3|.
-The evaluation is shown below graphically.
+We introduce an |apply| function that has an unspecified arity.
+where |apply f_k e_1 e_2 ... e_n| applys |f_k| to the arguments |e_1 e_2 ... e_n|.
 
-\begin{mdframed}
-\centerline{
-  \graphxy{
-      & & \xynode{$apply$} \xyS{dl} \xyS{dr} \\
-      & \xynode{$apply$} \xyS{dl} \xyS{dr} & & \xynode{3} \\
-      \xynode{$+_2$} & & \xynode{2} \\
-  }
+The behavior of |apply| is specified below.
 
-  \hspace*{2em}
-  $\Rightarrow$
-  \hspace*{2em}
-
-  \graphxy{
-      & & \xynode{$apply$} \xyS{dl} \xyS{dr} \\
-      & \xynode{$+_1$} \xyS{d} & & \xynode{3} \\
-      & \xynode{2} \\
-  }
-
-  \hspace*{2em}
-  $\Rightarrow$
-  \hspace*{2em}
-
-  \graphxy{
-      & \xynode{$+$} \xyS{dl} \xyS{dr} \\
-      \xynode{2} & & \xynode{3} \\
-  }
-}
-\end{mdframed}
-
-Applying functions one argument at a time will always work,
-but in practice this is very slow.
-We can improve performance drastically by making |apply| into a variadic function.
-
-> apply f_n [x_1, ... x_n] = f x_1 ... x_n
-
-Unfortunately, this definition only works if the length of the argument list is exactly the same
-as the number of missing arguments in |f|.
-This is rarely the case.
-So, we need to change the definition of |apply| to handle the three different possibilities.
-
-> apply f_k [x_1, ... x_n]
+> apply f_k x_1 ... x_n
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
->  | k < n   = apply (f x_1 ... x_k) [x_k1, ... x_n]
+>  | k < n   = apply (f x_1 ... x_k) x_k1 ... x_n
 
-This is the only change we need to support higher order functions,
-but is this change valid?
-How does it interact with non-determinism and free variables?
-The answer is that there aren't any complicated interactions to worry about.
-If |f_k| is non-deterministic, then we push the apply node on the backtracking stack.
-This is no different than any variable evaluated by a case statement.
-If |f_k| is a free variable, then we return |EXEMPT|,
-since we cannot narrow functions.
+If the first argument |f| of |apply| is not partially applied,
+then evaluate |f| until it is, and proceed as above.
+In the case that |f| is a free variable, then we return |EXEMPT|, 
+because we don't support higher order narrowing.
 
-\section{The Generated Code}
+\subsection{Backtracking Performance}
 
-This gives us a working semantics for the FlatCurry language.
-However this is not the semantics we used.
-Unfortunately, while this semantics isn't too complicated,
-its simplicity comes at the cost of speed.
-There are two major problems.
-The first is that we explicitly represent |case| and |let| expressions as nodes in our graph.
-These should be translated down to flow of control and assignment statements.
-The second problem is that every time we rewrite a node, we push a frame on the backtracking stack.
+Now that we've established a method for implementing non-determinism,
+we would like to improve the performance.
+Currently we push nodes on the backtracking stack for every rewrite.
+Often, we don't need to push most of these rewrites.
+Consider the following code for computing Fibonacci numbers:
 
-In order to fix these problems, we need to move from the world of abstract interpreters into compiled code.
-We compile to C code, since C is low level enough to apply all of our optimizations,
-but modern C compilers are able to take care of optimizations not related to functional logic programs.
-
-Since we are constructing a graph rewriting system, we need to decide on the representation of the graph.
-I've started with a simplified version of a \texttt{Node} of the graph.
-We will expand it as we add features.
-
-\begin{verbatim}
-typedef struct Node
-{
-    unsigned int missing;
-    unsigned int tag;
-    const void (*hnf)(struct Node*);
-    Node* children[4];
-} Node;
-\end{verbatim}
-
-As we can see, a node doesn't contain a lot of information.
-It only contains the number of arguments it's missing, a \texttt{tag},
-a function pointer to some \texttt{hnf} function, and an array of 4 children.
-The \texttt{missing} variable will only be relevant if this node represents a partially applied function
-or constructor.  Most of the time it will be set to 0.
-While the node can have four children, we can extend this by having the final child point to an
-array of more children.
-
-The \texttt{tag} field tells us what kind of node this represents.
-There are five global tags, \texttt{FAIL, FUNCTION, CHOICE, FORWARD,} and \texttt{FREE}.
-These tags are given the values 0,1,2,3, and 4 respectively.
-Then, for every data type, each constructor is given a unique tag for that type.
-For example the type |Bool| has two constructors |True| and |False|.
-The tag for |False| is 5, and the tag for |True| is 6.
-Curry's type system guarantees that expressions of one type will remain in that type,
-so we only need tags to be unique for each type.
-It's not an issue that both |False| and |Nothing| from the |Maybe| type share the tag 5,
-because no boolean expression could become a value of type |Maybe|.
-
-Finally the \texttt{hnf} field is a function pointer to the code that can reduce this node.
-For every function |f| in Curry, we will generate a \texttt{f\_hnf} C function.
-An example of the |id| hnf function is given below.
-
-\begin{verbatim}
-void Prelude_id_hnf(field root)
-{
-  Node* x = root->children[0]
-  x->hnf(x);
-  root->hnf = &forward_hnf;
-  root->tag = FORWARD_TAG;
-  push(bt_stack, root, make_id(x));
-  return;
-}
-\end{verbatim}
-
-Here each \texttt{hnf} function takes the root of the expression as a parameter.
-So if we're evaluating the expression |id 5|, then \texttt{root} is |id|
-and \texttt{x} is |5|.
-We get this first child of \texttt{root}, since |id| only takes one argument.
-Then we evaluate the child \texttt{x} to head normal form, using \texttt{x}'s hnf function.
-Finally we set \texttt{root} to be a forwarding node,
-and push \texttt{root} and a copy of the id node onto the backtracking stack.
-
-This matches what our semantics would do exactly,
-but |id| is a simple function.
-What happens when we have a function with a case statement.
-{%
-%format not = "not"
-We'll use the Curry function |not| as an example.
-
-> not :: Bool -> Bool
-> not x = case x of
->              True -> False
->              False -> True
-%}
-
-The generated code for these functions becomes complex quickly, so we'll start with a simplified version.
-Initially we might generate the following.
-
-\begin{verbatim}
-void not_hnf(Node* root)
-{
-  Node* x = root->children[0];
-  switch(x->tag)
-  {
-      case False_TAG:
-          root->tag = True_TAG;
-          root->hnf = CTR_hnf;
-          push(bt_stack, root, make_not(x));
-          break;
-
-      case True_TAG:
-          root->tag = False_TAG;
-          root->hnf = CTR_hnf;
-          push(bt_stack, root, make_not(x));
-          break;
-  }
-}
-\end{verbatim}
-
-This looks great.
-The only surprising part is why we are assigning a \texttt{hnf} function to a
-node in head normal form.
-The \texttt{CTR\_hnf} function doesn't actually do anything.
-It's just there because every node needs an hnf function.
-
-Right now this code only works if \texttt x is |True| or |False|.
-But \texttt x could be any other expression.
-It could be a \texttt{FAIL} node, a \texttt{FUNCTION} call,
-a \texttt{CHOICE} expression, a \texttt{FORWARD} node, or a \texttt{FREE} variable.
-We'll tackle these one at a time.
-Fortunately \texttt{FAIL} nodes are easy.  If the scrutiny of a case is a failure,
-then the whole expression should fail.
-We just need to add the case:
-
-\begin{verbatim}
-case FAIL_TAG:
-    root->tag = FAIL_TAG;
-    root->hnf = CTR_hnf;
-    push(bt_stack, root, make_not(x));
-    break;
-\end{verbatim}
-
-We can reuse \texttt{CTR\_hnf} because \texttt{FAIL} is a head normal form.
-This is simple enough, but now we need to add \texttt{FUNCTION} nodes to our case.
-The problem is, if our case expression is a function node, then we need to evaluate that
-to head normal form, and then we need to re-examine the tag.
-The solution here is simple.
-We just put the whole case in a loop.
-Surprisingly, this code is about as efficient as using a more complicated scheme like a jump table
- \cite{branchPerformance}.
-So our function node becomes
-
-\begin{verbatim}
-case FUNCTION_TAG:
-    root->hnf(root);
-    break;
-\end{verbatim}
-
-We can actually do the same for choice and free nodes.
-A choice node is reduced to one of its two values,
-and a free node is replaces with one of the two constructors.
-After this is done, we reevaluate the expression.
-
-\begin{verbatim}
-case CHOICE_TAG:
-    x->choice_hnf(x);
-    break;
-
-case FREE_TAG:
-    x->TAG = CHOICE_TAG;
-    x->hnf = &choice_hnf;
-    x->children[0] = make_True();
-    x->children[1] = make_False();
-    x->choice_hnf(x);
-    break;
-\end{verbatim}
-
-The \texttt{choice\_hnf} function chooses between the two options, and will be described later.
-Any \texttt{make\_*} function will construct new a new node.
-
-Finally we have the \texttt{FORWARD} nodes.
-Unfortunately, these nodes are more complicated.
-A naive implementation could set the value of the forward node to the node that it points to,
-such as the following code.
-
-\begin{verbatim}
-case FORWARD_TAG:
-    x = x->children[0]
-    break;
-\end{verbatim}
-
-Unfortunately, this solution fails if we need the original node.
-Suppose we have the Curry program
-
-> makeJustBool x = case x of
->                       True -> Just x
->                       False -> Just x
+> fib n = case  n < 2 of
+>               True   -> n
+>               False  ->  fib (n-1) + fib (n-2)
 >
-> main = makeJustBool (False ? True)
+> main = case  fib 20 == (1 ? 6765) of
+>              True -> putStrLn "found answer"
 
-If we were to use the naive forwarding method
-then we would evaluate |main| to the expression |Just True|,
-when it should really be |Just (FORWARD True)|.
-Therefore, we need to keep the original variable around.
-This leads to an unfortunate problem of keeping two values of each variable.
-The variable itself, and a forwarding position.
-This makes the generated code harder to read, but it doesn't effect performance much.
-The C optimizer can easily remove unused duplicates.
-This finally leads to the full code for the |not| function given below.
-There are a few more technical issues to resolve, but this is the core idea behind how we generate code.
-
-\begin{verbatim}
-void not_hnf(Node* root)
-{
-  Node* x = root->children[0];
-  Node* x_forward = x;
-  while(true)
-  {
-    switch(x_forward->tag)
-    {
-      case FAIL_TAG:
-        root->tag = FAIL_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_not(x));
-        return;
-
-      case FORWARD_TAG:
-        x_forward = x_forward->children[0]
-        break;
-
-      case FUNCTION_TAG:
-        root->hnf(root);
-        break;
-
-      case CHOICE_TAG:
-        x_forward->choice_hnf(x_forward);
-        break;
-      
-      case FREE_TAG:
-        x_forward->TAG = CHOICE_TAG;
-        x_forward->hnf = &choice_hnf;
-        x_forward->children[0] = make_True();
-        x_forward->children[1] = make_False();
-        x_forward->choice_hnf(x_forward);
-        break;
-
-      case False_TAG:
-        root->tag = True_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_not(x));
-        return;
-
-      case True_TAG:
-        root->tag = False_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_not(x));
-        return;
-    }
-}
-\end{verbatim}
-
-\subsection{Let Expression}
-
-The semantics here seem fine, but we actually encounter a surprising problem when we add let expressions.
-Consider the following function:
-
-> weird =  let x = True ? False
->          in case  x of
->                   False  -> False
->                   True   -> True
-
-This would be a silly function to write, but its meaning should be clear.
-It will produce both |True| and |False|.
-
-However, if we were to run this code with our current implementation, we'd get surprising behavior.
-
-> :eval weird
-> False
-> False
-> False
-> False
-> ...
-
-What went wrong here?
-Well, we can look at the generated code for |weird| to find a clue.
-
-\begin{verbatim}
-void weird_hnf(Node* root)
-{
-  Node* x = make_choice(make_True(), make_False());
-  Node* x_forward = x;
-  while(true)
-  {
-    switch(x_forward->tag)
-    {
-      ...
-
-      case False_TAG:
-        root->tag = False_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird);
-        return;
-
-      case True_TAG:
-        root->tag = True_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird);
-        return;
-    }
-}
-\end{verbatim}
-
-When we push a rewrite onto the backtracking stack,
-we can only backtrack to the calling function.
-In this case that means that when we backtrack, \texttt{root} is replaced by \texttt{weird}.
-But weird actually has some important state.
-It created a local node that was non-deterministic.
-So, when we backtrack, we need to keep the state around.
-This turns out to be a hard problem to solve.
-Both Pakcs and Kics2 sidestep this problem by transforming the program
-so that there is at most one case in each function. \cite{kics2, pakcs}
-This can solve the problem, but it increases the number of function calls substantially.
-We propose a novel solution where there are no extra function calls.
-
-The idea is pretty straightforward.
-Notice that the problem from our |weird| example happened because we reached a case statement
-with some local state.
-So, when we backtrack, we would want to backtrack to that specific point in the function.
-This leads to a new definition.
-Let |e| be an expression, then the \textit{case path} |path e p| 
-of an expression is a path through the branches of case statements.
-This is analogous to the path through a definitional tree.
-Now for each function, we can define a \textit{path function}
-as |path f p x_1 ... x_1 = path e p| where |x_1 ... x_n| are undefined variables in |path e p|.
-The full definition for |path e p| is given with the following non-deterministic function.
-
-> casePath (let ... in e) = casePath e
-> casePath (e_1 ? e_2) = casePath e_1 ? casePath e_2
-> casePath (case ... in ...) = []
-> casePath (case ... in {... p_i -> e_i ... }) = i : casePath e_i
-
-The idea here is that we make a new function starting at each case statement.
-Then when we're at the case at position |p|, we push |path f p| onto the backtracking stack
-instead of |f|.
-In C we represent |path f p| as \texttt{f\_p},
-and \texttt{f\_} is the function at the empty path,
-which is just before the first case statement.
-We can use this to solve our |wierd| problem.
-We generate two function.
-
-\begin{verbatim}
-void weird_hnf(Node* root)
-{
-  Node* x = make_choice(make_True(), make_False());
-  Node* x_forward = x;
-  while(true)
-  {
-    switch(x_forward->tag)
-    {
-      ...
-
-      case False_TAG:
-        root->tag = False_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird_());
-        return;
-
-      case True_TAG:
-        root->tag = True_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird_());
-        return;
-    }
-}
-
-void weird__hnf(Node* root)
-{
-  Node* x = root->childrent[0];
-  Node* x_forward = x;
-  while(true)
-  {
-    switch(x_forward->tag)
-    {
-      ...
-
-      case False_TAG:
-        root->tag = False_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird_());
-        return;
-
-      case True_TAG:
-        root->tag = True_TAG;
-        root->hnf = CTR_hnf;
-        push(bt_stack, root, make_weird_());
-        return;
-    }
-}
-\end{verbatim}
-
-As we can see this will duplicate a lot of code,
-and the problem gets worse when we have more nested case statements.
-However, the problem is not as bad as it might seem at first.
-While we will have more duplication with nested case statements,
-we're duplicating smaller functions each time.
-Also, while we're duplicating a lot of code,
-the duplicate code is part of a separate function,
-so having more code won't evict the running code from the cache.
-It may be possible to eliminate the duplicate code with a clever use of gotos,
-but it's not clear that it would be more efficient, and is outside the scope of this research.
-
-\subsection{Choice Nodes}
-
-At this point our compiler is correct, but there are still some details to work out.
-How do we actually implement non-determinism?
-So far we've swept it under the rug with the \texttt{choice\_hnf} function.
-This function isn't terribly complicated conceptually, but it hides a lot of details.
-
-\begin{verbatim}
-typedef struct
-{
-    bool choice;
-    field lhs;
-    field rhs;
-} Frame;
-
-typedef struct
-{
-    Frame* array;
-    size_t size;
-    size_t capacity;
-} Stack;
-
-Stack bt_stack;
-\end{verbatim}
-
-In our C implementation, choice frames and the backtracking stack are both straightforward.
-A choice frame has a left hand side, right hand side,
-and a marker denoting if the frame came from a choice node.
-Our backtracking function is almost as simple.
-We just copy the \texttt{rhs} over \texttt{lhs}
-
-\begin{verbatim}
-bool undo()
-{
-    if(empty(bt_stack))
-        return false;
-
-    Frame* frame;
-    do 
-    {
-        frame = pop(bt_stack);
-        memcpy(frame->lhs.n, frame->rhs.n, sizeof(Node));
-    } while(!(frame->choice || empty(bt_stack)));
-
-    return frame->choice;
-}
-\end{verbatim}
-
-This is all easy, but what about the choice node itself?
-Well, that's not much more complicated.
-A choice node is just a node, but we give a specific meaning to each child.
-A choice node has a left child \texttt{children[0]}, a right child \texttt{children[1]},
-and a marker for which side to reduce \texttt{children[2]}.
-When we first encounter a choice node, we reduce it to the left hand side,
-then after we've backtracked, we reduce it to the right hand side.
-Notice that if \texttt{children[2]} is 0 then reduce the left child 
-and mark this node in the backtracking stack, otherwise reduce the right child.
-This leads to the following algorithm for evaluating a choice node.
-
-\begin{verbatim}
-void choice_hnf(field root)
-{
-    Node* choices[2] = {root->children[0], root->children[1]};
-    int side = root->children[2];
-
-    Node* saved = (Node*)malloc(sizeof(Node));
-    memcpy(saved.n, root.n, sizeof(Node));
-    saved->children[2] = !side;
-
-    choices[side]->hnf(choices[side]);
-    set_forward(root,choices[side]);
-
-    push(bt_stack, root, saved, side == 0);
-}
-\end{verbatim}
-
-\subsection{Optimization: Removing Backtracking Frames}
-
-Surprisingly, the code in the previous section
-is the only piece of the runtime system that is needed for non-determinism.
-However, while this works, there's a major efficiency problem here.
-We're pushing nodes on the backtracking stack for every rewrite.
-There are a lot of cases where we don't need to push most of these nodes,
-such as the following code
-
-> fib n = if n < 2 then n else fib (n-1) + fib (n-2)
->
-> main
->  | fib 20 == (1 ? 6765) = putStrLn "found answer"
-
-This program will compute |fib 20|, then it will push all of those nodes onto the stack,
-Then, when it discoverers that |fib 20 /= 1|, it will undo all of those computations,
+This program will compute |fib 20|, pushing all of those rewrites onto the stack as it does,
+and then, when it discoverers that |fib 20 /= 1|, it will undo all of those computations,
 only to redo them immediately afterwards!
 This is clearly not what we want.
-Since |fib| is a deterministic function, can't we just avoid pushing those values on the stack?
-The short answer is no.
-There are two reasons.  First, determining if a function is non-deterministic is undecidable.
+Since |fib| is a deterministic function, we would like to avoid pushing these rewrites onto the stack.
+Unfortunately, this isn't as simple as it would first seems for two reasons.
+First, determining if a function is non-deterministic in general is undecidable,
+so any algorithm we developed would push rewrites for some deterministic computations.
 Second, a function may have a non-deterministic argument.
 For example, we could easily change the above program to:
 
-> fib n = if n < 2 then n else fib (n-1) + fib (n-2)
->
-> main
->  | fib (1 ? 20) == 6765 = putStrLn "found answer"
+> main = case  fib (1 ? 20) == 6765 of
+>              True -> putStrLn "found answer"
 
 Now the expression with |fib| is no longer deterministic.
-So, do we need to just give up and accept this loss of efficiency?
-Surprisingly, we don't.
-While it's impossible to tell statically if an expression is non-deterministic,
-its very easy to tell dynamically if it is.
+We sidestep the whole issue by noticing that while it's impossible to tell 
+if an expression is non-deterministic at compile time,
+it's very easy to tell if it is at run time.
 
 As far as we're aware, this is another novel solution.
-The idea is simple. Each expression contains a boolean flag that marks if it is non-deterministic.
-We've called these \texttt{nondet} flags.
+Each expression contains a Boolean flag that marks if it is non-deterministic.
+We called these \emph{\gls{nondet}} flags,
+and we refer to an expression whose root node is marked with a nondet flag as nondet.
+The rules for determining if an expression |e| is nondet are:
+if |e| is labeled by a choice, then |e| is nondet;
+if |e| is labeled by a function that has a case who's scrutinee is nondet,
+or is a forward to a nondet, then |e| is nondet;
+if |e' ->* e| and |e'| is nondet, then |e| is nondet.
 
-The rules for determining if an expression node |e| is \texttt{nondet} are simple.
-If |e| is a choice, then |e| is \texttt{nondet}.
-If |e| has a case who's scrutenee is \texttt{nondet},
-or is a forward to a \texttt{nondet}, then |e| is \texttt{nondet}.
-All other nodes are deterministic.
-
-It's easy to see that any node not marked as \texttt{nondet} doesn't need to be pushed on the stack.
-It's not part of a choice, 
-all of its case statements used deterministic nodes,
+Any node not marked as nondet doesn't need to be pushed on the stack
+because it's not part of a choice, 
+all of its case statements scrutinized deterministic nodes,
 and it's not forwarding to a non-deterministic node.
 However proving this is a more substantial problem.
 
-In order to prove the correctness of this modification we need to take a step back into graph rewriting.
-First we need a couple of definitions.
+We prove this for the class of \gls{LOIS} \gls{GRS}, 
+with the understanding our system is equivalent.
+This proof is based on a corresponding proof for set functions in Curry \cite{setFunctions}[Lemma 2].
+The original proof was concerned with a deterministic derivation from an expression to a value.
+While the idea is similar, we don't want to necessarily derive an expression to a value.
+Instead we define a deterministic redex, and deterministic step below, and show that there
+is an analogous theorem for a derivation of deterministic steps, even if it doesn't compute a value.
 
 \begin{definition}
-Given a rewrite system |R| with strategy |S|, a computation space of expression |e|, 
-|C_S(e)| is a directed graph where nodes are expressions, 
-there is an edge |(e_1, e_2)| iff |(R,p) `elem` S(e_1)| and |e_1 ->_(R,p) e_2|, 
-and |C_S(e)| is rooted by |e|.
+Given a rewrite system $R$ with fixed strategy $\phi$, 
+a \emph{\gls{computation space}} \cite{setFunctions} of expression $e$, 
+$\glssymbol{C(e)}$ is finitely branching tree defined inductively the rule
+$C(e) = \langle e, C(e_1), C(e_2) \ldots C(e_n)\rangle$.
 \end{definition}
+
+We now need the notions of a deterministic redex and a deterministic rewrite.
+Ultimately we want to show that if we have a deterministic reduction,
+then we can perform that computation at any point without affecting the results.
+One implication of this would be that performing a deterministic computation before
+a non-deterministic choice was made would be the same as performing the computation
+after the choice.
+This would justify our fast backtracking scheme, because it would be equivalent
+to performing the computation before the choice was made.
 
 \begin{definition}
-given an expression |e| and a rewrite rule |l -> r|,
-the redex pattern of |e| is the set of non-variable nodes in |e| that match |l|.
-\cite[Def. 2.7.3]{Terese03} that the \textbf{redex pattern}
+A redex $n$ in expression $e$ is deterministic if there is at most
+one rewrite rule that could apply to $e\vert_n$.
+A rewrite $e \to_n e'$ is deterministic if $n$ is a deterministic redex.
 \end{definition}
 
-Now we can start to reason about computation spaces.
-The first thing to point out is pretty straightforward.
-A path with no branches corresponds to a deterministic expression.
+Next we rephrase our notion of nondet for a LOIS system.
 
-\begin{theorem}
-If |C_S(e)| is a path, then |e| is deterministic.
-\end{theorem}
-\begin{proof}
-if |e| is non-deterministic, then |e ->* f| where |f| has two rules that can apply.
-Which means that there is a branch in |C_S(e)|,
-and therefore |C_S(e)| isn't a path.
-\end{proof}
+\begin{definition}
+let $e \to e_1 \to \ldots v$ be a derivation for $e$ to $v$.
+A node $n$ in $e_i$ is  \emph{nondet} iff\\
+1. $n$ is labeled by a choice.\\
+2. A node in the redex pattern \cite{?} of $n$ is \emph{nondet}.\\
+3. There exists some $j < i$ where $n$ is a subexpression of $e_j$ and $n$ is \emph{nondet}.
+\end{definition}
 
-Next we can start contracting deterministic paths.
-The idea is straightforward.  If a reduction is deterministic,
-then it doesn't matter when the reduction happens.
-This would be directly implied by confluence in an orthogonal system,
-but Curry isn't confluent, so we need to prove it.
+The first property is that all choice nodes are nondet.
+The second property is equivalent to the condition that any node 
+that scrutinizes a nondet node should be nondet.
+Finally, the third property is that nondet should be a persistent attribute.
+This corresponds to the definition we gave for nondet nodes above.
 
-\begin{lemma}[redex compression]
-if |a -> {b}|, and |e ->* n| then |extend e a b ->* n|
-\end{lemma}
-\begin{proof}
-If |a| is not needed in the derivation of |e|, the |extend e a b| will not change the computed values.
-If |a| is needed,
-then we can break the computation into 3 parts |e ->* rewrite e_a a e_b ->* n|.
-Since |a| is a redex, and |R| is a constructor rooted system, everything in the redex pattern for |a|
-must be a constructor.
-Since |a| can't be duplicated, we don't need to worry about parallel rewrites.
-Therefore by our definition of rewriting none of the nodes in the redex pattern of |a| will be changed,
-since constructors have no rewrite rules.
-Therefore if we replace |a| with |b| at the beginning, our derivation |extend e a b -> e_b ->* n|
-proceeds as before, except we've remove the step |rewrite e_a a e_b|.
-\end{proof}
+If $n$ is a redex that isn't marked as nondet,
+then $n$ can't be labeled by a choice.
+Since choice is the only rule in a LOIS system that is non-deterministic,
+$n$ must be a deterministic redex.
+We recall a theorem used to prove the correctness of set function.\cite{setFunctions}[Def. 1, Lemma 1]
 
-Finally we can prove our main theorem.
-If an expression |a| deterministically reduces to |b|,
-then we don't really need to do that reduction.
-There's only one possible choice,
-so if we just replace |a| with |b| at the start,
-then we get the same answers.
-
-\begin{theorem}[path compressions]
-if |a ->* {b}|, and |e ->* n| then |extend e a b ->* n|
-\end{theorem}
-\begin{proof}
-we proceed by induction.
-Base case: |a -> {b}|.
-This is the redex compression theorem.
-Inductive case: |a -> {a_1} ->* {b}|.
-It must be the case that |a_1| is a single reduct of |a|, because
-otherwise |a ->* b| would not be deterministic.
-Assume that |e ->* n| where |a| is a redex of |e|.
-By the redex compression theorem |extend e a a_1 ->* n|,
-and by the inductive hypothesis |extend (extend e a a_1) a_1 b ->* n|
-\end{proof}
-
-This is really all we need to prove that our backtracking strategy is valid.
-The effect of this theorem is that if I know |a ->* b| in the computation space,
-and |a ->* b| must be deterministic, then I can just replace |a| with |b|,
-and skip the entire rewriting process.
-So, In the computation space for |C_S(e)|, I can remove the path |a ->* b|,
-and it won't have any effect on the final answers.
-
-This means that if we have an expression that we know is deterministic,
-then we can replace that expression with any of it's reducts.
-This directly implies that if we don't backtrack a deterministic expression, 
-the we still produce the same set of solutions.
-
-Now we need to prove that our backtracking scheme only ever omits deterministic redexes.
-Recall that |e| is only marked nondet is it's a choice node, or if it's a case
-that depends on a nondet node.
-Taking the contrapositive of this definition we find that the following nodes
-are not nondet,
-any literal, forwarding node, fail node, 
-any constructor application, or any function application that does not contain
-a nondet node in it's redex pattern, and does not reduce to a nondet node.
-
-Now we can justify our using the term nondet for these nodes.
 \begin{lemma}
-Any Curry expression that is not marked as nondet are deterministic.
+Given an expression $e$ where $e \to_{n_1} e_1$ and $e \to_{n_2} e_2$,
+if $n_1 \ne n_2$, then there exists a $u_1$ and $u_2$ where
+$t_1 \glssymbol{->^=} u_1$ and $t_2 \to^= u_2$ and $u_1 = u_2$ up to renaming of nodes.
 \end{lemma}
+
+This leads directly to our first important theorem.
+If $n$ is a deterministic redex in a derivation, then we can move it earlier in the derivation.
+
+\begin{theorem}[\gls{Redex Compression Theorem}]
+if $n$ is a deterministic redex of $e$ where $n \to n'$, and $e \to e_1 \to_n e_2$.
+Then there exists a derivation $e[n \to n'] \to^= e'$ where $e_2 = e'$ up to renaming of nodes.
+\end{theorem}
+
 \begin{proof}
-Literals, forwarding nodes, fail nodes, and constructors are already in head normal form.
-If we have a function node, then by assumption we know that
-all of the nodes that it evaluates are not marked as nondet, and therefore produce 
-only a single value.
-Furthermore, since the function does not evaluate to a nondet node, 
-it must also produce a single answer.
+By definition of rewriting $e \to_n e[n\to n']$.
+Since $n$ is a deterministic redex, it must be the case that the redex in $e \to e_1$
+was not $n$. So by the previous lemma, we can swap the order of the rewrites.
 \end{proof}
 
-Finally we can establish correctness.
-\begin{corollary}[Correctness of fast backtracking]
-Any Curry expression will produce the same answers
-if only nodes marked as nondet are pushed on the stack.
-\end{corollary}
+Finally we show that if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic redexes,
+then $e[a \to b]$ rewites to the same values.
+
+\begin{theorem}[\gls{Path Compression Theorem}]
+if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic rewrites,
+and $e \to e_1 \to \ldots e_n$ is a derivation where $b$ is a subexpression of $e_n$,
+then there is a derivation $e[a\to b] \to^* e_n$.
+\end{theorem}
+
 \begin{proof}
-By the previous lemma we know that all nodes that aren't marked nondet are deterministic.
-Suppose we have an expression |e|, and |e ->* e'|, and |e_1 ? e_2| is needed in |e'|.
-Now if |a ->* b| is deterministic and |a| is needed by |e'|
-then |e'| will evaluate normally taking choice |e_1|,
-however when we backtrack to |e'| and take choice |e_2|, we are left with rewriting
-|extend e' a b|.  By the path compression theorem this is the same as if we
-hadn't reduced |a|.
+This follows by induction on the length of the derivation.
+In the base case $a = b$, and there is nothing to prove.
+In the inductive case $a \to_p a' \to^* b$.
+Since $a \to_p a'$ is deterministic by assumption,
+we can apply the path compression theorem and say that $e[a \to a'] \to^* e_n$.
+By the inductive hypotheses we can say that $e[a \to a'][a' \to b] \to^* e_n$.
+Therefore $e[a \to b] \to^* e_n$.
+This establishes our result.
 \end{proof}
 
-Now that we've established correctness, we can look at how we need to change the generated code.
-Fortunately the only change to the code is that instead of just pushing rewrites on the stack,
-we check if the variable is \texttt{nondet}.
-For example, the \texttt{not\_hnf} example is changed to:
+
+
+\subsection{Collapsing Functions}
+
+While this result is great, and it allows us to avoid creating a large number of stack frames,
+there's a subtle aspect of graph rewriting that gets in the way.
+If a node |n_1| labeled by function |f| is rewritten to |n_2|,
+then the definition of applying a rewrite rule \cite{graphRewriting}[Def. 8, Def. 10, Def. 19]
+would require us to traverse the graph, and find every node that has |n_1| as a child,
+and redirect that pointer to |n_2|.
+This is clearly inefficient, so this isn't done in practice.
+A much faster method is to simply replace the contents, the label and children, of |n_1|
+with the contents of |n_2|.
+This works most of the time, but we run into a problem when
+function a rewrites to a single variable, such as the |id| function.
+We call these functions \emph{\gls{collapsing functions}}.
+One option to solve this problem is to evaluate the contractum 
+to head constructor form, and copy the constructor
+to the root \cite{ImplLazyFunc}.
+This is commonly used in lazy functional languages,
+however it does not work for Curry programs.
+Consider the expression following expression.
+
+> f = let x = True ? False
+>         y = id x
+>     in not y
+
+When |y| is evaluated, then it will evaluate |x|, and |x| will evaluate to |True|.
+If we then copy the |True| constructor to |y|, then we have two copies of |True|.
+But, since |y| is deterministic, we don't need to undo |y| when backtracking.
+So, |y| will remain |True| after backtracking, instead of returning to |id x|.
+While constructor copying is definitely invalid with fast backtracking,
+it's unclear if it would be valid with a normal backtracking algorithm.
+
+We can solve this problem by using \glspl{forwarding node}, sometimes called indirection nodes
+\cite{lazyFunctionalCompilers}.
+The idea is that when we rewrite an expression rooted by a collapsing function,
+instead of copying the constructor, we just replace the root with a special forwarding node,
+$\glssymbol{FORWARD}(x)$, where |x| is the variable that the function collapses to.
+
+There is one more possibility to address before we move on.
+One performance optimization with forwarding nodes is \gls{path compression}.
+If we have a chain of forwarding nodes $FORWARD(FORWARD(FORWARD(x)))$, 
+we want to collapse this to simply $FORWARD(x)$.
+This is unequivocally invalid in non-deterministic backtracking systems.
+Consider the following function.
+
+> f =  let  x = True ? False
+>           y = id x
+>      in   case  y of
+>                 False -> case  x of
+>                                False -> ()
+
+When reducing this function, we create two forwarding nodes
+that are represented by the variables $x$ and $y$.
+We refer to these nodes as $FORWARD_x$ and $FORWARD_y$ respectively.
+While evaluating |y| in the case expression, we create two forwarding nodes
+that are represented by the variables $x$ and $y$ respectively.
+We refer to these nodes as $FORWARD_x$ and $FORWARD_y$ respectively.
+So $x$ is reduced to $FORWARD_x(True)$, and $y$ is reduced to $FORWARD_y(FORWARD_x(True))$.
+If we contract |y| to $FORWARD_y(True)$,
+then when we backtrack we replace |x| with $FORWARD_x(False)$, and |y|
+is replaced with $id(True)$.
+The reason that $y$ doesn't change to $id(False)$ is because $y$ 
+has lost its reference to $x$.
+Now, not only do we fail to find a solution for |f|, we've ended up in a state
+where |x| and |y| have different values.
+
+
+\section{Generated Code}
+
+Now that we've examined all of the different choices to make in constructing a compiler,
+we can start to design the generated code and runtime system for the compiler.
+In this section we give examples of generated code to implement Curry functions,
+and discuss the low level details of the Rice runtime.
+We start with a first order deterministic subset of Curry,
+then we add higher order function,
+finally we add non-determinism and free variables.
+Throughout this section we will use \texttt{teletype font} to represent generated
+C code to distinguish it from Curry or FlatCurry code.
+
+
+We will introduce the generated code by looking at the |not| function defined below.
+We choose this function, because it's small enough to be understandable,
+but it still demonstrates most of the decisions in designing the generated code
+and runtime system.
+
+> not x = case  x of
+>               False  -> True
+>               True   -> False
+
+Before we discuss generated code, 
+we need to discuss expressions and the runtime system for programs.
+
+When a FlatCurry module is compiled, it's translated into a C program.
+Every function |f| defined in the FlatCurry module is compiled into
+a C function that can reduce an expression, rooted by a node labeled with |f|,
+into \gls{HCF}.
+These functions are called \texttt{\gls{f_hnf}} for historical reasons \cite{pakcs}.
+
+An expression in our compiled code is a rooted labeled graph.
+\Glspl{node} in the graph are given the following definition.
+\begin{verbatim}
+typedef struct Node
+{
+    int missing;
+    bool nondet;
+    Symbol* symbol;
+    field children[4];
+} Node;
+\end{verbatim}
+
+A \texttt{\gls{field}} is a union of a \texttt{Node*} and the representations
+of the primitive types \texttt{Int}, \texttt{Float}, and \texttt{Char},
+as well as a \texttt{field*} to be described shortly.
+The \texttt{\gls{children}} field contains an array of children for this node.
+If a node could have more than three children, such as a node representing
+the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer
+to a variable length array that holds the rest of the children.
+This leads to non-uniform indexing into nodes.
+For example \texttt{n->children[1]} returns the second child of the node,
+but the sixth child must be retrieved with \texttt{n->children[3].a[2]}.
+We use a \texttt{child\_at} macro to simplify the code,
+so \texttt{child\_at(n,5)} returns the sixth child.
+The \texttt{symbol} field is a pointer to the static information
+of the node.
+This includes the name, arity, and \gls{tag} for the node,
+as well as a function pointer responsible for reducing the node to 
+head constructor from.
+We include a \texttt{TAG} macro to access the tag of a node.
+This is purely for convenience.
+For a node labeled by function |f|, this is a pointer to \texttt{f\_hnf}.
+Because the calling convention is complicated, we hide this detail with an
+\texttt{HNF} macro, so \texttt{HNF(f)} evaluated the node labeled by |f|
+to head constructor from.
+The \texttt{missing} field represents a partial function application.
+If \texttt{missing} is greater than 0, then \texttt f is partially applied.
+The \texttt{nondet} field represents the nondet marker described in the
+fast backtracking algorithm.
+
+Each function and constructor generates a \texttt{set} and \texttt{make} function.
+For the |not| function, we would generate 
 
 \begin{verbatim}
-void not_hnf(Node* root)
+void set_not(field root, field x);
+field make_not(field x);
+\end{verbatim}
+
+The \texttt{set\_not} function sets the \texttt{root} parameter to be a |not| node.
+This is accomplished by changing the symbol and children for \texttt{root}.
+The \texttt{make\_not} function allocates memory for a new |not| node.
+
+
+
+Each program in our language defines an expression |main|,
+and runs until |main| is evaluated to constructor normal form.
+This evaluation is broken up into two pieces.
+The primary driver of a program is the \texttt{nf} function,
+which is responsible for evaluating the main expression to constructor normal form.
+The \texttt{nf} function computes this form by first evaluating an expression to
+head constructor form.
+When an expression is in head constructor from, \texttt{nf} evaluates each subexpression
+to constructor normal from, producing the following execution loop:
+
+\begin{verbatim}
+void nf(field expr)
 {
-  Node* x = root->childrent[0];
-  Node* x_forward = x;
-  bool nondet = false;
-  while(true)
-  {
-    nondet = x_forward->nondet;
-    switch(x_forward->tag)
+    HNF(expr);
+
+    for(int i = 0; i < expr.n->symbol->arity; i++)
     {
-      ...
-
-      case False_TAG:
-        root->tag = False_TAG;
-        root->hnf = CTR_hnf;
-        if(nondet)
-        {
-          root->nondet = true;
-          push(bt_stack, root, make_not(x), false);
-        }
-        return;
-
-     ...
-
+        nf(child_at(expr, i));
     }
 }
 \end{verbatim}
 
-\subsection{Apply Nodes}
+All that's missing here is the \texttt{hnf} functions.
+We give a simplified version of the \texttt{not\_hnf} function in \ref{fig:notInit},
+and we will fill in details as we progress.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root)
+{
+  field x = child_at(root, 0);
+
+  field scrutenee = x;
+  while(true)
+  {
+    switch(TAG(scrutenee))
+    {
+      case FAIL_TAG:
+      {
+        fail(root);
+        return;
+      }
+      case FORWARD_TAG:
+      {
+        scrutenee = child_at(scrutenee,0);
+        break;
+      }
+      case FUNCTION_TAG:
+      {
+        HNF(scrutenee);
+        break;
+      }
+      case Prelude_True_TAG:
+      {
+        set_Prelude_False(root, 0);
+        return;
+      }
+      case Prelude_False_TAG:
+      {
+        set_Prelude_True(root, 0);
+        return;
+      }
+    }
+  }
+}
+\end{verbatim}
+\caption{Initial implementation of |not|}
+\label{fig:notInit}
+\end{figure}
+
+We can see that the main driver of this function is the \texttt{while(true)} loop.
+The loop looks up the tag of \texttt x, and if it's a function tag, when we evaluate it to
+head constructor form.
+If the tag for \texttt x is \texttt{FAIL}, which represents an exempt node, then
+we set the root to \texttt{FAIL} and return.
+If the tag is \texttt{Prelude\_True} or \texttt{Prelude\_False},
+we set the root to the corresponding expression, and return from the loop.
+Finally, in order to implement collapsing functions, we introduce a \texttt{FORWARD} tag.
+If the tag is \texttt{FORWARD}, then we traverse the forwarding chain,
+and continue evaluating the \texttt x.
+
+Finally, while we are evaluating the node stored in the local variable \texttt x,
+we introduce a new variable \texttt{scrutenee}.
+This is because if \texttt{x} evaluates to a forwarding node,
+we need to evaluate the child of \texttt x.
+If we were to update \texttt x, and then return an expression containing \texttt x
+later, then we would have compressed the forwarding path.
+As mentioned previously, this is not valid.
+
+At this point we have a strategy for how to compile first order deterministic Curry functions.
+Next we show how we handle partial application and higher order functions.
+
+\subsection{Higher Order Functions}
 
 Earlier we gave an interpretation of how to handle |apply| nodes,
 but there are still a few details to work out.
-Recall the semantics we gave to apply nodes:
+Recall the semantics we gave for apply nodes:
 
 > apply f_k [x_1, ... x_n]
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
 >  | k < n   = apply (f x_1 ... x_k) [x_k1, ... x_n]
 
-Here if |f| is missing any arguments, then we call |f| a partial application.
-Let's look at a concrete examples.
+If |f| is missing any arguments, then we call |f| a partial application.
+Let's look at a concrete example.
 In the expression |foldr_2 (pl_2)|, |foldr| is a partial application that is missing 2 arguments.
 We will write this as |foldr (pl_2) \* \*| where |\*| denotes a missing argument.
-Now suppose that we want to apply
+Now, suppose that we want to apply the following expression.
 
 \Tree[.|apply| [.|foldr| |+| |\*| |\*| ] |0| [.|:| |1| |...| ] ]
 
 Remember that each node represents either a function or a constructor,
 and each node has a fixed arity.
-For example |+| has an arity of 2, and |foldr| has an arity of 3.
-This is true for every |+| or |foldr| node we encounter,
-however, it's not true for |apply| nodes.
-In fact, and |apply| node may have any positive arity.
+For example, |+| has an arity of 2, and |foldr| has an arity of 3.
+This is true for every |+| or |foldr| node we encounter.
+However, it's not true for |apply| nodes.
+In fact, an |apply| node may have any positive arity.
 Furthermore, by definition, an |apply| node can't be missing any arguments.
-For this reason, we use the \texttt{missing} field to hold how many arguments the node is applied to.
-In reality we set missing to the 
-negative value of the arity to distinguish an apply node from a partial application.
+For this reason, we use the \texttt{\gls{missing}} field to hold the number of 
+arguments the node is applied
+to.\footnote{In reality we set missing to the 
+             negative value of the arity to distinguish an 
+             apply node from a partial application.}
 
 
 The algorithm for reducing apply nodes is straightforward, but brittle.
@@ -1505,11 +984,12 @@ The major problem with function application is getting the arguments in the corr
 To help alleviate this problem we make a non-obvious change to the structure of nodes.
 We store the arguments in reverse order.
 To see why this is helpful, let's consider the |foldr| example above.
-But this time let's decompose it into 3 apply nodes, so we have 
+But this time, let's decompose it into 3 apply nodes, so we have 
 |apply (apply (apply foldr_3 (pl_2)) 0) [1,2,3]|.
 In our innermost apply node, which will be evaluated first, we apply |foldr_3| to |pl_2| to get
-|foldr_2 (pl_2) \* \*|,
-This is straightforward, we simply put |+| as the first child.
+|foldr_2 (pl_2) \* \*|.
+This is straightforward.
+We simply put |+| as the first child.
 However, when we apply |foldr_2 (pl_2) \* \*| to |0|, we need to put |0| in the second child slot.
 In general, when we apply an arbitrary partial application |f| to |x|, what child do we put |x| in?
 Well, if we're storing the arguments in reverse order, then we get a really handy result.
@@ -1523,44 +1003,40 @@ This is completely independent of the arity of the function.
 > => foldr_0 [1,2,3] 0 (pl_2))
 
 
-The algorithm is given below.
+The algorithm is given in figure \ref{fig:apply}.
 There are a few more complications to point out.
-To avoid complications we assume arguments that a function is being applied to are stored in the
+To avoid complications, we assume arguments that a function is being applied to are stored in the
 array at \texttt{children[3]} of the apply node.
-That gives us the structure |apply f \* \* arg_n ... arg_1|
+That gives us the structure |apply f \* \* a_n ... a_1|.
 This isn't done in the runtime system because it would be inefficient,
-but it simplifies the code for presentation.
-We also make use of the \texttt{set\_child\_at} macro, which simplifies setting child nodes,
-since the first three children are part of the node, but any more are part of an external array.
-Finally, the loop to put the partial function in head normal form uses
+but it simplifies the code for this presentation.
+We also make use of the \texttt{set\_child\_at} macro, which simplifies setting child nodes
+and is similar to \texttt{child\_at}.
+Finally, the loop to put the partial function in \gls{HCF} uses
 \texttt{while(f.n->missing <= 0)} instead of \texttt{while(true)}.
 This is because our normal form is a partial application, which does not have its own tag.
 
-The algorithm, shown below, is pretty simple.
+We reduce an apply node in two steps.
 First get the function \texttt f, which is the first child of an apply node.
 Then, reduce it to a partial application.
 If \texttt f came from a non-deterministic expression, the save the apply node on the stack.
-Now we split into two cases.
-If we're under applied, or have exactly the right amount of arguments,
+We split the second step into two cases.
+If \texttt f is under applied, or has exactly the right number of arguments,
 then copy the contents of \texttt f into the root, and move the arguments over and reduce.
-If we're over applied, then make a new copy of \texttt f,
+If \texttt f is over applied, then make a new copy of \texttt f,
 and copy arguments into it until it's fully applied.
-reduce the fully applied copy of \texttt f, and finally apply the rest of the arguments.
+Finally we reduce the fully applied copy of \texttt f and apply the rest of the arguments.
 
+\begin{figure}
 \begin{verbatim}
 void apply_hnf(field root)
 {
-    field f = root.n->children[0];
+    field f = child_at(root,0);
     field* children = root.n->children[3].a;
 
     while(f.n->missing <= 0)
     {
         // Normal HNF loop
-    }
-
-    if(f.n->nondet)
-    {
-        save_copy(root);
     }
 
     int nargs = -root.n->missing;
@@ -1578,7 +1054,7 @@ void apply_hnf(field root)
 
         if(missing == 0)
         {
-            root->symbol->hnf(root);
+            HNF(root);
         }
     }
     else
@@ -1593,7 +1069,7 @@ void apply_hnf(field root)
         }
 
         newf.n->missing = 0;
-        newf->symbol->hnf(newf);
+        HNF(newf);
 
         set_child_at(root,0,newf);
         root.n->missing = -nargs;
@@ -1601,10 +1077,196 @@ void apply_hnf(field root)
     }
 }
 \end{verbatim}
+\caption{The \texttt{apply\_hnf}  function}
+\label{fig:apply}
+\end{figure}
+
+
+\subsection{Implementing Non-determinism}
+
+Now, we that we can reduce a higher order functional language,
+we would like to extend our implementation to handle features from logic languages.
+
+The implementation doesn't change too much.
+First we add two new tags \texttt{CHOICE} and \texttt{FREE}
+to represent non-deterministic choice and free variable nodes respectively.
+The choice nodes are treated in a similar manner to a function.
+We call the \texttt{choose} function to reduce a choice to \gls{HCF},
+and push the alternative on the stack.
+
+The choose function in \ref{fig:choose} reduces a choice node to head constructor form.
+Since choice is a collapsing rule, we return a forwarding node.
+The function is also responsible for keeping track of which branch of the choice we should reduce,
+and pushing the alternative on the backtracking stack.
+We accomplish this by keeping a marker in the second child of a choice node.
+This marker is 0 if we should reduce to the left hand side, and 1 if we should reduce to the righ
+hand side.
+
+\begin{figure}
+\begin{verbatim}
+void choose(field root)
+{
+    field choices[2] = {child_at(root,0), child_at(root,1)};
+    int side = child_at(root,2).i;
+
+    field saved;
+    saved.n = (Node*)alloc(sizeof(Node));
+    memcpy(saved.n, root.n, sizeof(Node));
+
+    child_at_i(saved,2) = !side;
+    stack_push(bt_stack, root, saved, side == 0);
+
+    set_forward(root,choices[side]);
+    root.n->nondet = true;
+
+}
+\end{verbatim}
+\caption{Implementation of the \texttt{choose} function.}
+\label{fig:choose}
+\end{figure}
+
+Free variables are more interesting.
+To narrow a free variable we pick a possible constructor,
+and replace the \texttt{scrutinee} node with that constructor.
+All arguments to the constructor are instantiated with free variables.
+Then, we push a rewrite on the stack to replace \texttt{scrutinee} with a free variable
+using the \texttt{push\_frame} function.
+This is because after each possible choice has been exhausted, we want to reset
+this node back to a free variable in case it is used in another non-deterministic branch
+of the computation.
+Finally, for every other constructor, we push an alternative on the backtracking stack
+using the \texttt{push\_choice} function.
+
+The only other necessary change is to push a rewrite onto the backtracking stack
+when we reach either a fail, or constructor case.
+The \texttt{Prelude\_not\_1} function is a function at a case expression discussed
+in the \ref{Non-determinism} section.
+The changes to the |not| function are give in figure \ref{fig:notNondet}.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root)
+{
+  field x = child_at(root, 0);
+
+  field scrutenee = x;
+  while(true)
+  {
+    switch(TAG(scrutenee))
+    {
+      case FAIL_TAG:
+        push_frame(root, make_Prelude_not_1(x));
+        fail(root);
+        return;
+
+      case FORWARD_TAG:
+        ...
+      case FUNCTION_TAG:
+        ...
+      case CHOICE_TAG:
+        choose(scrutenee);
+        break;
+
+      case FREE_TAG:
+        push(bt_stack(free_var())choose(scrutenee);
+        push_frame(scrutenee, free_var());
+        push_choice(scrutenee, make_Prelude_False(0));
+        set_Prelude_True(scrutenee, 0);
+        break;
+
+      case Prelude_True_TAG:
+        push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_False(root, 0);
+        return;
+
+      case Prelude_False_TAG:
+        push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_True(root, 0);
+        return;
+    }
+  }
+}
+\end{verbatim}
+\caption{implementation of |not| with possible non-deterministic values.}
+\label{fig:notNondet}
+\end{figure}
+
+
+\subsection{Fast Backtracking}
+
+Finally we show how we implement the fast backtracking technique described earlier.
+The implementation actually doesn't change much,
+we simply make use of the \texttt{nondet} flag in each node.
+While we're evaluating \texttt{scrutinee},
+we keep track of whether or not we've seen
+a non-deterministic node in a local variable, and if we have, we push
+the root on the backtracking stack.
+If we haven't seen a non-deterministic node,
+then we can simply avoid pushing this rewrite.
+The generated code for |not| is given in figure \ref{fig:notFull}.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root)
+{
+  field x = child_at(root, 0);
+  field scrutenee = x;
+  bool nondet = false;
+
+  while(true)
+  {
+    nondet |= scrutenee->nondet;
+    switch(TAG(scrutenee))
+    {
+      case FAIL_TAG:
+        if(nondet) push_frame(root, make_Prelude_not_1(x));
+        fail(root);
+        return;
+
+      case FORWARD_TAG:
+        ...
+      case FUNCTION_TAG:
+        ...
+      case CHOICE_TAG:
+        choose(scrutenee);
+        nondet = true;
+        break;
+
+      case FREE_TAG:
+        push_frame(scrutenee, free_var());
+        push_choice(scrutenee, make_Prelude_False(0));
+        set_Prelude_True(scrutenee, 0);
+        nondet = true;
+        break;
+
+      case Prelude_True_TAG:
+        if(nondet) push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_False(root, 0);
+        return;
+
+      case Prelude_False_TAG:
+        if(nondet) push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_True(root, 0);
+        return;
+    }
+  }
+}
+\end{verbatim}
+\caption{implementation of |not| with possible non-deterministic values.}
+\label{fig:notFull}
+\end{figure}
+
+In this chapter we've discussed the Curry language, and overviewed the semantics of Curry programs.
+We've shown different approaches to implementing a system for running Curry programs,
+and we've discussed the choices we've made.
+When a decision needed to be made, we prioritized correctness, then efficient execution,
+and then ease of implementation.
+
+In some sense, we've given a recipe of how to translate Curry into C.
+In the next chapter we introduce the tools to make this recipe.
+We introduce a system for implementing transformations as rewrite rules.
+We then show how this system can simplify the construction of a compiler,
+and use it to transform FlatCurry programs into a form that is easier to optimize and compile to C.
 
 
 
-And with that, we've arrived at our complete semantics for our compiler.
-In the next section, we describe how compiler transformations are implemented,
-and we give a short description of the compiler using these transformations.
-Now that we have our recipe, it's time to make some Curry!

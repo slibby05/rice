@@ -1,0 +1,351 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% symbol list
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newglossaryentry{->}
+{
+    name=$\to$,
+    description={rewrite relation},
+    symbol=\ensuremath{\to}
+}
+
+\newglossaryentry{->^n}
+{
+    name=$\to^n$,
+    description={n-fold rewrite relation},
+    symbol=\ensuremath{\to^n}
+}
+\newglossaryentry{->^<n}
+{
+    name=$\to^{\le n}$,
+    description={up to n-fold rewrite relation},
+    symbol=\ensuremath{\to^+}
+}
+
+\newglossaryentry{->^=}
+{
+    name=$\to^=$,
+    description={reflexive closure},
+    symbol=\ensuremath{\to^=}
+}
+\newglossaryentry{<->}
+{
+    name=$\leftrightarrow$,
+    description={symetric closure},
+    symbol=\ensuremath{\leftrightarrow}
+}
+
+\newglossaryentry{->^+}
+{
+    name=$\to^+$,
+    description={transitive closure},
+    symbol=\ensuremath{\to^+}
+}
+
+\newglossaryentry{->^*}
+{
+    name=$\to^*$,
+    description={reflexive, transitive closure},
+    symbol=\ensuremath{\to^*}
+}
+\newglossaryentry{TermSet}
+{
+    name={$T(\Sigma,V)$},
+    description={The set of terms with signature $\Sigma$ and variables in $V$},
+    symbol=\ensuremath{T(\Sigma,V)}
+}
+
+\newglossaryentry{atPath}
+{
+    name={$t\vert_p$},
+    description={The subterm of $t$ at position $p$.},
+    symbol={\ensuremath{t\vert_p}}
+}
+\newglossaryentry{replace}
+{
+    name={$t[p \to r]$},
+    description={replace subterm at position $p$ with term $r$.},
+    symbol=\ensuremath{t[p \to r]}
+}
+\newglossaryentry{sigma}
+{
+    name={$\sigma$},
+    description={substitution},
+    symbol=\ensuremath{\sigma}
+}
+
+\newglossaryentry{f_k}
+{
+    name=$f_k$,
+    description={Function missing $k$ arguments.},
+    symbol=\ensuremath{f_k}
+}
+
+\newglossaryentry{EXEMPT}
+{
+    name=$\bot$,
+    description={An expression representing a failed computation.}
+    symbol=\ensuremath{\bot}
+}
+\newglossaryentry{C(e)}
+{
+    name=C(e),
+    description={The computation space of $e$.},
+    symbol=\ensuremath{C(e)}
+}
+\newglossaryentry{FORWARD}
+{
+    name=$FORWARD(n)$,
+    description={A node that forwards to $n$.}
+    symbol=\ensuremath{FORWARD}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% terms
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newglossaryentry{ARS}
+{
+  name=Abstract Rewrite System (ARS),
+  first=Abstract Rewrite System (ARS),
+  text=Abstract Rewrite System,
+  description={ is a set $A$ along with a relation $\to$.
+                We write $a \to b$ instead of $(a,b) \in \to$, 
+                and we have several modifiers on our relation.}
+}
+
+\newglossaryentry{NF}
+{
+  name=Normal Form (NF),
+  first=Normal Form (NF),
+  text=normal form,
+  description={ $a$ is in \textit{normal form} if no rewrite rules can apply.}
+}
+
+\newglossaryentry{CNF}
+{
+  name=Constructor Normal Form (CNF),
+  first=Constructor Normal Form (CNF),
+  text=Constructor Normal Form,
+  description={ A normal form of an expression consisting of only
+                Constructor and literal values.}
+}
+
+\newglossaryentry{HCF}
+{
+  name=Head Constructor Form (HCF),
+  first=Head Constructor Form (HCF),
+  text=Head Constructor Form,
+  description={ A form where the root of an expression is a constructor.}
+}
+
+\newglossaryentry{rewrite derivation}
+{
+  name=rewrite derivation,
+  description={a sequence of rewrite steps $a_0 \to a_1 \to \ldots a_n$}
+}
+\newglossaryentry{confluent}
+{
+    name=confluent,
+    description={A rewrite system where the order of the rewrites doesn't change the final result.
+                If $b \leftarrow a \to c$, then there exists some $u$ where $b \to u \leftarrow c$.}
+}
+\newglossaryentry{terminating}
+{
+    name=terminating,
+    description={A rewrite system each derivation is finite.}
+}
+
+
+\newglossaryentry{signature}
+{
+    name=signature,
+    description={ The name and arity of a function}
+}
+\newglossaryentry{variable}
+{
+    name=variable,
+    description={ A term named by a symbol in $V$}
+}
+
+\newglossaryentry{term}
+{
+    name=term,
+    description={Either a variable, or a function symbol whose arguments are terms.}
+}
+\newglossaryentry{linear}
+{
+    name=linear,
+    description={A term where no variable appears twice.}
+}
+\newglossaryentry{child}
+{
+    name=child,
+    description={An argument to a function symbol.}
+}
+\newglossaryentry{subterm}
+{
+    name=subterm,
+    description={Either a child, or a subterm of a child.}
+}
+\newglossaryentry{path}
+{
+    name=path,
+    description={A sequence of positions of successive children.}
+}
+\newglossaryentry{substitution}
+{
+    name=substitution,
+    description={A mapping from variables to terms.}
+}
+\newglossaryentry{matcher}
+{
+    name=matcher,
+    description={a substitution that transforms one term into another.}
+}
+\newglossaryentry{unifier}
+{
+    name=unifier,
+    description={a substitution that transforms two terms into the same term.}
+}
+\newglossaryentry{FlatCurry}
+{
+    name=FlatCurry,
+    description={An intermediate representation of Curry programs meant to represent definitional trees.}
+}
+\newglossaryentry{inductively sequential}
+{
+    name=inductively sequential,
+    description={ }
+}
+\newglossaryentry{backtracking}
+{
+    name=backtracking,
+    description={ }
+}
+\newglossaryentry{Pull-Tabbing}
+{
+    name=Pull-Tabbing,
+    description={ }
+}
+\newglossaryentry{Bubbling}
+{
+    name=Bubbling,
+    description={ }
+}
+\newglossaryentry{Pakcs}
+{
+    name=Pakcs,
+    description={ }
+}
+\newglossaryentry{Kics2}
+{
+    name=Kics2,
+    description={ }
+}
+\newglossaryentry{Sprite}
+{
+    name=Sprite,
+    description={ }
+}
+\newglossaryentry{Rice}
+{
+    name=Rice,
+    description={ }
+}
+\newglossaryentry{GHC}
+{
+    name=GHC,
+    description={ }
+}
+\newglossaryentry{nondet}
+{
+    name=nondet,
+    description={ }
+}
+\newglossaryentry{LOIS}
+{
+    name=limited overlapping inductively sequential,
+    description={ }
+}
+\newglossaryentry{GRS}
+{
+    name=graph rewrite system,
+    description={ }
+}
+\newglossaryentry{computation space}
+{
+    name=computation space,
+    description={ }
+}
+\newglossaryentry{Path Compression Theorem}
+{
+    name=Path Compression Theorem,
+    description={ }
+}
+\newglossaryentry{Redex Compression Theorem}
+{
+    name=Redex Compression Theorem,
+    description={ }
+}
+\newglossaryentry{collapsing functions}
+{
+    name=collapsing functions,
+    description={ }
+}
+\newglossaryentry{path compression}
+{
+    name=path compression,
+    description={ }
+}
+\newglossaryentry{forwarding node}
+{
+    name=forwarding node,
+    plural=forwarding nodes,
+    description={ }
+}
+\newglossaryentry{f_hnf}
+{
+    name=f\_hnf,
+    plural=forwarding nodes,
+    description={ }
+}
+\newglossaryentry{node}
+{
+    name=node,
+    plural=nodes,
+    description={ }
+}
+\newglossaryentry{children}
+{
+    name=children,
+    description={ }
+}
+\newglossaryentry{field}
+{
+    name=field,
+    description={ }
+}
+\newglossaryentry{tag}
+{
+    name=tag,
+    description={ }
+}
+\newglossaryentry{missing}
+{
+    name=missing,
+    description={ }
+}
+\newglossaryentry{set}
+{
+    name=set function,
+    text=set,
+    description={ }
+}
+\newglossaryentry{make}
+{
+    name=make function,
+    text=make,
+    description={ }
+}

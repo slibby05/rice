@@ -13,6 +13,14 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{tikz-cd}
+%\usepackage{imakeidx}
+\usepackage[acronym,toc]{glossaries}
+%\usepackage{etoolbox}
+\newglossary[slg]{symbolslist}{syi}{syg}{Symbolslist}
+%include glossary.lcurry
+\makeglossaries
+
+
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 \def\N{\mathbb{N}}
 \newcommand{\xyS}[1]{\ar@@{-}@@/-6pt/[#1]}
@@ -35,6 +43,7 @@
 \title{Making Curry with Rice \\
        \large{An Optimizing Curry Compiler}}
 \author{Steven Libby}
+
 
 \begin{document}
 
@@ -70,16 +79,20 @@
 
 %include 06_conclusion.lcurry
 
-\appendix
 
-\chapter{Derivation of fib}
+% \appendix
+%
+% \chapter{Derivation of fib}
+% 
+% %include A1_fib.lcurry
+% 
+% \chapter{Benchmarks Programs}
+% 
+% %include A2_benchmarks.lcurry
 
-%include A1_fib.lcurry
 
-\chapter{Benchmarks Programs}
-
-%include A2_benchmarks.lcurry
-
+\printglossaries
 \bibliographystyle{plain}
 \bibliography{bibliography}
+%\printindex
 \end{document}

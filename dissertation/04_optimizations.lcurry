@@ -159,7 +159,7 @@ we can inline one without fear of problems with non-deterministic expressions.
 This will be referred to as limited A-Normal Form.
 
 In fact, this idea isn't even new to Curry.
-In \cite{normalSemantic} FlatCurry programs are translated into
+In \cite{currySemantics} FlatCurry programs are translated into
 a ``Normal Form'', before evaluation begins.
 Although, it should be noted that this form is more limited
 because case statements and choice expressions may contain compound expressions.
@@ -317,7 +317,7 @@ As mentioned at the start of this chapter, inlining isn't generally valid in Cur
 So, we need to establish cases when inlining is valid,
 determine when it's a good idea to inline,
 and ensure that our inlining algorithm is correct.
-This work is largely based on \cite{haskellInliner , CarruthInline}.
+This work is largely based on \cite{haskellInliner, CarruthInline}.
 
 Similarly to \cite{haskellInliner}, we need to make a distinction between
 inlining and reduction.
@@ -477,18 +477,18 @@ In order to keep track of all of the functions we've optimized we create a funct
 called |ifunction|.
 The function table is just a map from function names to information about the function.
 We use the following definitions for lookups into the function table.
-|inlinable f| returns true if we believe that |f| is a good candidate for reduction.
+|rinlinable f| returns true if we believe that |f| is a good candidate for reduction.
 We have designed the compiler so that the heuristic we use is easy to tweak,
 but at the very least |f| should not be external, or a loop breaker, and should not be too big.
-|useful x f e| attempts to determine if reducing the function |f| 
+|ruseful x f e| attempts to determine if reducing the function |f| 
 in the expression |let x = f ... in e| would be useful.
 Again this heuristic is easily tweakable, but currently,
 a function is useful if |x| is returned from the function,
 it's used as the scrutinee of a case expression,
 or it's used in a function that's likely to be reduced.
-|simple f| returns True if |f| is a simple reduction with no case expressions.
+|rsimple f| returns True if |f| is a simple reduction with no case expressions.
 It's always useful to reduce these functions.
-|cancels f [e_1, ... e_n]| returns true if reducing |f| with |e_1 ... e_n|
+|rcancels f [e_1, ... e_n]| returns true if reducing |f| with |e_1 ... e_n|
 will likely cause Case Canceling.
 
 
@@ -672,8 +672,8 @@ so we can apply the path compression theorem again to obtain our result.
 
 \end{proof}
 
-We give the GAS rules for reduction in figure \ref{fig:reduce}.
-The rules are straightforward, and we make sure that |body f| 
+We give the GAS rules for reduction in figure \ref{fig:GAS_reduce}.
+The rules are straightforward, and we make sure that |rbody f| 
 replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.
 This strategy was taken from \cite{haskellInliner} and it works very well.
@@ -682,23 +682,23 @@ we don't get the same readable code.
 
 \begin{figure}
 > REDUCE_BASE
-> f e_1 ... e_n                   | top & inlinable f  => sub f (v_1 |-> e_1, ... v_n |-> e_n)
+> f e_1 ... e_n                   | top & rinlinable f  => sub f (v_1 |-> e_1, ... v_n |-> e_n)
 > REDUCE_BRANCH
-> case e of Ctr -> f e_1 ... e_n  | inlinable f        => case e of Ctr -> sub f (v_1 |-> e_1, ... v_n |-> e_n)
+> case e of Ctr -> f e_1 ... e_n  | rinlinable f        => case e of Ctr -> sub f (v_1 |-> e_1, ... v_n |-> e_n)
 > REDUCE_LET
-> let ... in f e_1 ... e_n        | inlinable f        => let ... in sub f (v_1 |-> e_1, ... v_n |-> e_n)
+> let ... in f e_1 ... e_n        | rinlinable f        => let ... in sub f (v_1 |-> e_1, ... v_n |-> e_n)
 > REDUCE_USEFUL
-> let x = f e_1 ... e_n in e      | useful x f e       => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
+> let x = f e_1 ... e_n in e      | ruseful x f e       => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
 > REDUCE_SIMPLE
-> let x = f e_1 ... e_n in e      | simple f           => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
+> let x = f e_1 ... e_n in e      | rsimple f           => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
 > REDUCE_CANCELS
-> let x = f e_1 ... e_n in e      | cancels f e        => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
+> let x = f e_1 ... e_n in e      | rcancels f e        => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
 \caption{Rules for reduction.\\
          All expressions are kept in A-Normal Form.
          |REDUCE_BASE| is only run if we are at the root of the body.
          While the last three rules are effectively the same,
          tt's useful to keep them separated for debugging reduction derivations.}
-\label{fig:reduce}
+\label{fig:GAS_reduce}
 \end{figure}
 
 We end by giving a couple of examples of reductions to see how they work in practice.
@@ -814,6 +814,6 @@ Shortcutting is a new optimization to Curry.
 >       False -> True
 
 \caption{Derivation of |<=| for |Bool| condinued}
-\label{fig:LtEqReduce2}
+\label{fig:LtEqReduce3}
 \end{figure}
 

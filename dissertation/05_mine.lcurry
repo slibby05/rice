@@ -22,7 +22,7 @@ and the choice of how we represent boxes has a pervasive effect on the compiler.
 Since we knew how we intended to implement Unboxing, 
 we decided to use that representation from the beginning.
 
-We chose to follow the style of Unboxing from Launchbury et al. \cite{Unboxing}
+We chose to follow the style of Unboxing from Launchbury et al. \cite{unboxing}
 and represent all boxes explicitly in FlatCurry.
 This has several advantages, but one of the most important
 is that we can apply optimizations to the boxes themselves.
@@ -546,7 +546,7 @@ return f_RET_hnf(backup);
 \subsection{Shortcutting Results}
 
 Shortcutting was originally formulated in the context of the Pakcs compiler
-\cite{reallyNeeded, Shortcutting},
+\cite{reallyNeeded, shortcutting},
 which handled reduction a little differently then we do here.
 Instead of calling an hnf function directly,
 it had a giant lookup table that would dispatch the node to be reduced 
@@ -610,20 +610,20 @@ This is the goal of Deforestation.
 
 \subsection{The Original Scheme}
 Deforestation has actually gone through several forms throughout it's history.
-The original optimization proposed by Wadler \cite{wadler_deforest}
+The original optimization proposed by Wadler \cite{deforestationWadler}
 was very general, but it required a complicated algorithm, and it could fail to terminate.
 There have been various attempts to improve this algorithm \cite{turchin_supercompiler} and 
 \cite{wadler_ferguson_deforest}
 that have focused on restricting the form of programs.
 
-An alternative was proposed by Gill in his dissertation \cite{gill_dissertation, shortcut_deforest}
+An alternative was proposed by Gill in his dissertation \cite{gill_dissertation, shortcutDeforestation}
 called \mbox{foldr-build} Deforestation or short-cut Deforestation. 
 This approach is much simpler, always terminates, and has a nice correctness proof,
 but it comes at the cost of generality.
 \mbox{Foldr-build} Deforestation only works with functions that produce and consume lists.
 Still, lists are common enough in functional languages that this optimization has proven to be effective.
 
-Since then \mbox{foldr-build} Deforestation has been extended to Stream Fusion \cite{steam_fustion}.
+Since then \mbox{foldr-build} Deforestation has been extended to Stream Fusion \cite{stream}.
 While this optimization is able to cover more cases than \mbox{foldr-build} Deforestation,
 it relies on more advanced compiler technology.
 

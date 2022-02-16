@@ -46,14 +46,17 @@
 
 
 \begin{document}
-
+\frontmatter
 \maketitle
 
 \tableofcontents
 
+\setcounter{chapter}{-1}
 \chapter{Introduction}
 
 %include 00_introduction.lcurry
+
+\mainmatter
 
 \chapter{Mathematical Background}
 

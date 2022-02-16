@@ -24,7 +24,7 @@
 
 \newglossaryentry{->^=}
 {
-    name=$\to^=$,
+    name=$\to^{=}$,
     description={reflexive closure},
     symbol=\ensuremath{\to^=}
 }
@@ -58,13 +58,13 @@
 \newglossaryentry{atPath}
 {
     name={$t\vert_p$},
-    description={The subterm of $t$ at position $p$.},
+    description={The subterm of $t$ at position $p$},
     symbol={\ensuremath{t\vert_p}}
 }
 \newglossaryentry{replace}
 {
     name={$t[p \to r]$},
-    description={replace subterm at position $p$ with term $r$.},
+    description={replace subterm at position $p$ with term $r$},
     symbol=\ensuremath{t[p \to r]}
 }
 \newglossaryentry{sigma}
@@ -77,26 +77,26 @@
 \newglossaryentry{f_k}
 {
     name=$f_k$,
-    description={Function missing $k$ arguments.},
+    description={Function missing $k$ arguments},
     symbol=\ensuremath{f_k}
 }
 
 \newglossaryentry{EXEMPT}
 {
     name=$\bot$,
-    description={An expression representing a failed computation.}
+    description={An expression representing a failed computation}
     symbol=\ensuremath{\bot}
 }
 \newglossaryentry{C(e)}
 {
     name=C(e),
-    description={The computation space of $e$.},
+    description={The computation space of $e$},
     symbol=\ensuremath{C(e)}
 }
 \newglossaryentry{FORWARD}
 {
     name=$FORWARD(n)$,
-    description={A node that forwards to $n$.}
+    description={A node that forwards to $n$}
     symbol=\ensuremath{FORWARD}
 }
 
@@ -112,7 +112,115 @@
   text=Abstract Rewrite System,
   description={ is a set $A$ along with a relation $\to$.
                 We write $a \to b$ instead of $(a,b) \in \to$, 
-                and we have several modifiers on our relation.}
+                and we have several modifiers on our relation}
+}
+\newglossaryentry{TRS}
+{
+  name=Term Rewrite System (ARS),
+  first=Term Rewrite System (ARS),
+  text=Term Rewrite System,
+  description={ The pair $(T(\Sigma,V),R)$ where $T(\Sigma,V)$ is the set of terms
+                over $\Sigma$ and $R$ is a set of rewrite rules}
+}
+\newglossaryentry{Rewriting}
+{
+  name=Rewriting,
+  description={ Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ rewrites to $s$ if, 
+                $l$ matches $t\vert_p$ with matcher $\sigma$, and $t[p \leftarrow \sigma(r)] = s$.
+                The term $\sigma(l)$ is the redex, 
+                and the term $\sigma(r)$ is the contractum of the rewrite}
+}
+\newglossaryentry{redex}
+{
+  name=redex,
+  description={ A ``reducible expression'' that matches the left hand side of a rewrite rule}
+}
+\newglossaryentry{contractum}
+{
+  name=contractum,
+  description={ The replacement term in a rewrite rule}
+}
+\newglossaryentry{collapsing}
+{
+  name=collapsing,
+  description={ A rewrite rule where the right hand side is a variable}
+}
+\newglossaryentry{duplicating}
+{
+  name=duplicating,
+  description={ A rewrite rule where the right hand side contains 
+                more than one occurrence of the same variable}
+}
+\newglossaryentry{overlapping}
+{
+  name=overlapping,
+  description={ when a subterm of one term unifies with another term.
+                A rewrite system is overlapping if there exists two rules
+                where the left hand sides are overlapping}
+}
+\newglossaryentry{orthogonal}
+{
+  name=orthogonal,
+  description={ A left linear, non-overlapping term rewriting system}
+}
+\newglossaryentry{constructor system}
+{
+  name=constructor system,
+  plural=constructor systems,
+  description={ A term rewrite system there $\Sigma$ can be decomposed into a set $C$
+                and $F$, where the root of every left hand side of a rule is in $F$
+                and every other symbol is in $C \cup V$}
+}
+\newglossaryentry{Narrowing}
+{
+  name=narrowing,
+  description={ a rewriting relation where terms are allowed to contain free variables.
+                Instead of matching term, we unify with the left hand side of rewrite rules}
+}
+\newglossaryentry{Rewriting Strategy}
+{
+  name=Rewriting Strategy,
+  description={ a function that selects a position of a redex, and a rule that applies to the redex}
+}
+\newglossaryentry{Narrowing Strategy}
+{
+  name=Narrowing Strategy,
+  description={ a function that selects a position of a redex, a substitution, 
+                and a rule that applies to the redex with the substitution}
+}
+\newglossaryentry{normalizing}
+{
+  name=normalizing,
+  description={ A strategy is normalizing if it will eventually compute a normal form for every term
+                that has one}
+}
+\newglossaryentry{descendant}
+{
+  name=descendant,
+  description={ The piece of a term that is left over after rewriting}
+}
+\newglossaryentry{needed}
+{
+  name=needed,
+  description={ A subterm s of t is needed if every derivation of t to normal form
+                will rewrite a descendant of s}
+}
+
+\newglossaryentry{sequential}
+{
+  name=sequential,
+  description={ A class of rewrite systems that admits a needed normalizing strategy}
+}
+
+\newglossaryentry{definitional tree}
+{
+  name=definitional tree,
+  description={ A hierarchical structure for rewriting rules}
+}
+\newglossaryentry{inductively sequential}
+{
+  name=inductively sequential,
+  description={ A rewrite system where all the of rules can be organized into definitional trees}
 }
 
 \newglossaryentry{NF}
@@ -120,7 +228,7 @@
   name=Normal Form (NF),
   first=Normal Form (NF),
   text=normal form,
-  description={ $a$ is in \textit{normal form} if no rewrite rules can apply.}
+  description={ $a$ is in \textit{normal form} if no rewrite rules can apply}
 }
 
 \newglossaryentry{CNF}
@@ -129,7 +237,7 @@
   first=Constructor Normal Form (CNF),
   text=Constructor Normal Form,
   description={ A normal form of an expression consisting of only
-                Constructor and literal values.}
+                Constructor and literal values}
 }
 
 \newglossaryentry{HCF}
@@ -137,7 +245,7 @@
   name=Head Constructor Form (HCF),
   first=Head Constructor Form (HCF),
   text=Head Constructor Form,
-  description={ A form where the root of an expression is a constructor.}
+  description={ A form where the root of an expression is a constructor}
 }
 
 \newglossaryentry{rewrite derivation}
@@ -145,18 +253,19 @@
   name=rewrite derivation,
   description={a sequence of rewrite steps $a_0 \to a_1 \to \ldots a_n$}
 }
+
 \newglossaryentry{confluent}
 {
     name=confluent,
     description={A rewrite system where the order of the rewrites doesn't change the final result.
-                If $b \leftarrow a \to c$, then there exists some $u$ where $b \to u \leftarrow c$.}
+                If $b \leftarrow a \to c$, then there exists some $u$ where $b \to u \leftarrow c$}
 }
+
 \newglossaryentry{terminating}
 {
     name=terminating,
-    description={A rewrite system each derivation is finite.}
+    description={A rewrite system each derivation is finite}
 }
-
 
 \newglossaryentry{signature}
 {
@@ -172,180 +281,252 @@
 \newglossaryentry{term}
 {
     name=term,
-    description={Either a variable, or a function symbol whose arguments are terms.}
+    description={Either a variable, or a function symbol whose arguments are terms}
 }
 \newglossaryentry{linear}
 {
     name=linear,
-    description={A term where no variable appears twice.}
+    description={A term where no variable appears twice}
 }
 \newglossaryentry{child}
 {
     name=child,
-    description={An argument to a function symbol.}
+    description={An argument to a function symbol}
 }
 \newglossaryentry{subterm}
 {
     name=subterm,
-    description={Either a child, or a subterm of a child.}
+    description={Either a child, or a subterm of a child}
 }
 \newglossaryentry{path}
 {
     name=path,
-    description={A sequence of positions of successive children.}
+    description={A sequence of positions of successive children.
+                 In a graph it's a sequence of vertices where there is an edge between adjacent vertices}
 }
 \newglossaryentry{substitution}
 {
     name=substitution,
-    description={A mapping from variables to terms.}
+    description={A mapping from variables to terms}
 }
 \newglossaryentry{matcher}
 {
     name=matcher,
-    description={a substitution that transforms one term into another.}
+    description={a substitution that transforms one term into another}
 }
 \newglossaryentry{unifier}
 {
     name=unifier,
-    description={a substitution that transforms two terms into the same term.}
+    description={a substitution that transforms two terms into the same term}
 }
 \newglossaryentry{FlatCurry}
 {
     name=FlatCurry,
-    description={An intermediate representation of Curry programs meant to represent definitional trees.}
+    description={An intermediate representation of Curry programs meant to represent definitional trees}
 }
-\newglossaryentry{inductively sequential}
+\newglossaryentry{rewrite rule}
 {
-    name=inductively sequential,
-    description={ }
+    name=rewrite rule,
+    description={$l \to r$ replaces a term matching $l$ with the corresponding term matching $r$}
 }
 \newglossaryentry{backtracking}
 {
     name=backtracking,
-    description={ }
+    description={ An non-deterministic evaluation strategy where
+                  each alternative to a choice is tried,
+                  then, after the computation is complete, it is undone
+                  and the other result is tried}
 }
 \newglossaryentry{Pull-Tabbing}
 {
     name=Pull-Tabbing,
-    description={ }
+    description={ A non-deterministic evaluation strategy where choices are moved
+                  up one level in the graph}
 }
 \newglossaryentry{Bubbling}
 {
     name=Bubbling,
-    description={ }
+    description={ A non-deterministic evaluation strategy where choices
+                  are moved to the nearest dominator}
 }
 \newglossaryentry{Pakcs}
 {
     name=Pakcs,
-    description={ }
+    description={The Portland, Aachen, Kiel Curry System }
 }
 \newglossaryentry{Kics2}
 {
-    name=Kics2,
-    description={ }
+    name=KiCS2,
+    description={ The Kiel Curry System 2}
 }
 \newglossaryentry{Sprite}
 {
     name=Sprite,
-    description={ }
+    description={ A Curry Compiler}
 }
 \newglossaryentry{Rice}
 {
     name=Rice,
-    description={ }
+    description={ the Reduction Inspirted Compiler Environment}
 }
 \newglossaryentry{GHC}
 {
     name=GHC,
-    description={ }
+    description={ The Glasgow Haskell Compiler}
 }
 \newglossaryentry{nondet}
 {
     name=nondet,
-    description={ }
+    description={ A node is marked as nondet if it is a choice,
+                  or it forces the evaluation of a nondet node}
 }
 \newglossaryentry{LOIS}
 {
     name=limited overlapping inductively sequential,
-    description={ }
+    description={ An inductively sequential rewrite system with the addition of 
+                  a single pair of overlapping rules for choice}
 }
 \newglossaryentry{GRS}
 {
     name=graph rewrite system,
-    description={ }
+    description={ Similar to a term rewrite system, but using graphs}
 }
 \newglossaryentry{computation space}
 {
     name=computation space,
-    description={ }
+    description={ A graph representing the relationship of all possible computations}
 }
 \newglossaryentry{Path Compression Theorem}
 {
     name=Path Compression Theorem,
-    description={ }
+    description={ A sequence of deterministic redexes can be compressed in the computation space}
 }
 \newglossaryentry{Redex Compression Theorem}
 {
     name=Redex Compression Theorem,
-    description={ }
+    description={ A deterministic redex can be compressed in the computation space}
 }
 \newglossaryentry{collapsing functions}
 {
     name=collapsing functions,
-    description={ }
+    description={ A function that returns one of it's parameters}
 }
 \newglossaryentry{path compression}
 {
     name=path compression,
-    description={ }
+    description={ A chain of forwarding nodes is compressed 
+                  if one of the nodes points further down the chain}
 }
 \newglossaryentry{forwarding node}
 {
     name=forwarding node,
     plural=forwarding nodes,
-    description={ }
+    description={ A node whose value is contained in another node}
 }
 \newglossaryentry{f_hnf}
 {
     name=f\_hnf,
-    plural=forwarding nodes,
-    description={ }
+    description={ a generated C function to reduce the Curry function f}
 }
 \newglossaryentry{node}
 {
     name=node,
     plural=nodes,
-    description={ }
+    description={ A data structure for holding a piece of an expression graph to rewrite}
 }
 \newglossaryentry{children}
 {
     name=children,
-    description={ }
+    description={ an array of pointers to children nodes}
 }
 \newglossaryentry{field}
 {
     name=field,
-    description={ }
+    description={ a union representing the Curry types, Int, Float, Char, and Node*}
 }
 \newglossaryentry{tag}
 {
     name=tag,
-    description={ }
+    description={ Represents the type of node, FORWARD, FAIL, FUNCTION, CHOICE, FREE, or constructor}
 }
 \newglossaryentry{missing}
 {
     name=missing,
-    description={ }
+    description={ Represents the number of arguments this expression still needs to be applied to}
 }
 \newglossaryentry{set}
 {
     name=set function,
     text=set,
-    description={ }
+    description={ a C function use to set the contents of an existing node 
+                  to represent a given Curry function}
 }
 \newglossaryentry{make}
 {
     name=make function,
     text=make,
-    description={ }
+    description={ A C function used to create a new node representing a given Curry function}
+}
+\newglossaryentry{graph}
+{
+    name=graph,
+    description={ A set of vertices, or nodes, along with a set of edges connecting them}
+}
+\newglossaryentry{rooted graph}
+{
+    name=rooted graph,
+    description={ A directed graph with a distinguished node called the root}
+}
+\newglossaryentry{root}
+{
+    name=root,
+    description={ A node in a directed graph with no incoming edges}
+}
+\newglossaryentry{neighborhood}
+{
+    name=neighborhood,
+    description={ The neighborhood of $v$ is the set of nodes connected to $v$}
+}
+\newglossaryentry{connected}
+{
+    name=connected,
+    description={ A graph is connected if every vertex is reachable from the root}
+}
+\newglossaryentry{strongly connected}
+{
+    name=strongly connected,
+    description={ A graph is strongly connected if every vertex is reachable from every other vertex}
+}
+\newglossaryentry{cycle}
+{
+    name=cycle,
+    description={ A path that starts and ends at the same vertex}
+}
+\newglossaryentry{acyclic}
+{
+    name=acyclic,
+    description={ A graph with no cycles}
+}
+\newglossaryentry{Directed Acyclic Graph}
+{
+    name=Directed Acyclic Graph,
+    first=Directed Acyclic Graph (DAG),
+    description={ A directed graph that is acyclic}
+}
+\newglossaryentry{subgraph}
+{
+    name=subgraph,
+    description={ A graph created by taking a subset of the vertices, and the induced subset of edges.
+                  If the graph is rooted, the subgraph induced by root $r$ is the set of nodes
+                  reachable from $r$}
+}
+\newglossaryentry{term graph}
+{
+    name=term graph,
+    description={ A rooted DAG where each node has a label, and a set of successors}
+}
+\newglossaryentry{replacement}
+{
+    name=replacement,
+    description={ The term graph generated by replacing a node with a new term graph}
 }

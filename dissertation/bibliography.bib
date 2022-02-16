@@ -52,7 +52,11 @@
   author    = {F. Baader and T. Nipkow},
 }
 
-
+@inproceedings{rewriteStrategies,
+  title={Strategies for Rewrite Systems: Normalization and Optimality},
+  author={Aart Middeldorp},
+  year={2018}
+}
 
 
 % Advanced topics in term rewriting
@@ -338,6 +342,22 @@ booktitle = "Proc.\ of the 11th International ACM SIGPLAN Conference on
   volume={2004}
 }
 
+@INPROCEEDINGS{concurrentCurry,
+    author = {Michael Hanus and Ramin Sadre},
+    title = {A Concurrent Implementation of Curry in Java},
+    booktitle = {In Proc. ILPS'97 Workshop on Parallelism and Implementation Technology for (Constraint) Logic Programming Languages},
+    year = {1997}
+}
+
+@article{abstractConcurrentCurry,
+author = {Hanus, Michael and Sadre, Ramin},
+year = {1999},
+month = {01},
+pages = {},
+title = {An Abstract Machine for Curry and Its Concurrent Implementation in Java.},
+volume = {1999},
+journal = {Journal of Functional and Logic Programming}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -345,6 +365,15 @@ booktitle = "Proc.\ of the 11th International ACM SIGPLAN Conference on
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+@INPROCEEDINGS{multiparadigm,
+author       = {Hanus, M.},
+title        = {Multi-paradigm Declarative Languages},
+year         = {2007},
+booktitle    = {Proceedings of the International Conference on Logic Programming
+                (ICLP 2007)},
+pages        = {45-75},
+publisher    = {Springer LNCS 4670},
+}
 
 @article{currySemantics,
 author = {Elvira Albert and Michael Hanus and Frank Huch and Javier Oliver and Germán Vidal},
@@ -619,6 +648,16 @@ author = {Heinrich Hussmann},
   year        = 1978
 }
 
+@inproceedings{fastCurry,
+author = {Peyton Jones, Simon},
+title = {How to make a fast curry: push/enter vs eval/apply},
+booktitle = {International Conference on Functional Programming},
+year = {2004},
+month = {September},
+url = {https://www.microsoft.com/en-us/research/publication/make-fast-curry-pushenter-vs-evalapply/},
+pages = {4-15},
+edition = {International Conference on Functional Programming},
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -838,6 +877,23 @@ edition = {International Conference on Functional Programming},
   author  = {Philip Wadler}
 }
 
+
+@article{turchin_supercompiler,
+    author = {Turchin, Valentin F.},
+    title = {The Concept of a Supercompiler},
+    year = {1986},
+    issue_date = {July 1986},
+    publisher = {Association for Computing Machinery},
+    doi = {10.1145/5956.5957},
+    journal = {ACM Trans. Program. Lang. Syst.},
+    month = {jun},
+    pages = {292–325},
+    numpages = {34}
+}
+
+      
+
+
 @inproceedings{shortcutDeforestation,
   author    = {Gill, Andrew and Launchbury, John and Peyton Jones, Simon L.},
   title     = {{A Short Cut to Deforestation}},
@@ -853,6 +909,20 @@ edition = {International Conference on Functional Programming},
   acmid     = {165214},
   publisher = {ACM},
   address   = {New York, NY, USA},
+}
+
+@MISC{Gill_dissertation,
+    author = {Andrew John Gill and Andrew John Gill},
+    title = {Cheap Deforestation for Non-strict Functional Languages},
+    year = {1996}
+}
+
+@INPROCEEDINGS{wadler_ferguson_deforest,
+    author = {A. B. Ferguson and Philip Wadler},
+    title = {When Will Deforestation Stop?},
+    booktitle = {In 1988 Glasgow Workshop on Functional Programming},
+    year = {1988},
+    pages = {39--56}
 }
 
 @INPROCEEDINGS{stream,
@@ -1083,7 +1153,7 @@ number = {1},
   pages     = {174--188},
 }
 
-@Inbook{caio,
+@Inbook{ciao,
   author    = {Hermenegildo, Manuel V.  and Bueno, Francisco and Carro, Manuel and L{\'o}pez, Pedro and Morales, Jos{\'e} F.  and Puebla, German},
   title     = {{An Overview of the Ciao Multiparadigm Language and Program Development Environment and Its Design Philosophy}},
   bookTitle = {Concurrency, Graphs and Models: Essays Dedicated to Ugo Montanari on the Occasion of His 65th Birthday},
@@ -1122,6 +1192,8 @@ number = {1},
  publisher = {ACM},
  address = {New York, NY, USA},
 }
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1519,6 +1591,43 @@ series = {PLPV '10}
 }
 
   
+@inproceedings{logict,
+    author = {Kiselyov, Oleg and Shan, Chung-chieh and Friedman, Daniel P. and Sabry, Amr},
+    title = {Backtracking, Interleaving, and Terminating Monad Transformers: (Functional Pearl)},
+    year = {2005},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    doi = {10.1145/1086365.1086390},
+    booktitle = {Proceedings of the Tenth ACM SIGPLAN International Conference on Functional Programming},
+    pages = {192–203},
+    location = {Tallinn, Estonia},
+    series = {ICFP '05}
+}
+
+  
+
+@article{10.1145/1090189.1086390,
+author = {Kiselyov, Oleg and Shan, Chung-chieh and Friedman, Daniel P. and Sabry, Amr},
+title = {Backtracking, Interleaving, and Terminating Monad Transformers: (Functional Pearl)},
+year = {2005},
+issue_date = {September 2005},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {40},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/1090189.1086390},
+doi = {10.1145/1090189.1086390},
+abstract = {We design and implement a library for adding backtracking computations to any Haskell monad. Inspired by logic programming, our library provides, in addition to the operations required by the MonadPlus interface, constructs for fair disjunctions, fair conjunctions, conditionals, pruning, and an expressive top-level interface. Implementing these additional constructs is easy in models of backtracking based on streams, but not known to be possible in continuation-based models. We show that all these additional constructs can be generically and monadically realized using a single primitive msplit. We present two implementations of the library: one using success and failure continuations; and the other using control operators for manipulating delimited continuations.},
+journal = {SIGPLAN Not.},
+month = {sep},
+pages = {192–203},
+numpages = {12},
+keywords = {streams, Prolog, continuations, Haskell, logic programming, control delimiters}
+}
+
+  
+
 
 
 # playingByTheRules

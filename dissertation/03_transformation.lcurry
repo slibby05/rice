@@ -582,7 +582,7 @@ that we can translate directly to C.
 Most of the transformations aren't complicated, and consist of disallowing certain
 syntactic constructs.
 
-The rules are listed in table \ref{fig:canonical, fig:canonical2}
+The rules are listed in table \ref{fig:canonical} \ref{fig:canonical2}
 For clarity, the rules are presented as rewrite rules.
 However, the implementation is not much more difficult, just more cluttered.
 As an example, the first let floating rule could be implemented as:
@@ -818,7 +818,7 @@ we'll address this later.
 
 After we've finished transforming the FlatCurry,
 the transformation to ICurry is almost trivial.
-The algorithm from \cite{iCurry} can be applied directly \ref{fig:flatCurryiCurry}
+The algorithm from \cite{icurry} can be applied directly \ref{fig:flatCurryiCurry}
 Currently we need to come up with a new variable for the
 scrutinee of a case-expression.
 However, This can either be taken care of in the FlatCurry transformations with the following rule,

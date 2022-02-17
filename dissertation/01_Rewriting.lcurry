@@ -35,17 +35,19 @@ and Graph Rewrite Systems, which define the operational semantics for Curry prog
 This mathematical foundation will help us justify the correctness of our transformations
 even in the presence of laziness, non-determinism, and free variables.
 
-An \gls{ARS} is a set $A$ along with a relation $\glssymbol{->}$.
+An Abstract Rewriting System (ARS)\index{Abstract Rewriting System}
+is a set $A$ along with a relation $\to$\index{$\to$}.
 We write $a \to b$ instead of $(a,b) \in \to$, and we have several modifiers on our relation.
 \begin{itemize}
-    \item $a \glssymbol{->^n} b$ iff $a = x_0 \to x_1 \to \ldots x_n = b$.
-    \item $a \glssymbol{->^<n} b$ iff $a \to^i b$ and $i \leq n$.
-    \item reflexive closure: $a \glssymbol{->^=} b$ iff $a = b$ or $a \to b$.
-    \item symmetric closure: $a \glssymbol{<->} b$ iff $a \to b$ or $b \to a$.
-    \item transitive closure: $a \glssymbol{->^+} b$ iff $\exists n\in \N. a \to^n b$.
-    \item reflexive transitive closure: $a \glssymbol{->^*} b$ iff $a \to^= b$ or $a \to^+ b$.
-    \item \gls{rewrite derivation}: a sequence of rewrite steps $a_0 \to a_1 \to \ldots a_n$.
-    \item $a$ is in \textit{\gls{NF}} if no rewrite rules can apply.
+    \item $a \to^n b$\index{$\to^n$} iff $a = x_0 \to x_1 \to \ldots x_n = b$.
+    \item $a \to^{\le n} b$\index{$\to^{\le n}$} b iff $a \to^i b$ and $i \leq n$.
+    \item reflexive closure: $a \to^= b$\index{$\to^=$} iff $a = b$ or $a \to b$.
+    \item symmetric closure: $a \leftrightarrow b$\index{$\leftrightarrow$} iff $a \to b$ or $b \to a$.
+    \item transitive closure: $a \to^+ b$\index{$\to^+$} iff $\exists n\in \N. a \to^{\le n} b$.
+    \item reflexive transitive closure: $a \to^* b$\index{$\to^*b$} iff $a \to^= b$ or $a \to^+ b$.
+    \item rewrite derivation\index{rewrite derivation}: 
+          a sequence of rewrite steps $a_0 \to a_1 \to \ldots a_n$.
+    \item $a$ is in Normal Form (NF)\index{normal form} if no rewrite rules can apply.
 \end{itemize}
 
 A rewrite system is meant to invoke the feeling of algebra.
@@ -71,9 +73,10 @@ The mechanical process of rewriting allows for a simple implementation on a comp
 
 It's worth understanding the properties and limitations of these rewrite systems.
 Traditionally there are two important questions to answer about any rewrite system.
-Is it \textit{confluent}? Is it \textit{terminating}?
+Is it \emph{confluent}? Is it \emph{terminating}?
 
-A \gls{confluent} system is a system where the order of the rewrites doesn't change the final result.
+A \emph{confluent}\index{confluent} system is a system 
+where the order of the rewrites doesn't change the final result.
 For example, consider the distributive rule.
 When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.
 Both of these reductions arrived at the same answer as can be seen in figure \ref{fig:confluent}.
@@ -107,7 +110,7 @@ Both of these reductions arrived at the same answer as can be seen in figure \re
     \label{fig:confluent}
 \end{figure}
 
-In a \gls{terminating} system every derivation is finite.
+In a \emph{terminating}\index{terminating} system every derivation is finite.
 That means that eventually there are no rules that can be applied.
 The distributive rule is terminating, 
 whereas the commutative rule is not terminating.  See figure \ref{fig:terminate}.
@@ -158,16 +161,15 @@ Therefore everything from abstract rewriting will apply to term rewriting.
 A term is made up of signatures and variables. \cite{AdvancedTRS}[Def 3.1.2]
 We let $\Sigma$ and $V$ be two arbitrary alphabets, 
 but we require that $V$ be countably infinite, and $\Sigma \cap V = \emptyset$ to avoid name conflicts.
-A \emph{\gls{signature}} $f^{(n)}$ consists of a name $f \in \Sigma$ and an arity $n\in \mathbb{N}$.
-A \emph{\gls{variable}} $v\in V$ is just a name.
-Finally a \emph{\gls{term}} is defined inductively.
+A \emph{signature}\index{signature} $f^{(n)}$ consists of a name $f \in \Sigma$ and an arity $n\in \mathbb{N}$.
+A \emph{variable}\index{variable} $v\in V$ is just a name.
+Finally a \emph{term}\index{term} is defined inductively.
 The term $t$ is either a variable $v$, or it's a signature $f^{(n)}$ with children $t_1,t_2, \ldots t_n$,
 where $t_1,t_2, \ldots t_n$ are all terms.
-We write the set of terms all as $\glssymbol{TermSet}$.
-
+We write the set of terms all as $T(\Sigma,V)$\index{$T(\Sigma,V)$}.
 If $t \in T(\Sigma,V)$ then we write $Var(t)$ to denote the set of variables in $t$.
 By definition $Var(t) \subseteq V$.
-We say that a term is \emph{\gls{linear}} if no variable appears twice in the term \cite{AdvancedTRS}[Def. 3.2.4].
+We say that a term is \emph{linear}\index{linear} if no variable appears twice in the term \cite{AdvancedTRS}[Def. 3.2.4].
 
 This inductive definition gives us a tree structure for terms.
 As an example consider Peano arithmetic $\Sigma = \{+^2, *^2, -^2, <^2, 0^0, S^1, True^0, False^0\}$.
@@ -183,13 +185,13 @@ The symbol at the top of the tree is called the root of the term.
     \label{fig:tree}
 \end{figure}
 
-A \emph{\gls{child}} $c$ of term $t = f(t_1, t_2, \ldots t_n)$ is one of $t_1, t_2, \ldots t_n$.
-A \emph{\gls{subterm}} $s$ of $t$ is either $t$ itself, or it is a subterm of a child of $t$.
-We write $s = \glssymbol{atPath}$ where $p = [i_1,i_2,\ldots i_n]$ to denote that 
+A \emph{child}\index{child} $c$ of term $f(t_1, t_2, \ldots t_n)$ is one of $t_1, t_2, \ldots t_n$.
+A \emph{subterm}\index{subterm} $s$ of $t$ is either $t$ itself, or it is a subterm of a child of $t$.
+We write $s = t||_p$\index{$t||_p$} where $p = [i_1,i_2,\ldots i_n]$ to denote that 
 $t$ has child $t_{i_1}$ which has child $t_{i_2}$ and so on until $t_{i_n} = s$.
 Note that we can define this recursively as
 $t\vert_{[i_1,i_2,\ldots i_n]} = t_{i_1}\vert_{[i_2,\ldots i_n]}$, which matches our definition for subterm.
-We call $[i_1,i_2,\ldots i_n]$ the \emph{\gls{path}} from $t$ to $s$ \cite{AdvancedTRS}[Def 3.1.5].
+We call $[i_1,i_2,\ldots i_n]$ the \emph{path}\index{path} from $t$ to $s$ \cite{AdvancedTRS}[Def 3.1.5].
 We write $\epsilon$ for the empty path,
 and $i:p$ for the path starting with the number $i$ and followed by the path $p$,
 and $p\cdot q$ for concatenation of paths $p$ and $q$.
@@ -197,18 +199,18 @@ and $p\cdot q$ for concatenation of paths $p$ and $q$.
 In our previous term $S(0)$ is a subterm in two different places.
 One occurrence is at path $[0,1]$, and the other is at path $[1,0]$.
 
-We write $\glssymbol{replace}$ to denote replacing subterm $\glssymbol{atPath}$ with $r$.
-Algorithmically we can define this as in figure \ref{fig:subterm}
+We write $t[p \to r]$\index{$t[p \to r]$} to denote replacing subterm $t||_p$ with $r$.
+We define the algorithm for this in figure \ref{fig:subterm}.
 
 \begin{figure}[ht]
-    $t[\epsilon \leftarrow r] = r$\\
-    $f(t_1,\ldots t_i,\ldots t_n)[i:p \leftarrow r] = f(t_1,\ldots t_i[p\leftarrow r],\ldots t_n) $\\
+    $t[\epsilon \to r] = r$\\
+    $f(t_1,\ldots t_i,\ldots t_n)[i:p \to r] = f(t_1,\ldots t_i[p\to r],\ldots t_n) $\\
     \caption{algorithm for finding a subterm of $t$.}
     \label{fig:subterm}
 \end{figure}
 
 In our above example $t =*(+(0, S(0), +(S(0), 0)))$,
-We can compute the rewrite  $t[[0,1] \leftarrow *(S(0),S(0))]$, and we get the term
+We can compute the rewrite  $t[[0,1] \to *(S(0),S(0))]$, and we get the term
 $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
 
 \begin{figure}[h]
@@ -219,12 +221,13 @@ $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
         \Tree[.$*$ [.$+$ $0$ [.$*$ [.$S$ $0$ ] [.$S$ $0$ ] ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] \\
     \end{tabular}
     \end{center}
-    \caption{The result of the computation $t[[0,1] \leftarrow S(0)]$}
+    \caption{The result of the computation $t[[0,1] \to S(0)]$}
     \label{fig:subtree}
 \end{figure}
 
 A substitution replaces variables with terms.
-Formally, a \emph{\gls{substitution}} is a mapping from $\glssymbol{sigma} : V \to T(\Sigma,V)$,
+Formally, a \emph{substitution}\index{substitution} is a mapping from 
+$\sigma : V \to T(\Sigma,V)$\index{$\sigma$},
 such that $\sigma(x) \ne x$ \cite{AdvancedTRS}[Def. 3.1.7].
 We write $\sigma = \{v_1 \mapsto t_1, \ldots v_n \mapsto t_n\}$ to denote the substitution
 where $s(v_i) = t_i$ for $i \in \{1\ldots n\}$, and $s(v) = v$ otherwise.
@@ -240,10 +243,10 @@ We can uniquely extend $\sigma$ to a function on terms by figure \ref{fig:substi
 Since this extension is unique, we will just write $\sigma$ instead of $\sigma'$.
 Term $t_1$ \emph{matches} term $t_2$
 if there exists some substitution $\sigma$ such that $t_1 = \sigma(t_2)$ \cite{AdvancedTRS}[3.1.8],.
-We call $\sigma$ a \emph{\gls{matcher}}.
+We call $\sigma$ a \emph{matcher}\index{matcher}.
 Two terms $t_1$ and $t_2$ \emph{unify}
 if there exists some substitution $\sigma$ such that $\sigma(t_1) = \sigma(t_2)$ \cite{AdvancedTRS}[3.1.8],.
-In this case $\sigma$ is called a \emph{\gls{unifier}} for $t_1$ and $t_2$.
+In this case $\sigma$ is called a \emph{unifier}\index{unifier} for $t_1$ and $t_2$.
 
 We can order substitutions based on what variables they define.
 A substitution $\sigma \leq \tau$, iff,
@@ -263,32 +266,33 @@ If $\tau = \{x \mapsto 0, y \mapsto S(z)\}$, then $\tau \le \sigma$.  We can def
 and $\{\sigma = \nu \circ \tau\}$
 
 Now that we have a definition for a term, we need to be able to rewrite it.
-A \gls{rewrite rule} $l \to r$ is a pair of terms.
+A \emph{rewrite rule}\index{rewrite rule} $l \to r$ is a pair of terms.
 However this time we require that $Var(r) \subseteq Var(l)$, and that $l \not \in V$.
-A \gls{TRS} is the pair $(T(\Sigma,V),R)$ where $R$ is a set of rewrite rules.
+A \emph{Term Rewriting System (TRS)}\index{Term Rewriting System (TRS)}
+is the pair $(T(\Sigma,V),R)$ where $R$ is a set of rewrite rules.
 
 
 \theoremstyle{definition}
-\begin{definition}{\gls{Rewriting}:}
+\begin{definition}{Rewriting\index{Rewriting}:}
 Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ rewrites to $s$ if, 
-$l$ matches $t\vert_p$ with matcher $\sigma$, and $t[p \leftarrow \sigma(r)] = s$.
-The term $\sigma(l)$ is the \emph{\gls{redex}}, and the term $\sigma(r)$ is the \emph{\gls{contractum}}
+$l$ matches $t\vert_p$ with matcher $\sigma$, and $t[p \to \sigma(r)] = s$.
+The term $\sigma(l)$ is the \emph{redex}\index{redex}, and the term $\sigma(r)$ is the \emph{contractum}\index{contractum}
 of the rewrite.
 \end{definition}
 
 There are a few important properties of rewrite rules $l \to r$.
 A rule is left or right linear if $l$ or $r$ is linear respectively
 \cite{AdvancedTRS}[Def. 3.2.4].
-A rule is \emph{\gls{collapsing}} if $r \in V$.
-A rule is \emph{\gls{duplicating}} if there is an $x \in V$ that occurs more often in $r$ than in $l$
+A rule is \emph{collapsing}\index{collapsing} if $r \in V$.
+A rule is \emph{duplicating}\index{duplicating} if there is an $x \in V$ that occurs more often in $r$ than in $l$
 \cite{AdvancedTRS}[Def. 3.2.5].
 
-Two terms $s$ and $t$ are \emph{\gls{overlapping}} if $t$ unifies with a subterm of $s$,
+Two terms $s$ and $t$ are \emph{overlapping}\index{overlapping} if $t$ unifies with a subterm of $s$,
 or $s$ unifies with a subterm of $t$ at a non-variable position \cite{AdvancedTRS}[Def. 4.3.3].
 Two rules $l_1 \to r_1$ and $l_2 \to r_2$ if $l_1$ and $l_2$ overlap.
 A rewrite system is \emph{overlapping} if, and only if, any two rules overlap.
 Otherwise it's non-overlapping.
-Any non-overlapping left linear system is \emph{\gls{orthogonal}} \cite{AdvancedTRS}[Def.4.3.4].
+Any non-overlapping left linear system is \emph{orthogonal}\index{orthogonal} \cite{AdvancedTRS}[Def.4.3.4].
 Orthogonal systems have several nice properties, such as the following theorem \cite{AdvancedTRS}[Thm. 4.3.11].
 
 \begin{theorem}
@@ -469,20 +473,20 @@ Before, when we rewrote a term $t$ with rule $l \to r$, we assumed it was a grou
 then we could find a substitution $\sigma$ that would match a subterm $t\vert_p$ with $l$,
 so that $\sigma(l) = t\vert_p$.
 To extend this idea to terms with variables in them, 
-we look for a \gls{unifier} $\sigma$ that unifies $t\vert_p$ with $l$.
+we look for a unifier $\sigma$ that unifies $t\vert_p$ with $l$.
 This is really the only change we need to make \cite{AdvancedTRS}.
 However, now we record $\sigma$, because it is part of our solution.
 
 \theoremstyle{definition}
-\begin{definition}{\Gls{Narrowing}:}
+\begin{definition}{Narrowing\index{Narrowing}:}
 Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ narrows to $s$ if, 
-$l$ unifies with $t\vert_p$ with unifier $\sigma$, and $t[p \leftarrow \sigma(r)] = s$.
+$l$ unifies with $t\vert_p$ with unifier $\sigma$, and $t[p \to \sigma(r)] = s$.
 We write $t \rightsquigarrow_{p,l\to r,\sigma} s$.
 We may write $t \rightsquigarrow_\sigma s$ if $p$ and $l \to r$ are clear.
 \end{definition}
 
 Notice that this is almost identical to the definition of rewriting.
-The only difference is that $\sigma$ is a \gls{unifier} instead of a \gls{matcher}.
+The only difference is that $\sigma$ is a unifier instead of a matcher.
 
 Narrowing was first developed to solve equations for automated theorem provers \cite{narrowing}.
 However, for our purposes it's more important that narrowing allows us to
@@ -522,13 +526,13 @@ no matter what $z$ is.
 In this particular case, since $Ap(Ap(S,Ap(I,I)),Ap(S,Ap(I,I))))$ reduces to itself,
 we have turned a potentially non-terminating reduction to a terminating one.
 
-A \emph{Rewriting Strategy} $\mathcal{S} : T(\Sigma, V) \to Pos\times R$ 
+A \emph{Rewriting Strategy}\index{Rewrite Strategy} $\mathcal{S} : T(\Sigma, V) \to Pos\times R$ 
 is a function that takes a term, and returns a position to rewrite, and a rule to rewrite with
 \cite{termRewriting}.
 Furthermore we require that if $(p,l \to r) = \mathcal{S}(t)$, then $t\vert_p$ is a redex that matches $l$.
 The idea is that $S(t)$ should give us a position to rewrite, and the rule to rewrite with.
 
-For \gls{orthogonal} rewriting systems, 
+For orthogonal rewriting systems, 
 there are two common rewriting strategies that do not run in 
 parallel,\footnote{we avoid discussing parallel strategies,
                    because our work is focused on sequential execution of Curry programs.
@@ -540,7 +544,7 @@ We rewrite the term that matches a rule that is the furthest down the tree.
 Outermost rewriting correspond roughly to lazy evaluation.
 We rewrite the highest possible term that matches a rewrite rule.
 
-A strategy is \emph{\gls{normalizing}} if, when a term $t$ has a normal form, 
+A strategy is \emph{normalizing}\index{normalizing} if, when a term $t$ has a normal form, 
 then the strategy will eventually find it.
 While outermost rewriting isn't normalizing in general,
 it is for left-normal systems, 
@@ -614,7 +618,7 @@ We can formalize this with the notion of descendants with the following definiti
 
 
 \theoremstyle{definition}
-\begin{definition}{\Gls{descendant}:}
+\begin{definition}{Descendant\index{descendant}:}
     Let $s = t\vert_v$, and $A = l \rightarrow_{p,\sigma,R} r$ be a rewrite step in $t$.
     The set of descendants of $s$ is given by $Des(s,A)$\\
     $$
@@ -640,7 +644,7 @@ Now we can formally define what it means for a redex to be necessary for computi
 a normal form.
 
 \theoremstyle{definition}
-\begin{definition}{\Gls{needed}:}
+\begin{definition}{Needed\index{needed}:}
     A redex $s$ that is a subterm of $t$ is \emph{needed} in $t$ if,
     for every derivation of $t$ to a normal form,
     a descendant of $s$ is the root of a rewrite.
@@ -667,7 +671,7 @@ However, with some restrictions, there are rewrite systems where this is possibl
                                            context in normal form.}
 
 \theoremstyle{definition}
-\begin{definition}{\Gls{sequential}}
+\begin{definition}{Sequential\index{sequential}}
     A rewrite system is \emph{sequential} if, given a term $t$ with $n$ variables $v_1,v_2\ldots v_n$,
     such that $t$ is in normal form,
     then there is an $i$ such that for every substitution $\sigma$ from variables to redexes,
@@ -738,10 +742,10 @@ then we can compute a narrowing step by traversing the tree for the defined symb
     and $X_1,\ldots X_n$ are fresh variables.\\
     $\ $\\
     Given a constructor rewrite system $R$,
-    $T$ is a \emph{gls{definitional tree}} for function symbol $f$ if
+    $T$ is a \emph{definitional tree}\index{definitional tree} for function symbol $f$ if
     $T$ is a partial definitional tree, and each leaf in $T$
     corresponds to exactly one rule rooted by $f$.
-    A rewrite system is \emph{\gls{inductively sequential}}
+    A rewrite system is \emph{inductively sequential}\index{inductively sequential}
     if there exists a definitional tree for every function symbol.
 \end{definition}
 
@@ -816,7 +820,7 @@ Therefore we need a definition that isn't dependent on substitutions that might 
 
 \theoremstyle{definition}
 \begin{definition}
-    A narrowing step $t \rightsquigarrow_{p, R, \sigma} s$ is \gls{needed}, 
+    A narrowing step $t \rightsquigarrow_{p, R, \sigma} s$ is needed, 
     iff, for every $\eta \ge \sigma$,
     there is a needed redex at $p$ in $\eta(t)$.
 \end{definition}
@@ -833,7 +837,8 @@ For example, $x < y \rightsquigarrow_{\epsilon, R_8, \{x\mapsto 0\}} True $, and
 $x < y \rightsquigarrow_{\epsilon, R_9, \{x\rightarrow S(u), t \mapsto S(v)\}} u \le v $
 are both possible needed narrowing steps.
 
-Therefore we define a \textit{\gls{Narrowing Strategy}} $\mathcal{S}$ as a function from terms
+Therefore we define a \emph{Narrowing Strategy}\index{narrowing strategy} 
+$\mathcal{S}$ as a function from terms
 to a set of triples of a position, rule, and substitution, such that if $(p, R, \sigma) \in \mathcal{S}(t)$,
 then $\sigma(t)\vert_p$ is a redex for rule $R$.
 
@@ -895,16 +900,16 @@ In programming languages, this distinction moves the evaluation strategy from
 
 
 As a brief review of relevant graph theory:
-A \emph{\gls{graph}} $G = (V,E)$ is a pair of vertices $V$ and edges $E \subseteq V \times V$.
+A \emph{graph}\index{graph} $G = (V,E)$ is a pair of vertices $V$ and edges $E \subseteq V \times V$.
 We will only deal with directed graphs, so the order of the edge matters.
-A \emph{\gls{rooted graph}} is a graph with a specific vertex $r$ designated as the \emph{\gls{root}}.
-The \emph{\gls{neighborhood}} of $v$, written $N(v)$ is the set of vertices adjacent to $v$.
+A \emph{rooted graph}\index{rooted graph} is a graph with a specific vertex $r$ designated as the \emph{root}\index{root}.
+The \emph{neighborhood}\index{neighborhood} of $v$, written $N(v)$ is the set of vertices adjacent to $v$.
 That is, $N(v) = \{u\ \vert\ (v,u) \in E\}$.
-A \emph{\gls{path}} $p$ from vertex $u$ to vertex $v$ is a sequence 
+A \emph{path}\index{path} $p$ from vertex $u$ to vertex $v$ is a sequence 
 $u = p_1, p_2 \ldots p_n = v$ where $(p_i,p_{i+1}) \in E$.
-A rooted graph is \emph{\gls{connected}} 
+A rooted graph is \emph{connected}\index{connected} 
 if there is a path from the root to every other vertex in the graph.
-A graph is \emph{\gls{strongly connected}} if, 
+A graph is \emph{strongly connected}\index{strongly connected} if, 
 for each pair of vertices $(u,v)$, there is a path from $u$ to $v$
 and a path form $v$ to $u$.
 A path $p$ is a cycle
@@ -914,7 +919,7 @@ A path $p$ is a cycle
 if its endpoints are the same.
 A graph is acyclic if it contains no cycles.
 Such graphs are referred to as Directed Acyclic Graphs, or DAG's.
-A graph $H$ is a \emph{\gls{subgraph}} of $G$, $H \subseteq G$ if, and only if, $V_H \subseteq V_G$
+A graph $H$ is a \emph{subgraph}\index{subgraph} of $G$, $H \subseteq G$ if, and only if, $V_H \subseteq V_G$
 and $E_H \subseteq E_G$.
 A strongly connected component $S$ of $G$ is a subgraph that is strongly connected.
 We will use the well-known facts that strongly connected components partition a graph.
@@ -926,7 +931,7 @@ To avoid confusion with variables, we will refer to vertices of graphs as nodes.
 We define term graphs in a similar way to terms.
 Let $\Sigma = C \uplus F$ be an alphabet of constructor and function names respectively,
 and $V$ be a countably infinite set of variables.
-A \emph{\gls{term graph}} is a rooted graph $G$ with nodes in
+A \emph{term graph}\index{term graph} is a rooted graph $G$ with nodes in
 $N$ where each node $n$ has a label in $\Sigma \cup V$.
 We'll write $L(n)$ to refer to the label of a node.
 If $(n, s) \in E$ is an edge, then $s$ is a successor of $n$.
@@ -1037,8 +1042,8 @@ It may be the case that $G\vert_p$ and $G$ have the same nodes, such as if the r
 
 \theoremstyle{definition}
 \begin{definition}
-A \emph{\gls{replacement}} of node $p$ by graph $u$ in $g$ 
-(written $g[p \leftarrow u]$) is given by the following procedure.
+A \emph{replacement}\index{replacement} of node $p$ by graph $u$ in $g$ 
+(written $g[p \to u]$) is given by the following procedure.
 For each edge $(n,p) \in E_g$ replace it with an edge $(n, root_u)$.
 Add all other edges from $E_g$ and $E_u$.
 If $p$ is the root of $g$, then $root_u$ is now the root.
@@ -1085,7 +1090,7 @@ but this doesn't cause a problem.
 
 \theoremstyle{definition}
 \begin{definition}
-A \emph{\gls{rewrite rule}} is a pair $L \to R$ where $L$ is a 
+A \emph{rewrite rule}\index{rewrite rule} is a pair $L \to R$ where $L$ is a 
 term, and $R$ is a term graph.
 A graph $G$ matches the rule if there exists subgraph $K$
 where $K$ matches $L$ with matcher $\sigma$.

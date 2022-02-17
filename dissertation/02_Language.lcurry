@@ -177,7 +177,10 @@ Curry also allows for declaring new infix operators.
 In fact, Curry really only adds two new pieces of syntax to Haskell, \textbf{fcase} and \textbf{free}.
 However, the main difference between Curry and Haskell is not immediately clear from the syntax.
 Curry allows for overlapping rules and free variables.
-Specifically Curry programs are represented as Limited Overlapping Inductively Sequential (LOIS) Rewrite systems.
+Specifically Curry programs are represented as 
+\emph{Limited Overlapping Inductively Sequential (LOIS)}
+\index{Limited Overlapping Inductively Sequential} Rewrite systems.
+These are is indicatively sequential systems with a single overlapping rule.
 On the other hand, Haskell programs are transformed into non-overlapping systems.
 
 To see the difference consider the usual definition of factorial.
@@ -259,7 +262,7 @@ This issue of run-time choice semantics will appear throughout the compiler.
 
 \subsection{FlatCurry} \label{FlatCurry}
 
-The first step in the compiler pipeline is to parse a Curry program into \gls{FlatCurry}.
+The first step in the compiler pipeline is to parse a Curry program into FlatCurry\index{FlatCurry}.
 The definition is given in figure \ref{fig:flatSyntax}.
 The FlatCurry language is the standard for representing Curry programs
 in compilers \cite{pakcs, kics2, kics2Theory, sprite}, 
@@ -299,15 +302,16 @@ we've also occasionally found it useful in optimization.
 
 Each program contains a special function |main| that takes no arguments.
 The program executes by reducing the expression |main| 
-to a 
-\gls{CNF}\footnote{This is constructor normal form, and not simply a normal form,
+to a \emph{Constructor Normal 
+Form}\index{Constructor Normal Form}\footnote{This is constructor normal form, and not simply a normal form,
               because a failing expression, like |head []|, is a normal form,
               since it can't be rewritten, but it contains a function at the root.} 
 as defined in figure \ref{fig:normalForm}.
 Similar to Kics2, Pakcs, and Sprite, \cite{kics2, pakcs, sprite}
-we compute constructor normal form by first reducing the |main| to \gls{HCF}.
+we compute constructor normal form by first reducing the |main| to 
+\emph{Head Constructor Form}\index{Head Constructor Form}.
 That is where the expression is rooted by a constructor.
-Then each child of the root is reduced to \gls{CNF}.
+Then each child of the root is reduced to constructor normal form.
 
 \begin{figure}
 
@@ -346,7 +350,7 @@ The transformation simply created a new function for every nested case expressio
 This created a series of tail calls for larger functions.
 
 To see this transformation in action, we can examine the FlatCurry function |==| on lists \ref{fig:eqList}.
-This function is \gls{inductively sequential}, however both Pakcs and Kics2 will transform it
+This function is inductively sequential, however both Pakcs and Kics2 will transform it
 into a series of flat function calls with a single case at the root.
 Since this would drastically increase the number of function calls, we avoid this transformation.
 It would also defeat much of the purpose of an optimizing compiler 
@@ -383,7 +387,9 @@ Transformed FlatCurry representation of |==| on lists.
 
 
 Currently there are three approaches to evaluating non-deterministic expression in Curry:
-\gls{backtracking}, \gls{Pull-Tabbing}\cite{pulltab}, and \gls{Bubbling}\cite{bubbling}.
+\emph{backtracking}\index{backtracking}, 
+\emph{Pull-Tabbing}\index{pull-tabbing}\cite{pulltab}, and 
+\emph{Bubbling}\index{bubbling}\cite{bubbling}.
 At this time there are complete strategies for evaluating Curry programs,
 so we have elected to use backtracking.
 It is the simplest to implement, and it's well understood.
@@ -397,7 +403,7 @@ If the expression is labeled by a choice |e_1 ? e_2|, and it is rewritten to the
 then we push |(n, n_q, Stop)| onto the backtracking stack to denote that this 
 was an alternative, and we should stop backtracking.
 
-Unfortunately, while \gls{backtracking} is well defined for rewriting systems,
+Unfortunately, while backtracking is well defined for rewriting systems,
 our representation of FlatCurry programs isn't a graph rewrite system.
 This is because we don't flatten our FlatCurry functions like Pakcs and Kics2.
 As an example of why FlatCurry programs aren't a graph rewriting system,
@@ -561,7 +567,7 @@ Now that we have a plan for the logic features of Curry, we move on to higher or
 This subject has been extensively studied by the function languages community,
 and we take the approach of \cite{fastCurry}.
 Higher order functions are represented using defunctionalization \cite{defunctionalization}.
-Recall that in FlatCurry, an expression $\glssymbol{f_k}$ represents a partial application
+Recall that in FlatCurry, an expression $f_k$\index{$f_k$} represents a partial application
 that is missing |k| arguments.
 We introduce an |apply| function that has an unspecified arity.
 where |apply f_k e_1 e_2 ... e_n| applys |f_k| to the arguments |e_1 e_2 ... e_n|.
@@ -614,7 +620,7 @@ it's very easy to tell if it is at run time.
 
 As far as we're aware, this is another novel solution.
 Each expression contains a Boolean flag that marks if it is non-deterministic.
-We called these \emph{\gls{nondet}} flags,
+We called these \emph{nondet}\index{nondet} flags,
 and we refer to an expression whose root node is marked with a nondet flag as nondet.
 The rules for determining if an expression |e| is nondet are:
 if |e| is labeled by a choice, then |e| is nondet;
@@ -628,7 +634,7 @@ all of its case statements scrutinized deterministic nodes,
 and it's not forwarding to a non-deterministic node.
 However proving this is a more substantial problem.
 
-We prove this for the class of \gls{LOIS} \gls{GRS}, 
+We prove this for the class of limited overlapping inductively sequential graph rewriting systems, 
 with the understanding our system is equivalent.
 This proof is based on a corresponding proof for set functions in Curry \cite{setFunctions}[Lemma 2].
 The original proof was concerned with a deterministic derivation from an expression to a value.
@@ -638,8 +644,8 @@ is an analogous theorem for a derivation of deterministic steps, even if it does
 
 \begin{definition}
 Given a rewrite system $R$ with fixed strategy $\phi$, 
-a \emph{\gls{computation space}} \cite{setFunctions} of expression $e$, 
-$\glssymbol{C(e)}$ is finitely branching tree defined inductively the rule
+a \emph{computation space}\index{computation space} \cite{setFunctions} of expression $e$, 
+$C(e)$\index{$C(e)$} is finitely branching tree defined inductively the rule
 $C(e) = \langle e, C(e_1), C(e_2) \ldots C(e_n)\rangle$.
 \end{definition}
 
@@ -683,13 +689,13 @@ We recall a theorem used to prove the correctness of set function.\cite{setFunct
 \begin{lemma}
 Given an expression $e$ where $e \to_{n_1} e_1$ and $e \to_{n_2} e_2$,
 if $n_1 \ne n_2$, then there exists a $u_1$ and $u_2$ where
-$t_1 \glssymbol{->^=} u_1$ and $t_2 \to^= u_2$ and $u_1 = u_2$ up to renaming of nodes.
+$t_1 \to^= u_1$ and $t_2 \to^= u_2$ and $u_1 = u_2$ up to renaming of nodes.
 \end{lemma}
 
 This leads directly to our first important theorem.
 If $n$ is a deterministic redex in a derivation, then we can move it earlier in the derivation.
 
-\begin{theorem}[\gls{Redex Compression Theorem}]
+\begin{theorem}[Redex Compression Theorem\index{Redex Compression Theorem}]
 if $n$ is a deterministic redex of $e$ where $n \to n'$, and $e \to e_1 \to_n e_2$.
 Then there exists a derivation $e[n \to n'] \to^= e'$ where $e_2 = e'$ up to renaming of nodes.
 \end{theorem}
@@ -701,9 +707,9 @@ was not $n$. So by the previous lemma, we can swap the order of the rewrites.
 \end{proof}
 
 Finally we show that if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic redexes,
-then $e[a \to b]$ rewites to the same values.
+then $e[a \to b]$ rewrites to the same values.
 
-\begin{theorem}[\gls{Path Compression Theorem}]
+\begin{theorem}[Path Compression Theorem\index{Path Compression Theorem}]
 if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic rewrites,
 and $e \to e_1 \to \ldots e_n$ is a derivation where $b$ is a subexpression of $e_n$,
 then there is a derivation $e[a\to b] \to^* e_n$.
@@ -735,7 +741,7 @@ A much faster method is to simply replace the contents, the label and children, 
 with the contents of |n_2|.
 This works most of the time, but we run into a problem when
 function a rewrites to a single variable, such as the |id| function.
-We call these functions \emph{\gls{collapsing functions}}.
+We call these functions \emph{collapsing functions}\index{collapsing functions}.
 One option to solve this problem is to evaluate the contractum 
 to head constructor form, and copy the constructor
 to the root \cite{gmachine}.
@@ -754,14 +760,15 @@ So, |y| will remain |True| after backtracking, instead of returning to |id x|.
 While constructor copying is definitely invalid with fast backtracking,
 it's unclear if it would be valid with a normal backtracking algorithm.
 
-We can solve this problem by using \glspl{forwarding node}, sometimes called indirection nodes
+We can solve this problem by using forwarding nodes\index{forwarding node}, 
+sometimes called indirection nodes
 \cite{lazyFunctionalCompilers}.
 The idea is that when we rewrite an expression rooted by a collapsing function,
 instead of copying the constructor, we just replace the root with a special forwarding node,
-$\glssymbol{FORWARD}(x)$, where |x| is the variable that the function collapses to.
+$FORWARD(x)$\index{$FORWARD$}, where |x| is the variable that the function collapses to.
 
 There is one more possibility to address before we move on.
-One performance optimization with forwarding nodes is \gls{path compression}.
+One performance optimization with forwarding nodes is \emph{path compression}\index{path compression}.
 If we have a chain of forwarding nodes $FORWARD(FORWARD(FORWARD(x)))$, 
 we want to collapse this to simply $FORWARD(x)$.
 This is unequivocally invalid in non-deterministic backtracking systems.
@@ -817,11 +824,11 @@ we need to discuss expressions and the runtime system for programs.
 When a FlatCurry module is compiled, it's translated into a C program.
 Every function |f| defined in the FlatCurry module is compiled into
 a C function that can reduce an expression, rooted by a node labeled with |f|,
-into \gls{HCF}.
-These functions are called \texttt{\gls{f_hnf}} for historical reasons \cite{pakcs}.
+into head constructor form.
+These functions are called \texttt{f\_hnf}\index{\texttt{f\_hnf}} for historical reasons \cite{pakcs}.
 
 An expression in our compiled code is a rooted labeled graph.
-\Glspl{node} in the graph are given the following definition.
+nodes\index{\texttt{node}} in the graph are given the following definition.
 \begin{verbatim}
 typedef struct Node
 {
@@ -832,10 +839,10 @@ typedef struct Node
 } Node;
 \end{verbatim}
 
-A \texttt{\gls{field}} is a union of a \texttt{Node*} and the representations
+A \texttt{field}\index{\texttt{field}} is a union of a \texttt{Node*} and the representations
 of the primitive types \texttt{Int}, \texttt{Float}, and \texttt{Char},
 as well as a \texttt{field*} to be described shortly.
-The \texttt{\gls{children}} field contains an array of children for this node.
+The \texttt{children}\index{\texttt{children}} field contains an array of children for this node.
 If a node could have more than three children, such as a node representing
 the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer
 to a variable length array that holds the rest of the children.
@@ -846,7 +853,7 @@ We use a \texttt{child\_at} macro to simplify the code,
 so \texttt{child\_at(n,5)} returns the sixth child.
 The \texttt{symbol} field is a pointer to the static information
 of the node.
-This includes the name, arity, and \gls{tag} for the node,
+This includes the name, arity, and \texttt{tag}\index{\texttt{tag}} for the node,
 as well as a function pointer responsible for reducing the node to 
 head constructor from.
 We include a \texttt{TAG} macro to access the tag of a node.
@@ -992,7 +999,7 @@ This is true for every |+| or |foldr| node we encounter.
 However, it's not true for |apply| nodes.
 In fact, an |apply| node may have any positive arity.
 Furthermore, by definition, an |apply| node can't be missing any arguments.
-For this reason, we use the \texttt{\gls{missing}} field to hold the number of 
+For this reason, we use the \texttt{missing}\index{\texttt{missing}} field to hold the number of 
 arguments the node is applied
 to.\footnote{In reality we set missing to the 
              negative value of the arity to distinguish an 
@@ -1033,7 +1040,7 @@ This isn't done in the runtime system because it would be inefficient,
 but it simplifies the code for this presentation.
 We also make use of the \texttt{set\_child\_at} macro, which simplifies setting child nodes
 and is similar to \texttt{child\_at}.
-Finally, the loop to put the partial function in \gls{HCF} uses
+Finally, the loop to put the partial function in head constructor form uses
 \texttt{while(f.n->missing <= 0)} instead of \texttt{while(true)}.
 This is because our normal form is a partial application, which does not have its own tag.
 
@@ -1112,7 +1119,7 @@ The implementation doesn't change too much.
 First we add two new tags \texttt{CHOICE} and \texttt{FREE}
 to represent non-deterministic choice and free variable nodes respectively.
 The choice nodes are treated in a similar manner to a function.
-We call the \texttt{choose} function to reduce a choice to \gls{HCF},
+We call the \texttt{choose} function to reduce a choice to HCF,
 and push the alternative on the stack.
 
 The choose function in \ref{fig:choose} reduces a choice node to head constructor form.

@@ -43,6 +43,7 @@ While this transformation is obviously inefficient, it is general and easy to im
 A good optimizer should be able to recognize that |otherwise| is really a synonym for |True|,
 and reduce the case-expression.
 So for this one example, we have two different optimizations we need to implement.
+We need to reduce |otherwise| to |True|, then we can reduce the second case expression to |x|.
 
 There are two common approaches to solving this problem.
 The first is to make a separate function for each optimization.
@@ -65,13 +66,14 @@ any places where optimizations apply.
 However, It is difficult or impossible to write many common optimizations in this style. \cite{playingByTheRules}
 
 The aim of our solution is to try to get the best of all three worlds.
-We've developed an approach to simplify Generating and Altering Subexpressions (GAS).
+We've developed an approach to simplify Generating and Altering Subexpressions (GAS)
+\index{Generating and Altering Subexpressions (GAS)}.
 Our approach was to do optimization entirely by rewriting.
 This has several advantages, and might be the most useful result of this work.
 First, developing new optimizations is simple.
 We can write down new optimizations in this system within minutes.
 It was often easier to write down the optimization and test it,
-than it was to try to describe the optimization in english.
+than it was to try to describe the optimization in English.
 Second, any performance improvement we made to the optimization engine
 would apply to every optimization.
 Third, optimizations were easy to maintain and extend.

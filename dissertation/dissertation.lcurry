@@ -13,12 +13,8 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{tikz-cd}
-%\usepackage{imakeidx}
-\usepackage[acronym,toc]{glossaries}
-%\usepackage{etoolbox}
-\newglossary[slg]{symbolslist}{syi}{syg}{Symbolslist}
-%include glossary.lcurry
-\makeglossaries
+\usepackage{imakeidx}
+\makeindex
 
 
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
@@ -51,7 +47,7 @@
 
 \tableofcontents
 
-\setcounter{chapter}{-1}
+\setcounter{chapter}{0}
 \chapter{Introduction}
 
 %include 00_introduction.lcurry
@@ -94,7 +90,7 @@
 % %include A2_benchmarks.lcurry
 
 
-\printglossaries
+\printindex
 \bibliographystyle{plain}
 \bibliography{bibliography}
 %\printindex

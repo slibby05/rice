@@ -1,3 +1,5 @@
+%format == = "\Varid{==}"
+%format not = "\Varid{not}"
 %format free         = "\textbf{free} "
 %format fcase        = "\textbf{fcase} "
 %format expr        = "\mathcal{E} "
@@ -11,6 +13,8 @@
 %format forall       = "\forall "
 %format ...          = "\ldots "
 %format ->*          = "\rightarrow^* "
+%format ->&          = "\rightarrow_S "
+%format ->*&         = "\rightarrow_S^* "
 %format EXEMPT       = "\bot "
 %format Nat          = "\mathbf{N} "
 %format R            = "\textbf{R} "
@@ -25,15 +29,20 @@
 %format sigma        = "\sigma"
 %format ->^* = "\rightarrow^*"
 
+%format ==> = "\Rrightarrow "
+
 %format a_1
+%format a_n
 
 %format e_a
 %format e_b
+%format e_0
 %format e_1
 %format e_1'
 %format e_2
 %format e_2'
 %format e_3
+%format e_n1 = e"_{-1}"
 %format e2' = e"_{2'}"
 %format e_11 = e"_{1,1}"
 %format e_12 = e"_{1,2}"
@@ -51,6 +60,7 @@
 %format e_ik = e"_{i,k}"
 %format e_ki = e"_{k_i}"
 
+%format v_i
 %format v_n
 %format v_k
 
@@ -58,7 +68,12 @@
 %format n_2
 %format n_3
 %format n_k
+%format n_f
+%format n_q = n"_?"
 
+%format C_S
+
+%format f_0
 %format f_1
 %format f_2
 %format f_i
@@ -97,6 +112,8 @@
 
 %format x_1
 %format x_2
+%format x_3
+%format x_4
 %format x_k
 %format x_k1 = "x_{k+1}"
 %format x_11 = "x_{1,1}"
@@ -123,7 +140,13 @@
 %format c_2
 %format c_n
 %format b_1
+%format b_2
 %format b_n
+
+%format b_11 = b"_{1,1}"
+%format b_12 = b"_{1,2}"
+%format b_21 = b"_{2,1}"
+%format b_22 = b"_{2,2}"
 
 %format p_0
 %format p_1
@@ -160,12 +183,16 @@
 %format mkz_1
 %format mkz_2
 
+%format weird_1 
+%format eqList_1 
+%format eqList_2
+
 %format compLambda_1
 %format foldr_3 = "foldr_3"
 %format foldr_2 = "foldr_2"
 %format foldr_1 = "foldr_1"
 %format foldr_0 = "foldr_0"
-%format \* = "\bullet"
+%format \* = "\bullet "
 %format \| = "\big\rvert"
 %format `vert` = " \vert "
 %format pcase          = "\textbf{pcase}"
@@ -183,6 +210,11 @@
 %format (codebr (a))   = "\llbracket " a "\rrbracket_{BR} "
 %format codelit a      = "\llbracket " a "\rrbracket_{LIT} "
 %format (codelit (a))  = "\llbracket " a "\rrbracket_{LIT} "
+
+%format appOpt a     = "\boxed{" a "}"
+%format appOpt (a)   = "\boxed{" a "}"
+%format (appOpt (a)) = "\boxed{" a "}"
+
 %format set a         = "\{ " a "\} "
 %format (set (a))     = "\{ " a "\} "
 %format outline f n   = f"\#"n
@@ -197,18 +229,18 @@
 %format (rewriteRule a p r b) = a ->"_{"p,r"}" b
 %format (rewrite a p b) = a ->"_{"p"}" b
 %format (rewrite a p b) = a ->"_{"p"}" b
-%format `to` = "\mapsto"
+%format `to` = "\to"
 %format `f` = " \oplus "
 %format |-> = "\mapsto"
 %format :-> = "\mapsto"
 %format path e p = e"|_{"p"}"
 %format # = "\#"
 
-%format inlinable = "\mathbf{"I"}_"ifunction
-%format body = "\mathbf{"B"}_"ifunction
-%format useful = "\mathbf{"U"}_"ifunction
-%format simple = "\mathbf{"S"}_"ifunction
-%format cancels = "\mathbf{"C"}_"ifunction
+%format rinlinable = "\mathbf{"I"}_"ifunction
+%format rbody = "\mathbf{"B"}_"ifunction
+%format ruseful = "\mathbf{"U"}_"ifunction
+%format rsimple = "\mathbf{"S"}_"ifunction
+%format rcancels = "\mathbf{"C"}_"ifunction
 
 %format FLOAT = "\textbf{Let Floating}"
 %format FLOAT_LET = "\textbf{Let Floating (Let in Let)}"

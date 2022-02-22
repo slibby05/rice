@@ -170,9 +170,9 @@ We have removed |CaseType| and |Typed| from |Expr|, and
 > code (e_1 ? e_2)                           = Or (code e_1) (code e_2)
 > code EXEMPT                                = Comb ConsCall ("","FAIL") []
 > code (f_k e_1 e_2 ... e_n)   | k == 0      = Comb FuncCall f [code e_1, code e_2 ... code e_n]
->                              | otherwise   = Comb (PartFuncCall k) f [code e_1, code e_2 ... code e_n]
+>                              | otherwise   = Comb (FuncPartCall k) f [code e_1, code e_2 ... code e_n]
 > code (C_k e_1 e_2 ... e_n)   | k == 0      = Comb ConsCall f [code e_1, code e_2 ... code e_n]
->                              | otherwise   = Comb (PartConsCall k) f [code e_1, code e_2 ... code e_n]
+>                              | otherwise   = Comb (ConsPartCall k) f [code e_1, code e_2 ... code e_n]
 > code (let v_1 = e_1, ... v_n = e_n in e)   = Let [(v_1,code e_1) ... (v_n,code e_n)] (code e)
 > code (let v_1, v_2 ... v_n free in e)      = Free [v_1,v_2, ... v_n] (code e)
 > code (case e of branches)                  = Case e (code branches)
@@ -218,7 +218,7 @@ However, we will not worry about confluence for most optimizations.
 
 > float (Comb ct f (as++[Let vs e]++bs)   = Let vs (Comb ct f (as++[e]++bs))
 > float (Comb ct f (as++[Free vs e]++bs)  = Free vs (Comb ct f (as++[e]++bs))
-> float (Let vs (Free ws e)               = Free ws (Let vs e)
+> float (Let vs (Free ws e))              = Free ws (Let vs e)
 
 Great, now we can make an optimization.
 It was easy to write, but it's not a very complex optimization.
@@ -254,8 +254,9 @@ Unfortunately, splitting the let expression into blocks isn't trivial.
 The algorithm involves making a graph out of all references in the let block,
 then finding the strongly connected components of that reference graph,
 and, finally, rebuilding the let expression from the component graph.
-The full algorithm is given below.
+The full algorithm is given below in figure \ref{fig:blocks}
 
+\begin{figure}
 > blocks (Let vs e) | numBlocks > 1 = e'
 >   where (e', numBlocks) = makeBlocks es e
 
@@ -266,6 +267,9 @@ The full algorithm is given below.
 > 
 >         comps = scc (vs >>= makeEdges)
 >         makeEdges (v, exp) = [(v,f) | f <- freeVars exp `intersect` map fst vs]
+\caption{Transformation for splitting let expressions into mutually recursive blocks.}
+\label{fig:blocks}
+\end{figure}
 
 While this optimization is significantly more complicated then the |float| example,
 We can still implement it in our system.
@@ -437,15 +441,9 @@ The full implementation is in figure \ref{fig:optAddInfo}.
 >                                Nothing       -> return e
 >                                Just (e',dv)  -> do  put (v+dv)
 >                                                     return e'
-> emptyspace
 > fix :: (a -> State b a) -> a -> b -> a
 > fix f x s =  let  (x',s') = runState (f x) s
->              in   if x == x' 
->                   then x
->                   else fix f x' s'
-> emptyspace
-> simplify :: Opt -> Expr -> Expr
-> simplify opt e = fix (reduce opt True) e (maximum (vars e) + 1)
+>              in   if x == x' then x else fix f x' s'
 \caption{A third attempt.
          keep track of the next fresh variable, and if we're at the root.}
 \label{fig:optAddInfo}
@@ -518,27 +516,24 @@ The full implementation is in figure \ref{fig:reconstruct}
 
 \begin{figure}
 > reduce :: Opt -> Path -> Expr -> ReWriter Expr
-> reduce opt p (Var v)         = runOpts opt p (Var v)
-> reduce opt p (Lit l)         = runOpts opt p (Lit l)
+> reduce opt p (Var v)         = return (Var v)
+> reduce opt p (Lit l)         = return (Lit l)
 > reduce opt p (Comb ct f es)  = do  es' <- mapM runArg (zip [0..] es)
 >                                    runOpts opt p (Comb ct f es)
->  where  runArg (n, e)        = do  e' <- reduce opt (n:p) e
->                                    return e'
+>  where  runArg (n, e)        = reduce opt (n:p) e
 > reduce opt p (Let vs e)      = do  vs'  <- mapM runVar (zip [0..] vs)
 >                                    e'   <- mapM reduce opt (-1:p) e
 >                                    runOpts opt p (Let vs' e')
->  where  runVar (n, (v, e))   = do  e' <- reduce opt (n:p) e
->                                    return (v, e')
+>  where  runVar (n, (v, e))   = fmap (\x -> (v,x)) (reduce opt (n:p) e)
 > reduce opt p (Free vs in e)  = do  e' <- reduce opt (0:p) e
 >                                    runOpts opt p (Free vs e')
 > reduce opt p (Or a b)        = do  a  <- reduce opt (0:p) a
 >                                    b  <- reduce opt (1:p) b
 >                                    runOpts opt (Or (a' ? b'))
-> reduce opt p (Case e bs))    = do  e'    <- reduce opt (-1:p) e
+> reduce opt p (Case e bs)     = do  e'    <- reduce opt (-1:p) e
 >                                    bs'   <- mapM runBranch (zip [0..] bs)
 >                                    runOpts opt (Case e' bs')
->  where runBranch (n, (Branch pat e))  = do  e' <- reduce opt (n:p) e
->                                             return (Branch pat e')
+>  where runBranch (n, (Branch pat e))  = fmap (Branch pat) (reduce opt (n:p) e)
 >         
 > emptyspace
 > runOpts :: Opt -> Path -> Expr -> ReWriter Expr
@@ -547,15 +542,9 @@ The full implementation is in figure \ref{fig:reconstruct}
 >                              Nothing            ->  return e
 >                              Just (e',rule,dv)  ->  do update (e',rule,p) dv
 >                                                     return e'
-> emptyspace
 > fix :: (a -> ReWriter a) -> a -> Int -> [Step] -> (a,[Step])
 > fix f x n steps =  let  (x',n',steps') = runRewriter (f x) n
->                    in   if x == x' 
->                         then x
->                         else fix f x' n' (steps++steps')
-> emptyspace
-> simplify :: Opt -> Expr -> (Expr,[Step])
-> simplify opt e = fix (reduce opt []) e (maximum (vars e) + 1) []
+>                    in   if x == x' then x else fix f x' n' (steps++steps')
 \caption{The final version of GAS with reconstruction.}
 \label{fig:reconstruct}
 \end{figure}
@@ -601,7 +590,16 @@ Third, we sanitize the FlatCurry to simplify the process of generating C code.
 Fourth, we compile the FlatCurry to ICurry, an intermediate representation that is closer to C.
 Finally, we compile the ICurry to C.
 These steps are referred to as pre-process, optimize, post-process, toICurry, and toC within the compiler.
-We give an example of the |<=| function as it passes through each of the stages of the compiler in figure \ref{fig:stages}.
+
+We give an example of a function as it passes through each of the stages of the 
+compiler in figure \ref{fig:stages}.
+After pre-processing the let expression has been floated to the root,
+and the missing branch has been filled in.
+After optimization, code is organized into blocks, and functions have been reduced.
+After post processing, let bound variables with a case expression have been factored
+out into their own functions.
+At this point the code is ready to be translated into ICurry and then C.
+
 While there are several small details that are important to constructing a working Curry compiler,
 we'll concern ourselves with the big picture here.
 
@@ -618,8 +616,7 @@ After Pre-processing
 > f v_1 =  let v_2 = not v1_ 
 >          in  (case  v_1 of 
 >                     True -> False 
->                     False -> EXEMPT) 
->              ? (not (not v2))
+>                     False -> EXEMPT) ? (not (not v2))
 
 After Optimization
 > let  v_4 = case  v_1 of
@@ -640,12 +637,7 @@ After Post-processing
 > f_1 v_1 = fcase  v_1 of
 >                  True -> False
 >                  False -> True
-\caption{|f| at each stage of the compiler.\\
-         After pre-processing the let expression has been floated to the root,
-         and the missing branch has been filled in.
-         After optimization, code is organized into blocks, and functions have been reduced.
-         After post processing, let bound variables with a case expression have been factored
-         out into functions, then the code is translated into ICurry and C.}
+\caption{|f| at each stage of the optimizer.}
 \label{fig:stages}
 \end{figure}
 
@@ -695,8 +687,9 @@ that we can translate directly to C.
 Most of the transformations consist of disallowing certain syntactic constructs.
 Canonical FlatCurry is defined in figure \ref{fig:flatCanonical}.
 
-The implementation of the preprocessing transformations are presented in figures.
+Examples of the preprocessing transformations are presented in figures.
 \ref{fig:canonical} and \ref{fig:canonical2}.
+We use the symbol |=>| for the optimization relation.
 The implementation is presented in figure \ref{fig:code}.
 We only show the initial implementation of an optimiation
 that excludes the name and path, but it can be extended to the full optimization
@@ -753,7 +746,7 @@ However, these extensions to the rules are also included in the repository.
 > let x =  let y = e_1 
 >          in e_2 
 > in e_3
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let  y = e_1
 >      in  let  x = e_2
@@ -763,7 +756,7 @@ However, these extensions to the rules are also included in the repository.
 > let x =  let y free 
 >          in e_1
 > in e_2
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let y free
 > in  let x = e_2
@@ -771,26 +764,26 @@ However, these extensions to the rules are also included in the repository.
 \end{minipage}\\
 \begin{minipage}{.40\textwidth}
 > (let x = e_1 in e_2) ? e_3
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = e_1 in (e_2 ? e_3)
 \end{minipage}\\
 \begin{minipage}{.40\textwidth}
 > (let x free in e_1) ? e_2
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x free in (e_1 ? e_2)
 \end{minipage}\\
 \begin{minipage}{.40\textwidth}
 > f (let x = e_1 in e_2)
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = e_1
 > in f e_2
 \end{minipage}\\
 \begin{minipage}{.40\textwidth}
 > f (let x free in e)
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x free
 > in f e
@@ -799,7 +792,7 @@ However, these extensions to the rules are also included in the repository.
 > case  let x = e_1 
 >       in e_2  of 
 >       alts
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = e_1
 > in case e_2 of alts
@@ -808,7 +801,7 @@ However, these extensions to the rules are also included in the repository.
 > case  let x free 
 >       in e  of 
 >       alts
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x free
 > in case e of alts
@@ -825,7 +818,7 @@ However, these extensions to the rules are also included in the repository.
 >              {b_2 -> e_2}) of
 >       {b_1 -> e_1}
 >
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > case e of  {  b_2 -> 
 >               case  e_2 of  
@@ -835,7 +828,7 @@ However, these extensions to the rules are also included in the repository.
 \textbf{Double Apply}\\
 \begin{minipage}{.40\textwidth}
 > apply (apply f [x]) [y]
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > apply f [x,y]
 \end{minipage}\\
@@ -843,7 +836,7 @@ However, these extensions to the rules are also included in the repository.
 \begin{minipage}{.40\textwidth}
 > apply (case  e of 
 >              {pat -> f}) x
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > case  e of 
 >       {pat -> f x}
@@ -856,7 +849,7 @@ However, these extensions to the rules are also included in the repository.
 >      d = b
 >      e = 1
 > in   a
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let  e = 1
 > in   let  b = c
@@ -868,13 +861,13 @@ However, these extensions to the rules are also included in the repository.
 \textbf{Alias}\\
 \begin{minipage}{.40\textwidth}
 > let x = y in e
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > e[x `to` y]
 \end{minipage}\vspace{-4ex}\\
 \begin{minipage}{.40\textwidth}
 > let x = x in e
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = loop in e
 \end{minipage}\\
@@ -882,7 +875,7 @@ However, these extensions to the rules are also included in the repository.
 \begin{minipage}{.40\textwidth}
 > case  e of  
 >       True -> e
-\end{minipage} |=>|
+\end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > case  e of 
 >       True   -> e
@@ -972,7 +965,7 @@ At this point point we are ready to transform the cononicalized FlatCurry into I
 >                                      in   case  (==) (appOpt ((apply (apply mod v3) 2) 1)) of
 >                                                 True   -> powaux ((*) v1 v2) v4 v5
 >                                                 False  -> powaux v1 v4 v5
-> => DOUBLE_APPLY [1,-1,-1,0]
+> ==> DOUBLE_APPLY [1,-1,-1,0]
 > poweraux v1 v2 v3 = case  (==) v3 0 of
 >                           True   ->  v1
 >                           False  ->  let  v4 = (appOpt (square v2))
@@ -980,7 +973,7 @@ At this point point we are ready to transform the cononicalized FlatCurry into I
 >                                      in   case  (==) (apply mod v3 2) 1 of
 >                                                 True   -> powaux ((*) v1 v2) v4 v5
 >                                                 False  -> powaux v1 v4 v5
-> => BLOCKS [1]
+> ==> BLOCKS [1]
 > poweraux v1 v2 v3 = case  ((==) v3 0) of
 >                           True   ->  v1
 >                           False  ->  let  v4 = square v2
@@ -1058,48 +1051,34 @@ into ICurry in figure \ref{fig:icurryStage}.
 \begin{figure}
 >ifunction(f(x_1,...,x_n) = e) := f = iblock(x_1,..., x_n, e, ROOT)
 >
->iblock(x_1,...,x_n, EXEMPT, root)  := EXEMPT 
->iblock(x_1,...,x_n, e, root)       := 
->    declare x_1
->    ...
->    declare x_n
+>iblock({x}, EXEMPT, root)        := EXEMPT 
+>iblock({x}, e, root)             := 
+>    {declare x}
 >    decl(e)
->    x_1 = root[1]
->    ...
->    x_n = root[n]
+>    {x_i = root[i]}
 >    asgn(e)
 >    ret(e)
 >
->decl(let x_1,...,x_n free in e) :=
->    decfree x_1
->    ...
->    decfree x_n
->decl(let {x_1 = e_1;...;x_n = e_n} in e) :=
->    declare x_1
->    ...
->    declare x_n
->decl(case e of {p_1 -> e_1; ...; p_n -> e_n}) := declare x_e
+>decl(let {x} free in e)          := {decfree x}
+>decl(let {x = e} in e')          := {declare x}
+>decl(case e of {p -> e}) := declare x_e
 >
->asgn(let {x_1 = e_1;...;x_n = e_n} in e) :=
->    x_1 = expr(e_1)
->    ...
->    x_n = expr(e_n)
->    [x_i[p] = x_j | x_j `in` {x_1,...,x_n}, e_i|_p = x_j]
+>asgn(let {x = e} in e')          :=
+>    {x = expr(e)}
+>    [x_i[p] = x_j | x_i,x_j `in` {x}, e_i|_p = x_j]
 >
 >asgn(case e of _) := x_e = expr(e)
 >
 >
->ret(case e of  C_1(x_11,...,x_1m) -> e_1   := case E(e) of  iblock(x_11,...,x_1m, e_1, x_e)
->               ...                                          ...
->               C_n(x_n1,...,x_nk) -> e_n)                   iblock(x_n1,...,x_nk, e_n, x_e)
->ret(e)                                     := return E(e)
+>ret(case e' of  {C({x}) -> e}    := case E(e) of  iblock({x}, e, x_e)
+>ret(e)                           := return E(e)
 >
->expr(x)                                     := x
->expr(c e_1 ... e_n)                         := NODE(c, expr(e_1),...,expr(e_n))
->expr(f e_1 ... e_n)                         := NODE(f, expr(e_1),...,expr(e_n))
->expr(e_1 ? e_2)                             := expr(e_1) ? expr(e_2)
->expr(let {x_1 = e_1;...;x_n = e_n} in e)    := expr(e)
->expr(let x_1,...,x_n free in e)             := expr(e)
+>expr(x)                          := x
+>expr(c {e})                      := NODE(c, {expr(e)})
+>expr(f {e})                      := NODE(f, {expr(e)})
+>expr(e_1 ? e_2)                  := expr(e_1) ? expr(e_2)
+>expr(let {x = e} in e')          := expr(e)
+>expr(let {x} free in e)          := expr(e)
 
 \caption{Algorithm for translating FlatCurry into ICurry}
 \label{fig:flatCurryiCurry}
@@ -1137,19 +1116,8 @@ ICurry
 >       exempt
 >     }
 > }
-> 
-> f_1/1 : {
->   declare x_2
->   x_2 = ROOT[0]
->   case x_2 of
->     True / 0 -> {
->       return False()
->     }
->     False / 0 -> {
->       return True()
->     }
-> }
-\caption{translating |f| |f_0| and |f_1| into icurry}
+\caption{translating |f| and |f_0| into icurry.\\
+         We omit |f_1| for space, and because it's largely the same as |f_0|.}
 \label{fig:icurryStage}
 \end{figure}
 

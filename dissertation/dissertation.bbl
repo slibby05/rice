@@ -1,0 +1,571 @@
+\begin{thebibliography}{10}
+
+\bibitem{synthesizedSetFunctions}
+Synthesizing set functions.
+\newblock 2018.
+
+\bibitem{orbit}
+Norman Adams, David Kranz, Richard Kelsey, Jonathan Rees, Paul Hudak, and James
+  Philbin.
+\newblock {ORBIT: An Optimizing Compiler for Scheme}.
+\newblock In {\em Proceedings of the 1986 SIGPLAN Symposium on Compiler
+  Construction}, SIGPLAN '86, pages 219--233, New York, NY, USA, 1986. ACM.
+
+\bibitem{dragon}
+Alfred~V. Aho and Jeffrey~D. Ullman.
+\newblock {\em {Principles of Compiler Design (Addison-Wesley Series in
+  Computer Science and Information Processing)}}.
+\newblock Addison-Wesley Longman Publishing Co., Inc., Boston, MA, USA, 1977.
+
+\bibitem{currySemantics}
+Elvira Albert, Michael Hanus, Frank Huch, Javier Oliver, and Germán Vidal.
+\newblock Operational semantics for declarative multi-paradigm languages.
+\newblock {\em Journal of Symbolic Computation}, 40(1):795--829, 2005.
+
+\bibitem{optimizationAllen}
+F.E. Allen.
+\newblock {Program optimization}.
+\newblock {\em Annual Review in Automatic Programming}, 5:239--307, 1969.
+
+\bibitem{dataflowAllen}
+F.E. Allen and J.~Cocke.
+\newblock {\em {A catalogue of optimizing transformations}}.
+\newblock Prentice-Hall, 1972.
+
+\bibitem{ssa}
+B.~Alpern, M.~N. Wegman, and F.~K. Zadeck.
+\newblock {Detecting Equality of Variables in Programs}.
+\newblock In {\em Proceedings of the 15th ACM SIGPLAN-SIGACT Symposium on
+  Principles of Programming Languages}, POPL '88, pages 1--11, New York, NY,
+  USA, 1988. ACM.
+
+\bibitem{pulltab}
+A.~Alqaddoumi, S.~Antoy, S.~Fischer, and F.~Reck.
+\newblock The pull-tab transformation.
+\newblock In {\em Third International Workshop on Graph Computation Models},
+  Enschede, The Netherlands, October 2010.
+
+\bibitem{bubbling}
+S.~Antoy, D.~Brown, and S.~Chiang.
+\newblock Lazy context cloning for non-deterministic graph rewriting.
+\newblock In {\em Proc.~of the 3rd International Workshop on Term Graph
+  Rewriting, Termgraph'06}, pages 61--70, Vienna, Austria, April 2006.
+
+\bibitem{bubblingCorrect}
+S.~Antoy, D.~Brown, and S.-H. Chiang.
+\newblock On the correctness of bubbling.
+\newblock In F.~Pfenning, editor, {\em 17th International Conference on
+  Rewriting Techniques and Applications}, pages 35--49, Seattle, WA, Aug. 2006.
+  Springer LNCS 4098.
+
+\bibitem{OverlappingRules}
+S.~Antoy and M.~Hanus.
+\newblock {Overlapping Rules and Logic Variables in Functional Logic Programs}.
+\newblock In {\em Proceedings of the Twenty Second International Conference on
+  Logic Programming}, pages 87--101, Seattle, WA, August 2006. Springer LNCS
+  4079.
+
+\bibitem{setFunctions}
+S.~Antoy and M.~Hanus.
+\newblock Set functions for functional logic programming.
+\newblock In {\em Proc.\ of the 11th International ACM SIGPLAN Conference on
+  Principle and Practice of Declarative Programming (PPDP'09)}, pages 73--82.
+  ACM Press, 2009.
+
+\bibitem{FunLog}
+S.~Antoy and M.~Hanus.
+\newblock {Functional Logic Programming}.
+\newblock {\em Comm. of the ACM}, 53(4):74--85, April 2010.
+
+\bibitem{CurryTutorial}
+S.~Antoy and M.~Hanus.
+\newblock {{Curry}: A {Tutorial} {Introduction}}, January 13, 2017.
+\newblock Available at
+  http://www-ps.informatik.uni-kiel.de/currywiki/documentation/tutorial.
+
+\bibitem{icurry}
+S.~Antoy, M.~Hanus, A.~Jost, and S.~Libby.
+\newblock Icurry.
+\newblock {\em CoRR}, abs/1908.11101, 2019.
+
+\bibitem{DefinitionalTrees}
+Sergio Antoy.
+\newblock Definitional trees.
+\newblock In H{\'e}l{\`e}ne Kirchner and Giorgio Levi, editors, {\em Algebraic
+  and Logic Programming}, pages 143--157, Berlin, Heidelberg, 1992. Springer
+  Berlin Heidelberg.
+
+\bibitem{Needed}
+Sergio Antoy, Rachid Echahed, and Michael Hanus.
+\newblock A needed narrowing strategy.
+\newblock {\em J. ACM}, 47(4):776–822, July 2000.
+
+\bibitem{shortcutting}
+Sergio Antoy, Jacob Johannsen, and Steven Libby.
+\newblock {Needed Computations Shortcutting Needed Steps}.
+\newblock In {\em Electronic Proceedings in Theoretical Computer Science,
+  EPTCS}, volume 183, pages 18--32. Open Publishing Association, 2015.
+
+\bibitem{reallyNeeded}
+Sergio Antoy and Andy Jost.
+\newblock Are needed redexes really needed?
+\newblock In {\em Proceedings of the 15th Symposium on Principles and Practice
+  of Declarative Programming}, PPDP '13, pages 61--71, New York, NY, USA, 2013.
+  ACM.
+
+\bibitem{sprite}
+Sergio Antoy and Andy Jost.
+\newblock {A New Functional-Logic Compiler for Curry: Sprite}.
+\newblock {\em CoRR}, abs/1608.04016, 2016.
+
+\bibitem{compilersAppel}
+Andrew~W. Appel.
+\newblock {\em {Modern Compiler Implementation in ML: Basic Techniques}}.
+\newblock Cambridge University Press, New York, NY, USA, 1997.
+
+\bibitem{continuationsAppel}
+Andrew~W. Appel.
+\newblock {\em {Compiling with Continuations}}.
+\newblock Cambridge University Press, New York, NY, USA, 2007.
+
+\bibitem{termAndAllThat}
+F.~Baader and T.~Nipkow.
+\newblock {\em {Term Rewriting and All That}}.
+\newblock Cambridge University Press, 1998.
+
+\bibitem{kics2Theory}
+B.~Brassel.
+\newblock {\em {Implementing Functional Logic Programs by Translation into
+  Purely Functional Programs}}.
+\newblock PhD thesis, Christian-Albrechts-Universit{\"a}t zu Kiel, 2011.
+
+\bibitem{kics2}
+B.~Bra{\ss}el, M.~Hanus, B.~Peem{\"o}ller, and F.~Reck.
+\newblock {{KiCS2}: A New Compiler from {Curry} to {Haskell}}.
+\newblock In {\em Proc.\ of the 20th International Workshop on Functional and
+  (Constraint) Logic Programming (WFLP 2011)}, pages 1--18. Springer LNCS 6816,
+  2011.
+
+\bibitem{findall}
+Bernd Brassel, M.~Hanus, and F.~Huch.
+\newblock Encapsulating non-determinism in functional logic computations.
+\newblock {\em J. Funct. Log. Program.}, 2004, 2004.
+
+\bibitem{CarruthInline}
+Chandler Carruth.
+\newblock Understanding compiler optimization - chandler carruth - opening
+  keynote meeting c++ 2015.
+\newblock December 2015.
+
+\bibitem{toy}
+I.~Castiñeiras, J.~Correas, S.~Estévez-Martín, and F.~Sáenz-Pérez.
+\newblock {TOY: A CFLP Language and System}.
+\newblock {\em {The Association for Logic Programming}}, 2012.
+
+\bibitem{freeTheoremsCurry}
+Jan Christiansen, Daniel Seidel, and Janis Voigtl\"{a}nder.
+\newblock Free theorems for functional logic programs.
+\newblock In {\em Proceedings of the 4th ACM SIGPLAN Workshop on Programming
+  Languages Meets Program Verification}, PLPV '10, page 39–48, New York, NY,
+  USA, 2010. Association for Computing Machinery.
+
+\bibitem{churchRosser}
+Alonzo Church and J.~B. Rosser.
+\newblock Some properties of conversion.
+\newblock {\em Transactions of the American Mathematical Society},
+  39(3):472--482, 1936.
+
+\bibitem{stream}
+Duncan Coutts, Roman Leshchinskiy, and Don Stewart.
+\newblock {Stream Fusion. From Lists to Streams to Nothing at All}.
+\newblock In {\em ICFP’07}, 2007.
+
+\bibitem{CombLogic}
+Haskell~B. Curry and Robert Feys.
+\newblock Combinatory logic. volume i.
+\newblock {\em Journal of Symbolic Logic}, 32(2):267–268, 1967.
+
+\bibitem{hal}
+Bart Demoen, Maria~Garc{\'i}a de~la Banda, Warwick Harvey, Kim Marriott, and
+  Peter Stuckey.
+\newblock {An Overview of HAL}.
+\newblock In Joxan Jaffar, editor, {\em Principles and Practice of Constraint
+  Programming -- CP'99}, pages 174--188, Berlin, Heidelberg, 1999. Springer
+  Berlin Heidelberg.
+
+\bibitem{graphRewriting}
+R.~Echahed and J.~C. Janodet.
+\newblock {On constructor-based graph rewriting systems}.
+\newblock Technical Report 985-I, IMAG, 1997.
+\newblock Available at
+  ftp://ftp.imag.fr/pub/labo-LEIBNIZ/OLD-archives/PMP/c-graph-rewriting.ps.gz.
+
+\bibitem{standardNarrowing}
+Michael Fay.
+\newblock First-order unification in equational theories.
+\newblock pages 161,167, 1979.
+
+\bibitem{wadler_ferguson_deforest}
+A.~B. Ferguson and Philip Wadler.
+\newblock When will deforestation stop?
+\newblock In {\em In 1988 Glasgow Workshop on Functional Programming}, pages
+  39--56, 1988.
+
+\bibitem{ANormal}
+Cormac Flanagan, Amr Sabry, Bruce~F. Duba, and Matthias Felleisen.
+\newblock {The Essence of Compiling with Continuations}.
+\newblock In {\em Proceedings of the ACM SIGPLAN 1993 Conference on Programming
+  Language Design and Implementation}, PLDI '93, pages 237--247, 1993.
+
+\bibitem{slog}
+L.~Fribourg.
+\newblock Slog: A logic programming language interpreter based on clausal
+  superposition and rewriting.
+\newblock In {\em SLP}, 1985.
+
+\bibitem{shortcutDeforestation}
+Andrew Gill, John Launchbury, and Simon~L. Peyton~Jones.
+\newblock {A Short Cut to Deforestation}.
+\newblock In {\em Proceedings of the Conference on Functional Programming
+  Languages and Computer Architecture}, FPCA '93, pages 223--232, New York, NY,
+  USA, 1993. ACM.
+
+\bibitem{gill_dissertation}
+Andrew~John Gill and Andrew~John Gill.
+\newblock Cheap deforestation for non-strict functional languages, 1996.
+
+\bibitem{crwl}
+J.~C. Gonz{\'a}lez-Moreno, M.~T. Hortal{\'a}-Gonz{\'a}lez, F.~J.
+  L{\'o}pez-Fraguas, and M.~Rodr{\'i}guez-Artalejo.
+\newblock A rewriting logic for declarative programming.
+\newblock In Hanne~Riis Nielson, editor, {\em Programming Languages and Systems
+  --- ESOP '96}, pages 156--172, Berlin, Heidelberg, 1996. Springer Berlin
+  Heidelberg.
+
+\bibitem{ultimateGoto}
+Jr. Guy Lewis~Steele.
+\newblock {Debunking the "Expensive Procedure Call" Myth, or Procedure Call
+  Implementations Considered Harmful, or LAMBDA, the Ultimate GOTO"}.
+\newblock {\em ACM Conference Proceedings. 1977}, 1977.
+
+\bibitem{rabbit}
+Jr~Guy Lewis~Steele.
+\newblock {\em {RABBIT: A Compiler for SCHEME}}.
+\newblock PhD thesis, May 1978.
+
+\bibitem{lambdaRename}
+Jr. Guy Lewis~Steele.
+\newblock {Compiler Optimization Based on Viewing LAMBDA as RENAME + GOTO}.
+\newblock 1980.
+
+\bibitem{multiparadigm}
+M.~Hanus.
+\newblock Multi-paradigm declarative languages.
+\newblock In {\em Proceedings of the International Conference on Logic
+  Programming (ICLP 2007)}, pages 45--75. Springer LNCS 4670, 2007.
+
+\bibitem{IntegrationFunLog}
+Michael Hanus.
+\newblock The integration of functions into logic programming: From theory to
+  practice.
+\newblock {\em The Journal of Logic Programming}, 19-20:583 -- 628, 1994.
+
+\bibitem{concurrentCurry}
+Michael Hanus and Ramin Sadre.
+\newblock A concurrent implementation of curry in java.
+\newblock In {\em In Proc. ILPS'97 Workshop on Parallelism and Implementation
+  Technology for (Constraint) Logic Programming Languages}, 1997.
+
+\bibitem{abstractConcurrentCurry}
+Michael Hanus and Ramin Sadre.
+\newblock An abstract machine for curry and its concurrent implementation in
+  java.
+\newblock {\em Journal of Functional and Logic Programming}, 1999, 01 1999.
+
+\bibitem{CurryReport}
+M.~Hanus~(ed.).
+\newblock Curry: An integrated functional logic language (vers.\ 0.9.0), 2016.
+
+\bibitem{pakcs}
+M.~Hanus~(ed.).
+\newblock {{PAKCS} 1.14.3: {The Portland Aachen Kiel Curry System}}, March 04,
+  2017.
+\newblock Available at http://www.informatik.uni-kiel.de/~pakcs.
+
+\bibitem{ciao}
+Manuel~V. Hermenegildo, Francisco Bueno, Manuel Carro, Pedro L{\'o}pez,
+  Jos{\'e}~F. Morales, and German Puebla.
+\newblock {\em {An Overview of the Ciao Multiparadigm Language and Program
+  Development Environment and Its Design Philosophy}}, pages 209--237.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 2008.
+
+\bibitem{StrongSequential}
+G.~Huet and J.~L{\'e}vy.
+\newblock Computations in orthogonal rewriting systems, i.
+\newblock In {\em Computational Logic - Essays in Honor of Alan Robinson},
+  1991.
+
+\bibitem{basicNarrowing}
+Jean-Marie Hullot.
+\newblock Canonical forms and unification.
+\newblock In Wolfgang Bibel and Robert Kowalski, editors, {\em 5th Conference
+  on Automated Deduction Les Arcs, France, July 8--11, 1980}, pages 318--334,
+  Berlin, Heidelberg, 1980. Springer Berlin Heidelberg.
+
+\bibitem{callTimeChoice}
+Heinrich Hussmann.
+\newblock Nondeterministic algebraic specifications and nonconfluent term
+  rewriting.
+\newblock {\em The Journal of Logic Programming}, 12(3):237--255, 1992.
+
+\bibitem{unboxing}
+SL~Peyton Jones, J~Launchbury, and Simon Peyton~Jones.
+\newblock {Unboxed values as first class citizens}.
+\newblock In {\em ACM Conference on Functional Programming and Computer
+  Architecture (FPCA'91)}, volume 523, pages 636--666. Springer, January 1991.
+
+\bibitem{condKaplan}
+Stephane Kaplan.
+\newblock Simplifying conditional term rewriting systems : Unification,
+  termination and confluence.
+\newblock {\em Journal of Symbolic Computation}, 4(3):295 -- 334, 1987.
+
+\bibitem{dataflowKildall}
+Gary~A. Kildall.
+\newblock {A Unified Approach to Global Program Optimization}.
+\newblock In {\em Proceedings of the 1st Annual ACM SIGACT-SIGPLAN Symposium on
+  Principles of Programming Languages}, POPL '73, pages 194--206, New York, NY,
+  USA, 1973. ACM.
+
+\bibitem{logict}
+Oleg Kiselyov, Chung-chieh Shan, Daniel~P. Friedman, and Amr Sabry.
+\newblock Backtracking, interleaving, and terminating monad transformers:
+  (functional pearl).
+\newblock In {\em Proceedings of the Tenth ACM SIGPLAN International Conference
+  on Functional Programming}, ICFP '05, page 192–203, New York, NY, USA,
+  2005. Association for Computing Machinery.
+
+\bibitem{termRewriting}
+J.~W. Klop.
+\newblock {{Term Rewriting Systems}}.
+\newblock In S.~Abramsky, D.~Gabbay, and T.~Maibaum, editors, {\em Handbook of
+  Logic in Computer Science, Vol.\ II}, pages 1--112. Oxford University Press,
+  1992.
+
+\bibitem{KnuthBendix}
+DONALD~E. KNUTH and PETER~B. BENDIX.
+\newblock Simple word problems in universal algebras††the work reported in
+  this paper was supported in part by the u.s. office of naval research.
+\newblock In JOHN LEECH, editor, {\em Computational Problems in Abstract
+  Algebra}, pages 263 -- 297. Pergamon, 1970.
+
+\bibitem{strictProj}
+Ryszard Kubiak, John Hughes, and John Launchbury.
+\newblock Implementing projection-based strictness analysis.
+\newblock In {\em Functional Programming}, 1991.
+
+\bibitem{gmachine}
+Augustsson L.
+\newblock {\em {Compiling Lazy Functional Languages}}.
+\newblock PhD thesis, 1978.
+
+\bibitem{llvm}
+Chris Lattner and Vikram Adve.
+\newblock {LLVM: A Compilation Framework for Lifelong Program Analysis \&
+  Transformation}.
+\newblock In {\em {Proceedings of the 2004 International Symposium on Code
+  Generation and Optimization (CGO'04)}}, Palo Alto, California, Mar 2004.
+
+\bibitem{git}
+Steven Libby.
+\newblock Rice.
+\newblock \url{https://github.com/slibby05/rice}.
+
+\bibitem{proposal}
+Steven Libby.
+\newblock Cooking with gas:\\making an optimizing curry compiler.
+\newblock 2019.
+
+\bibitem{this}
+Steven Libby.
+\newblock {\em Making Curry with Rice: An Optimizing Compiler for Curry}.
+\newblock PhD thesis, Portland State University, 2022.
+
+\bibitem{dominatorFlow}
+Edward~S. Lowry and C.~W. Medlock.
+\newblock {Object Code Optimization}.
+\newblock {\em Commun. ACM}, 12(1):13--22, January 1969.
+
+\bibitem{rewriteStrategies}
+Aart Middeldorp.
+\newblock Strategies for rewrite systems: Normalization and optimality.
+\newblock 2018.
+
+\bibitem{foldUnfold}
+Ginés Moreno.
+\newblock Transformation rules and strategies for functional‐logic programs.
+
+\bibitem{lazyNarrowing}
+Juan~Jose Moreno-Navarro and Mario Rodriguez-Artalejo.
+\newblock Logic programming with functions and predicates: The language babel.
+\newblock {\em The Journal of Logic Programming}, 12(3):191--223, 1992.
+
+\bibitem{strictAbstract}
+Alan Mycroft.
+\newblock The theory and practice of transforming call-by-need into
+  call-by-value.
+\newblock In Bernard Robinet, editor, {\em International Symposium on
+  Programming}, pages 269--281, Berlin, Heidelberg, 1980. Springer Berlin
+  Heidelberg.
+
+\bibitem{wrongData}
+Todd Mytkowicz, Amer Diwan, Matthias Hauswirth, and Peter~F. Sweeney.
+\newblock {Producing Wrong Data Without Doing Anything Obviously Wrong!}
+\newblock {\em SIGPLAN Not.}, 44(3):265--276, March 2009.
+
+\bibitem{Newman}
+M.~Newman.
+\newblock On theories with a combinatorial definition of "equivalence".
+\newblock {\em Annals of Mathematics}, 43:223, 1942.
+
+\bibitem{AdvancedTRS}
+Enno Ohlebusch.
+\newblock {\em {Advanced Topics in Term Rewriting}}.
+\newblock Springer-Verlag New York, 2002.
+
+\bibitem{jvm}
+Michael Paleczny, Christopher Vick, and Cliff Click.
+\newblock The java hotspottm server compiler.
+\newblock In {\em Proceedings of the 2001 Symposium on JavaTM Virtual Machine
+  Research and Technology Symposium - Volume 1}, JVM'01, page~1, USA, 2001.
+  USENIX Association.
+
+\bibitem{peval}
+Bj{\"o}rn Peem{\"o}ller.
+\newblock {\em {Normalization and Partial Evaluation of Functional Logic
+  Programs}}.
+\newblock PhD thesis, 2016.
+
+\bibitem{fastCurry}
+Simon Peyton~Jones.
+\newblock How to make a fast curry: push/enter vs eval/apply.
+\newblock In {\em International Conference on Functional Programming}, pages
+  4--15, September 2004.
+
+\bibitem{evalApply}
+Simon Peyton~Jones.
+\newblock How to make a fast curry: push/enter vs eval/apply.
+\newblock In {\em International Conference on Functional Programming}, pages
+  4--15, September 2004.
+
+\bibitem{haskellInliner}
+Simon Peyton~Jones and Simon Marlow.
+\newblock {Secrets of the Glasgow Haskell Compiler Inliner}.
+\newblock {\em J. Funct. Program.}, 12(5):393--434, July 2002.
+
+\bibitem{haskellOpt}
+Simon Peyton~Jones and Andre Santos.
+\newblock A transformation-based optimiser for haskell.
+\newblock {\em Science of Computer Programming}, 32(1), October 1997.
+
+\bibitem{playingByTheRules}
+Simon Peyton~Jones, Andrew Tolmach, and Tony Hoare.
+\newblock Playing by the rules: Rewriting as a practical optimisation technique
+  in ghc.
+\newblock {\em Haskell 2001}, 04 2001.
+
+\bibitem{lazyFunctionalCompilers}
+Simon~L. Peyton~Jones.
+\newblock {\em {The Implementation of Functional Programming Languages
+  (Prentice-Hall International Series in Computer Science)}}.
+\newblock Prentice-Hall, Inc., Upper Saddle River, NJ, USA, 1987.
+
+\bibitem{stg}
+Simon~L. Peyton~Jones and Jon Salkild.
+\newblock {The Spineless Tagless G-machine}.
+\newblock In {\em Proceedings of the Fourth International Conference on
+  Functional Programming Languages and Computer Architecture}, FPCA '89, pages
+  184--201. ACM, 1989.
+
+\bibitem{offline_peval}
+J.~Guadalupe Ramos, Josep Silva, and Germ\'{a}n Vidal.
+\newblock {An Offline Partial Evaluator for Curry Programs}.
+\newblock In {\em Proceedings of the 2005 ACM SIGPLAN Workshop on Curry and
+  Functional Logic Programming}, WCFLP '05, pages 49--53, New York, NY, USA,
+  2005. ACM.
+
+\bibitem{offlinePeval}
+J.~Guadalupe Ramos, Josep Silva, and Germ\'{a}n Vidal.
+\newblock {An Offline Partial Evaluator for Curry Programs}.
+\newblock In {\em Proceedings of the 2005 ACM SIGPLAN Workshop on Curry and
+  Functional Logic Programming}, WCFLP '05, pages 49--53, New York, NY, USA,
+  2005. ACM.
+
+\bibitem{defunctionalization}
+John~C. Reynolds.
+\newblock Definitional interpreters for higher-order programming languages.
+\newblock In {\em Proceedings of the ACM Annual Conference - Volume 2}, ACM
+  '72, page 717–740, New York, NY, USA, 1972. Association for Computing
+  Machinery.
+
+\bibitem{oz}
+Ralf Scheidhauer.
+\newblock {\em {Design, Implementierung und Evaluierung einer virtuellen
+  Maschine f{\"u}r {Oz}}}.
+\newblock PhD thesis, Universit{\"a}t des Saarlandes, Fachbereich Informatik,
+  Saarbr{\"u}cken, Germany, December 1998.
+
+\bibitem{strictBack}
+Ilya Sergey, Simon Peyton~Jones, and Dimitrios Vytiniotis.
+\newblock Theory and practice of demand analysis in haskell.
+\newblock Unpublished draft, June 2014.
+
+\bibitem{narrowing}
+James~R. Slagle.
+\newblock Automated theorem-proving for theories with simplifiers
+  commutativity, and associativity.
+\newblock {\em J. ACM}, 21(4):622–642, October 1974.
+
+\bibitem{mercury}
+Zoltan Somogyi and Fergus Henderson.
+\newblock {The design and implementation of Mercury}.
+\newblock {\em Joint International Conference and Symposium on Logic
+  Programming}, Sep 1996.
+
+\bibitem{ssaVariable}
+E~Stoltz, M.P. Gerlek, and M~Wolfe.
+\newblock {Extended SSA with factored use-def chains to support optimization
+  and parallelism}.
+\newblock pages 43 -- 52, 02 1994.
+
+\bibitem{monadSemantics}
+Andrew Tolmach and Sergio Antoy.
+\newblock A monadic semantics for core curry.
+\newblock {\em Electronic Notes in Theoretical Computer Science}, 86(3):16--34,
+  2003.
+\newblock WFLP 2003, 12th International Workshop on Functional and Constraint
+  Logic Programming.
+
+\bibitem{turchin_supercompiler}
+Valentin~F. Turchin.
+\newblock The concept of a supercompiler.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, page 292–325, jun 1986.
+
+\bibitem{deforestationWadler}
+Philip Wadler.
+\newblock {Deforestation: transforming programs to eliminate trees}.
+\newblock {\em Theoretical Computer Science}, 73(2):231 -- 248, 1990.
+
+\bibitem{ssaOptimizations}
+Mark~N. Wegman and F.~Kenneth Zadeck.
+\newblock {Constant Propagation with Conditional Branches}.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 13(2):181--210, April 1991.
+
+\bibitem{outerNarrowing}
+Jia-Huai You.
+\newblock Enumerating outer narrowing derivationsfor constructor-based term
+  rewriting systems.
+\newblock {\em Journal of Symbolic Computation}, 7(3):319--341, 1989.
+\newblock Unification: Part 1.
+
+\end{thebibliography}

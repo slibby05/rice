@@ -39,8 +39,9 @@ This will be translated into FlatCurry as
 >                               True   -> x
 >                               False  -> EXEMPT
 
-While this transformation is obviously inefficient, it is general and easy to implement.
-A good optimizer should be able to recognize that |otherwise| is really a synonym for |True|,
+While this transformation is obviously inefficient, 
+it is general and has a straightforward implementation.
+A good optimizer should be able to recognize that |otherwise| reduces to |True|,
 and reduce the case-expression.
 So for this one example, we have two different optimizations we need to implement.
 We need to reduce |otherwise| to |True|, then we can reduce the second case expression to |x|.
@@ -91,10 +92,10 @@ Finally, optimizations are written in Curry.
 We didn't need to develop a DSL to describe the optimizations,
 and there are no new ideas for programmers to learn if they want to extend the compiler.
 
-We should note that there are some significant disadvantages to the GAS system as well.
-This biggest disadvantage is that there are some optimizations and transformations
+We should note that there are some potential disadvantages to the GAS system as well.
+The first disadvantage is that there are some optimizations and transformations
 that are not easily described by rewriting.
-Another disadvantage is that, while we've improved the efficiency of the algorithm considerably,
+The second is that, while we've improved the efficiency of the algorithm considerably,
 it still takes longer to optimize programs then we'd like.
 
 The first problem isn't really a problem at all.
@@ -117,39 +118,107 @@ Each optimization is going to be a function from a FlatCurry expression to anoth
 
 > type Opt = Expr -> Expr
 
+For readability we use the FlatCurry syntax defined in figure \ref{fig:flatSyntax},
+While this version of FlatCurry is easier to read,
+we will need the actual representation of FlatCurry programs to implement the compiler.
+This representation is given in figure \ref{fig:flatRep}, and the transformation
+from the FlatCurry syntax to the FlatCurry representation is given in figure \ref{fig:flatTranslate}.
 We can describe an optimization by simply describing what it does to each expression.
 As an example consider the definition for floating let-expressions:
 
-> float (code (f (as++[let vs in e]++bs))) = (code (let vs in (f (as++[e]++bs))))
+\begin{figure}
+
+> type QName = (String, String)
+> type Arity = Int
+> type VarIndex = Int
+> data Visibility = Public | Private
+>
+> data FuncDecl = Func QName Arity Rule
+> data Rule
+>   = Rule [VarIndex] Expr
+>   | External String
+> data CombType = FuncCall | ConsCall | FuncPartCall Arity | ConsPartCall Arity
+> data Expr
+>   = Var VarIndex
+>   | Lit Literal
+>   | Comb CombType QName [Expr]
+>   | Let [(VarIndex, Expr)] Expr
+>   | Free [VarIndex] Expr
+>   | Or Expr Expr
+>   | Case Expr [BranchExpr]
+> data BranchExpr = Branch Pattern Expr
+> data Pattern
+>   = Pattern QName [VarIndex]
+>   | LPattern Literal
+> data Literal
+>   = Intc   Int
+>   | Floatc Float
+>   | Charc  Char
+\caption{Curry representation of FlatCurry programs\\
+This is the standard representation of FlatCurry programs as defined in \cite{FlatCurry},
+We have removed |CaseType| and |Typed| from |Expr|, and 
+|TypeExpr| and |Visibility| from |FuncDecl|, because they are not used in our translation.}
+\label{fig:flatRep}
+\end{figure}
+
+\begin{figure}
+
+> code (f v_1,v_2 ... v_n = e ) = FuncDecl f n (Rule [v_1,v_2 ... v_n] (code e))
+> emptyspace
+> code v                                     = Var v
+> code l                                     = Lit (code l)
+> code (e_1 ? e_2)                           = Or (code e_1) (code e_2)
+> code EXEMPT                                = Comb ConsCall ("","FAIL") []
+> code (f_k e_1 e_2 ... e_n)   | k == 0      = Comb FuncCall f [code e_1, code e_2 ... code e_n]
+>                              | otherwise   = Comb (PartFuncCall k) f [code e_1, code e_2 ... code e_n]
+> code (C_k e_1 e_2 ... e_n)   | k == 0      = Comb ConsCall f [code e_1, code e_2 ... code e_n]
+>                              | otherwise   = Comb (PartConsCall k) f [code e_1, code e_2 ... code e_n]
+> code (let v_1 = e_1, ... v_n = e_n in e)   = Let [(v_1,code e_1) ... (v_n,code e_n)] (code e)
+> code (let v_1, v_2 ... v_n free in e)      = Free [v_1,v_2, ... v_n] (code e)
+> code (case e of branches)                  = Case e (code branches)
+> emptyspace
+> code (l -> e)                  = LPattern (code l) (code e)
+> code (C v_1 v_2 ... v_n -> e)  = Pattern C [v_1,v_2 ... v_n] (code e)
+> emptyspace
+> code l =  | isInt l    = Intc l
+>           | isFloat l  = Floatc l
+>           | isChar l   = Charc l
+\caption{Translation from FlatCurry syntax to the Curry representation of FlatCurry.}
+\label{fig:flatTranslate}
+\end{figure}
+
+
+
+> float (Comb ct f (as++[Let vs e]++bs) = Let vs (Comb ct f (as++[e]++bs))
 
 This optimization tells us that, if an argument to a function application is a |let| expression,
 then we can move the let-expression outside.
 This works for let-expressions, but what if there's a free variable declaration inside of a function?
 Well, we can define that case with another rule.
 
-> float (code (f (as++[let vs in e]++bs)))       = (code (let vs in (f (as++[e]++bs))))
-> float (code (f (as++[let vs free in e]++bs)))  = (code (let vs free in (f (as++[e]++bs))))
+> float (Comb ct f (as++[Let vs e]++bs)   = Let vs (Comb ct f (as++[e]++bs))
+> float (Comb ct f (as++[Free vs e]++bs)  = Free vs (Comb ct f (as++[e]++bs))
 
 This is where the non-determinism comes in.
 Suppose we have an expression:
 
-> (code (f [let [x = 1] in x, let r free in 2]))
+> f (let x = 1 in x) (let r free in 2)
 
 This could be matched by either rule.
 The trick is that we don't care which rule matches, as long as they both do eventually.
 This will be transformed into one of the following:
 
-> (code (let r free in let [x = 1] in f x 2))
-> (code (let [x = 1] in let r free in f x 2))
+> let r free in let x = 1 in f x 2
+> let x = 1 in let r free in f x 2
 
 Either of these options is acceptable.
 In fact, we could remove the ambiguity by making our rules a confluent system,
 as shown by the code below.
 However, we will not worry about confluence for most optimizations.
 
-> float (code (f (as++[let vs in e]++bs)))       = (code (let vs in (f (as++[e]++bs))))
-> float (code (f (as++[let vs free in e]++bs)))  = (code (let vs free in (f (as++[e]++bs))))
-> float (code ([let vs in let ws free in e]))    = (code (let ws free in let vs in e))
+> float (Comb ct f (as++[Let vs e]++bs)   = Let vs (Comb ct f (as++[e]++bs))
+> float (Comb ct f (as++[Free vs e]++bs)  = Free vs (Comb ct f (as++[e]++bs))
+> float (Let vs (Free ws e)               = Free ws (Let vs e)
 
 Great, now we can make an optimization.
 It was easy to write, but it's not a very complex optimization.
@@ -187,33 +256,33 @@ then finding the strongly connected components of that reference graph,
 and, finally, rebuilding the let expression from the component graph.
 The full algorithm is given below.
 
-> blocks _ (code (Let vs e)) | numBlocks > 1 = e'
+> blocks (Let vs e) | numBlocks > 1 = e'
 >   where (e', numBlocks) = makeBlocks es e
 
 > makeBlocks vs e = (letExp, length comps)
 >  where  letExp = foldr makeBlock e comps
->         makeBlock comp = \exp -> (code (let (map getExp comp) in exp))
->         getExp n | code (n = exp) `elem` vs = (code (n = exp))
+>         makeBlock comp = \exp -> Let (map getExp comp) exp
+>         getExp (_++[(n,exp)]++_) = (n,exp)
 > 
 >         comps = scc (vs >>= makeEdges)
->         makeEdges (code (v = exp)) = [(v,f) | f <- freeVars exp `intersect` map fst vs]
+>         makeEdges (v, exp) = [(v,f) | f <- freeVars exp `intersect` map fst vs]
 
-While this optimization is significantly more complicated then the $float$ example,
+While this optimization is significantly more complicated then the |float| example,
 We can still implement it in our system.
 Furthermore, we're able to factor out the code for building the graph
 and finding the strongly connected components.
-This is the advantage of using Curry functions as our rewrite rules.
+This is the advantage of using Curry functions as opposed to strict rewrite rules.
 We have much more freedom in constructing the right-hand side of our rules.
 
-Now that we can create optimizations, what if we want both $blocks$ and $float$ to run?
+Now that we can create optimizations, what if we want both |blocks| and |float| to be able to run?
 This is an important part of the compilation process to get expressions into a canonical form.
 It turns out that combining two optimizations is simple.
 We just make a non-deterministic choice between them.
 
 > floatBlocks = float ? blocks
 
-This is a new optimization that will apply both $float$ and $blocks$.
-The ability to compose optimizations with $?$ is the heart of the GAS system.
+This is a new optimization that will apply either |float| or |blocks|.
+The ability to compose optimizations with |?| is the heart of the GAS system.
 Each optimization can be developed and tested in isolation,
 then they can be combined for efficiency.
 
@@ -235,14 +304,13 @@ The full code is given in figure \ref{fig:optFirst}
 >  | otherwise        = fix f (f x)
 
 > subExpr :: Expr -> Expr
-> subExpr e = e
-> subExpr (code (f es))              = subExpr (foldr1 (?) es)
-> subExpr (code (let vs in e))       = subExpr (foldr1 (?) (map snd es))
-> subExpr (code (let vs free in e))  = subExpr e
-> subExpr (code (e : t))             = subExpr e
-> subExpr (code (e_1 ? e_2))         = subExpr e_1 ? subExpr e_2
-> subExpr (code (case e of bs))      = subExpr (e ? map branchExpr bs)
->  where  branchExpr (code (pat -> e)) = e
+> subExpr e               = e
+> subExpr (Comb ct f vs)  = subExpr (foldr1 (?) es)
+> subExpr (Let vs e)      = subExpr (foldr1 (?) (e : map snd es))
+> subExpr (Free vs e)     = subExpr e
+> subExpr (Or e_1 e_2)    = subExpr e_1 ? subExpr e_2
+> subExpr (Case e bs)     = subExpr (e : map branchExpr bs)
+>  where  branchExpr (Branch _ e) = e
 
 > reduce :: Opt -> Expr -> Expr
 > reduce opt e = opt (subExpr e)
@@ -254,7 +322,7 @@ The full code is given in figure \ref{fig:optFirst}
 \label{fig:optFirst}
 \end{figure}
 
-While this attempt is really simple,
+While this attempt is short and readable,
 there's a problem with it.
 It is unusably slow.
 While looking at the code, it's pretty clear to see what the problem is.
@@ -264,7 +332,7 @@ then we need to traverse the expression 100 times.
 
 \subsection{A Second Attempt: Multiple Transformations Per Pass}
 
-Our second attempt is much more successful.
+Our second attempt runs much faster.
 Instead of picking an arbitrary subexpression,
 we choose to traverse the expression manually.
 Now, we can check at each node if an optimization applies.
@@ -282,31 +350,25 @@ The new implementation is given in figure \ref{fig:optReduce}
 > fix f x
 >  | f x == x = x
 >  | otherwise = fix f (f x)
-
+> emptyspace
 > reduce                                :: Opt -> Expr -> Expr
-> reduce opt (code (v))                 = runOpts opt (code (v))
-> reduce opt (code (l))                 = runOpts opt (code (l))
-> reduce opt (code (f es))              = runOpts opt (code (f es'))
->  where es'    = map (run opt) es
-> reduce opt (code (let vs in e))       = runOpts opt (code (let vs' in e'))
->  where  vs'   = map (\(code (v = e)) -> (code (v = run opt e))) vs
->         e'    = run opt e
-> reduce opt (code (let vs free in e))  = runOpts opt (code (let vs free in e'))
->  where  e'    = run opt e
-> reduce opt (code (e : t))             = runOpts opt (code (e' : t))
->  where  e'    = run opt e
-> reduce opt (code (e_1 ? e_2))         = runOpts opt (code (e_1' ? e_2'))
->  where  e_1'  = run opt e_1
->         e_2'  = run opt e_2
-> reduce opt (code (case e of bs))      = runOpts opt (code (case e' of bs'))
->  where  e'    = run opt e
->         bs'   = map (\(code (pat -> e)) -> (code (pat -> (run opt e')))) bs
-
+> reduce opt (Var v)             = runOpts opt (Var v)
+> reduce opt (Lit l)             = runOpts opt (Lit l)
+> reduce opt (Comb ct f es)      = runOpts opt (Comb ct f (map (reduce opt) es))
+>  where  es' = map (reduce opt) es
+> reduce opt (Let vs e)          = runOpts opt Let (map runLet vs) (reduce opt e)
+>  where  runLet (v,e) = (v, reduce opt e)
+> reduce opt (Free vs e)         = runOpts opt (Free vs (reduce opt e))
+> reduce opt (Or a b)            = runOpts opt (Or (reduce opt a) (reduce opt a))
+> reduce opt (Case e bs)         = runOpts opt (Case (reduce opt e) bs')
+>  where  runBranch (Branch p e) = Branch p (reduce opt e)
+>         bs' = map runBranch bs
+> emptyspace
 > runOpts :: Opt -> Expr -> Expr
-> runOpts opt e =  if opt e == emptyset
->                  then e 
->                  else let e' `elem` opt e in e'
-
+> runOpts opt e =  case  oneValue (opt e) of
+>                        Nothing  -> e
+>                        Just e'  -> e'
+> emptyspace
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt) e
 \caption{A second attempt.
@@ -317,23 +379,22 @@ The new implementation is given in figure \ref{fig:optReduce}
 This approach is significantly better.
 Aside from applying multiple rules in one pass,
 we also limit our search space when applying our optimizations.
-While there's still more we can do.
-The new approach makes the GAS library usable on larger Curry programs,
+While there's still more we can do,
+the new approach makes the GAS library usable on larger Curry programs,
 like the standard Prelude.
 
 \subsection{Adding More Information}
 
-Rather surprisingly our current approach is actually sufficient for compiling Curry.
+Rather surprisingly our current approach is actually sufficient for compiling FlatCurry.
 However, to optimize Curry we're going to need more information when we apply a transformation.
 Specifically, we'll be able to create new variables.
 To simplify optimizations, we'll require that each variable name can only be used once.
 Regardless, we need a way to know what is a safe variable name that we're allowed to use.
 We may also need to know if we're rewriting the root of an expression.
-Fortunately, both of these changes are easy to add.
-We just change the definition of |Opt| to take all the information as an argument.
+Fortunately, all we need to change is to define |Opt| to accept more parameters.
 For each optimization, we'll pass in an |n :: Int|
 that represents the next variable |v_n| that is guaranteed to be fresh.
-We'll also pass in a |top :: Bool| that tells us if we're at the top of the stack.
+We'll also pass in a |top :: Bool| that tells us if we're at root of a function we're optimizing.
 We also return a pair of |(Expr,Int)| to denote the optimized expression,
 and the number of new variables we used.
 
@@ -349,43 +410,40 @@ The full implementation is in figure \ref{fig:optAddInfo}.
 
 
 \begin{figure}
-> reduce                                :: Opt -> Bool -> Expr -> State Int Expr
-> reduce opt top (code (v))                 = runOpts opt top (code (v))
-> reduce opt top (code (l))                 = runOpts opt top (code (l))
-> reduce opt top (code (f es))              = do  es' <- mapM (run opt False (code es))
->                                                 runOpts opt top (code (f es))
-> reduce opt top (code (let vs in e))       = do  vs'  <- mapM runVar vs
->                                                 e'   <- mapM run opt False e
->                                                 runOpts opt top (code (let vs' in e'))
->  where  runVar (code (v = e)) = do  e' <- run opt False e
->                                     return (code (v = e'))
-> reduce opt top (code (let vs free in e))  = do  e' <- run opt False e
->                                                 runOpts opt top (code (let vs free in e'))
-> reduce opt top (code (e : t))             = do  e' <- run opt False e
->                                                 runOpts opt top (code (e' : t))
-> reduce opt top (code (e_1 ? e_2))         = do  e_1'  <- run opt False e_1
->                                                 e_2'  <- run opt False e_2
->                                                 runOpts opt (code (e_1' ? e_2'))
-> reduce opt top (code (case e of bs))      = do  e'    <- run opt False e
->                                                 bs'   <- mapM runBranch bs
->                                                 runOpts opt (code (case e' of bs'))
->  where runBranch (code (pat -> e)) = do  e' <- run opt False e
->                                          return (code (pat -> e'))
-
+> reduce :: Opt -> Bool -> Expr -> State Int Expr
+> reduce opt top (Var v)          = runOpts opt top (Var v)
+> reduce opt top (Lit l)          = runOpts opt top (Lit l)
+> reduce opt top (Comb ct f es)   = do  es' <- mapM (reduce opt False es)
+>                                       runOpts opt top (Comb ct f es')
+> reduce opt top (Let vs in e)    = do  vs'  <- mapM runVar vs
+>                                       e'   <- mapM reduce opt False e
+>                                       runOpts opt top (Let vs' in e')
+>  where  runVar (v, e) = do  e' <- reduce opt False e
+>                             return (v, e')
+> reduce opt top (Free vs e)      = do  e' <- reduce opt False e
+>                                       runOpts opt top (Free vs e')
+> reduce opt top (Or a b)         = do  a'  <- run opt False a
+>                                       b'  <- run opt False b
+>                                       runOpts opt (Or a' b')
+> reduce opt top (Case e bs)      = do  e'    <- reduce opt False e
+>                                       bs'   <- mapM runBranch bs
+>                                       runOpts opt (Case e' bs')
+>  where runBranch (Branch pat e)  = do  e' <- reduce opt False e
+>                                        return (Branch pat e')
+> emptyspace
 > runOpts :: Opt -> Bool -> Expr -> State Int Expr
 > runOpts opt top e =  do  v <- get
->                          if opt (v,top) e == emptyset
->                          then return e 
->                          else do  let (e',dv) `elem` opt e 
->                                   put (v+dv)
->                                   return e'
-
+>                          case  opt (v,top) e of
+>                                Nothing       -> return e
+>                                Just (e',dv)  -> do  put (v+dv)
+>                                                     return e'
+> emptyspace
 > fix :: (a -> State b a) -> a -> b -> a
-> fix f x s = let  (x',s') = runState (f x) s
->             in   if x == x' 
->                  then x
->                  else fix f x' s'
-
+> fix f x s =  let  (x',s') = runState (f x) s
+>              in   if x == x' 
+>                   then x
+>                   else fix f x' s'
+> emptyspace
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt True) e (maximum (vars e) + 1)
 \caption{A third attempt.
@@ -416,28 +474,20 @@ This gives us the type:
 
 
 \begin{figure}
-> f E_0 E_1 E_2 ... E_n
-
-> let v_0 = E_0
->     v_1 = E_1
->     ...
-> in E_n1
-> let vs in E_0
-
-> E_0 :: t
-
-> E_0 ? E_1
-
-> case  E_n1 of
->       p_0 -> E_0
->       p_1 -> E_1
->       ...
->       p_n -> E_n
-\caption{The definition of a path for Curry expressions. \\
-         |E_i| denotes that expression |E|
-         is at position |i| relative to the current expression.
-         Note that variables and literals don't have subexpressions, so they're excluded.
-         |E_n1| is used for expressions that have a variable number of children, such as let expressions.}
+> ndpath e                 = []
+> ndpath (Comb ct f es)    = anymap argPath es
+>  where argPath (i,e) = i : ndpath e_i
+> ndpath (Or e_0 e_1)      = 0 : ndpath e_0 ? 1 : ndpath e_1
+> ndpath (Let vs e_n1)     = anymap letPath es
+>                          ?  -1 : ndpath e_n1
+>  where letPath (i,(_, e)) = i : ndpath e
+> ndpath (Case e of alts)  = -1 : ndpath e
+>                          ? anymap altPath alts
+>  where altPath (i,Branch _ e) = i : ndpath e
+> emptyspace
+> anymap f = anyof . map f . zip [1..]
+\caption{The definition of a path for Curry expressions.\\
+         This function non-deterministically returns a path to a subexpression.}
 \label{fig:path}
 \end{figure}
 
@@ -449,14 +499,11 @@ because it forces us to come up with unique names for each optimization.
 
 > type Opt = (Int,Bool) -> Expr -> (Expr, String, Int)
 
-So, what changes do we need to make to the algorithm?
-Again, there aren't many.
+We only need to make a few change to the algorithm.
 Instead of using the |State| monad, we use a combination of the |State| and |Writer| monads,
 so we can keep track of the derivation.
 We've elected to call this the |ReWriter| 
-monad.\footnote{We are still disappointed that we were not able to come up with a way
-                to construct this using a combination of the |Reader| and |Writer| monads.
-                In our opinion this is the single great failing of this dissertation.}
+monad.
 We add a function |update :: Expr -> Step -> Int -> ReWriter Expr| 
 that is similar to |put| from |State|.  This updates the state variable, and creates a single step.
 The |reduce| function requires few changes.
@@ -470,46 +517,43 @@ We change the return type of |simplify| so that we have the list of steps.
 The full implementation is in figure \ref{fig:reconstruct}
 
 \begin{figure}
-> reduce                                  :: Opt -> Path -> Expr -> ReWriter Expr
-> reduce opt p (code (v))                 = runOpts opt p (code (v))
-> reduce opt p (code (l))                 = runOpts opt p (code (l))
-> reduce opt p (code (f es))              = do  es' <- mapM runArg (zip [0..] es)
->                                               runOpts opt p (code (f es))
->  where  runArg (n, (code e)) = do  e' <- run opt (n:p) e
->                                    return (code (e'))
-> reduce opt p (code (let vs in e))       = do  vs'  <- mapM runVar (zip [0..] vs)
->                                               e'   <- mapM run opt (-1:p) e
->                                               runOpts opt p (code (let vs' in e'))
->  where  runVar (n, (code (v = e))) = do  e' <- run opt (n:p) e
->                                          return (code (v = e'))
-> reduce opt p (code (let vs free in e))  = do  e' <- run opt (0:p) e
->                                               runOpts opt p (code (let vs free in e'))
-> reduce opt p (code (e : t))             = do  e' <- run opt (0:p) e
->                                               runOpts opt p (code (e' : t))
-> reduce opt p (code (e_1 ? e_2))         = do  e_1'  <- run opt (0:p) e_1
->                                               e_2'  <- run opt (1:p) e_2
->                                               runOpts opt (code (e_1' ? e_2'))
-> reduce opt p (code (case e of bs))      = do  e'    <- run opt (-1:p) e
->                                               bs'   <- mapM runBranch (zip [0..] bs)
->                                               runOpts opt (code (case e' of bs'))
->  where runBranch (n, (code (pat -> e)))  = do  e' <- run opt (n:p) e
->                                                return (code (pat -> e'))
+> reduce :: Opt -> Path -> Expr -> ReWriter Expr
+> reduce opt p (Var v)         = runOpts opt p (Var v)
+> reduce opt p (Lit l)         = runOpts opt p (Lit l)
+> reduce opt p (Comb ct f es)  = do  es' <- mapM runArg (zip [0..] es)
+>                                    runOpts opt p (Comb ct f es)
+>  where  runArg (n, e)        = do  e' <- reduce opt (n:p) e
+>                                    return e'
+> reduce opt p (Let vs e)      = do  vs'  <- mapM runVar (zip [0..] vs)
+>                                    e'   <- mapM reduce opt (-1:p) e
+>                                    runOpts opt p (Let vs' e')
+>  where  runVar (n, (v, e))   = do  e' <- reduce opt (n:p) e
+>                                    return (v, e')
+> reduce opt p (Free vs in e)  = do  e' <- reduce opt (0:p) e
+>                                    runOpts opt p (Free vs e')
+> reduce opt p (Or a b)        = do  a  <- reduce opt (0:p) a
+>                                    b  <- reduce opt (1:p) b
+>                                    runOpts opt (Or (a' ? b'))
+> reduce opt p (Case e bs))    = do  e'    <- reduce opt (-1:p) e
+>                                    bs'   <- mapM runBranch (zip [0..] bs)
+>                                    runOpts opt (Case e' bs')
+>  where runBranch (n, (Branch pat e))  = do  e' <- reduce opt (n:p) e
+>                                             return (Branch pat e')
 >         
-
+> emptyspace
 > runOpts :: Opt -> Path -> Expr -> ReWriter Expr
 > runOpts opt p e =  do  v <- get
->                        if opt (v,null p) e == emptyset
->                        then return e 
->                        else do  let (e',rule,dv) `elem` opt e 
->                                 update (e',rule,p) dv
->                                 return e'
-
+>                        case  oneValue (opt (v, null p)) of
+>                              Nothing            ->  return e
+>                              Just (e',rule,dv)  ->  do update (e',rule,p) dv
+>                                                     return e'
+> emptyspace
 > fix :: (a -> ReWriter a) -> a -> Int -> [Step] -> (a,[Step])
 > fix f x n steps =  let  (x',n',steps') = runRewriter (f x) n
 >                    in   if x == x' 
 >                         then x
 >                         else fix f x' n' (steps++steps')
-
+> emptyspace
 > simplify :: Opt -> Expr -> (Expr,[Step])
 > simplify opt e = fix (reduce opt []) e (maximum (vars e) + 1) []
 \caption{The final version of GAS with reconstruction.}
@@ -540,8 +584,6 @@ so we can immediately return in each of those cases without calling |runOpt|.
 This is actually a much bigger deal than it might first appear.
 All of the leaves are going to either be variables, literals, or constructors applied to no arguments.
 For expression trees the leaves are often the majority of the nodes in the tree.
-In fact we can optimize type expressions by just removing the type when we encounter it.
-We won't ever use the type in the rest of the compiler.
 Finally, we can put a limit on the number of optimizations to apply.
 If we ever reach that number, then we can immediately return.
 This can stop our optimizer from taking too much time.
@@ -556,18 +598,85 @@ While we start with an AST, there are still five phases left before we can gener
 First, we normalize FlatCurry to a canonical form. 
 Second we optimize the FlatCurry. 
 Third, we sanitize the FlatCurry to simplify the process of generating C code.
-Fourth, we compile the Code to ICurry, an intermediate representation that is closer to C.
-Finally, we compile the code to C.
-These steps are referred to as preprocess, optimize, postprocess, toICurry, and toC within the compiler.
+Fourth, we compile the FlatCurry to ICurry, an intermediate representation that is closer to C.
+Finally, we compile the ICurry to C.
+These steps are referred to as pre-process, optimize, post-process, toICurry, and toC within the compiler.
+We give an example of the |<=| function as it passes through each of the stages of the compiler in figure \ref{fig:stages}.
 While there are several small details that are important to constructing a working Curry compiler,
 we'll concern ourselves with the big picture here.
 
+\begin{figure}
+Curry function
+> f True = False
+> f x = not (let y = not x in not y)
+
+FlatCurry representation
+> f v_1 =  (case v_1 of True -> False) ? 
+>          (not (let v_2 = not v_1 in not v_2))
+
+After Pre-processing
+> f v_1 =  let v_2 = not v1_ 
+>          in  (case  v_1 of 
+>                     True -> False 
+>                     False -> EXEMPT) 
+>              ? (not (not v2))
+
+After Optimization
+> let  v_4 = case  v_1 of
+>                  True -> False
+>                  False -> EXEMPT
+> in   let  v_5 = case  v_1 of 
+>                       True -> False 
+>                       False -> True 
+>      in   v4 ? v5
+
+After Post-processing
+> f v_1 =  let  v_4 = f_0 v_1
+>          in   let  v_5 = f_1 v_1
+>               in   v_4 ? v_5
+> f_0 v_1 = fcase  v_1 of
+>                  True -> False
+>                  False -> EXEMPT
+> f_1 v_1 = fcase  v_1 of
+>                  True -> False
+>                  False -> True
+\caption{|f| at each stage of the compiler.\\
+         After pre-processing the let expression has been floated to the root,
+         and the missing branch has been filled in.
+         After optimization, code is organized into blocks, and functions have been reduced.
+         After post processing, let bound variables with a case expression have been factored
+         out into functions, then the code is translated into ICurry and C.}
+\label{fig:stages}
+\end{figure}
+
 \subsection{Canonical FlatCurry}
 
-The preproces and postprocess steps of the compiler make heavy use the of GAS system,
-and transform the FlatCurry program in to a form that is more amenable to C.
+The preproces and post-process steps of the compiler make heavy use the of GAS system,
+and transform the FlatCurry program in to a form that is more amenable to C,
+such as removing case and let expression from inside function applications.
 We will discuss the optimization phase in the next section,
 but for now we can see how transformations work.
+
+\begin{figure}
+> f v_1 v_2 ... v_n = b
+>
+> s  =  case  e of {C v_1 ... v_n -> s}
+>    |  let {v = e} in s
+>    |  let {v} free in s
+>    |  e
+>
+> e  =  v
+>    |  l
+>    |  f_k e_1 e_2 ... e_n
+>    |  C_k e_1 e_2 ... e_n
+>    |  e_1 ? e_2
+
+\caption{Canonical FlatCurry.\\
+         We split expressions into statement like expressions |s|, and expressions |e|.
+         Statement like expressions roughly correspond to control flow, and are translated
+         to variable declaration and control flow statements in C.  }
+\label{fig:flatCanonical}
+\end{figure}
 
 Let's start with an example:
 > 1 + let x = 3 in x
@@ -577,101 +686,209 @@ but C does not allow variable declarations in an expression,
 so we need to rewrite this Curry expression to:
 > let x = 3 in 1 + x
 
+We don't reduce |let x = 3 in x| yet, because that would be an optimization.
+However, this will be reduced later.
 We can translate the new expression to C in a direct manner.
-This is the purpose of the preprocess and postprocess steps.
-Rewrite Curry a expression that doesn't make sense in C to an equivalent Curry expression
+This is the purpose of the pre-process and post-process steps.
+We rewrite a Curry expression that doesn't make sense in C to an equivalent Curry expression
 that we can translate directly to C.
-Most of the transformations aren't complicated, and consist of disallowing certain
-syntactic constructs.
+Most of the transformations consist of disallowing certain syntactic constructs.
+Canonical FlatCurry is defined in figure \ref{fig:flatCanonical}.
 
-The rules are listed in table \ref{fig:canonical} \ref{fig:canonical2}
-For clarity, the rules are presented as rewrite rules.
-However, the implementation is not much more difficult, just more cluttered.
-As an example, the first let floating rule could be implemented as:
-> float _ (code (let x = (let y = e_1 in e_2) in e_3))
->     = (code (let y = e_1 in let x = e_2 in e_3), "float 1", 0)
-
-We did not need any fresh variable names, so the first parameter is ignored,
-and we return 0 new variables.
-The name |"float 1"| is returned for reconstructing the rewrite derivation.
+The implementation of the preprocessing transformations are presented in figures.
+\ref{fig:canonical} and \ref{fig:canonical2}.
+The implementation is presented in figure \ref{fig:code}.
+We only show the initial implementation of an optimiation
+that excludes the name and path, but it can be extended to the full optimization
+in a straightforward manner.
+The full implementation can be found in 
+the \texttt{src/Optimize/Preprocess.curry} file at \cite{git}.
 
 In practice several of these rules are generalized and optimized.
 For example let-expressions may have many mutually recursive variables,
 and when floating a let bound variable inward, we may want to recursively traverse
 the expression to find the innermost declaration possible.
-However, these extensions to the rules are straightforward.
+However, these extensions to the rules are also included in the repository.
+
+\begin{figure}
+> float (Let (as++[(x,Let vs e_1)]++bs) e_2)   = Let ((x,e_1):vs++as++bs) e_2
+> float (Let (as++[(x,Free vs e_1)]++bs) e_2)  = Free vs (Let ((x,e_1):as++bs) e_2)
+> float (Or (Let vs e_1) e_2)                  = Let vs (Or e_1 e_2)
+> float (Or e_1 (Let vs e_2))                  = Let vs (Or e_1 e_2)
+> float (Or (Free vs e_1) e_2)                 = Free vs (Or e_1 e_2)
+> float (Or e_1 (Free vs e_2))                 = Free vs (Or e_1 e_2)
+> float (Comb ct n (as++[Let vs e]++bs))       = Let vs (Comb ct n (as++[e]++bs))
+> float (Comb ct n (as++[Free vs e]++bs))      = Free vs (Comb ct n (as++[e]++bs))
+> float (Case (Let vs e) alts)                 = Let vs (Case e alts)
+> float (Case (Free vs e) alts)                = Free vs (Case e alts)
+> emptyspace
+> flatten (apply (apply f as) bs)    = applyf f (as++bs)
+> flatten (apply (Case e bs) xs)     = Case e bs'
+>   where bs' = [Branch p (applyf e' xs) | (Branch p e') <- bs]
+> flatten (Case (Case e alt2) alt1)  = Case e bs (map addCase alt2)
+>   where addCase (Branch p e') = Branch p (Case e' b1)
+> emptyspace
+> blocks _ (Let vs e) | changed = e'
+>   where (e', changed) = makeBlocks vs e
+> emptyspace
+> alias _ (Let (as++[(v, Var y)]++bs) e)
+>  | v == y       = Let (as++[(v,loop)]++bs) e
+>  | otherwise    = suby (Let (as++bs) e)
+>   where  loop = Comb FuncCall ("Prelude","loop") []
+>          suby = sub (\x -> x == v then Var y else Var x)
+> emptyspace
+> fillCases dt _ (Case e bs)
+>   | not (null exempts) = Case e (bs++exempts)
+>   where exempts = [Branch (Pattern b []) exempt | b <- missingBranches dt bs]
+\caption{In |fillCases|, |dt| is a |DataTable|, which holds information about data types.
+         The |missingBranches| takes a list of branches and a |DataTable| and returns the names
+         of the branches that aren't present.
+         In |alias| the |sub| function applies a substitution to an expression.}
+\label{fig:code}
+\end{figure}
 
 \begin{figure}
 >FLOAT
-> let x = (let y = e_1 in e_2) in e_3   =>  let y = e1 
->                                           in  let x = e_2
->                                               in e_3
->
-> let x = (let y free in e_1) in e_2    =>  let y free
->                                           in  let x = e_2
->                                               in e_3
->
-> (let x = e_1 in e_2) ? e_3            =>  let x = e_1 in (e_2 ? e_3)
->
-> (let x free in e_1) ? e_2             =>  let x free in (e_1 ? e_2)
->
-> f (let x = e_1 in e_2)                =>  let x = e_1
->                                           in f e_2
->
-> f (let x free in e_2)                 =>  let x free
->                                           in f e_2
->
-> case (let x = e_1 in e_2) of ...      =>  let x = e_1
->                                           in case e_2 of ...
->
-> case (let x free in e) of ...         =>  let x free
->                                           in case e of ...
->
->CASE_IN_CASE
-> case  (case e_1 of  b_21 -> e_21        =>  case e_1 of  b_21 -> case e_21 of  b_11 -> e_11
->                     b_22 -> e_22                                               b_12 -> e_22
->                     ...)                                                       ...
->       of  b_11 -> e_11                                   b_22 -> case e_22 of  b_11 -> e_11
->           b_12 -> b_12                                                         b_12 -> e_22
->           ...                                                                  ...
->                                                          ...
->
+\begin{minipage}{.40\textwidth}
+> let x =  let y = e_1 
+>          in e_2 
+> in e_3
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let  y = e_1
+>      in  let  x = e_2
+>          in   e_3
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let x =  let y free 
+>          in e_1
+> in e_2
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let y free
+> in  let x = e_2
+>     in e_3
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> (let x = e_1 in e_2) ? e_3
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1 in (e_2 ? e_3)
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> (let x free in e_1) ? e_2
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x free in (e_1 ? e_2)
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> f (let x = e_1 in e_2)
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1
+> in f e_2
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> f (let x free in e)
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x free
+> in f e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case  let x = e_1 
+>       in e_2  of 
+>       alts
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1
+> in case e_2 of alts
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case  let x free 
+>       in e  of 
+>       alts
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x free
+> in case e of alts
+\end{minipage}
 \caption{GAS rules for putting FlatCurry programs into canonical form}
 \label{fig:canonical}
 \end{figure}
 
 \begin{figure}
->DOUBLE_APPLY
-> apply (apply f [x]) [y]               =>  apply f [x,y]
+\vspace{-4ex}
+\textbf{Case in Case}\\
+\begin{minipage}{.40\textwidth}
+> case  (case  e of 
+>              {b_2 -> e_2}) of
+>       {b_1 -> e_1}
 >
->CASE_APPLY
-> apply (case e of (C(...) -> f)) x     =>  case e of C(...) -> apply f x
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> case e of  {  b_2 -> 
+>               case  e_2 of  
+>                     {b_1 -> e_1} }
 >
->STRING
-> c_1 : c_2  ... c_n : []               =>  StrConst "c1c2...cn"
->  where c_1 c_2 ... c_n are character literals
->
->BLOCKS
-> let  x_1 = e_2                        =>  blocks [(x_1,e_1), (x_2,e_2) ... (x_n,e_n)]
->      x_2 = e_2                                where blocks = foldr Let e . scc
->      ...
->      x_n = e_n
-> in e
->
->ALIAS
-> let x = y in e                        =>  e[x `to` y]
-> let x = x in e                        =>  let x = loop in e
->
->
->FILL
-> case e of  C_1 ... -> e_1             =>  case e of  C_1 ... -> e_1
->            C_2 ... -> e_2                            C_2 ... -> e_2
->            ...                                       ...
->            C_k ... -> e_k                            C_k ... -> e_k
->                                                      C_k1 ... -> EXEMPT
->                                                      ...
->                                                      C_n ... -> EXEMPT
->                                               where C_k1 ... C_n `elem` Ctrs - {C_1,C_2,...C_k}
+\end{minipage}\\
+\textbf{Double Apply}\\
+\begin{minipage}{.40\textwidth}
+> apply (apply f [x]) [y]
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> apply f [x,y]
+\end{minipage}\\
+\textbf{Case Apply}\\
+\begin{minipage}{.40\textwidth}
+> apply (case  e of 
+>              {pat -> f}) x
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> case  e of 
+>       {pat -> f x}
+\end{minipage}\\
+\textbf{Blocks}\\
+\begin{minipage}{.40\textwidth}
+> let  a = b
+>      b = c
+>      c = d + e
+>      d = b
+>      e = 1
+> in   a
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let  e = 1
+> in   let  b = c
+>           c = d + e
+>           d = b
+>      in   let  a = b
+>           in   a
+\end{minipage}\\
+\textbf{Alias}\\
+\begin{minipage}{.40\textwidth}
+> let x = y in e
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> e[x `to` y]
+\end{minipage}\vspace{-4ex}\\
+\begin{minipage}{.40\textwidth}
+> let x = x in e
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x = loop in e
+\end{minipage}\\
+\textbf{Case Fill}\\
+\begin{minipage}{.40\textwidth}
+> case  e of  
+>       True -> e
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> case  e of 
+>       True   -> e
+>       False  -> EXEMPT
+\end{minipage}\\
+
 \caption{GAS rules for putting FlatCurry programs into canonical form (continued)}
 \label{fig:canonical2}
 \end{figure}
@@ -684,12 +901,13 @@ strongly connected components.
 This isn't strictly necessary,
 but it removes the need to check for mutual recursion during the optimization phase.
 It will often transform a block of mutually defined variables into a cascading 
-series of let expressions with a single variable, which is beneficial
-throughout the compiler.
+series of let expressions with a single variable,
+which will allow more optimizations to run throughout the compiler.
 
 The \textbf{alias} transformation will remove any aliased variables.
 If one variables is aliased to another, then it will do the substitution,
-but if a variable is aliased to itself, then it is an infinite loop.
+but if a variable is aliased to itself, then it cannot be reduced to a normal form,
+so we can replace it with an infinite loop.
 
 
 Finally the \textbf{Fill cases} transformation completes the definitional tree.
@@ -702,7 +920,8 @@ we create a new branch |C_i -> EXEMPT|.
 
 After running all of these transformations, our program is in canonical form
 and we may choose to optimize it, or we may skip straight to the post-processing phase.
-Currently, we only need two transformations for post processing.
+At this point we only need two transformations for post processing,
+however we will need to add more to support some of the optimizations.
 If we ever have an expression of the form |let x = case ...|, then we need to transform the
 case-expression into a function call.
 We don't do this transformation in pre-processing
@@ -710,18 +929,27 @@ because we don't want to split functions apart during optimizations.
 The \textbf{Let-Case} transformation has a single rule given in figure \ref{fig:letcase}.
 
 \begin{figure}
->LET_CASE
-> f v_1 ... v_n =  ...                               =>  f v_1 ... v_n            =  ... 
->                  let x = case e of  C_1 -> e_1     emptyspace                      let x = f#1 x_1 ... x_k
->                                     C_2 -> e_2                                     in ...
->                                     ...                outline f 1 x_1 ... x_k  =  case e of  C_1 -> e_1
->                                     C_n -> e_n                                                C_2 -> e_2
->                  in ...                                                                       ...       
->                                                                                               C_n -> e_n
+\textbf{Let Case}\\
+\begin{minipage}{.40\textwidth}
+> f v_1 ... v_n 
+>    =  let x = case   e of  
+>                      {p_i -> e_i}
+>       in e'
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> f v_1 ... v_n  =  let x = f_1 x_1 ... x_k
+>                   in e'
+> f_1 x_1 ... x_k  =  case  e of  
+>                           {p_i -> e_i}
 >  where set (x_1 ... x_k) == freeVars [e,e_1,e_2...e_n]
->
->VAR_CASE
-> case e of ...                                      => let x = e in case x of ...
+\end{minipage}\\
+\textbf{Var Case}\\
+\begin{minipage}{.40\textwidth}
+> case e of alts
+\end{minipage} |=>|
+\begin{minipage}{.40\textwidth}
+> let x = e in case x of alts
+\end{minipage}\\
 \caption{Rule for moving a let bound case out of a function, 
          and eliminating compound expressions in case-expressions.}
 \label{fig:letcase}
@@ -741,14 +969,14 @@ At this point point we are ready to transform the cononicalized FlatCurry into I
 >                           True   ->  v1
 >                           False  ->  let  v4 = square v2
 >                                           v5 = halve v3
->                                      in   case  (==) (apply (apply mod v3) 2) 1 of
+>                                      in   case  (==) (appOpt ((apply (apply mod v3) 2) 1)) of
 >                                                 True   -> powaux ((*) v1 v2) v4 v5
 >                                                 False  -> powaux v1 v4 v5
 > => DOUBLE_APPLY [1,-1,-1,0]
 > poweraux v1 v2 v3 = case  (==) v3 0 of
 >                           True   ->  v1
->                           False  ->  let  v4 = square v2
->                                           v5 = halve v3
+>                           False  ->  let  v4 = (appOpt (square v2))
+>                                           v5 = (appOpt (halve v3))
 >                                      in   case  (==) (apply mod v3 2) 1 of
 >                                                 True   -> powaux ((*) v1 v2) v4 v5
 >                                                 False  -> powaux v1 v4 v5
@@ -819,16 +1047,13 @@ we'll address this later.
 \end{figure}
 
 After we've finished transforming the FlatCurry,
-the transformation to ICurry is almost trivial.
-The algorithm from \cite{icurry} can be applied directly \ref{fig:flatCurryiCurry}
-Currently we need to come up with a new variable for the
-scrutinee of a case-expression.
-However, This can either be taken care of in the FlatCurry transformations with the following rule,
-or we can create a new variable during the transformation itself.
-> case e of ... | not (isVar e) => let x_e = e in case x_e of ...
-However, as we'll see in the next section, this will become a moot point.
-All case-expressions will already only contain variables.
-Finally we can move onto code generation.
+the transformation to ICurry is much easier to implement.
+The algorithm from \cite{icurry}, given in figure \ref{fig:flatCurryiCurry}, 
+can be applied directly to the translated program.
+We show an example of translating the function |f| from figure \ref{fig:stages}
+into ICurry in figure \ref{fig:icurryStage}.
+
+
 
 \begin{figure}
 >ifunction(f(x_1,...,x_n) = e) := f = iblock(x_1,..., x_n, e, ROOT)
@@ -880,10 +1105,57 @@ Finally we can move onto code generation.
 \label{fig:flatCurryiCurry}
 \end{figure}
 
+\begin{figure}
+After Post-processing
+> f v_1 =  let  v_4 = f_0 v_1
+>          in   let  v_5 = f_1 v_1
+>               in   v_4 ? v_5
+> f_0 v_1 = fcase  v_1 of
+>                  True -> False
+>                  False -> EXEMPT
+> f_1 v_1 = fcase  v_1 of
+>                  True -> False
+>                  False -> True
+ICurry
+> f/1 : {
+>   declare x_2
+>   declare x_3
+>   declare x_4
+>   x_2 = ROOT[0]
+>   x_3 = f_0(x2)
+>   x_4 = f_1(x2)
+>   return (x_3 ? x_4)
+> }
+> f_0/1 : {
+>   declare x_2
+>   x_2 = ROOT[0]
+>   case x_2 of
+>     True / 0 -> {
+>       return False()
+>     }
+>     False / 0 -> {
+>       exempt
+>     }
+> }
+> 
+> f_1/1 : {
+>   declare x_2
+>   x_2 = ROOT[0]
+>   case x_2 of
+>     True / 0 -> {
+>       return False()
+>     }
+>     False / 0 -> {
+>       return True()
+>     }
+> }
+\caption{translating |f| |f_0| and |f_1| into icurry}
+\label{fig:icurryStage}
+\end{figure}
+
+
 \subsection{C}
 
-Generating C code from ICurry isn't as easy as generating the ICurry code,
-but it's not much more complicated.
 We already have a good idea of what the C code should look like,
 and our ICurry structure fits closely with this.
 This major difference is that we need to be sure to declare and allocate memory for all variables,
@@ -893,15 +1165,20 @@ go in the *.h file, and the code for executing the hnf function will go in the *
 This is a common pattern for structuring C and C++ code,
 so it's not surprising that we take the same approach.
 
-For each Data type |D| and function |f|, we generate both a |makeD| function and a |setD|.
-The difference is that |makeD| will allocate memory for a new node, while |setD|
+For each Data type |D|, we generate both a \texttt{make\_D} function and a \texttt{set\_D}.
+The difference is that \texttt{make\_D} will allocate memory for a new node, while \texttt{set\_D}
 takes an existing node as a parameter, and transforms it to the given type of node.
+We do the same thing for every ICurry function |f|,
+and produce a \texttt{make\_f} and \texttt{set\_f} function in C.
 Each node contains a \texttt{symbol}, that denotes the type of node, and holds information
 such as the name, arity, and hnf function of the node.
-Along with setting the \texttt{symbol}, the make and set functions reset the nondet flag to \texttt{false},
+Along with setting the \texttt{symbol} from section \ref{Generated Code},
+the make and set functions reset the nondet flag to \texttt{false},
 and set any children that were passed into the node.
 
-As mentioned in the last chapter, for every function |f|, we need to generate a function |path f p| where
+As mentioned in the last chapter, for every function |f|, 
+we need to generate a function for every case expression in |f|.
+|path f p| where
 |p| is a path to a case statement.
 The translation to C code is where we finally generate these functions.
 Surprisingly, this doesn't have too much of an effect on the code generator.
@@ -924,7 +1201,8 @@ and case statements are turned into the while/switch construct from the last cha
 
 At this point we can now produce a running program.
 In fact, the code produced by this compiler is already relatively efficient,
-In many cases it outperforms the current state-of-the-art Curry compilers.
+As we will see later on,
+in many cases it outperforms the current state-of-the-art Curry compilers.
 
 In this chapter, we've built up the GAS tool for performing transformations
 on FlatCurry code in a simple declarative way.

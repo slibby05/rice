@@ -3,6 +3,7 @@
 \usepackage{amsfonts}
 \usepackage[fleqn]{amsmath}
 \usepackage{xspace}
+\usepackage{hyperref}
 \usepackage[all]{xy}
 \usepackage{mdframed}
 \usepackage{qtree}

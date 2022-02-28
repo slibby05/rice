@@ -63,21 +63,29 @@
 
 %include 02_Language.lcurry
 
+\chapter{The Generated Code}
+
+%include 03_code.lcurry
+
 \chapter{Generating and Altering Subexpressions}
 
-%include 03_transformation.lcurry
+%include 04_gas.lcurry
+
+\chapter{The Compiler Pipeline}
+
+%include 05_compiler.lcurry
 
 \chapter{Basic Optimizations}
 
-%include 04_optimizations.lcurry
+%include 06_optimizations.lcurry
 
 \chapter{Memory Optimizations}
 
-%include 05_mine.lcurry
+%include 07_mine.lcurry
 
 \chapter{Conclusion}
 
-%include 06_conclusion.lcurry
+%include 08_conclusion.lcurry
 
 
 % \appendix

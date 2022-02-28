@@ -25,32 +25,51 @@ It's not clear at all that they are even valid for Curry.
 We show an effective method to implement them
 in a way that they remain valid for Curry expressions.
 
+In this chapter we discuss one of the major hurderls to optimizing 
+FlatCurry programs,
+we then present a solution in A-Normal form,
+We do on to develop some standard optimizations
+for FlatCurry includeing dead code elimination, case cancelling, and inlinig.
+Finally, we show these optimiztions at work optimizing the implementation
+the implementation |<=| for the |Bool| type.
+
 \subsection{A-Normal Form}
 
 Before we discuss any substantial optimizations, we need to deal with a significant
 roadblock to optimizing Curry.
-Equational reasoning is not valid for Curry programs.
-Consider the following program.
+Equational reasoning is not valid when optimizing FlatCurry programs.
+The reason is that FlatCurry is made up of terms,
+and the GAS system rewrites these terms.
+Since the Curry semantics are defined for graph rewriting,
+we need to impose some restrictions.
+
+While there have been graph intermedeate representation proposed for
+languages \cite{graph_ir, dactl} FlatCurry is not one of these.
+We do think that incorporating the graph based IR
+might improve the optimization process, and we believe
+it is a promising area of future work.
+
+To see an example of why this an issue, let's consider the following program.
+
 > double x  = x + x
 > main      = double (0 ? 1)
 
 In pure lazy functional languages, it is always safe to replace a function
 with its definition.
-So we should be able to rewrite |main| to |(0 + 1) ? (0 + 1)|,
+So we should be able to rewrite |main| to |(0 ? 1) + (0 ? 1)|,
 but this expression will produce a different set of answers.
 This is the primary problem with optimizing functional logic languages,
 but exactly why this happens is a bit tricky to pin down.
-The non-determinism isn't the only problem, for a trivial example inlining |id (0 ? 1)| is fine.
+The non-determinism isn't the only problem, for example inlining |id (0 ? 1)| is fine.
 We can even duplicate non-deterministic expressions with the following example.
 > double x  = x + x
 > main      =  let y = (0 ? 1)
 >              in double y
 
 Here |y| is a non-deterministic expression, because it produces two answers when evaluated,
-but the expression |let y = (0 ? 1) in y + y| is just fine.
-So, what is the problem with our first example?
-
-The real problem is a bit more subtle, and we have to step back into the world of graph rewriting.
+but the expression |let y = (0 ? 1) in y + y| is still equivalent to our example.
+The real problem with our first example is a bit more subtle,
+and we have to step back into the world of graph rewriting.
 If we construct the graph for the first expression we see:
 
 \begin{mdframed}
@@ -98,7 +117,8 @@ This gives us a powerful tool when reasoning about Curry expressions.
 Even if a variable is duplicated in the source code, it is not copied in the graph.
 Since this duplication of non-deterministic expressions was the main concern for correctness,
 the solution is pretty straightforward.
-Every expression that could be copied should be explicitly stored in a variable.
+If we copy an expression in FlatCurry, then we should instead store that expression
+in a variable and copy the variable.
 
 We can enforce this restriction by disallowing any compound expressions.
 Specifically, all function calls, constructor calls, choices, and case expression must either
@@ -118,17 +138,17 @@ and we implement the transformation using GAS in figure
 \ref{fig:anormalTransform}.
 
 \begin{figure}
-> a  =>  v                                        Variable
->    |   l                                        Literal
->    |   EXEMPT                                   Failed
-> e  =>  a_1 ? a_2                                Choice
->    |   f_k a_1 a_2 ... a_n                      Function Application
->    |   C_k a_1 a_2 ... a_n                      Constructor Application
->    |   let v_1 = e_2 ... v_n = e_n in e         Variable Declaration
->    |   let v_1, v_2, ... v_n free in e          Free Variable Declaration
->    |   case a of {p_1 -> e_1; ... p_n -> e_n}   Case Expression
-> p  =>  C v_1 v_2 ... v_n                        Constructor Pattern
->    |   l                                        Literal Pattern
+> a  =>  v                     Variable
+>    |   l                     Literal
+>    |   EXEMPT                Failed
+> e  =>  a_1 ? a_2             Choice
+>    |   f_k {a}               Function Application
+>    |   C_k {a}               Constructor Application
+>    |   let {v = e} in e      Variable Declaration
+>    |   let {v} free in e     Free Variable Declaration
+>    |   case a of {p -> e}    Case Expression
+> p  =>  C {v}                 Constructor Pattern
+>    |   l                     Literal Pattern
 \caption{
 Restricting Curry expressions to A-Normal Form.\\
 An atom is either a variable, a literal, or a failure.
@@ -158,33 +178,58 @@ Since a constructor is computationally inert,
 we can inline one without fear of problems with non-deterministic expressions.
 This will be referred to as limited A-Normal Form.
 
-In fact, this idea isn't even new to Curry.
+In fact, this is exactly how the operational semantics were defined for FlatCurry.
 In \cite{currySemantics} FlatCurry programs are translated into
-a ``Normal Form'', before evaluation begins.
-Although, it should be noted that this form is more limited
-because case statements and choice expressions may contain compound expressions.
-We choose to flatten these expressions as well for two reasons.
-It produces more uniform, albeit longer, programs,
+a normalized form before evaluation begins.
+We choose to flatten these expressions as well because
+it produces more uniform programs,
 and more optimizing transformations become valid.
 Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
 
 \begin{figure}
-> fib n =  case  n < 1                             \|  fib n =  let  x = n < 1
->                True   ->  n                      \|           in   case  x of
->                False  ->  fib (n-1) + fib (n-2)  \|                      True   ->  n
->                                                  \|                      False  ->  let  n1 = n-1
->                                                  \|                                      n2 = n-2
->                                                  \|                                      f1 = fib n1
->                                                  \|                                      f2 = fib n2
->                                                  \|                                 in   f1 + f2
->                                                  \|
-> sumPrimes  = foldr (+) 0                          \| sumPrimes =  let v1 = (+)
->        . filter isPrime                          \|             in let v2 = foldr v1 0
->        . enumFromTo 1                            \|             in let v3 = isPrime
->                                                  \|             in let v4 = filter v3
->                                                  \|             in let v5 = enumFromTo 1
->                                                  \|             in let v6 = v4 . v5
->                                                  \|             in v2 . v6
+\fbox{
+\begin{minipage}{.40\textwidth}
+> fib n =  case n < 1
+>                True   ->  n
+>                False  ->  fib (n-1) + 
+>                           fib (n-2)
+> 
+> emptyspace
+> emptyspace
+> emptyspace
+> emptyspace
+\end{minipage} |==>|
+\begin{minipage}{.45\textwidth}
+> fib n =  let  x = n < 1
+>          in   case x of
+>                     True   ->  n
+>                     False  ->  let  n_1 = n-1
+>                                     n_2 = n-2
+>                                     f_1 = fib n_1
+>                                     f_2 = fib n_2
+>                                in   f_1 + f_2
+\end{minipage}
+}
+\fbox{
+\begin{minipage}{.40\textwidth}
+> sumPrimes  = foldr (+) 0
+>            . filter isPrime
+>            . enumFromTo 1
+>
+>
+>
+>
+\end{minipage} |==>|
+\begin{minipage}{.45\textwidth}
+>   sumPrimes =  let v_1 = (+)
+>                in let v_2 = foldr v_1 0
+>                in let v_3 = isPrime
+>                in let v_4 = filter v_3
+>                in let v_5 = enumFromTo 1
+>                in let v_6 = v_4 . v_5
+>                in v_2 . v_6
+\end{minipage}
+}
 \caption{Examples of Curry programs translated to A-Normal Form}
 \label{fig:anormalExample}
 \end{figure}
@@ -201,17 +246,17 @@ Consider the following code:
 >                 False -> True
 
 While it is very unlikely that a programmer would actually write this code,
-but as we'll see, this code comes up frequently when inlining.
+it comes up frequently when inlining.
 This is fantastic, because it's clear what we should do here.
-We know that the |True| branch will be taken, so we might as well discard the
-case expression altogether.
+We know that the |True| branch will be taken, 
+so we might as well evaluate the case expression right now.
 
 > notTrue = False
 
 This transformation is called Case Canceling,
 and it's the workhorse of all of our other optimizations.
-The transformation, given in \ref{fig:CaseCancel} 
-looks intimidating at first, but it's very straightforward.
+The transformation is given and \ref{fig:CaseCode} 
+and examples of the transformation are given in \ref{fig:CaseCancel} .
 If the scrutinee of a case is a constructor,
 then we find the appropriate branch, and reduce to that branch.
 The only real complication is that we need to keep the expression in
@@ -221,47 +266,49 @@ However, we can simply add let-expressions for every variable that the construct
 We also include two other optimizations.
 These optimizations are really about cleaning up after Case Canceling runs.
 The first is Case Variable elimination.
-The idea is also simple.
-Consider the following expression from the optimization of |compare| for |Bool|:
+Consider the expression from the optimization of |compare| for |Bool| in figure \ref{fig:caseBool}.
+\begin{figure}
 > ...
->     in case  v2 of
+>     in case  v_2 of
 >              True   -> LT
->              False  -> case  v2 of
+>              False  -> case  appOpt v_2 of
 >                              True   -> EQ
->                              False  -> case  v1 of
+>                              False  -> case  v_1 of
 >                                              True   -> GT
 >                                              False  -> EQ
 > ...
-> => CASE_VAR [-1,0,-1]
+> ==> CASE_VAR [-1,0,-1]
 > ...
->     in case  v2 of
+>     in case  v_2 of
 >              True   -> LT
->              False  -> case  False of
+>              False  -> case  appOpt False of
 >                              True   -> EQ
->                              False  -> case  v1 of
+>                              False  -> case  v_1 of
 >                                              True   -> GT
 >                                              False  -> EQ
 > ...
-> => CASE_CANCEL [-1,0,-1,1]
+> ==> CASE_CANCEL [-1,0,-1,1]
 > ...
->     in case  v2 of
+>     in case  v_2 of
 >              True   -> LT
->              False  -> case  v1 of
+>              False  -> case  v_1 of
 >                              True   -> GT
 >                              False  -> EQ
 > ...
+\caption{a piece of the optimization derivation for the implementation of |compare|
+for |Bool|.}
+\label{fig:caseBool}
+\end{figure}
 The use of Case Variable elimination allows us to set up
 a situation where a case can cancel later.
 This occurs a lot in practice, but this optimization may raise red flags for some.
-If we're replacing a variable, which represents a node in our expression graph,
-with a completely distinct literal value, how do we know that this replacement is valid?
-This isn't clear.
-In fact, in general it's not valid to replace a variable.
+In general it's not valid to replace a variable with an expression in FlatCurry.
 That variable could be shared, and it could represent a non-deterministic expression.
 Case Canceling is fine, because we only change a case statement, which only affects
 flow of control.
 It doesn't actually affect any of the data in the expression graph.
-However, we can justify this by looking at the computation space for our expression again.
+However, we can justify this by looking at the computation space for our expression,
+similar to section \ref{Backtracking Performance}.
 Suppose that we have the expression |case x in  e|.
 If |x| is deterministic, then there is no problem.
 If |x| is non-deterministic, then |x| has already been reduced to head normal form,
@@ -280,27 +327,95 @@ Finally, if we have |let x = e in x|, then we don't need to create the variable 
 These are all clearly correct, 
 as long as we're careful to make sure that our variable definitions aren't recursive.
 
+\begin{figure}
+> caseCancel :: Opt
+> caseCancel _ (Case (Comb ConsCall n es) (_++[Branch (Pattern n vs) e] ++ _))
+>  = foldr Let e (zip vs es)
+> caseCancel _ (Case (Lit l) (_++[Branch (LPattern l) e] ++ _)) = e
+> caseCancel _ (Case EXEMPT of _) = EXEMPT
+> emptyspace
+> caseVar (Case (Var x) bs)
+>  | x `elem` vars bs = Case (Var x) (map (repCaseVar x) bs)
+> repCaseVar x (Branch (Pattern n vs) e)  = Branch (Pattern n vs)  (sub f e)
+>   where f v = if v == x then Comb ConsCall n (map Var vs) else Var v
+> repCaseVar x (Branch (LPattern l) e)    = Branch (LPattern l)    (sub f e)
+>   where f v = if v == x then Lit l else Var v
+> emptyspace
+> deadCode (Free [] e) = (e, "DEAD_CODE", 0)
+> deadCode (Let [] e) = (e, "DEAD_CODE", 0)
+> deadCode (Free (as++[v]++bs) e)
+>  | not (hasVar v e) = (Free (as++bs) e, "DEAD_CODE", 0)
+> deadCode (Let [(v,_)] e)
+>  | not (hasVar v e) = (e, "DEAD_CODE", 0)
+> deadCode (Let [(x,e)] (Var x))
+>  | not (hasVar x e) = (e, "DEAD_CODE", 0)
+\caption{The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
+\label{fig:caseCode}
+\end{figure}
 
 \begin{figure}
-> CASE_CANCEL
-> case (C_i e_i1 ... e_ki) of     =>  let     x_i1 = e_1
->     C_1 x_11 ... x_1k1 -> e_1   sp          ...
->     C_2 x_21 ... x_2k2 -> e_2       in let  x_iki = e_ki
->     ...                             in      e_i
->     C_i x_i1 ... x_iki -> e_i   
->     ...
->     C_n x_n1 ... x_nkn -> e_n
->
->CASE_VAR
-> case x of                       =>  case  x of
->     (C ...) -> ... x ...                  (C ...) -> ... (C ...) ...
->
->DEAD_CODE
-> let free in e                   => e
-> let in e                        => e
-> let v free   in e               | v `notelem` e  => e
-> let v = ...  in e               | v `notelem` e  => e
-> let v = e    in v               | v `notelem` e  => e
+\textbf{Case Cancel}\\
+\begin{minipage}{.40\textwidth}
+> case (C_i {e}) of
+>     {C_i {x} -> e'}
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let {x = e}
+> in e'
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case l_i of
+>     {l_i -> e'}
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e'
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case EXEMPT of alts
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> EXEMPT
+\end{minipage}\\
+\textbf{Case Var}\\
+\begin{minipage}{.40\textwidth}
+> case v of
+>      (C ...) -> e'
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> case  v of
+>       (C {x}) -> (extend e' v (C {x}))
+\end{minipage}\\
+\textbf{Dead Code}\\
+\begin{minipage}{.40\textwidth}
+> let free in e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let in e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let v free   in e | v `notelem` e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let v = e'  in e | v `notelem` e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let v = e in v | v `notelem` e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e
+\end{minipage}\\
     \caption{Case Canceling, Case Variable, and Dead Code Elimination optimizations.}
     \label{fig:CaseCancel}
 \end{figure}
@@ -388,29 +503,29 @@ However, when translated to FlatCurry, this lambda expression is turned into a c
 > compLambda f g x = f (g x)
 
 So, when we try to inline |sumPrimes| we end up with the following derivation.
-> let v1 = (+)
-> in let v2 = foldr v1 0
-> in let v3 = isPrime
-> in let v4 = filter v3
-> in let v5 = enumFromTo 1
-> in let v6 = v4 . v5
-> in v2 . v6
-> REDUCE => [-1,-1,-1,-1,-1,-1]
-> let v1 = (+)
-> in let v2 = foldr_1 v1 0
-> in let v3 = isPrime_1
-> in let v4 = filter_1 v3
-> in let v5 = enumFromTo_1 1
-> in let v6 = v4 . v5
-> in compLambda_1
-> REDUCE => [-1,-1,-1,-1,-1]
-> let v1 = p_2
-> in let v2 = foldr_1 v1 0
-> in let v3 = isPrime_1
-> in let v4 = filter_1 v3
-> in let v5 = enumFromTo_1 1
-> in let v6 = compLambda_1 v4 v5
-> in compLambda_1 v2 v6
+> let v_1 = p_2
+> in let v_2 = foldr_1 v_1 0
+> in let v_3 = isPrime_1
+> in let v_4 = filter_1 v_3
+> in let v_5 = enumFromTo_1 1
+> in let v_6 = v_4 . v_5
+> in (appOpt (v_2 . v_6))
+> REDUCE_BASE => [-1,-1,-1,-1,-1,-1]
+> let v_1 = p_2
+> in let v_2 = foldr_1 v_1 0
+> in let v_3 = isPrime_1
+> in let v_4 = filter_1 v_3
+> in let v_5 = enumFromTo_1 1
+> in let v_6 = (appOpt (v_4 . v_5))
+> in compLambda_1 v_2 v_6
+> REDUCE_LET => [-1,-1,-1,-1,-1]
+> let v_1 = p_2
+> in let v_2 = foldr_1 v_1 0
+> in let v_3 = isPrime_1
+> in let v_4 = filter_1 v_3
+> in let v_5 = enumFromTo_1 1
+> in let v_6 = compLambda_1 v_4 v_5
+> in compLambda_1 v_2 v_6
 
 At this point there's no more optimization that can be done,
 because everything is a partial function.
@@ -673,8 +788,7 @@ so we can apply the path compression theorem again to obtain our result.
 \end{proof}
 
 We give the GAS rules for reduction in figure \ref{fig:GAS_reduce}.
-The rules are straightforward, and we make sure that |rbody f| 
-replaces the definition with fresh variables.
+We make sure that |rbody f| replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.
 This strategy was taken from \cite{haskellInliner} and it works very well.
 Although, since FlatCurry uses numbers exclusively to represent variables,

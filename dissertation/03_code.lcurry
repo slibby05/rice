@@ -1,0 +1,471 @@
+
+Now that we've examined all of the different choices to make in constructing a compiler,
+we can start to design the generated code and runtime system for the compiler.
+In this capter we give examples of generated code to implement Curry functions,
+and discuss the low level details of the Rice runtime.
+We start with a first order deterministic subset of Curry,
+then we add higher order function,
+finally we add non-determinism and free variables.
+Throughout this section we will use \texttt{teletype font} to represent generated
+C code to distinguish it from Curry or FlatCurry code.
+
+
+We will introduce the generated code by looking at the |not| function defined below.
+We choose this function, because it's small enough to be understandable,
+but it still demonstrates most of the decisions in designing the generated code
+and runtime system.
+
+> not x = case  x of
+>               False  -> True
+>               True   -> False
+
+Before we discuss generated code, 
+we need to discuss expressions and the runtime system for programs.
+
+When a FlatCurry module is compiled, it's translated into a C program.
+Every function |f| defined in the FlatCurry module is compiled into
+a C function that can reduce an expression, rooted by a node labeled with |f|,
+into head constructor form.
+These functions are called \texttt{f\_hnf}\index{\texttt{f\_hnf}} for historical reasons \cite{pakcs}.
+
+An expression in our compiled code is a rooted labeled graph.
+nodes\index{\texttt{node}} in the graph are given the definition in figure \ref{fig:node}.
+
+\begin{figure}
+\begin{verbatim}
+typedef struct Node
+{
+    int missing;
+    bool nondet;
+    Symbol* symbol;
+    field children[4];
+} Node;
+\end{verbatim}
+\caption{Definition of a node.}
+\label{fig:node}
+\end{figure}
+
+A \texttt{field}\index{\texttt{field}} is a union of a \texttt{Node*} and the representations
+of the primitive types \texttt{Int}, \texttt{Float}, and \texttt{Char},
+as well as a \texttt{field*} to be described shortly.
+The \texttt{children}\index{\texttt{children}} field contains an array of children for this node.
+If a node could have more than three children, such as a node representing
+the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer
+to a variable length array that holds the rest of the children.
+This leads to non-uniform indexing into nodes.
+For example \texttt{n->children[1]} returns the second child of the node,
+but the sixth child must be retrieved with \texttt{n->children[3].a[2]}.
+We use a \texttt{child\_at} macro to simplify the code,
+so \texttt{child\_at(n,5)} returns the sixth child.
+The \texttt{symbol} field is a pointer to the static information
+of the node.
+This includes the name, arity, and \texttt{tag}\index{\texttt{tag}} for the node,
+as well as a function pointer responsible for reducing the node to 
+head constructor from.
+We include a \texttt{TAG} macro to access the tag of a node.
+This is purely for convenience.
+For a node labeled by function |f|, this is a pointer to \texttt{f\_hnf}.
+Because the calling convention is complicated, we hide this detail with an
+\texttt{HNF} macro, so \texttt{HNF(f)} evaluated the node labeled by |f|
+to head constructor from.
+The \texttt{missing} field represents a partial function application.
+If \texttt{missing} is greater than 0, then \texttt f is partially applied.
+The \texttt{nondet} field represents the nondet marker described in the
+fast backtracking algorithm.
+
+Each function and constructor generates a \texttt{set} and \texttt{make} function.
+For the |not| function, we would generate 
+
+\begin{verbatim}
+void set_not(field root, field x);
+field make_not(field x);
+\end{verbatim}
+
+The \texttt{set\_not} function sets the \texttt{root} parameter to be a |not| node.
+This is accomplished by changing the symbol and children for \texttt{root}.
+The \texttt{make\_not} function allocates memory for a new |not| node.
+
+
+
+Each program in our language defines an expression |main|,
+and runs until |main| is evaluated to constructor normal form.
+This evaluation is broken up into two pieces.
+The primary driver of a program is the \texttt{nf} function,
+which is responsible for evaluating the main expression to constructor normal form.
+The \texttt{nf} function computes this form by first evaluating an expression to
+head constructor form.
+When an expression is in head constructor from, \texttt{nf} evaluates each subexpression
+to constructor normal from, producing the loop in figure \ref{fig:nf}.
+
+\begin{figure}
+\begin{verbatim}
+void nf(field expr)
+{
+    HNF(expr);
+
+    for(int i = 0; i < expr.n->symbol->arity; i++)
+    {
+        nf(child_at(expr, i));
+    }
+}
+\end{verbatim}
+\caption{algorithm for reducing a node to constructor normal form.}
+\label{fig:nf}
+\end{figure}
+
+All that's missing here is the \texttt{hnf} functions.
+We give a simplified version of the \texttt{not\_hnf} function in \ref{fig:notInit},
+and we will fill in details as we progress.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root)
+{
+  field x = child_at(root, 0);
+
+  field scrutenee = x;
+  while(true)
+  {
+    switch(TAG(scrutenee))
+    {
+      case FAIL_TAG:
+      {
+        fail(root);
+        return;
+      }
+      case FORWARD_TAG:
+      {
+        scrutenee = child_at(scrutenee,0);
+        break;
+      }
+      case FUNCTION_TAG:
+      {
+        HNF(scrutenee);
+        break;
+      }
+      case Prelude_True_TAG:
+      {
+        set_Prelude_False(root, 0);
+        return;
+      }
+      case Prelude_False_TAG:
+      {
+        set_Prelude_True(root, 0);
+        return;
+      }
+    }
+  }
+}
+\end{verbatim}
+\caption{Initial implementation of |not|}
+\label{fig:notInit}
+\end{figure}
+
+We can see that the main driver of this function is the \texttt{while(true)} loop.
+The loop looks up the tag of \texttt x, and if it's a function tag, when we evaluate it to
+head constructor form.
+If the tag for \texttt x is \texttt{FAIL}, which represents an exempt node, then
+we set the root to \texttt{FAIL} and return.
+If the tag is \texttt{Prelude\_True} or \texttt{Prelude\_False},
+we set the root to the corresponding expression, and return from the loop.
+Finally, in order to implement collapsing functions, we introduce a \texttt{FORWARD} tag.
+If the tag is \texttt{FORWARD}, then we traverse the forwarding chain,
+and continue evaluating the \texttt x.
+
+Finally, while we are evaluating the node stored in the local variable \texttt x,
+we introduce a new variable \texttt{scrutenee}.
+This is because if \texttt{x} evaluates to a forwarding node,
+we need to evaluate the child of \texttt x.
+If we were to update \texttt x, and then return an expression containing \texttt x
+later, then we would have compressed the forwarding path.
+As mentioned previously, this is not valid.
+
+At this point we have a strategy for how to compile first order deterministic Curry functions.
+Next we show how we handle partial application and higher order functions.
+
+\subsection{Higher Order Functions} \label{Higher Order Functions C}
+
+Earlier we gave an interpretation of how to handle |apply| nodes,
+but there are still a few details to work out.
+Recall the semantics we gave for apply nodes:
+
+> apply f_k [x_1, ... x_n]
+>  | k > n   = f_kn x_1 ... x_n
+>  | k == n  = f x_1 ... x_n
+>  | k < n   = apply (f x_1 ... x_k) [x_k1, ... x_n]
+
+If |f| is missing any arguments, then we call |f| a partial application.
+Let's look at a concrete example.
+In the expression |foldr_2 (pl_2)|, |foldr| is a partial application that is missing 2 arguments.
+We will write this as |foldr (pl_2) \* \*| where |\*| denotes a missing argument.
+Now, suppose that we want to apply the following expression.
+
+\Tree[.|apply| [.|foldr| |+| |\*| |\*| ] |0| [.|:| |1| |...| ] ]
+
+Remember that each node represents either a function or a constructor,
+and each node has a fixed arity.
+For example, |+| has an arity of 2, and |foldr| has an arity of 3.
+This is true for every |+| or |foldr| node we encounter.
+However, it's not true for |apply| nodes.
+In fact, an |apply| node may have any positive arity.
+Furthermore, by definition, an |apply| node can't be missing any arguments.
+For this reason, we use the \texttt{missing}\index{\texttt{missing}} field to hold the number of 
+arguments the node is applied
+to.\footnote{In reality we set missing to the 
+             negative value of the arity to distinguish an 
+             apply node from a partial application.}
+
+
+The algorithm for reducing apply nodes is straightforward, but brittle.
+There are several easy mistakes to make here.
+The major problem with function application is getting the arguments in the correct positions.
+To help alleviate this problem we make a non-obvious change to the structure of nodes.
+We store the arguments in reverse order.
+To see why this is helpful, let's consider the |foldr| example above.
+But this time, let's decompose it into 3 apply nodes, so we have 
+|apply (apply (apply foldr_3 (pl_2)) 0) [1,2,3]|.
+In our innermost apply node, which will be evaluated first, we apply |foldr_3| to |pl_2| to get
+|foldr_2 (pl_2) \* \*|.
+This is straightforward.
+We simply put |+| as the first child.
+However, when we apply |foldr_2 (pl_2) \* \*| to |0|, we need to put |0| in the second child slot.
+In general, when we apply an arbitrary partial application |f| to |x|, what child do we put |x| in?
+Well, if we're storing the arguments in reverse order, then we get a really handy result.
+Given function |f_k| that is missing |k| arguments, then |apply f_k x| reduces to |f_k1 x| where |x|
+is the |k-1| child.
+The missing value for a function tells us exactly where to put the arguments.
+This is completely independent of the arity of the function.
+> apply (apply (apply (foldr_3 \* \* \*) (pl_2)) 0) [1,2,3]
+> => apply (apply (foldr_2 \* \* (pl_2)) 0) [1,2,3]
+> => apply (foldr_1 \* 0 (pl_2)) [1,2,3]
+> => foldr_0 [1,2,3] 0 (pl_2))
+
+
+The algorithm is given in figure \ref{fig:apply}.
+There are a few more complications to point out.
+To avoid complications, we assume arguments that a function is being applied to are stored in the
+array at \texttt{children[3]} of the apply node.
+That gives us the structure |apply f \* \* a_n ... a_1|.
+This isn't done in the runtime system because it would be inefficient,
+but it simplifies the code for this presentation.
+We also make use of the \texttt{set\_child\_at} macro, which simplifies setting child nodes
+and is similar to \texttt{child\_at}.
+Finally, the loop to put the partial function in head constructor form uses
+\texttt{while(f.n->missing <= 0)} instead of \texttt{while(true)}.
+This is because our normal form is a partial application, which does not have its own tag.
+
+We reduce an apply node in two steps.
+First get the function \texttt f, which is the first child of an apply node.
+Then, reduce it to a partial application.
+If \texttt f came from a non-deterministic expression, the save the apply node on the stack.
+We split the second step into two cases.
+If \texttt f is under applied, or has exactly the right number of arguments,
+then copy the contents of \texttt f into the root, and move the arguments over and reduce.
+If \texttt f is over applied, then make a new copy of \texttt f,
+and copy arguments into it until it's fully applied.
+Finally we reduce the fully applied copy of \texttt f and apply the rest of the arguments.
+
+\begin{figure}
+\begin{verbatim}
+void apply_hnf(field root) {
+    field f = child_at(root,0);
+    field* children = root.n->children[3].a;
+    while(f.n->missing <= 0) {
+        // Normal HNF loop
+    }
+    int nargs = -root.n->missing;
+    int missing = f.n->missing;
+    if(missing <= nargs) {
+        set_copy(root, f);
+        for(int i = nargs; i > 0; i--, missing--) {
+            set_child_at(root, missing-1, children[i-1]);
+        }
+        root.n->missing = missing;
+        if(missing == 0) {
+            HNF(root);
+        }
+    } else {
+        field newf = copy(f);
+        while(missing > 0) {
+            set_child_at(newf, missing-1, children[nargs-1]);
+            nargs--;
+            missing--;
+        }
+        newf.n->missing = 0;
+        HNF(newf);
+        set_child_at(root,0,newf);
+        root.n->missing = -nargs;
+        apply_hnf(root);
+    }
+}
+\end{verbatim}
+\caption{The \texttt{apply\_hnf}  function}
+\label{fig:apply}
+\end{figure}
+
+
+\subsection{Implementing Non-determinism} \label{Implementing Non-determinism}
+
+Now, we that we can reduce a higher order functional language,
+we would like to extend our implementation to handle features from logic languages.
+
+The implementation doesn't change too much.
+First we add two new tags \texttt{CHOICE} and \texttt{FREE}
+to represent non-deterministic choice and free variable nodes respectively.
+The choice nodes are treated in a similar manner to a function.
+We call the \texttt{choose} function to reduce a choice to HCF,
+and push the alternative on the stack.
+
+The choose function in \ref{fig:choose} reduces a choice node to head constructor form.
+Since choice is a collapsing rule, we return a forwarding node.
+The function is also responsible for keeping track of which branch of the choice we should reduce,
+and pushing the alternative on the backtracking stack.
+We accomplish this by keeping a marker in the second child of a choice node.
+This marker is 0 if we should reduce to the left hand side, and 1 if we should reduce to the righ
+hand side.
+
+\begin{figure}
+\begin{verbatim}
+void choose(field root)
+{
+    field choices[2] = {child_at(root,0), child_at(root,1)};
+    int side = child_at(root,2).i;
+
+    field saved;
+    saved.n = (Node*)alloc(sizeof(Node));
+    memcpy(saved.n, root.n, sizeof(Node));
+
+    child_at_i(saved,2) = !side;
+    stack_push(bt_stack, root, saved, side == 0);
+
+    set_forward(root,choices[side]);
+    root.n->nondet = true;
+
+}
+\end{verbatim}
+\caption{Implementation of the \texttt{choose} function.}
+\label{fig:choose}
+\end{figure}
+
+Free variables are more interesting.
+To narrow a free variable we pick a possible constructor,
+and replace the \texttt{scrutinee} node with that constructor.
+All arguments to the constructor are instantiated with free variables.
+Then, we push a rewrite on the stack to replace \texttt{scrutinee} with a free variable
+using the \texttt{push\_frame} function.
+This is because after each possible choice has been exhausted, we want to reset
+this node back to a free variable in case it is used in another non-deterministic branch
+of the computation.
+Finally, for every other constructor, we push an alternative on the backtracking stack
+using the \texttt{push\_choice} function.
+
+The only other necessary change is to push a rewrite onto the backtracking stack
+when we reach either a fail, or constructor case.
+The \texttt{Prelude\_not\_1} function is a function at a case expression discussed
+in section \ref{Non-determinism}.
+The changes to the |not| function are give in figure \ref{fig:notNondet}.
+Due to space constraints not all sections are show.
+The pieces of code that don't changed are omitted and replaced with \texttt{...}.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root) {
+  field x = child_at(root, 0);
+  field scrutenee = x;
+  while(true) {
+    switch(TAG(scrutenee)) {
+      case FAIL_TAG:
+        push_frame(root, make_Prelude_not_1(x));
+        fail(root);
+        return;
+      ...
+      case CHOICE_TAG:
+        choose(scrutenee);
+        break;
+
+      case FREE_TAG:
+        push(bt_stack(free_var())choose(scrutenee);
+        push_frame(scrutenee, free_var());
+        push_choice(scrutenee, make_Prelude_False(0));
+        set_Prelude_True(scrutenee, 0);
+        break;
+
+      case Prelude_True_TAG:
+        push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_False(root, 0);
+        return;
+      ...
+    }
+  }
+}
+\end{verbatim}
+\caption{implementation of |not| with possible non-deterministic values.}
+\label{fig:notNondet}
+\end{figure}
+
+
+\subsection{Fast Backtracking} \label{Fast Backtracking}
+
+Finally we show how we implement the fast backtracking technique described earlier.
+The implementation actually doesn't change much,
+we simply make use of the \texttt{nondet} flag in each node.
+While we're evaluating \texttt{scrutinee},
+we keep track of whether or not we've seen
+a non-deterministic node in a local variable, and if we have, we push
+the root on the backtracking stack.
+If we haven't seen a non-deterministic node,
+then we can simply avoid pushing this rewrite.
+The generated code for |not| is given in figure \ref{fig:notFull}.
+
+\begin{figure}
+\begin{verbatim}
+void Prelude_not_hnf(field root) {
+  field x = child_at(root, 0);
+  field scrutenee = x;
+  bool nondet = false;
+
+  while(true) {
+    nondet |= scrutenee->nondet;
+    switch(TAG(scrutenee)) {
+      case FAIL_TAG:
+        if(nondet) push_frame(root, make_Prelude_not_1(x));
+        fail(root);
+        return;
+
+      ...
+      case CHOICE_TAG:
+        choose(scrutenee);
+        nondet = true;
+        break;
+
+      case FREE_TAG:
+        push_frame(scrutenee, free_var());
+        push_choice(scrutenee, make_Prelude_False(0));
+        set_Prelude_True(scrutenee, 0);
+        nondet = true;
+        break;
+
+      case Prelude_True_TAG:
+        if(nondet) push_frame(root, make_Prelude_not_1(x));
+        set_Prelude_False(root, 0);
+        return;
+
+      ...
+    }
+  }
+}
+\end{verbatim}
+\caption{implementation of |not| with possible non-deterministic values.}
+\label{fig:notFull}
+\end{figure}
+
+In the last two chapters we've discussed the choices we've made with 
+our generated code, and given an idea with what the generated code should look like.
+In some sense, we've given a recipe of how to translate Curry into C.
+In the next chapter we introduce the tools to make this recipe.
+We introduce a system for implementing transformations as rewrite rules.
+We then show how this system can simplify the construction of a compiler,
+and use it to transform FlatCurry programs into a form that is easier to optimize and compile to C.
+
+
+

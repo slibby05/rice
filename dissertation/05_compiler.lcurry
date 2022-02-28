@@ -1,0 +1,890 @@
+
+In the last chapter we developed the GAS system for representing transformation.
+In this chapter we show an extended example of using the GAS system to transform FlatCurry programs
+into a canonical form.
+We then show how to translate these canonical progras to the ICurry intermediate representation.
+Finally, we compile the ICurry progrms to C code, as discussed in chapter 3.
+
+This compiler, unsurprisingly, follows a traditional compiler pipeline.
+While we start with an AST, there are still five phases left before we can generate C code.
+First, we normalize FlatCurry to a canonical form. 
+Second, we optimize the FlatCurry. 
+Third, we sanitize the FlatCurry to simplify the process of generating C code.
+Fourth, we compile the FlatCurry to ICurry, an intermediate representation that is closer to C.
+Finally, we compile the ICurry to C.
+These steps are referred to as pre-process, optimize, post-process, toICurry, and toC within the compiler
+\cite{git}.
+
+We give an example of a function as it passes through each of the stages of the 
+compiler in figure \ref{fig:stages}.
+After pre-processing, the let expression has been floated to the top,
+and the missing branch has been filled in.
+After optimization, code is organized into blocks, and functions have been reduced.
+After post processing, let bound variables with a case expression have been factored
+out into their own functions.
+At this point the code is ready to be translated into ICurry and then C.
+
+While there are several small details that are important to constructing a working Curry compiler,
+we'll concern ourselves with the big picture here.
+
+\begin{figure}
+Curry function
+> f True = False
+> f x = not (let y = not x in not y)
+
+FlatCurry representation
+> f v_1 =  (case v_1 of True -> False) ? 
+>          (not (let v_2 = not v_1 in not v_2))
+
+After Pre-processing
+> f v_1 =  let v_2 = not v1_ 
+>          in  (case  v_1 of 
+>                     True -> False 
+>                     False -> EXEMPT) ? (not (not v2))
+
+After Optimization
+> let  v_4 = case  v_1 of
+>                  True -> False
+>                  False -> EXEMPT
+> in   let  v_5 = case  v_1 of 
+>                       True -> False 
+>                       False -> True 
+>      in   v4 ? v5
+
+After Post-processing
+> f v_2 =  let  v_3 = f_0 v_2
+>          in   let  v_4 = f_1 v_2
+>               in   v_3 ? v_4
+> f_0 v_2 = fcase  v_2 of
+>                  True -> False
+>                  False -> EXEMPT
+> f_1 v_2 = fcase  v_2 of
+>                  True -> False
+>                  False -> True
+\caption{|f| at each stage of the optimizer.}
+\label{fig:stages}
+\end{figure}
+
+\section{Canonical FlatCurry}
+
+The pre-process and post-process steps of the compiler make heavy use the of GAS system,
+and transform the FlatCurry program in to a form that is more amenable to C,
+including removing case and let expression from inside function applications.
+We will discuss the optimization phase in the next section,
+but for now we can see how transformations work.
+
+\begin{figure}
+> f v_1 v_2 ... v_n = b
+>
+> s  =  case  e of {C v_1 ... v_n -> s}
+>    |  let {v = e} in s
+>    |  let {v} free in s
+>    |  e
+>
+> e  =  v
+>    |  l
+>    |  f_k e_1 e_2 ... e_n
+>    |  C_k e_1 e_2 ... e_n
+>    |  e_1 ? e_2
+
+\caption{Canonical FlatCurry.\\
+         We split expressions into statement-like expressions |s|, and expressions |e|.
+         Statement like expressions roughly correspond to control flow, and are translated
+         to variable declaration and control flow statements in C.  }
+\label{fig:flatCanonical}
+\end{figure}
+
+Let's start with an example:
+> 1 + let x = 3 in x
+
+This is a perfectly fine Curry program, 
+but C does not allow variable declarations in an expression,
+so we need to rewrite this Curry expression to:
+> let x = 3 in 1 + x
+
+We don't reduce |let x = 3 in x| yet, because that would be an optimization.
+However, this will be reduced later.
+We can translate the new expression to C in a direct manner.
+This is the purpose of the pre-process and post-process steps.
+We rewrite a Curry expression that doesn't make sense in C to an equivalent Curry expression
+that we can translate directly to C.
+Most of the transformations consist of disallowing certain syntactic constructs.
+Canonical FlatCurry is defined in figure \ref{fig:flatCanonical}.
+
+Examples of the pre-processing transformations are presented in figures
+\ref{fig:canonical} and \ref{fig:canonical2}.
+We use the symbol |==>| for the optimization relation.
+The implementation is presented in figure \ref{fig:code}.
+We only show the initial implementation of an optimiation
+that excludes the name and path, but it can be extended to the full optimization
+in a straightforward manner.
+The full implementation can be found in 
+the \texttt{src/Optimize/Preprocess.curry} file at \cite{git}.
+
+In practice several of these rules are generalized and optimized.
+For example let-expressions may have many mutually recursive variables,
+and when floating a let bound variable inward, we may want to recursively traverse
+the expression to find the innermost declaration possible.
+However, these extensions to the rules are also included in the repository \cite{git}.
+
+\begin{figure}
+> float (Let (as++[(x,Let vs e_1)]++bs) e_2)   = Let ((x,e_1):vs++as++bs) e_2
+> float (Let (as++[(x,Free vs e_1)]++bs) e_2)  = Free vs (Let ((x,e_1):as++bs) e_2)
+> float (Or (Let vs e_1) e_2)                  = Let vs (Or e_1 e_2)
+> float (Or e_1 (Let vs e_2))                  = Let vs (Or e_1 e_2)
+> float (Or (Free vs e_1) e_2)                 = Free vs (Or e_1 e_2)
+> float (Or e_1 (Free vs e_2))                 = Free vs (Or e_1 e_2)
+> float (Comb ct n (as++[Let vs e]++bs))       = Let vs (Comb ct n (as++[e]++bs))
+> float (Comb ct n (as++[Free vs e]++bs))      = Free vs (Comb ct n (as++[e]++bs))
+> float (Case (Let vs e) alts)                 = Let vs (Case e alts)
+> float (Case (Free vs e) alts)                = Free vs (Case e alts)
+> emptyspace
+> flatten (apply (apply f as) bs)    = applyf f (as++bs)
+> flatten (apply (Case e bs) xs)     = Case e bs'
+>   where bs' = [Branch p (applyf e' xs) | (Branch p e') <- bs]
+> flatten (Case (Case e alt2) alt1)  = Case e bs (map addCase alt2)
+>   where addCase (Branch p e') = Branch p (Case e' b1)
+> emptyspace
+> blocks _ (Let vs e) | changed = e'
+>   where (e', changed) = makeBlocks vs e
+> emptyspace
+> alias _ (Let (as++[(v, Var y)]++bs) e)
+>  | v == y       = Let (as++[(v,loop)]++bs) e
+>  | otherwise    = suby (Let (as++bs) e)
+>   where  loop = Comb FuncCall ("Prelude","loop") []
+>          suby = sub (\x -> x == v then Var y else Var x)
+> emptyspace
+> fillCases dt _ (Case e bs)
+>   | not (null exempts) = Case e (bs++exempts)
+>   where exempts = [Branch (Pattern b []) exempt | b <- missingBranches dt bs]
+\caption{The Curry implementation for the pre-processing transformations.\\
+         In |fillCases|, |dt| is a |DataTable|, which holds information about data types.
+         The |missingBranches| takes a list of branches and a |DataTable| and returns the names
+         of the branches that aren't present.
+         In |alias| the |sub| function applies a substitution to an expression.}
+\label{fig:code}
+\end{figure}
+
+\begin{figure}
+>FLOAT
+\begin{minipage}{.40\textwidth}
+> let x =  let y = e_1 
+>          in e_2 
+> in e_3
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let  y = e_1
+>      in  let  x = e_2
+>          in   e_3
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> let x =  let y free 
+>          in e_1
+> in e_2
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let y free
+> in  let x = e_2
+>     in e_3
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> (let x = e_1 in e_2) ? e_3
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1 in (e_2 ? e_3)
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> (let x free in e_1) ? e_2
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x free in (e_1 ? e_2)
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> f (let x = e_1 in e_2)
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1
+> in f e_2
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> f (let x free in e)
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x free
+> in f e
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case  let x = e_1 
+>       in e_2  of 
+>       alts
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x = e_1
+> in case e_2 of alts
+\end{minipage}\\
+\begin{minipage}{.40\textwidth}
+> case  let x free 
+>       in e  of 
+>       alts
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x free
+> in case e of alts
+\end{minipage}
+\caption{GAS rules for putting FlatCurry programs into canonical form}
+\label{fig:canonical}
+\end{figure}
+
+\begin{figure}
+\vspace{-4ex}
+\textbf{Case in Case}\\
+\begin{minipage}{.40\textwidth}
+> case  (case  e of 
+>              {b_2 -> e_2}) of
+>       {b_1 -> e_1}
+>
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> case e of  {  b_2 -> 
+>               case  e_2 of  
+>                     {b_1 -> e_1} }
+>
+\end{minipage}\\
+\textbf{Double Apply}\\
+\begin{minipage}{.40\textwidth}
+> apply (apply f [x]) [y]
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> apply f [x,y]
+\end{minipage}\\
+\textbf{Case Apply}\\
+\begin{minipage}{.40\textwidth}
+> apply (case  e of 
+>              {pat -> f}) x
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> case  e of 
+>       {pat -> f x}
+\end{minipage}\\
+\textbf{Blocks}\\
+\begin{minipage}{.40\textwidth}
+> let  a = b
+>      b = c
+>      c = d + e
+>      d = b
+>      e = 1
+> in   a
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let  e = 1
+> in   let  b = c
+>           c = d + e
+>           d = b
+>      in   let  a = b
+>           in   a
+\end{minipage}\\
+\textbf{Alias}\\
+\begin{minipage}{.40\textwidth}
+> let x = y in e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> e[x `to` y]
+\end{minipage}\vspace{-4ex}\\
+\begin{minipage}{.40\textwidth}
+> let x = x in e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x = loop in e
+\end{minipage}\\
+\textbf{Case Fill}\\
+\begin{minipage}{.40\textwidth}
+> case  e of  
+>       True -> e
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> case  e of 
+>       True   -> e
+>       False  -> EXEMPT
+\end{minipage}\\
+
+\caption{GAS rules for putting FlatCurry programs into canonical form (continued)}
+\label{fig:canonical2}
+\end{figure}
+
+While most of these transformations are simple,
+a few require some explanation.
+The \textbf{blocks} transformation takes a let block with multiple variable definitions,
+and rewrites it to a series of let blocks where all variables are split into
+strongly connected components.
+This isn't strictly necessary,
+but it removes the need to check for mutual recursion during the optimization phase.
+It will often transform a block of mutually defined variables into a cascading 
+series of let expressions with a single variable,
+which will allow more optimizations to run throughout the compiler.
+
+The \textbf{alias} transformation will remove any aliased variables.
+If one variables is aliased to another, then it will do the substitution,
+but if a variable is aliased to itself, then it cannot be reduced to a normal form,
+so we can replace it with an infinite loop.
+
+
+Finally the \textbf{Fill cases} transformation completes the definitional tree.
+If we have a case with branches for constructors |C_1, C_2 ... C_k|,
+then we look up the type |T| that all of these constructor belong to.
+Next we get the list |Ctrs| of all constructors that belonging to |T|.
+This list will contain |C_1, C_2, ... C_n|, but it may contain more.
+For each constructor not represented in the case-expression,
+we create a new branch |C_i -> EXEMPT|.
+
+After running all of these transformations, our program is in canonical form,
+and we may choose to optimize it, or we may skip straight to the post-processing phase.
+At this point we only need two transformations for post-processing
+however, we will need to add more to support some of the optimizations.
+If we ever have an expression of the form |let x = case ...|, then we need to transform the
+case-expression into a function call.
+We don't do this transformation in pre-processing
+because we don't want to split functions apart during optimizations.
+The \textbf{Let-Case} transformation has a single rule given in figure \ref{fig:letcase}.
+
+\begin{figure}
+\textbf{Let Case}\\
+\begin{minipage}{.40\textwidth}
+> f (vec v)
+>    =  let x = case   e of  
+>                      (vec (p_i -> e_i))
+>       in e'
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> f (vec v)      =  let x = f_1 (vec x)
+>                   in e'
+> f_1 (vec x)    =  case  e of  
+>                         vec (p_i -> e_i)
+Where $\overline{x}$ are free variables of $e$ and $\overline{e_i}$.
+% >  where vec x = freeVars e : vec e_i
+\end{minipage}\\
+\textbf{Var Case}\\
+\begin{minipage}{.40\textwidth}
+> case e of alts
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> let x = e in case x of alts
+\end{minipage}\\
+\caption{Rule for moving a let bound case out of a function, 
+         and eliminating compound expressions in case-expressions.}
+\label{fig:letcase}
+\end{figure}
+
+Every let with a case-expression creates a new function |outline f n|
+where |n| is incremented every time.
+
+Finally, in our post-processing phase we simply factor out 
+the scrutinee of a case-expression into a variable.
+The transformation is straightforward.
+An example of a pre-process derivation is given in \ref{fig:preprocess_example}.
+At this point we are ready to transform the canonicalized FlatCurry into ICurry.
+
+\begin{figure}
+> powaux v_1 v_2 v_3 = case  (==) v_3 0 of
+>                            True   ->  v_1
+>                            False  ->  let  v_4 = square v_2
+>                                            v_5 = halve v_3
+>                                       in   case  (==) (appOpt ((apply (apply mod v_3) 2) 1)) of
+>                                                  True   -> powaux ((*) v_1 v_2) v4 v5
+>                                                  False  -> powaux v_1 v_4 v_5
+> ==> DOUBLE_APPLY [1,-1,-1,0]
+> powaux v_1 v_2 v_3 = case  (==) v_3 0 of
+>                            True   ->  v_1
+>                            False  ->  let  v_4 = (appOpt (square v_2))
+>                                            v_5 = (appOpt (halve v_3))
+>                                       in   case  (==) (apply mod v_3 2) 1 of
+>                                                  True   -> powaux ((*) v_1 v_2) v_4 v_5
+>                                                  False  -> powaux v_1 v_4 v_5
+> ==> BLOCKS [1]
+> powaux v_1 v_2 v_3 = case  ((==) v_3 0) of
+>                            True   ->  v_1
+>                            False  ->  let  v_4 = square v_2
+>                                       in   let  v_5 = halve v_3
+>                                            in   case  (==) (apply mod v_3 2) 1 of
+>                                                       True   -> powaux ((*) v_1 v_2) v_4 v_5
+>                                                       False  -> powaux v_1 v_4 v_5
+    \caption{Reducing the |powaux| function defined in the standard Float library.
+             The first reduction occurs in the |False| branch |[1]| or the in expression [-1]
+             in the scrutinee of the case [-1] in the first argument of the apply node [0],
+             so it has a path of [1,-1,-1,0].}
+    \label{fig:preprocess_example}
+\end{figure}
+
+\section{Compiling to ICurry}
+
+ICurry is meant to be a bridge between Curry code and imperative languages like C, Python, and Assembly.
+The let and case-expressions have been transformed into statements,
+and variables have been explicitly declared.
+All mutually recursive declarations are broken here into two steps:
+Declare memory for each node, 
+then fill in the pointers.
+This allows us to create expression graphs with loops in them.
+Each function is organized into a sequence of blocks,
+and each block is broken up into declarations, assignments, and a single statement.
+A statement can either fail, return a new expression graph, 
+or inspect a single variable to choose a case.
+
+
+\begin{figure}[t]
+> p         =>  (vec t) (vec f)               program
+> t         =>  vec C                         datatype
+> f         =>  name = b                      function
+> b         =>  vec d                         block
+>               vec a
+>               s  
+> d         =>  declare x                     variable declaration
+>           |   declfree x                    free variable declaration
+> a         =>  v = e
+> s         =>  return e                      return statement
+>           |   EXEMPT                        failure
+>           |   case x of                     case statement
+>                    vec (C -> b)
+> e         =>  v                             variable expression
+>           |   NODE(l,vec e)                 node creation
+>           |   e_1 ? e_2                     choice expression
+> v         =>  x                             local variable
+>           |   v[i]                          variable access
+>           |   ROOT                          root variable
+> l         =>  C                             constructor label
+>           |   f                             function label
+>           |   LABEL(v)                      variable label
+\caption{Abstract syntax of function definitions in ICurry}
+\label{fig:iCurrySyntax}
+\end{figure}
+
+After we've finished transforming the FlatCurry,
+the transformation to ICurry is much easier to implement.
+The algorithm from \cite{icurry}, given in figure \ref{fig:flatCurryiCurry}, 
+can be applied directly to the translated program.
+We show an example of translating the function |f| from figure \ref{fig:stages}
+into ICurry in figure \ref{fig:icurryStage}.
+
+The algorithm itself is broken up into 6 pieces.
+First |ifunction| Compiles a FlatCurry function into an ICurry function.
+Then |iblock| takes the function arguments, the expression, and the root,
+and compiles it into a block.
+We factor out |iblock| instead of leaving it a part of |ifunction|
+because we will be able to recursively call it to construct nested blocks.
+This is also why we pass in a root parameter.
+In subsequent calls, the scrutinee of a case expression.
+While this isn't explicit in the algorithm here,
+in our implementation, the root of any block under a case expression
+is always |v_1|.
+This will become the variable \texttt{scrutenee} from the C code in chapter 3.
+Next we declare variables with the |decl| function.
+Each variables bound by a |let| or |free| expression must be declared.
+We also declare a variable for the scrutinee of the case statement, if this block has one.
+Then, |ret| generates code for the return value.
+If the expression is a case, 
+then examine the case variable and generate code for the associated blocks,
+otherwise we return the expression.
+Finally |expr| generates code for constructing a piece of the expression graph.
+If the expression contains choices, function calls, or constructor calls, then
+the corresponding nodes are generated.
+If the expression is a variable, then it is returned.
+If the expression is a let or a free expression, then the principal expression is generated.
+
+
+
+\begin{figure}
+>ifunction(f(vec x) = e)                   :=  f = iblock(vec x, e, ROOT)
+>
+>iblock(vec x, EXEMPT, root)               :=  EXEMPT 
+>iblock(vec x, e, root)                    :=  vec (declare x)
+>                                              decl(e)
+>                                              (vec (x_i = root[i]))
+>                                              asgn(e)
+>                                              ret(e)
+>
+>decl(let (vec (x)) free in e)             :=  decfree (vec x)
+>decl(let (vec (x = e)) in e')             :=  declare (vec x)
+>decl(case e of (vec (p -> e')))           :=  declare x_e
+>
+>asgn(let (vec (x = e)) in e')             :=  (vec (x = expr(e)))
+>                                              [x_i[p] = x_j |  x_i `elem` vec x, 
+>                                                               x_j `elem` vec x, 
+>                                                               path (e_i) p = x_j]
+>
+>asgn(case e of _)                         :=  x_e = expr(e)
+>
+>
+>ret(case e' of (vec (C((vec x)) -> e)))   :=  case expr (e') of  iblock(vec x, e, x_e)
+>ret(e)                                    :=  return E(e)
+>
+>expr(x)                                   :=  x
+>expr(c (vec e))                           :=  NODE(c, (vec (expr(e))))
+>expr(f (vec e))                           :=  NODE(f, (vec (expr(e))))
+>expr(e_1 ? e_2)                           :=  expr(e_1) ? expr(e_2)
+>expr(let (vec (x = e)) in e')             :=  expr(e)
+>expr(let vec x free in e)                 :=  expr(e)
+
+\caption{Algorithm for translating FlatCurry into ICurry}
+\label{fig:flatCurryiCurry}
+\end{figure}
+
+\begin{figure}
+After Post-processing
+> f v_2 =  let  v_3 = f_0 v_2
+>          in   let  v_4 = f_1 v_2
+>               in   v_3 ? v_4
+> f_0 v_2 = fcase  v_2 of
+>                  True -> False
+>                  False -> EXEMPT
+> f_1 v_2 = fcase  v_2 of
+>                  True -> False
+>                  False -> True
+ICurry
+> f/1 : {
+>   declare x_2
+>   declare x_3
+>   declare x_4
+>   x_2 = ROOT[0]
+>   x_3 = f_0(x_2)
+>   x_4 = f_1(x_2)
+>   return (x_3 ? x_4)
+> }
+> f_0/1 : {
+>   declare x_2
+>   x_2 = ROOT[0]
+>   case x_2 of
+>     True / 0 -> {
+>       return False()
+>     }
+>     False / 0 -> {
+>       exempt
+>     }
+> }
+\caption{translating |f| and |f_0| into icurry.\\
+         We omit |f_1| for space, and because it's largely the same as |f_0|.}
+\label{fig:icurryStage}
+\end{figure}
+
+\section{Generating C Code}
+
+Now that we have a program in ICurry, we can translate this to C.
+In order to facilitate this process, We've created a small library for generating C code in Curry.
+
+\subsection{The C Library}
+
+The C library is meant to help with the generation of C code in Curry.
+It's a small library, and does not cover most of the C language,
+but we've found it very useful.
+
+The library is designed around the idea that we want to generate lines of C code.
+In fact, it looks similar to a pretty printing library \cite{pretty}.
+The difference is that we don't start with an abstract representation of C code.
+Instead we have functions that produce C expression.
+We define a few types for readability.
+
+> type CType = String
+> type CName = String
+> type CStmt = String
+> type CExpr = String
+
+The compiled C code is represented as either a |String| or a list of |Strings|.
+In figures \ref{fig:cfunc} and \ref{fig:cflow} we start with a few basic functions
+for controlling indentation, and grouping code together,
+and general flow of control.
+
+\begin{figure}
+> tab :: Int -> String -> String
+> tab n s
+>  | n == 0    = s
+>  | otherwise = "  " ++ tab (n-1) s
+> emptyspace
+> nl :: [CStmt]
+> nl = [""]
+> emptyspace
+> cinclude :: String -> CStmt
+> cinclude name = "#include \"" ++ name ++ "\""
+> emptyspace
+> cfunDefn :: CType -> CName -> [(CType,CName)] -> CExpr
+> cfunDefn rettype name ps = rettype ++ " " ++ name ++ cparams ps
+> emptyspace
+> cparams :: [(CExpr,CExpr)] -> CExpr
+> cparams ps = "(" ++ intercalate "," (map param ps) ++ ")"
+>  where param (t,x) = t ++ " " ++ x
+> emptyspace
+> creturn :: CStmt
+> creturn = "return;"
+> emptyspace
+> cblock :: [CStmt] -> [CStmt]
+> cblock b = ["{"] ++ map (tab 1) b ++ ["}"]
+\caption{Function for generating functions in C.}
+\label{fig:cfunc}
+\end{figure}
+
+\begin{figure}
+> cif :: CExpr -> [CStmt] -> [CStmt]
+> cif c b =  ["if(" ++ c ++ ")"] ++
+>            cblock b
+> emptyspace
+> cElse :: [CStmt] -> [CStmt]
+> cElse b =  ["else"] ++
+>            cblock b
+>  emptyspace
+> cifElse :: CExpr -> [CStmt] -> [CStmt] -> [CStmt]
+> cifElse c t f = cif c t ++ 
+>                 cElse f
+> emptyspace
+> cwhile :: CExpr -> [CStmt] -> [CStmt]
+> cwhile c b =  ["while(" ++ c ++ ")"] ++
+>               cblock b
+>  emptyspace
+> cswitch :: CExpr -> [[CStmt]] -> [CStmt]
+> cswitch e bs =  ["switch("++ e ++ ")"] ++
+>                 cblock (concat bs)
+>  emptyspace
+> ccase :: CExpr -> [CStmt] -> [CStmt]
+> ccase lbl body =  ["case " ++ lbl ++ ":"] ++
+>                   cblock body
+\caption{Function for generating control flow statements in C.}
+\label{fig:cflow}
+\end{figure}
+
+These combinators are meant to resemble C code.
+The resemblance isn't perfect, but it's proved to be easy to work with.
+The general naming convention is functions that produce C code
+start with a c.
+We also introduce several of the C operators such as \texttt + and \texttt{==}.
+These operators all start with a dot to distinguish them from the Curry equivalent,
+so the two operators would be |.+| and |.==| respectively.
+
+We also introduce several ICurry specific combinators.
+The definitions are given in figure \ref{fig:CICurry}.
+Several of these use the |mangle| function.
+The definition of |mangle| is complicated and not important.
+It's used to mangle ICurry names into valid C names.
+The |var| function produces a variable name.
+The values of 0 and 1 are special because 0 is always the root of the expression,
+and 1 is a special variable used for the scrutinee of a case.
+The |tag| function makes a label out of a constructor name.
+The |hnf| function makes a call to the \texttt{\_hnf} version of a function.
+The |children| function gets the descendant of node |n| on path |xs|.
+Finally |field| declares a variable as a \texttt{field}.
+
+\begin{figure}
+> var :: IVarIndex -> CExpr
+> var v
+>  | v == 0    = "root"
+>  | v == 1    = "scrutenee"
+>  | otherwise = "v"++show (abs v)
+> emptyspace
+> tag :: IQName -> CExpr
+> tag f = mangle f ++ "_TAG"
+> emptyspace
+> hnf :: IQName -> CName
+> hnf n = mangle n ++ "_hnf"
+> emptyspace
+> children :: CName -> [IVarIndex] -> CExpr
+> children n xs = foldl childAt n xs
+>  where childAt x y = "child_at("++x++", "++show y++")"
+> emptyspace
+> field :: IVarIndex -> CType
+> field v = "field " ++ (var v)
+\caption{ICurry specific function for producing C code.}
+\label{fig:CICurry}
+\end{figure}
+
+\subsection{Translation to C}
+
+We already have a good idea of what the C code should look like,
+and our ICurry structure fits closely with this.
+The difference is that we need to be sure to declare and allocate memory for all variables,
+which leads to a split in the structure of the generated code.
+The code responsible for creating expression graphs and declaring memory will
+go in the *.h file, and the code for executing the hnf function will go in the *.c file.
+This is a common pattern for structuring C and C++ code,
+so it's not surprising that we take the same approach.
+
+For each Data type |D|, we generate both a \texttt{make\_D} function and a \texttt{set\_D}.
+The difference is that \texttt{make\_D} will allocate memory for a new node, while \texttt{set\_D}
+takes an existing node as a parameter, and transforms it to the given type of node.
+We do the same thing for every ICurry function |f|,
+and produce a \texttt{make\_f} and \texttt{set\_f} function in C.
+Each node contains a \texttt{symbol}, that denotes the type of node, and holds information
+such as the name, arity, and hnf function of the node.
+Along with setting the \texttt{symbol} from section \ref{Generated Code},
+the make and set functions reset the nondet flag to \texttt{false},
+and set any children that were passed into the node.
+
+
+The code to generate the C source file is given in 
+figures \ref{fig:cprog}, \ref{fig:cloop}, \ref{fig:ccases}, \ref{fig:cshow}, \ref{fig:cset}.
+This is a standard syntax directed translation.
+We don't show the generation of literal cases,
+because of our implementation of unboxing, which will be discussed in chapter 5.
+We also skip over the generation of the functions for case expressions discussed in section
+\ref{Non-determinism}.
+The code for this is largely the same.
+We just need to keep track of the current path through the blocks in an ICurry function.
+The generation of the correct calls is handled in the |save| function, which
+is responsible for pushing a rewrite onto the backtracking stack.
+
+The code in figure \ref{fig:cprog} is the main entry point for the code generator.
+It's responsible for compiling the entire program down to the statement level.
+The code in figure \ref{fig:cloop} generates the switch case loop.
+The code in figure \ref{fig:ccases} constructs the various cases.
+The code in figure \ref{fig:cshow} generates code for constructing new nodes in an expression graph.
+Finally, the code in figure \ref{fig:cset} generates code for setting an existing node in the expression
+graph to a new value.
+\begin{figure}
+> 
+> toSource :: IProg -> [String]
+> toSource (IProg name imports _ funs)
+>  =  [cinclude name,
+>     cinclude "runtime"] ++
+>     map cinclude imports ++ nl ++
+>     concatMap funSource funs
+> emptyspace
+> funSource :: IQName -> IFuncBody -> [String]
+> funSource (IFunction name _ _ _ body) 
+>  =  [cfunDefn "void" (hnf name) [("field", "root")]] ++
+>     showBody name body ++ nl
+> emptyspace
+> showBody :: IQName -> IFuncBody -> [String]
+> showBody n (IFuncBody block) = cblock (showBlock block)
+> emptyspace
+> showBlock :: IBlock -> [String]
+> showBlock (IBlock decls asgns stmt) =  map showDecl decls ++
+>                                        map showAsgn asgns ++
+>                                        showStmt stmt
+> emptyspace
+> showDecl :: IVarDecl -> Stmt
+> showDecl (IVarDecl  v) = field v ++ ";"
+> showDecl (IFreeDecl v) = field v .= "free_var()" ++ ";"
+> emptyspace
+> showAsgn :: IAssign -> Stmt
+> showAsgn (INodeAssign v ixs e)  = (children (var v) ixs .= showExpr e) ++ ";"
+> showAsgn (IVarAssign v e)       = var v .= showExpr e ++ ";"
+> emptyspace
+> showStmt :: IStatement -> [CStmt]
+> showStmt IExempt           = [scall "fail" ["root"], creturn]
+> showStmt (IReturn e)       = setExpr e False ++ [creturn]
+> showStmt (ICaseCons v bs)  = showConsCase v bs
+> showStmt (ICaseLit  v bs)  = showLitCase v bs
+
+\caption{generation of C programs.}
+\label{fig:cprog}
+\end{figure}
+
+\begin{figure}
+> showConsCase :: IVarIndex -> [IConsBranch] -> [String]
+> showConsCase v alts
+>   = cblock (
+>       ["bool nondet = false;",
+>       field "scrutenee" .= var v ++ ";"] ++
+>       cwhile "true" (
+>         ["nondet |= scrutenee.n->nondet;"] ++
+>         cswitch "scrutenee.n->symbol->tag" (
+>           [failBlock v,
+>           funBlock,
+>           choiceBlock,
+>           forwardBlock,
+>           freeBlock v cons] ++ 
+>           map (showConsBranch v) bs )
+>       )
+>     )
+>  where  conName (IConsBranch c _ _) = c
+>         cons = map (mangle . conName) bs'
+> emptyspace
+> showConsBranch :: IVarIndex -> IConsBranch -> [String]
+> showConsBranch v (IConsBranch c _ b) = ccase  (tag c) (
+>                                               save v ++
+>                                               showBlock b )
+\caption{Code for generating case loops.}
+\label{fig:cloop}
+\end{figure}
+
+\begin{figure}
+> failBlock :: FunPos -> IVarIndex -> Bool -> [CStmt]
+> failBlock  v = ccase  "FAIL_TAG" (
+>                       save v ++
+>                       ["fail(root);", "return;"] )
+> emptyspace
+> funBlock :: [CStmt]
+> funBlock = ccase  "FUNCTION_TAG" [
+>                   "HNF(scrutenee);",
+>                   "break;" ]
+> emptyspace
+> choiceBlock :: [CStmt]
+> choiceBlock = ccase  "CHOICE_TAG" [
+>                      "choose(scrutenee);",
+>                      "break;" ]
+> emptyspace
+> forwardBlock :: [CStmt]
+> forwardBlock = ccase  "FORWARD_TAG" [
+>                       "scrutenee = scrutenee.n->children[0];",
+>                       "break;" ]
+> emptyspace
+> freeCaseBlock :: IVarIndex -> [CName] -> [CStmt]
+> freeCaseBlock v (b:bs) =  ccase "FREE_TAG" (
+>                             [scall "push_frame" [v', "free_var()"]] ++
+>                             map (\con -> scall "push_choice" ["scrutenee", "make_"++con++"_free()"]) bs ++
+>                             [scall ("set_"++b++"_free") ["scrutenee"],
+>                             "nondet = true;",
+>                             "break;"] )
+\caption{Generation of C switch loop.}
+\label{fig:ccases}
+\end{figure}
+
+\begin{figure}
+> showExpr :: IExpr -> CExpr
+> showExpr (IVar v)           = var v
+> showExpr (IVarAccess v ixs) = children (var v) ixs
+> showExpr (ILit l)           = toUnion (litType l) (showLit l)
+> showExpr (IFCall f es)
+>  | isApply f                = "make_apply"++show (length es-1) ++ cargs (map showExpr es)
+>  | otherwise                = showComb f es
+> showExpr (ICCall c es)      = showComb c es
+> showExpr (IFPCall f n es)   = showPart f n es
+> showExpr (ICPCall c n es)   = showPart c n es
+> showExpr (IOr e1 e2)        = call "make_choice" [showExpr e1, showExpr e2]
+> 
+> showComb :: IQName -> [IExpr] -> CExpr
+> showComb f es = call ("make_"++mangle f) (map showExpr es ++ ["0"])
+> 
+> showPart :: IQName -> Int -> [IExpr] -> CExpr
+> showPart f m es = call ("make_"++mangle f) (missingArgs es m)
+> 
+> missingArgs :: [IExpr] -> Int -> [CExpr]
+> missingArgs es m = (map showExpr es ++ replicate m nullf ++ [show m])
+\caption{Generating code to create new nodes.}
+\label{fig:cshow}
+\end{figure}
+
+\begin{figure}
+> 
+> setExpr :: IExpr -> [CStmt]
+> setExpr (IVar v)          = [scall "set_forward" ["root", var v]]
+> setExpr (IOr e1 e2)       = [scall "set_choice" ["root", showExpr e1, showExpr e2],
+>                              scall "choose" ["root"]]
+> setExpr (IFCall f es)
+>  | isApply f              = [scall ("set_apply"++show (length es-1)) ("root":map showExpr es),
+>                              scall "apply_hnf" ["root"]]
+>  | otherwise              = [setComb f es,
+>                              scall (name++"_hnf") ["root"]]
+> setExpr (ICCall c es)     = [setComb c es]
+> setExpr (IFPCall f n es)  = [setPartComb f n es]
+> setExpr (ICPCall c n es)  = [setPartComb c n es]
+> 
+> setComb :: IQName -> [IExpr] -> CStmt
+> setComb f es = scall ("set_"++mangle f) ("root" : (map showExpr es) ++ ["0"])
+> 
+> setPartComb :: IQName -> Int -> [IExpr] -> CStmt
+> setPartComb f m es = scall ("set_"++mangle f) ("root" : missingArgs es m)
+> 
+\caption{Generating code to set nodes.}
+\label{fig:cset}
+\end{figure}
+
+In this chapter we used this library to transform FlatCurry programs into a canonical form that we could then
+translate to ICurry.  We also showed how to translate ICurry program to C.
+In short we wrote the back end of a compiler in a simple, clear, and short implementation.
+This shows the power of the GAS system for applying simple transformations to Curry programs.
+In the next chapter we'll see how we can use it to write an Optimizer.
+Now we're cooking with GAS!

@@ -43,7 +43,7 @@ and the GAS system rewrites these terms.
 Since the Curry semantics are defined for graph rewriting,
 we need to impose some restrictions.
 
-While there have been graph intermedeate representation proposed for
+While there have been graph intermediate representation proposed for
 languages \cite{graph_ir, dactl} FlatCurry is not one of these.
 We do think that incorporating the graph based IR
 might improve the optimization process, and we believe
@@ -60,7 +60,8 @@ So we should be able to rewrite |main| to |(0 ? 1) + (0 ? 1)|,
 but this expression will produce a different set of answers.
 This is the primary problem with optimizing functional logic languages,
 but exactly why this happens is a bit tricky to pin down.
-The non-determinism isn't the only problem, for example inlining |id (0 ? 1)| is fine.
+The non-determinism isn't the only problem, for example evaluating |id (0 ? 1)| 
+at compile time is fine.
 We can even duplicate non-deterministic expressions with the following example.
 > double x  = x + x
 > main      =  let y = (0 ? 1)
@@ -125,7 +126,7 @@ Specifically, all function calls, constructor calls, choices, and case expressio
 be applied to literal values or variables.
 Fortunately we are not the first to come up with this idea.
 In fact this restricted form is used in many functional compilers,
-and is known as Administrative Normal Form (ANF) \cite{ANormal}.
+and is known as Administrative Normal Form (ANF) \cite{ANormal}\index{Administrative Normal Form (ANF)}.
 The idea originally was to take CPS, another well known intermediate representation
 for functional languages, and remove common ``administrative redexes''.
 After removing the administrative redexes, we can remove the continuations,
@@ -135,20 +136,19 @@ A-Normal form transformation.
 We give the definition of A-Normal Form for Curry programs in figure
 \ref{fig:anormal}
 and we implement the transformation using GAS in figure
-\ref{fig:anormalTransform}.
+\ref{fig:anormalTransform} with the Curry implementation in figure \ref{fig:anormalCurry}.
 
 \begin{figure}
-> a  =>  v                     Variable
->    |   l                     Literal
->    |   EXEMPT                Failed
-> e  =>  a_1 ? a_2             Choice
->    |   f_k {a}               Function Application
->    |   C_k {a}               Constructor Application
->    |   let {v = e} in e      Variable Declaration
->    |   let {v} free in e     Free Variable Declaration
->    |   case a of {p -> e}    Case Expression
-> p  =>  C {v}                 Constructor Pattern
->    |   l                     Literal Pattern
+\textbf{ANF:}
+> a  =>  v                       Variable
+>    |   l                       Literal
+>    |   EXEMPT                  Failed
+> e  =>  a_1 ? a_2               Choice
+>    |   f_k (vec a)             Function Application
+>    |   C_k (vec a)             Constructor Application
+>    |   let (vec v = e) in e    Variable Declaration
+>    |   let (vec v) free in e   Free Variable Declaration
+>    |   case a of (vec alt)     Case Expression
 \caption{
 Restricting Curry expressions to A-Normal Form.\\
 An atom is either a variable, a literal, or a failure.
@@ -157,10 +157,11 @@ Compound expressions are only allowed to contain atoms.}
 \end{figure}
 
 \begin{figure}
-> case e of ...               => let x = e    in case x of ...
-> f a_1 a_2 ... e_k ... e_n   => let x = e_k  in f a_1 a_2 ... x ... e_n
-> e_1 ? e_2                   => let x = e_1  in x ? e_2
-> a_1 ? e_2                   => let x = e_2  in a_1 ? x
+> case e of alts              ==> let x = e    in case x of alts
+> f a_1 a_2 ... e_k ... e_n   ==> let x = e_k  in f a_1 a_2 ... x ... e_n
+> C a_1 a_2 ... e_k ... e_n   ==> let x = e_k  in C a_1 a_2 ... x ... e_n
+> e_1 ? e_2                   ==> let x = e_1  in x ? e_2
+> a_1 ? e_2                   ==> let x = e_2  in a_1 ? x
 \caption{
     Rules for transforming Curry expression to A-Normal Form.\\
     |a| is used for atoms, |e| is used for arbitrary expressions,
@@ -168,14 +169,30 @@ Compound expressions are only allowed to contain atoms.}
     }
 \label{fig:anormalTransform}
 \end{figure}
+\begin{figure}
+> toANF :: Opt
+> toANF (n,_) (Case ct e bs)
+>  | not (trivial e) = Let [(n,e)] (Case ct (Var n) bs)
+> 
+> toANF (n,_) (Comb ct f (as++[e]++bs))
+>  | all trivial as && not (trivial e) = Let [(n,e)] (Comb ct f (as++[Var n]++bs))
+> 
+> toANF (n,_) (Or e_1 e_2)
+>  | not (trivial e_1) = Let [(n,e_1)] (Or (Var n) e_2)
+>  | not (trivial e_2) = Let [(n,e_2)] (Or e_1 (Var n))
+\caption{
+    Curry implementation of A-Normal Form transformation.
+    }
+\label{fig:anormalCurry}
+\end{figure}
 
 As long as we enforce this A-Normal Form structure,
 we restore equational reasoning for Curry programs.
 We don't even need to enforce A-Normal Form strictly here.
-During optimization, it's often useful to be able to inline
-constructors and partial applications.
-Since a constructor is computationally inert,
-we can inline one without fear of problems with non-deterministic expressions.
+During optimization, it's often useful to be able to replace
+variable bound to constructors and partial applications with their definitions.
+Since these nodes have no rewrite rules that can apply at the root,
+we can do this replacement without fear of problems with non-deterministic expressions.
 This will be referred to as limited A-Normal Form.
 
 In fact, this is exactly how the operational semantics were defined for FlatCurry.
@@ -198,7 +215,7 @@ Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
 > emptyspace
 > emptyspace
 > emptyspace
-\end{minipage} |==>|
+\end{minipage} |==>*|
 \begin{minipage}{.45\textwidth}
 > fib n =  let  x = n < 1
 >          in   case x of
@@ -219,7 +236,7 @@ Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
 >
 >
 >
-\end{minipage} |==>|
+\end{minipage} |==>*|
 \begin{minipage}{.45\textwidth}
 >   sumPrimes =  let v_1 = (+)
 >                in let v_2 = foldr v_1 0
@@ -245,8 +262,7 @@ Consider the following code:
 >                 True -> False
 >                 False -> True
 
-While it is very unlikely that a programmer would actually write this code,
-it comes up frequently when inlining.
+Expressions like this come up frequently during optimization.
 This is fantastic, because it's clear what we should do here.
 We know that the |True| branch will be taken, 
 so we might as well evaluate the case expression right now.
@@ -257,7 +273,7 @@ This transformation is called Case Canceling,
 and it's the workhorse of all of our other optimizations.
 The transformation is given and \ref{fig:CaseCode} 
 and examples of the transformation are given in \ref{fig:CaseCancel} .
-If the scrutinee of a case is a constructor,
+If the scrutinee of a case is labeled by a constructor,
 then we find the appropriate branch, and reduce to that branch.
 The only real complication is that we need to keep the expression in
 A-Normal form.
@@ -268,7 +284,6 @@ These optimizations are really about cleaning up after Case Canceling runs.
 The first is Case Variable elimination.
 Consider the expression from the optimization of |compare| for |Bool| in figure \ref{fig:caseBool}.
 \begin{figure}
-> ...
 >     in case  v_2 of
 >              True   -> LT
 >              False  -> case  appOpt v_2 of
@@ -276,9 +291,7 @@ Consider the expression from the optimization of |compare| for |Bool| in figure 
 >                              False  -> case  v_1 of
 >                                              True   -> GT
 >                                              False  -> EQ
-> ...
 > ==> CASE_VAR [-1,0,-1]
-> ...
 >     in case  v_2 of
 >              True   -> LT
 >              False  -> case  appOpt False of
@@ -286,9 +299,7 @@ Consider the expression from the optimization of |compare| for |Bool| in figure 
 >                              False  -> case  v_1 of
 >                                              True   -> GT
 >                                              False  -> EQ
-> ...
 > ==> CASE_CANCEL [-1,0,-1,1]
-> ...
 >     in case  v_2 of
 >              True   -> LT
 >              False  -> case  v_1 of
@@ -304,35 +315,61 @@ a situation where a case can cancel later.
 This occurs a lot in practice, but this optimization may raise red flags for some.
 In general it's not valid to replace a variable with an expression in FlatCurry.
 That variable could be shared, and it could represent a non-deterministic expression.
-Case Canceling is fine, because we only change a case statement, which only affects
-flow of control.
-It doesn't actually affect any of the data in the expression graph.
-However, we can justify this by looking at the computation space for our expression,
-similar to section \ref{Backtracking Performance}.
-Suppose that we have the expression |case x in  e|.
-If |x| is deterministic, then there is no problem.
-If |x| is non-deterministic, then |x| has already been reduced to head normal form,
-and been pushed on the backtracking stack.
-Furthermore, the root of this function has also been pushed on the backtracking stack,
-since |case x of e| depended on a non-deterministic variable.
-So, if |x| has changed while backtracking, the current expression has been undone.
-Therefore replacing |x| with a constructor in this expression has no effect.
+Fortunately, this is still viable in Curry.
+
+We give a short sketch of the why Case Variable elimination is viable in Curry with the following
+example.
+Suppose I have the following FlatCurry definition for |notHead|.
+This function will look at the first element of a list, and return |not True|
+if the head of the list evaluates to True.
+> notHead xs = case  xs of
+>                    x:_ -> case  x of
+>                                 True -> not x
+
+We use a key fact from Brassels work \cite{Kics2Theory}[Lemma 4.1.10].
+Lifting a case into it's own function Does not change the set of values
+an expression evaluates to.
+We can use this to lift the inner case into it's own function.
+> notHead xs = case  xs of
+>                    x:_ -> notHead_1 x
+> notHead_1 x = case x of
+>                    True -> not x
+
+Since uniform programs can be viewed as inductively sequential rewrite systems.
+The function |notHead_1| should be equivalent to the following Curry program.
+> notHead_1 True = not True
+> notHead_1 False = EXEMPT
+Now this program could be compiled into the following semantically equivalent FlatCurry program.
+> notHead_1 x = case  x of
+>                     True   -> not True
+>                     False  -> EXEMPT
+
+Finally, by the path compression theorem we can reduce the call in |notHead| to get the following result.
+> notHead xs = case  xs of
+>                    x:_ -> case  x of
+>                                 True -> not True
+
+This gives us a general procedure for converting FlatCurry programs to the same program
+after performing Case Variable elimination.
+While we don't perform these steps in practice, each one has already been shown to be valid
+on their own, so our transformation is also valid.
 
 Finally we have Dead Code Elimination.
 This is a standard optimization.
 In short, if we have an empty |let| or |free| expression,
 then we can remove them.
+This may happen due to the aliasing rule from last chapter.
 Furthermore if a variable is never used, then it can also be removed.
 Finally, if we have |let x = e in x|, then we don't need to create the variable |x|.
-These are all clearly correct, 
+These are correct
 as long as we're careful to make sure that our variable definitions aren't recursive.
 
 \begin{figure}
 > caseCancel :: Opt
-> caseCancel _ (Case (Comb ConsCall n es) (_++[Branch (Pattern n vs) e] ++ _))
+> caseCancel (Case (Comb ConsCall n es) (_++[Branch (Pattern n vs) e] ++ _))
 >  = foldr Let e (zip vs es)
-> caseCancel _ (Case (Lit l) (_++[Branch (LPattern l) e] ++ _)) = e
-> caseCancel _ (Case EXEMPT of _) = EXEMPT
+> caseCancel (Case (Lit l) (_++[Branch (LPattern l) e] ++ _)) = e
+> caseCancel (Case EXEMPT of _) = EXEMPT
 > emptyspace
 > caseVar (Case (Var x) bs)
 >  | x `elem` vars bs = Case (Var x) (map (repCaseVar x) bs)
@@ -341,14 +378,14 @@ as long as we're careful to make sure that our variable definitions aren't recur
 > repCaseVar x (Branch (LPattern l) e)    = Branch (LPattern l)    (sub f e)
 >   where f v = if v == x then Lit l else Var v
 > emptyspace
-> deadCode (Free [] e) = (e, "DEAD_CODE", 0)
-> deadCode (Let [] e) = (e, "DEAD_CODE", 0)
+> deadCode (Free [] e)  = e
+> deadCode (Let [] e)   = e
 > deadCode (Free (as++[v]++bs) e)
->  | not (hasVar v e) = (Free (as++bs) e, "DEAD_CODE", 0)
+>  | not (hasVar v e)   = Free (as++bs) e
 > deadCode (Let [(v,_)] e)
->  | not (hasVar v e) = (e, "DEAD_CODE", 0)
+>  | not (hasVar v e)   = e
 > deadCode (Let [(x,e)] (Var x))
->  | not (hasVar x e) = (e, "DEAD_CODE", 0)
+>  | not (hasVar x e)   = e
 \caption{The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
 \label{fig:caseCode}
 \end{figure}
@@ -356,16 +393,16 @@ as long as we're careful to make sure that our variable definitions aren't recur
 \begin{figure}
 \textbf{Case Cancel}\\
 \begin{minipage}{.40\textwidth}
-> case (C_i {e}) of
->     {C_i {x} -> e'}
+> case C_i (vec e) of
+>     (vec (C_i (vec x) -> e'))
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
-> let {x = e}
+> let vec x = vec e
 > in e'
 \end{minipage}\\
 \begin{minipage}{.40\textwidth}
 > case l_i of
->     {l_i -> e'}
+>     (vec (l_i -> e'))
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > e'
@@ -379,11 +416,11 @@ as long as we're careful to make sure that our variable definitions aren't recur
 \textbf{Case Var}\\
 \begin{minipage}{.40\textwidth}
 > case v of
->      (C ...) -> e'
+>      (C ((vec x) -> e'))
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > case  v of
->       (C {x}) -> (extend e' v (C {x}))
+>       (C ((vec x) -> (extend e' v (C (vec x)))))
 \end{minipage}\\
 \textbf{Dead Code}\\
 \begin{minipage}{.40\textwidth}
@@ -423,8 +460,8 @@ as long as we're careful to make sure that our variable definitions aren't recur
 Now that we've finally created an optimization,
 we can get back to moving code around in convoluted patterns.
 In the next section we look at how we can inline functions.
-Unlike Case Canceling, Inlining isn't obviously correct,
-and, in fact, we have to do a lot of work to inline functions in Curry.
+Unlike Case Canceling, It's harder to determine the correctness of Inlining.
+In fact, we have to do a lot of work to inline functions in Curry.
 
 \section{Inlining}
 
@@ -440,7 +477,8 @@ When we use the term \textit{inlining} we are referring to replacing a let bound
 it's definition.
 For example |let x = True in not x| could inline to |not True|.
 When we use the term \textit{reduction}, we are referring to replacing a function call
-with the body of the function.
+with the body of the function where the parameters of the function are replaced
+with the arguments of the call.
 Again, as an example |let x = True in not x| could reduce to:
 > let  x = True
 > in   case  x of
@@ -462,7 +500,7 @@ Consider the function:
 
 Aside from the fact that |sumPrimes| contains mostly recursive functions,
 we wouldn't be able to optimize it anyway, because |.| is defined in the standard Prelude.
-If we can't inline the definition of |.|, then we're fighting a losing battle.
+If we can't reduce the definition of |.|, then we're fighting a losing battle.
 
 This brings us to our third problem with inlining.
 The |sumPrimes| function is actually partially applied.
@@ -485,7 +523,8 @@ the current number of variables in a function;
 the size of the function;
 and the function definition.
 This map is updated every time we optimize a new function,
-so we can inline all functions that we've already optimized.
+so we can reduce all functions that we've already optimized.
+We will use this map to determine when it is safe and effective to reduce a function.
 
 \subsection{Partial Applications}
 
@@ -502,7 +541,7 @@ However, when translated to FlatCurry, this lambda expression is turned into a c
 > f . g = compLambda_1 f g
 > compLambda f g x = f (g x)
 
-So, when we try to inline |sumPrimes| we end up with the following derivation.
+So, when we try to optimize |sumPrimes| we end up with the following derivation.
 > let v_1 = p_2
 > in let v_2 = foldr_1 v_1 0
 > in let v_3 = isPrime_1
@@ -510,7 +549,7 @@ So, when we try to inline |sumPrimes| we end up with the following derivation.
 > in let v_5 = enumFromTo_1 1
 > in let v_6 = v_4 . v_5
 > in (appOpt (v_2 . v_6))
-> REDUCE_BASE => [-1,-1,-1,-1,-1,-1]
+> REDUCE_BASE ==> [-1,-1,-1,-1,-1,-1]
 > let v_1 = p_2
 > in let v_2 = foldr_1 v_1 0
 > in let v_3 = isPrime_1
@@ -518,7 +557,7 @@ So, when we try to inline |sumPrimes| we end up with the following derivation.
 > in let v_5 = enumFromTo_1 1
 > in let v_6 = (appOpt (v_4 . v_5))
 > in compLambda_1 v_2 v_6
-> REDUCE_LET => [-1,-1,-1,-1,-1]
+> REDUCE_LET ==> [-1,-1,-1,-1,-1]
 > let v_1 = p_2
 > in let v_2 = foldr_1 v_1 0
 > in let v_3 = isPrime_1
@@ -527,19 +566,27 @@ So, when we try to inline |sumPrimes| we end up with the following derivation.
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6
 
+The |REDUCE_BASE| and |REDUCE_LET| transformations will be described later.
 At this point there's no more optimization that can be done,
 because everything is a partial function.
-But this is clearly ridiculous.
+But this isn't a great result.
 We've created a pipeline, and when we pass it a variable, then everything will be fully applied.
 So, how do we solve the problem?
 
-The key is to notice that if the root of the function is a partial application,
+The key is to notice that if the root of the body of a function is a partial application,
 then we can rewrite our definition.
+We simply add enough variables to the function definition so the body of the function
+is fully applied.
+The transformation 
 
-> f v_1 ... v_k = g_n ...
-> => MISSING_VAR
-> f v_1 ... v_k x_1 ... x_n = apply (g_n ...) x_1 ... x_n
->  where x_1 ... x_n are fresh variables
+\noindent
+\textbf{Add Missing Variables}\\
+\begin{minipage}{.40\textwidth}
+> f (vec v) = g_k (vec e)
+\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> f (vec v) (vec x) = apply (g_k (vec e)) (vec x)
+\end{minipage}\\
 
 The |sumPrimes| functions is transformed with the derivation in \ref{fig:addvarDeriv}
 and we can continue to optimize the function.
@@ -552,24 +599,23 @@ and we can continue to optimize the function.
 > in let v_5 = enumFromTo 1
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6
-> => MISSING_VAR 
-> apply (  let v_1 = (+)
->          in let v_2 = foldr v_1 0
->          in let v_3 = isPrime
->          in let v_4 = filter v_3
->          in let v_5 = enumFromTo 1
->          in let v_6 = compLambda_1 v_4 v_5
->          in compLambda_1 v_2 v_6) x_1
-> ...
-> => FLOAT 
+> ==> MISSING_VAR 
+> appOpt apply (  let v_1 = (+)
+>                 in let v_2 = foldr v_1 0
+>                 in let v_3 = isPrime
+>                 in let v_4 = filter v_3
+>                 in let v_5 = enumFromTo 1
+>                 in let v_6 = compLambda_1 v_4 v_5
+>                 in compLambda_1 v_2 v_6) x_1
+> ==> FLOAT 
 > let v_1 = (+)
 > in let v_2 = foldr v_1 0
 > in let v_3 = isPrime
 > in let v_4 = filter v_3
 > in let v_5 = enumFromTo 1
 > in let v_6 = compLambda_1 v_4 v_5
-> in apply (compLambda_1 v_2 v_6) x_1
-> => UNAPPLY
+> in (appOpt (apply (compLambda_1 v_2 v_6) x_1))
+> ==> UNAPPLY
 > let v_1 = (+)
 > in let v_2 = foldr v_1 0
 > in let v_3 = isPrime
@@ -581,29 +627,26 @@ and we can continue to optimize the function.
     \label{fig:addvarDeriv}
 \end{figure}
 
-Unfortunately, since this involves the definition of the function itself, and not just its body,
-we can't use the GAS system here.
-However, this does solve our problem.
-It leads to a new problem though.
-Since we are changing the arity of functions, any function calls may have the wrong arity.
-
-\subsection{The Function Table}
+\subsection{The Function Table} \label{sec:funTab}
 In order to keep track of all of the functions we've optimized we create a function lookup table
-called |ifunction|.
+called |rfunction| \index{$F_{\mathcal{F}}$}.
 The function table is just a map from function names to information about the function.
 We use the following definitions for lookups into the function table.
-|rinlinable f| returns true if we believe that |f| is a good candidate for reduction.
-We have designed the compiler so that the heuristic we use is easy to tweak,
-but at the very least |f| should not be external, or a loop breaker, and should not be too big.
-|ruseful x f e| attempts to determine if reducing the function |f| 
+|rinlinable f| \index{$I_{\mathcal{F}}$} returns true if we believe that |f|
+is a good candidate for reduction.
+We have designed the compiler so that whatever heuristic we use to decide
+if a function can be inlined, it is easy to tweak,
+but at the very least |f| should not be external, nor too big, and inlining |f|
+should not lead to an infinite derivation.
+|ruseful x f e| \index{$U_{\mathcal{F}}$} attempts to determine if reducing the function |f| 
 in the expression |let x = f ... in e| would be useful.
 Again this heuristic is easily tweakable, but currently,
 a function is useful if |x| is returned from the function,
 it's used as the scrutinee of a case expression,
 or it's used in a function that's likely to be reduced.
-|rsimple f| returns True if |f| is a simple reduction with no case expressions.
+|rsimple f| \index{$S_{\mathcal{F}}$} returns True if |f| is a simple reduction with no case expressions.
 It's always useful to reduce these functions.
-|rcancels f [e_1, ... e_n]| returns true if reducing |f| with |e_1 ... e_n|
+|rcancels f [e_1, ... e_n]| \index{$C_{\mathcal{F}}$} returns true if reducing |f| with |e_1 ... e_n|
 will likely cause Case Canceling.
 
 
@@ -626,52 +669,59 @@ This problem reduces to finding the topological ordering of |G_F|.
 Unfortunately, if |F| contains any recursion, then the topological ordering isn't defined.
 So, instead, we split |G_F| into strongly connected components, and find the topological ordering
 of those components.
-Within each component, we pick a ``loop breaker'' which is removed from the graph,
-and attempt to find the topological order of each component again.
+Within each component, we pick an arbitrary function, called the \emph{loop breaker}\index{loop breaker},
+which is removed from the graph.
+We then attempt to find the topological order of each component again.
 This process repeats until our graph is acyclic.
 
-These loop breakers are marked in |ifunction|, and they are never allowed to be reduced.
+These loop breakers are marked in |rfunction|, and they are never allowed to be reduced.
 Every other function can be reduced, because all functions that it calls,
 except for possibly the loop breakers, have been optimized.
 
 Consider the program:
 \begin{mdframed}
+\begin{minipage}{.4\textwidth}
 > f x = g x
 > g x = h x
 > h x = case x of
 >            0 -> 0
 >            _ -> 1 + f x
-
+\end{minipage}
+\begin{minipage}{.6\textwidth}
 \centerline{
   \graphxy{
-      & \xynode{$f$} \xyS{dl} \xyS{dr} & \\
-      \xynode{$g$} \xyS{rr} & & \xynode{$h$}\\
+      & \xynode{$f$} \xydS{dl} & \\ %\xydS{dr} & \\
+      \xynode{$g$} \xydS{rr} & & \yxnode{$h$} \xydS{ul}\\
   }
   $\Rightarrow$
   \hspace*{2em}
   \graphxy{
-      \xynode{$f$} \xyS{d} \\
-      \xynode{$g$} \xyS{d} \\
+      \xynode{$f$} \xydS{d} \\
+      \xynode{$g$} \xydS{d} \\
       \xynode{$h$}\\
   }
 }
+\end{minipage}
 \end{mdframed}
 
-The graph for this function is a triangle, because |f| calles |g| which calls |h| which calls |f|.
+The graph for this function is a triangle, because |f| calls |g| which calls |h| which calls |f|.
 However, if we mark |h| as a loop breaker, then suddenly this problem is easy.
 When we optimize |h|, we are free to reduce |f| and |g|.
 
 > h x = case x of
->            0 -> 0
->            _ -> 1 + f x
-> => REDUCE
+>            0 ->  0
+>            _ ->  let y = (appOpt (f x))
+>                  in 1 + y
+> ==> REDUCE_LET
 > h x = case x of
->            0 -> 0
->            _ -> 1 + g x
-> => REDUCE
+>            0 ->  0
+>            _ ->  let y = (appOpt (g x))
+>                  in 1 + y
+> ==> REDUCE_LET
 > h x = case x of
->            0 -> 0
->            _ -> 1 + h x
+>            0 ->  0
+>            _ ->  let y = (appOpt (h x))
+>                  in 1 + y
 
 
 \subsection{Inlining}
@@ -697,32 +747,32 @@ Certain constraints are enforced, such as the trivial constructor argument invar
 but in general Core is less restricted.
 
 Translating to A-Normal form gives us an important result.
-If we inline a constructor, a literal or a variable, then we don't affect the computed results.
+If we inline a constructor then we don't affect the computed results.
+This same result holds for literal values, but we will discuss how we handle literals
+in Curry in the next chapter.
 
 \begin{theorem}
 If |let x = e_1 in e| is a Curry expression in limited A-Normal Form, 
-and |e_1| is a constructor, literal, or variable, or partial application,
+and |e_1| is a constructor application, or partial application,
 then |extend e x e_1| computes the same results.
 \end{theorem}
 
 \begin{proof}
-The cases for literals and variables are trivial, so we omit them here.
-Also, note that a partial application functions identically to a constructor,
-since the only place they can be reduced is the constructor case of \texttt{apply\_hnf}.
+First note that given our semantics for partial application,
+a partially applied function is a normal form.
+There are no rules for evaluating a partial application,
+only for examining one while evaluating an apply node.
 
-Now let's consider the case of |let x = C ... in e|.
-Assume that |C| is applied to either variables or literal values.
-It may be the case that |extend e x (C ...)| duplicates C.
-However, since |C| is already constructor, it is a deterministic node.
-By the path compression theorem |extend e x (C ...)| computes the same results.
-
-If |C| is applied to other constructors or partial applications,
-then the result follows from structural induction.
+If $e_1$ is a constructor, or partial application,
+then it is a normal form.
+Therefore it's a deterministic expression by definition \ref{def:deterministic}.
+Since $e_1$ is deterministic by the path compression theorem,
+$e$ evaluates to the same values as |extend e x e_1|
 \end{proof}
 
 Now we have enough information to inline variables as long as we restrict inlining to
 literals, constructors, variables, and partial applications,
-although the case for variables is already subsumed by |ALIAS|.
+although the case for variables is already subsumed by the |ALIAS| rule \ref{fig:canonical2}.
 We add two new rules.  |LET_FOLDING| allows us to move variable definitions
 closer to where they're actually used,
 and |UNAPPLY| allows us to simplify expressions involving |apply|.
@@ -730,23 +780,113 @@ Both of these are useful for inlining and reduction.
 The GAS rules are given in figure \ref{fig:inline}.
 Note that the |UNAPPLY| rule corresponds exactly to the evaluation step for application nodes
 in our semantics.
+The inlining rules correspond to the cases discussed above.
+We add one more rule.  We inline a variable bound to a case expression,
+if that expression occurs once in a needed position.
+Since we can't determine if the variable occurs in a needed position at compile time,
+we can use check if it occurs in a strict position \cite{strictAbstract}.
+This is usually good enough.
+The implementation of Inlining in the Gas system is given in figure \ref{fig:inlineCode}.
+The combinator |(x,e) @> sigma| is used to build up substitutions.
+It means that we add we add $x \to e$ to the substitution |sigma|.
+The |idSub| substitution is just the identity.
+In the |letFold| rule, |hasVar| checks is expression |e| contains variable |v|.
+In the fist Inlining rule, the |strict| and |uses| functions are just to ensure that |x|
+is a in a strict position, and that it's only at one position in |e|.
+These aren't required for correctness,
+we've found that this restrictions generate better code.
 
 \begin{figure}
->LET_FOLDING
-> let v = e_1 in case e of ...   | v `notelem` e               => case e of C_i ... -> let v = e_1 in ...
->UNAPPLY
-> apply f_k as                   | k <   n                     => apply (apply f as_1) as_2
->                                | k ==  n                     => f as
->                                | k >   n                     => f_kn as
->INLINE_CONS
-> let x = C v_1 ... v_n    in e  | x `notElem` {v_1, ... v_n}  => extend e x (C v_1 v_2 ... v_n)
->INLINE_PART
-> let x = f_k v_1 ... v_n  in e  | x `notElem` {v_1, ... v_n}  => extend e x (f_k v_1 v_2 ... v_n)
->INLINE_LIT
-> let x = l                in e                                => extend e x l
+\textbf{Let Folding}\\
+\begin{minipage}{.30\textwidth}
+> let  v = e_v 
+> in   case e of vec (C_i (vec x) -> e_i)
+\end{minipage} \begin{minipage}{.1\textwidth}$\vert$ | v `notelem` e |\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> case  e of 
+>       vec (C_i (vec x) -> let v = e_v in e_i)
+\end{minipage}\\
+\textbf{Unapply}\\
+\begin{minipage}{.30\textwidth}
+> apply f_k (a_1 ... a_k ... a_n)
+\end{minipage} \begin{minipage}{.1\textwidth} $\ $ \end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> apply (apply f (a_1 ... a_k)) a_k1 ... a_n
+\end{minipage}\\
+\begin{minipage}{.30\textwidth}
+> apply f_n (a_1 ... a_n)
+\end{minipage} \begin{minipage}{.1\textwidth} $\ $ \end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> f (a_1 ... a_n)
+\end{minipage}\\
+\begin{minipage}{.30\textwidth}
+> apply f_k (a_1 ... a_n) | k >   n
+\end{minipage} \begin{minipage}{.1\textwidth} $\ $ \end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> f_kn (a_1 ... a_n)
+\end{minipage}\\
+\textbf{Inlining}\\
+\begin{minipage}{.30\textwidth}
+> let  x = case e of alts 
+> in   e'
+\end{minipage} \begin{minipage}{.1\textwidth}$\vert$ | x `elem1` e' |\\ $\vert$ |strict x |\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> extend e' x (case e of alts)
+\end{minipage}\\
+\begin{minipage}{.30\textwidth}
+> let x = C (vec v) in e
+\end{minipage} \begin{minipage}{.1\textwidth}$\vert$ | x `notelem` e |\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> extend e x (C (vec v))
+\end{minipage}\\
+\begin{minipage}{.30\textwidth}
+> let x = f_k (vec v)  in e
+\end{minipage} \begin{minipage}{.1\textwidth}$\vert$ | x `notelem` e |\end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+> extend e x (f_k (vec v))
+\end{minipage}\\
+\begin{minipage}{.30\textwidth}
+> let x = l in e
+\end{minipage} \begin{minipage}{.1\textwidth} $\ $ \end{minipage} |==>|
+\begin{minipage}{.40\textwidth}
+>  extend e x l
+\end{minipage}\\
 \caption{rules for variable inlining.\\
-         We need to ensure that |x| isn't used recursively before we inline it.}
+         We need to ensure that |x| isn't used recursively before we inline it.
+         Guards indicate that the rule fire only if the guard is satisfied.
+         The notation $\in_1$ indicates that the variable $x$ occurs exactly once in $e'$,
+         and |strict x| indicates that $x$ is strict, so the case will be evaluated.}
 \label{fig:inline}
+\end{figure}
+
+\begin{figure}
+> unapply :: Opt
+> unapply (v,_) (apply (Comb (FuncPartCall k) f es) as)
+>  = case  compare k n of
+>          LT -> Let [(v, Comb FuncCall f (es++as_1))] (apply (Var n) as_2)
+>          EQ -> Comb FuncCall f (es++as)
+>          GT -> Comb (FuncPartCall (k-n)) f (es++as)
+>  where  n             = length as
+>         (as_1, as_2)  = splitAt (n-k)
+>
+> letFold :: Opt
+> letFold (n,_) (Let [(v,e_v)] c@(Case e bs))
+>  | not (hasVar e v)
+>  = Case e (zipWith addVar [1..] bs)
+>   where  addVar k (Branch p e)  = Branch p (Let [(n+k,sigma k e_v)] (sigma k e))
+>          sigma k                = sub ((v,n+k) @> idSub)
+> 
+> inline :: Opt
+> inline _ (Let [v@(x, Case _ _)] e)
+>  | strict x e & uses x e == 1 = sub (v @> idSub) e
+>
+> inline _ (Let [(x, f@(Comb ct _ _))] e)
+>  | (isCons ct || isPart ct) & nonRecursive x f = sub ((x,f) @> idSub) e
+>
+> inline _ (Let [v@(_, Lit _)] e) = sub (v @> idSub) e
+
+\caption{Gas implementation of the inlining rules.}
+\label{fig:inlineCode}
 \end{figure}
 
 \subsection{Reduce}
@@ -755,8 +895,9 @@ Finally we come to reduction.
 While this was a simpler task than inlining in GHC,
 it becomes a very tricky prospect in Curry.
 Fortunately, we've already done the hard work.
-At this point, the only place a function is allowed to appear in our expressions is
-as the root of the expression,
+At this point, in any given function definition,
+the only place a function symbol is allowed to appear in our expressions is
+as the root of the body,
 as the root of a branch in a |case| expression,
 as the root the result of a |let| expression,
 or as a variable assignment in a let-expression.
@@ -765,29 +906,21 @@ so it's now valid to reduce any function we come across.
 
 \begin{theorem}[reduction]
 let |e| be an expression in limited A-Normal Form,
-and let |path e p = f e_1 ... e_n|.
-then |extend e p (sub f (v_1 :-> e_1, ... v_n :-> e_n))|
-computes the same results as |e|.
+and let |path e p = f (vec e)|,
+where |f| is a function symbol with definition |f (vec v) = b|.
+Then |extend e p (extend b (vec v) (vec e))|
+has the same values as |e|.
 \end{theorem}
 
 \begin{proof}
-If |f| is the root of the expression, or |f| is the root of a branch or let,
-then this is equivalent to taking a step in our semantics.
-If that particular branch of the case is never evaluated at runtime, then reducing |f| has no effect.
-
-If |f| is a let bound variable, i.e. |let x = f ... in ...|, when we replace |f|
-it's still bound to a single node in the graph.
-
-Furthermore, only nodes that can be duplicated while reducing |f| are the arguments.
-However, the arguments are constrained to be literals, constructors, variables, or partial applications.
-Therefore, we are never duplicating any choice nodes.
-
-Finally, replacing |f| with it's definition is a single deterministic step,
-so we can apply the path compression theorem again to obtain our result.
-
+First not that There is only one way to replace an expression
+where the root has symbol |f|, with the body of the definition for |f|.
+Therefore This is a deterministic step, and by the path compression theorem
+|e| and |extend e p (extend b (vec v) (vec e))| have the same values.
 \end{proof}
 
-We give the GAS rules for reduction in figure \ref{fig:GAS_reduce}.
+We give the GAS rules for reduction in figure \ref{fig:reduce}.
+These rule make use of the function table
 We make sure that |rbody f| replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.
 This strategy was taken from \cite{haskellInliner} and it works very well.
@@ -795,24 +928,100 @@ Although, since FlatCurry uses numbers exclusively to represent variables,
 we don't get the same readable code.
 
 \begin{figure}
-> REDUCE_BASE
-> f e_1 ... e_n                   | top & rinlinable f  => sub f (v_1 |-> e_1, ... v_n |-> e_n)
-> REDUCE_BRANCH
-> case e of Ctr -> f e_1 ... e_n  | rinlinable f        => case e of Ctr -> sub f (v_1 |-> e_1, ... v_n |-> e_n)
-> REDUCE_LET
-> let ... in f e_1 ... e_n        | rinlinable f        => let ... in sub f (v_1 |-> e_1, ... v_n |-> e_n)
-> REDUCE_USEFUL
-> let x = f e_1 ... e_n in e      | ruseful x f e       => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
-> REDUCE_SIMPLE
-> let x = f e_1 ... e_n in e      | rsimple f           => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
-> REDUCE_CANCELS
-> let x = f e_1 ... e_n in e      | rcancels f e        => let x = sub f (v_1 |-> e_1, ... v_n |-> e_n) in e
+\textbf{Reduce Base:}\\
+\begin{minipage}{.30\textwidth}
+> f (vec e)
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | top && finlinable f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> extend (fbody f) (vec v) (vec e)
+\end{minipage}\\
+\textbf{Reduce Branch:}\\
+\begin{minipage}{.30\textwidth}
+> case e' of vec (Ctr -> f (vec e))
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | finlinable f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> case e' of vec (extend (rbody f) (vec v) (vec e))
+\end{minipage}\\
+\textbf{Reduce Let:}\\
+\begin{minipage}{.30\textwidth}
+> let vec (v_i = e_i) in f (vec e)
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | finlinable f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> let vec (v_i = e_i) in extend (rbody f) (vec v) (vec e)
+\end{minipage}\\
+\textbf{Reduce Useful:}\\
+\begin{minipage}{.30\textwidth}
+> let x = f (vec e) in e'
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | fuseful f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> let x = extend (rbody f) (vec v) (vec e) in e'
+\end{minipage}\\
+\textbf{Reduce Simple:}\\
+\begin{minipage}{.30\textwidth}
+> let x = f (vec e) in e'
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | fsimple f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> let x = extend (rbody f) (vec v) (vec e) in e'
+\end{minipage}\\
+\textbf{Reduce Cancels:}\\
+\begin{minipage}{.30\textwidth}
+> let x = f (vec e) in e'
+\end{minipage} \begin{minipage}{.14\textwidth} $\vert$ | fcancels f | \end{minipage} |==>|
+\begin{minipage}{.30\textwidth}
+> let x = extend (rbody f) (vec v) (vec e) in e'
+\end{minipage}\\
 \caption{Rules for reduction.\\
          All expressions are kept in A-Normal Form.
-         |REDUCE_BASE| is only run if we are at the root of the body.
-         While the last three rules are effectively the same,
-         tt's useful to keep them separated for debugging reduction derivations.}
-\label{fig:GAS_reduce}
+         |REDUCE_BASE| is only run at the root of the body.
+         While the last three rules are very similar,
+         It's useful to keep them separated for debugging reduction derivations.}
+\label{fig:reduce}
+\end{figure}
+
+\begin{figure}
+> reduce :: FunTable -> Opt
+> reduce funs  = reduce_base funs
+>              ? reduce_branch funs
+>              ? reduce_let funs
+>              ? reduce_useful funs
+>              ? reduce_simple funs
+>              ? reduce_cancels funs
+> 
+> reduce_base funs (n,True) b@(Comb FuncCall f _)
+>   | inlinable funs f = b'
+>    where b' = makeReduce funs n b
+> 
+> reduce_branch funs (n,_) (Case ct e (as++[Branch p b@(Comb FuncCall f _)]++bs))
+>   | inlinable funs f = Case ct e (as++[Branch p b']++bs)
+>    where b' = makeReduce funs n b
+>
+> reduce_let funs (n,_) (Let vs b@(Comb FuncCall f _))
+>   | inlinable funs f = Let vs b'
+>    where b' = makeReduce funs n b
+> 
+> reduce_useful funs (n,_) (Let [(x,b@(Comb FuncCall f _))] e)
+>   |   inlinable funs f 
+>   &&  useful funs False x e = Let [(x,b')] e
+>    where b'   = makeReduce funs n b
+> 
+> reduce_simple funs (n,_) (Let [(x,b@(Comb FuncCall f _))] e)
+>   | simple funs f = Let [(x,b')] e
+>    where b' = makeReduce funs n b
+> 
+> reduce_cancels funs (n,_) (Let [(x,b@(Comb FuncCall f es))] e)
+>   |   inlinable funs f
+>   &&  cancels funs f (map isConsExpr es) = Let [(x,b')] e
+>    where b' = makeReduce funs n b
+> 
+\caption{Gas code for the Reduce optimizations.\\
+         The |makeReduce| function corresponds to |rbody|,
+         and it is a helper function that
+         substitutes parameters of the function with expressions,
+         and renames variables to ensure there are no name clashes.
+         The function |inlinable, useful, simple,| and |cancels|
+         correspond to |rinlinable, ruseful, rsimple| and |rcancels| respectively.}
+\label{fig:reduce_code}
+
 \end{figure}
 
 We end by giving a couple of examples of reductions to see how they work in practice.
@@ -835,16 +1044,17 @@ Shortcutting is a new optimization to Curry.
 > double x = x + x
 > main = double (0 ? 1)
 >
-> double (0 ? 1)
-> ANF [1]
+> double (appOpt (0 ? 1))
+> ==> ANF_APP
 > let v_1 = 0 ? 1
-> in double v_1
-> REDUCE_LET [1]
+> in (appOpt (double v_1))
+> ==> REDUCE_LET
 > let v_1 = 0 ? 1
 > in v_1 + v_1
 \caption{Derivation of |double (0 ? 1)| showing that we still arrive at an equivalent expression.}
 \label{fig:doubleReduce}
 \end{figure}
+
 \begin{figure}
 > not v_1 = case  v_1 of 
 >                 True   -> False
@@ -856,78 +1066,77 @@ Shortcutting is a new optimization to Curry.
 >                    True   -> True
 >                    False  -> v_2
 > v_1 <= v_2 = not v_1 || v_2
->
-> (not v_1) || v_2
-> => ANF_APP []
-> let v_3 = not v_1 
+\caption{Definition of |<=| for |Bool|.}
+\label{fig:boolLeq}
+\end{figure}
+
+\begin{figure}
+> appOpt ((not v_1) || v_2)
+> ==> ANF_APP []
+> let v_3 = appOpt (not v_1)
 > in v_3 || v_2
-> => REDUCE_USEFUL []
+> ==> REDUCE_USEFUL []
 > let v_3 = case  v_1 of 
->                  True -> False 
->                  False -> True 
-> in v_3 || v_2
-> => REDUCE_LET []
-> let v_3 = case  v_1 of
->                  True -> False
->                  False -> True
-> in case  v_3 of
->           True -> v_3
->           False -> v_2
-> => CASE_VAR [-1]
-> let v_3 = case  v_1 of
->                  True -> False
->                  False -> True
-> in case  v_3 of
->           True -> True
->           False -> v_2
-> => INLINE_CASE []
+>                 True   -> False 
+>                 False  -> True 
+> in appOpt (v_3 || v_2)
+> ==> REDUCE_LET []
+> let  v_3 = case  v_1 of
+>                  True   -> False
+>                  False  -> True
+> in   case  v_3 of
+>            True   -> appOpt v_3
+>            False  -> v_2
+> ==> CASE_VAR [-1]
+> let  v_3 = case  v_1 of
+>                  True   -> False
+>                  False  -> True
+> in   case  v_3 of
+>            True   -> True
+>            False  -> v_2
+> ==> INLINE_CASE []
 > case  (case  v_1 of
->                True -> False
->                False -> True) of
->        True -> True
->        False -> v_2
-> => CASE_IN_CASE []
-> case  v_1 of
->       True   ->  let v7 = False 
->                  in case  v7 of 
->                           True -> True 
->                           False -> v_2
->       False  ->  let v8 = True  
->                  in case  v8 of 
->                           True -> True 
->                           False -> v_2
+>              True   -> False
+>              False  -> True) of
+>       True   -> True
+>       False  -> v_2
 \caption{Derivation of |<=| for |Bool| condinued}
 \label{fig:LtEqReduce2}
 \end{figure}
+
 \begin{figure}
-> => INLINE_CONS [0]
+> ==> CASE_IN_CASE []
 > case  v_1 of
->       True -> case  False of
->                     True -> True
->                     False -> v_2
->       False  ->  let v8 = True  
->                  in case  v8 of 
->                           True -> True 
->                           False -> v_2
-> => CASE_CANCEL_CONS [0]
+>       True   ->  let appOpt (v7 = False)  in case  v7 of 
+>                                                    True   -> True 
+>                                                    False  -> v_2
+>       False  ->  let v8 = True            in case  v8 of 
+>                                                    True   -> True 
+>                                                    False  -> v_2
+> ==> INLINE_CONS [0]
+> case  v_1 of
+>       True -> case  appOpt False of
+>                     True   -> True
+>                     False  -> v_2
+>       False  ->  let v8 = True  in case  v8 of 
+>                                          True   -> True 
+>                                          False  -> v_2
+> ==> CASE_CANCEL_CONS [0]
 > case  v_1 of
 >       True   -> v_2
->       False  -> let v8 = True in 
->                 in case  v8 of 
->                          True -> True 
->                          False -> v_2
-> => INLINE_CONS [1]
+>       False  -> let appOpt (v8 = True) in case  v8 of 
+>                                                 True   -> True 
+>                                                 False  -> v_2
+> ==> INLINE_CONS [1]
 > case  v_1 of
->       True -> v_2
->       False -> case  True of
->                      True -> True
->                      False -> v_2
-> => CASE_CANCEL_CONS [1]
+>       True   -> v_2
+>       False  -> case  appOpt True of
+>                       True   -> True
+>                       False  -> v_2
+> ==> CASE_CANCEL_CONS [1]
 > case  v_1 of
->       True -> v_2
->       False -> True
+>       True   -> v_2
+>       False  -> True
 
-\caption{Derivation of |<=| for |Bool| condinued}
-\label{fig:LtEqReduce3}
 \end{figure}
 

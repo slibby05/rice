@@ -1,4 +1,5 @@
 %format == = "\Varid{==}"
+%format @> = "\hspace{2pt}\text{@}\hspace{-3pt}">
 %format not = "\Varid{not}"
 %format free         = "\textbf{free} "
 %format fcase        = "\textbf{fcase} "
@@ -28,13 +29,29 @@
 %format Name_A       = Name"_{Arity}"
 %format sigma        = "\sigma"
 %format ->^* = "\rightarrow^*"
+%format `elem1` = "\in_1"
 
-%format ==> = "\Rrightarrow "
+%format ==>   = "\Rrightarrow "
+%format ==>*   = "\Rrightarrow^* "
+%format Arr_F = "\Rrightarrow_{\mathcal{F}} "
+%format Arr_B = "\Rrightarrow_{\mathcal{B}} "
+%format Arr_D = "\Rrightarrow_{\mathcal{D}} "
+%format Arr_S = "\Rrightarrow_{\mathcal{S}} "
+%format Arr_A = "\Rrightarrow_{\mathcal{A}} "
+%format Arr_E = "\Rrightarrow_{\mathcal{E}} "
 
+%format notHead_1
 %format a_1
+%format a_2
 %format a_n
+%format a_k
+%format a_k1 = "a_{k+1}"
+%format as_1
+%format as_2
+
 
 %format e_a
+%format e_v
 %format e_b
 %format e_0
 %format e_1
@@ -111,6 +128,9 @@
 %format op = "\oplus"
 
 %format x_1
+%format x_e
+%format x_i
+%format x_j
 %format x_2
 %format x_3
 %format x_4
@@ -148,6 +168,8 @@
 %format b_21 = b"_{2,1}"
 %format b_22 = b"_{2,2}"
 
+%format d_1
+
 %format p_0
 %format p_1
 %format p_2
@@ -170,6 +192,8 @@
 
 %format pl_1 = "+_1"
 %format pl_2 = "+_2"
+
+%format l_i = "l_i"
 
 %format pl_p = +"_{\text{prim}}"
 %format mi_p = -"_{\text{prim}}"
@@ -210,6 +234,9 @@
 %format (codebr (a))   = "\llbracket " a "\rrbracket_{BR} "
 %format codelit a      = "\llbracket " a "\rrbracket_{LIT} "
 %format (codelit (a))  = "\llbracket " a "\rrbracket_{LIT} "
+%format vec v          = "\overline{" v "} "
+%format vec (v)        = "\overline{" v "} "
+%format (vec (v))      = "\overline{" v "} "
 
 %format appOpt a     = "\boxed{" a "}"
 %format appOpt (a)   = "\boxed{" a "}"
@@ -225,22 +252,30 @@
 %format (extend env v s) = env"["v "\mapsto" s"]"
 %format (extend env v (s)) = env"["v "\mapsto" s"]"
 %format (extend env (v) (s)) = env"["v "\mapsto" s"]"
-%format sub e (vs)  = (body f)"["vs"]"
+%format (extend (env) (v) (s)) = env"["v "\mapsto" s"]"
+%format fsub e (vs)  = (rbody f)"["vs"]"
 %format (rewriteRule a p r b) = a ->"_{"p,r"}" b
-%format (rewrite a p b) = a ->"_{"p"}" b
 %format (rewrite a p b) = a ->"_{"p"}" b
 %format `to` = "\to"
 %format `f` = " \oplus "
 %format |-> = "\mapsto"
 %format :-> = "\mapsto"
 %format path e p = e"|_{"p"}"
+%format path (e) p = e"|_{"p"}"
 %format # = "\#"
 
-%format rinlinable = "\mathbf{"I"}_"ifunction
-%format rbody = "\mathbf{"B"}_"ifunction
-%format ruseful = "\mathbf{"U"}_"ifunction
-%format rsimple = "\mathbf{"S"}_"ifunction
-%format rcancels = "\mathbf{"C"}_"ifunction
+%format rfunction = F"_"ifunction
+%format rinlinable = I"_"ifunction
+%format rbody = B"_"ifunction
+%format ruseful = U"_"ifunction
+%format rsimple = S"_"ifunction
+%format rcancels = C"_"ifunction
+
+%format fbody f = rbody "\hspace{-2pt}"(f)
+%format finlinable f = rinlinable "\hspace{-2pt}"(f)
+%format fuseful f = ruseful "\hspace{-2pt}"(f)
+%format fsimple f = rsimple "\hspace{-2pt}"(f)
+%format fcancels f = rcancels "\hspace{-2pt}"(f)
 
 %format FLOAT = "\textbf{Let Floating}"
 %format FLOAT_LET = "\textbf{Let Floating (Let in Let)}"

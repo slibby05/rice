@@ -8,7 +8,19 @@ as well as how the system in implemented.
 
 \section{Building Optimizations}
 
-Optimization is usually considered the most difficult aspect of writing a modern compiler.
+Throughout this dissertation we look at the process of developing compiler optimizations.
+For our purposes we are concerned with 
+\emph{compile time optimizations}\index{compile time optimizations}.
+These are transformations on a program, performed at compile time,
+that are intended to produce more efficient code.
+Most research in the Curry comunity has been done on \emph{run time optimizations}
+\index{run time optimizations}, which are improvements to the evaluation of Curry programs.
+This can include the development of new rewriting strategies, or improvements to
+pull-tabbing and bubbling \cite{sprite,bubblingPractical}.
+These improvements are important, but they are not our concern for this compiler.
+
+Developing compile time optimizations is usually considered 
+the most difficult aspect of writing a modern compiler.
 It's easy to see why.
 There are dozens of small optimizations to make, 
 and each one needs to be written, shown correct, and tested.

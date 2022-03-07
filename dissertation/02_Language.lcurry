@@ -569,8 +569,8 @@ and we take the approach of \cite{fastCurry}.
 Higher order functions are represented using defunctionalization \cite{defunctionalization}.
 Recall that in FlatCurry, an expression $f_k$\index{$f_k$} represents a partial application
 that is missing |k| arguments.
-We introduce an |apply| function that has an unspecified arity.
-where |apply f_k e_1 e_2 ... e_n| applys |f_k| to the arguments |e_1 e_2 ... e_n|.
+We introduce an |apply| function that has an unspecified arity,
+where |apply f_k e_1 e_2 ... e_n| applies |f_k| to the arguments |e_1 e_2 ... e_n|.
 
 The behavior of |apply| is specified below.
 
@@ -663,7 +663,7 @@ to performing the computation before the choice was made.
 A redex $n$ in expression $e$ is deterministic if there is at most
 one rewrite rule that could apply to $e\vert_n$.
 A rewrite $e \to_n e'$ is deterministic if $n$ is a deterministic redex.
-\end{definition}
+\end{definition} \label{def:deterministic}
 
 Next we rephrase our notion of nondet for a LOIS system.
 

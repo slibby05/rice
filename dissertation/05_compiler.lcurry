@@ -449,9 +449,8 @@ or inspect a single variable to choose a case.
 > v         =>  x                             local variable
 >           |   v[i]                          variable access
 >           |   ROOT                          root variable
-> l         =>  C                             constructor label
->           |   f                             function label
->           |   LABEL(v)                      variable label
+> l         =>  C_k                           constructor label
+>           |   f_k                           function label
 \caption{Abstract syntax of function definitions in ICurry}
 \label{fig:iCurrySyntax}
 \end{figure}
@@ -516,8 +515,8 @@ If the expression is a let or a free expression, then the principal expression i
 >ret(e)                                    :=  return E(e)
 >
 >expr(x)                                   :=  x
->expr(c (vec e))                           :=  NODE(c, (vec (expr(e))))
->expr(f (vec e))                           :=  NODE(f, (vec (expr(e))))
+>expr(C_k (vec e))                         :=  NODE(C_k, (vec (expr(e))))
+>expr(f_k (vec e))                         :=  NODE(f_k, (vec (expr(e))))
 >expr(e_1 ? e_2)                           :=  expr(e_1) ? expr(e_2)
 >expr(let (vec (x = e)) in e')             :=  expr(e)
 >expr(let vec x free in e)                 :=  expr(e)
@@ -566,132 +565,6 @@ ICurry
 \section{Generating C Code}
 
 Now that we have a program in ICurry, we can translate this to C.
-In order to facilitate this process, We've created a small library for generating C code in Curry.
-
-\subsection{The C Library}
-
-The C library is meant to help with the generation of C code in Curry.
-It's a small library, and does not cover most of the C language,
-but we've found it very useful.
-
-The library is designed around the idea that we want to generate lines of C code.
-In fact, it looks similar to a pretty printing library \cite{pretty}.
-The difference is that we don't start with an abstract representation of C code.
-Instead we have functions that produce C expression.
-We define a few types for readability.
-
-> type CType = String
-> type CName = String
-> type CStmt = String
-> type CExpr = String
-
-The compiled C code is represented as either a |String| or a list of |Strings|.
-In figures \ref{fig:cfunc} and \ref{fig:cflow} we start with a few basic functions
-for controlling indentation, and grouping code together,
-and general flow of control.
-
-\begin{figure}
-> tab :: Int -> String -> String
-> tab n s
->  | n == 0    = s
->  | otherwise = "  " ++ tab (n-1) s
-> emptyspace
-> nl :: [CStmt]
-> nl = [""]
-> emptyspace
-> cinclude :: String -> CStmt
-> cinclude name = "#include \"" ++ name ++ "\""
-> emptyspace
-> cfunDefn :: CType -> CName -> [(CType,CName)] -> CExpr
-> cfunDefn rettype name ps = rettype ++ " " ++ name ++ cparams ps
-> emptyspace
-> cparams :: [(CExpr,CExpr)] -> CExpr
-> cparams ps = "(" ++ intercalate "," (map param ps) ++ ")"
->  where param (t,x) = t ++ " " ++ x
-> emptyspace
-> creturn :: CStmt
-> creturn = "return;"
-> emptyspace
-> cblock :: [CStmt] -> [CStmt]
-> cblock b = ["{"] ++ map (tab 1) b ++ ["}"]
-\caption{Function for generating functions in C.}
-\label{fig:cfunc}
-\end{figure}
-
-\begin{figure}
-> cif :: CExpr -> [CStmt] -> [CStmt]
-> cif c b =  ["if(" ++ c ++ ")"] ++
->            cblock b
-> emptyspace
-> cElse :: [CStmt] -> [CStmt]
-> cElse b =  ["else"] ++
->            cblock b
->  emptyspace
-> cifElse :: CExpr -> [CStmt] -> [CStmt] -> [CStmt]
-> cifElse c t f = cif c t ++ 
->                 cElse f
-> emptyspace
-> cwhile :: CExpr -> [CStmt] -> [CStmt]
-> cwhile c b =  ["while(" ++ c ++ ")"] ++
->               cblock b
->  emptyspace
-> cswitch :: CExpr -> [[CStmt]] -> [CStmt]
-> cswitch e bs =  ["switch("++ e ++ ")"] ++
->                 cblock (concat bs)
->  emptyspace
-> ccase :: CExpr -> [CStmt] -> [CStmt]
-> ccase lbl body =  ["case " ++ lbl ++ ":"] ++
->                   cblock body
-\caption{Function for generating control flow statements in C.}
-\label{fig:cflow}
-\end{figure}
-
-These combinators are meant to resemble C code.
-The resemblance isn't perfect, but it's proved to be easy to work with.
-The general naming convention is functions that produce C code
-start with a c.
-We also introduce several of the C operators such as \texttt + and \texttt{==}.
-These operators all start with a dot to distinguish them from the Curry equivalent,
-so the two operators would be |.+| and |.==| respectively.
-
-We also introduce several ICurry specific combinators.
-The definitions are given in figure \ref{fig:CICurry}.
-Several of these use the |mangle| function.
-The definition of |mangle| is complicated and not important.
-It's used to mangle ICurry names into valid C names.
-The |var| function produces a variable name.
-The values of 0 and 1 are special because 0 is always the root of the expression,
-and 1 is a special variable used for the scrutinee of a case.
-The |tag| function makes a label out of a constructor name.
-The |hnf| function makes a call to the \texttt{\_hnf} version of a function.
-The |children| function gets the descendant of node |n| on path |xs|.
-Finally |field| declares a variable as a \texttt{field}.
-
-\begin{figure}
-> var :: IVarIndex -> CExpr
-> var v
->  | v == 0    = "root"
->  | v == 1    = "scrutenee"
->  | otherwise = "v"++show (abs v)
-> emptyspace
-> tag :: IQName -> CExpr
-> tag f = mangle f ++ "_TAG"
-> emptyspace
-> hnf :: IQName -> CName
-> hnf n = mangle n ++ "_hnf"
-> emptyspace
-> children :: CName -> [IVarIndex] -> CExpr
-> children n xs = foldl childAt n xs
->  where childAt x y = "child_at("++x++", "++show y++")"
-> emptyspace
-> field :: IVarIndex -> CType
-> field v = "field " ++ (var v)
-\caption{ICurry specific function for producing C code.}
-\label{fig:CICurry}
-\end{figure}
-
-\subsection{Translation to C}
-
 We already have a good idea of what the C code should look like,
 and our ICurry structure fits closely with this.
 The difference is that we need to be sure to declare and allocate memory for all variables,
@@ -714,173 +587,152 @@ and set any children that were passed into the node.
 
 
 The code to generate the C source file is given in 
-figures \ref{fig:cprog}, \ref{fig:cloop}, \ref{fig:ccases}, \ref{fig:cshow}, \ref{fig:cset}.
+figures \ref{fig:cprog}, \ref{fig:cloop}, and \ref{fig:ccases}.
 This is a standard syntax directed translation.
-We don't show the generation of literal cases,
-because of our implementation of unboxing, which will be discussed in chapter 5.
+We hold of on showing the generated code for literal cases until Chapter \ref{ch:Memory Optimizations}
+where we discuss our implementation of unboxing.
 We also skip over the generation of the functions for case expressions discussed in section
 \ref{Non-determinism}.
 The code for this is largely the same.
-We just need to keep track of the current path through the blocks in an ICurry function.
-The generation of the correct calls is handled in the |save| function, which
-is responsible for pushing a rewrite onto the backtracking stack.
+We just begin generating code at each block inside the function, after the declarations and assignments.
 
-The code in figure \ref{fig:cprog} is the main entry point for the code generator.
-It's responsible for compiling the entire program down to the statement level.
-The code in figure \ref{fig:cloop} generates the switch case loop.
-The code in figure \ref{fig:ccases} constructs the various cases.
-The code in figure \ref{fig:cshow} generates code for constructing new nodes in an expression graph.
-Finally, the code in figure \ref{fig:cset} generates code for setting an existing node in the expression
-graph to a new value.
+The translation is similar to how we translated ICurry programs.
+Figure \ref{fig:cprog} is the main entry point.
+We translate the function, blocks, declarations, and assignments.
+$\mathcal{F}$\index{$\mathcal{F}$} translates an  ICurry function to a C function.
+$\mathcal{B}$\index{$\mathcal{B}$} translates an ICurry block.
+Along with the block to translate, we also pass in the function name, and current path
+to the block.
+This allows us to generate unique names for each of the functions for case expressions.
+We will use this information in the call to \texttt{save}, which pushes a rewrite onto
+the backtracking stack.
+The $\mathcal{D}$\index{$\mathcal{D}$} function translates a variable declaration,
+and $\mathcal{A}$\index{$\mathcal{A}$} translates an assignment.
+
+Figure \ref{fig:stmt} generates code for translating statements.
+The $\mathcal{S}$\index{$\mathcal{S}$} function translates an ICurry statement.
+Both |return| and |EXEMPT| just set the root of the expression to the appropriate value,
+but case statements require us to generate the switch case loop from figure \ref{fig:notInit}.
+Most of the loop is largely identical to the example,
+but to simplify the code generation process, we introduce a function \texttt{save},
+which takes the root node, and a copy of the current function at this particular case,
+and pushes it on the backtracking stack.
+The notation $f\vert_p$ is read as the function with symbol $f$ at the position $p$,
+and is just a unique identifier for this particular case statement.
+We also use a helper function $FV$ to find all of the free variables in the rest of the body,
+since those will be needed to construct $f\vert_p$.
+
+Finally figure \ref{fig:expr} translates free variables, case branches, and expressions to C.
+The $\mathcal{V}$ \index{$\mathcal{V}$} function generates code to translate free variables.
+The final free variable, and the constructors containing free variables 
+are pushed on the stack in reverse order.
+Then we set the root to be the first constructor.
+The $\mathcal{C}$ \index{$\mathcal{C}$} function translates a case branch to a C case statement.
+We insert the check and call to the \texttt{save} function, and generate code for the block.
+We split the generation of expressions into two functions.
+The $\mathcal{E_S}$ \index{$\mathcal{E_S}$} function sets the root to an expression.
+The $\mathcal{E_M}$ \index{$\mathcal{E_M}$} function creates nodes for a new expression.
+
+
 \begin{figure}
-> 
-> toSource :: IProg -> [String]
-> toSource (IProg name imports _ funs)
->  =  [cinclude name,
->     cinclude "runtime"] ++
->     map cinclude imports ++ nl ++
->     concatMap funSource funs
-> emptyspace
-> funSource :: IQName -> IFuncBody -> [String]
-> funSource (IFunction name _ _ _ body) 
->  =  [cfunDefn "void" (hnf name) [("field", "root")]] ++
->     showBody name body ++ nl
-> emptyspace
-> showBody :: IQName -> IFuncBody -> [String]
-> showBody n (IFuncBody block) = cblock (showBlock block)
-> emptyspace
-> showBlock :: IBlock -> [String]
-> showBlock (IBlock decls asgns stmt) =  map showDecl decls ++
->                                        map showAsgn asgns ++
->                                        showStmt stmt
-> emptyspace
-> showDecl :: IVarDecl -> Stmt
-> showDecl (IVarDecl  v) = field v ++ ";"
-> showDecl (IFreeDecl v) = field v .= "free_var()" ++ ";"
-> emptyspace
-> showAsgn :: IAssign -> Stmt
-> showAsgn (INodeAssign v ixs e)  = (children (var v) ixs .= showExpr e) ++ ";"
-> showAsgn (IVarAssign v e)       = var v .= showExpr e ++ ";"
-> emptyspace
-> showStmt :: IStatement -> [CStmt]
-> showStmt IExempt           = [scall "fail" ["root"], creturn]
-> showStmt (IReturn e)       = setExpr e False ++ [creturn]
-> showStmt (ICaseCons v bs)  = showConsCase v bs
-> showStmt (ICaseLit  v bs)  = showLitCase v bs
-
-\caption{generation of C programs.}
+\begin{tabular}{lcl}
+$\mathcal{F}(f (\overline{v}) = b)$ & $\coloneqq$
+ & \texttt{void }$f\_$\texttt{hnf(field root)}\\
+ & & \texttt{\{}\\
+ & & $\ \ \ \ $ $\mathcal{B}(b, f, \epsilon)$\\
+ & & \texttt{\}}\\
+$\mathcal{B}(\{\overline{d}; \overline{a}; s\}, f, p)$ & $\coloneqq $
+ & $\mathcal{D}(\overline{d})$ \\
+ & & $\mathcal{A}(\overline{a})$ \\
+ & & $\mathcal{S}(\overline{s}, f, p)$\\
+$\mathcal{D}(\text{declare}\ x)$ & $\coloneqq$ & \texttt{field v\_}$x$\texttt{;}\\
+$\mathcal{D}(\text{declfree}\ x)$ & $\coloneqq$ & \texttt{field v\_}$x$\texttt{ = free\_var();}\\
+$\mathcal{A}(x = e)$ & $\coloneqq$ & \texttt{v\_}$x$\texttt{ =} $\mathcal{E}_M(e)$\texttt{;}\\
+$\mathcal{A}(x[i] = e)$ & $\coloneqq$ & \texttt{child\_at(v\_}$x,i$\texttt{) =} $\mathcal{E}_M(e)$\texttt{;}\\
+\end{tabular}
+\caption{Code for generating Programs, declarations, and assignments.}
 \label{fig:cprog}
 \end{figure}
 
 \begin{figure}
-> showConsCase :: IVarIndex -> [IConsBranch] -> [String]
-> showConsCase v alts
->   = cblock (
->       ["bool nondet = false;",
->       field "scrutenee" .= var v ++ ";"] ++
->       cwhile "true" (
->         ["nondet |= scrutenee.n->nondet;"] ++
->         cswitch "scrutenee.n->symbol->tag" (
->           [failBlock v,
->           funBlock,
->           choiceBlock,
->           forwardBlock,
->           freeBlock v cons] ++ 
->           map (showConsBranch v) bs )
->       )
->     )
->  where  conName (IConsBranch c _ _) = c
->         cons = map (mangle . conName) bs'
-> emptyspace
-> showConsBranch :: IVarIndex -> IConsBranch -> [String]
-> showConsBranch v (IConsBranch c _ b) = ccase  (tag c) (
->                                               save v ++
->                                               showBlock b )
-\caption{Code for generating case loops.}
-\label{fig:cloop}
+\begin{tabular}{lcl}
+$\mathcal{S}(\texttt{return } e, f, p)$ & $\coloneqq$ & $\mathcal{E}_S($\texttt{root},$e)$\\
+& & \texttt{return;}\\
+$\mathcal{S}(\bot, f, p)$ & $\coloneqq$ & \texttt{fail(root);}\\
+& & \texttt{return;}\\
+\end{tabular} \\
+$\ $\\
+\begin{tabular}{l}
+$\mathcal{S}($|case x of (vec (C -> b))|$, f, p)$ $\coloneqq$ \\
+$\ \ $ \texttt{bool nondet = false;}\\
+$\ \ $ \texttt{field scrutinee = } $x$ \texttt{;}\\
+$\ \ $ \texttt{while(true)}\\
+$\ \ $ \texttt{\{}\\
+$\ \ \ \ $ \texttt{nondet ||= scrutinee.n->nondet;}\\
+$\ \ \ \ $ \texttt{switch(scrutinee.n->symbol->tag)}\\
+$\ \ \ \ $ \texttt{\{}\\
+$\ \ \ \ \ \ $ \texttt{case FAIL\_TAG:}\\
+$\ \ \ \ \ \ \ \ $ \texttt{if(nondet)}\\
+$\ \ \ \ \ \ \ \ $ $\ \ $ \texttt{save(root, make\_}$f\vert_p(FV(e))\texttt{}$\texttt{);}\\
+$\ \ \ \ \ \ \ \ $ \texttt{fail(root);}\\
+$\ \ \ \ \ \ \ \ $ \texttt{return;}\\
+$\ \ \ \ \ \ $ \texttt{case FUNCTION\_TAG:}\\
+$\ \ \ \ \ \ \ \ $ \texttt{HNF(scrutinee);}\\
+$\ \ \ \ \ \ \ \ $ \texttt{break;}\\
+$\ \ \ \ \ \ $ \texttt{case CHOICE\_TAG:}\\
+$\ \ \ \ \ \ \ \ $ \texttt{choose(scrutinee);}\\
+$\ \ \ \ \ \ \ \ $ \texttt{break;}\\
+$\ \ \ \ \ \ $ \texttt{case FORWARD\_TAG:}\\
+$\ \ \ \ \ \ \ \ $ \texttt{scrutinee = scrutinee.n->children[0];}\\
+$\ \ \ \ \ \ \ \ $ \texttt{break;}\\
+$\ \ \ \ \ \ $ \texttt{}$\mathcal{V}(\overline{C})$\\
+$\ \ \ \ \ \ $ \texttt{}$\overline{\mathcal{C}(C_i \to b_i, f, i:p)}$\\
+$\ \ \ \ $ \texttt{\}}\\
+$\ \ $ \texttt{\}}\\
+\end{tabular}{l}
+\caption{code for generating statements.}
+\label{fig:cstmt}
 \end{figure}
 
 \begin{figure}
-> failBlock :: FunPos -> IVarIndex -> Bool -> [CStmt]
-> failBlock  v = ccase  "FAIL_TAG" (
->                       save v ++
->                       ["fail(root);", "return;"] )
-> emptyspace
-> funBlock :: [CStmt]
-> funBlock = ccase  "FUNCTION_TAG" [
->                   "HNF(scrutenee);",
->                   "break;" ]
-> emptyspace
-> choiceBlock :: [CStmt]
-> choiceBlock = ccase  "CHOICE_TAG" [
->                      "choose(scrutenee);",
->                      "break;" ]
-> emptyspace
-> forwardBlock :: [CStmt]
-> forwardBlock = ccase  "FORWARD_TAG" [
->                       "scrutenee = scrutenee.n->children[0];",
->                       "break;" ]
-> emptyspace
-> freeCaseBlock :: IVarIndex -> [CName] -> [CStmt]
-> freeCaseBlock v (b:bs) =  ccase "FREE_TAG" (
->                             [scall "push_frame" [v', "free_var()"]] ++
->                             map (\con -> scall "push_choice" ["scrutenee", "make_"++con++"_free()"]) bs ++
->                             [scall ("set_"++b++"_free") ["scrutenee"],
->                             "nondet = true;",
->                             "break;"] )
-\caption{Generation of C switch loop.}
-\label{fig:ccases}
+\noindent
+\begin{tabular}{l}
+$\mathcal{C}(C \to b, f, p) \coloneqq$\\
+$\ \ $ \texttt{case }$C$\texttt{:}\\
+$\ \ \ \ $ \texttt{if(nondet)}\\
+$\ \ \ \ $ $\ \ $ \texttt{save(root, make\_}$f_p(FV(e))\texttt{}$\texttt{);}\\
+$\ \ \ \ $ $B(b, f, p)$\\
+\end{tabular}\\
+$\ $\\
+\begin{tabular}{l}
+$\mathcal{V}(C:\overline{CS}) \coloneqq$\\
+$\ \ $ \texttt{case FREE\_TAG:}\\
+$\ \ \ \ $ \texttt{push\_frame(scrutinee, free\_var());}\\
+$\ \ \ \ $ \texttt{push\_choice(scrutinee, make\_}$\overline{CS}$\texttt{\_free();}\\
+$\ \ \ \ $ \texttt{set\_}$C$\texttt{\_free(scrutinee);}\\
+$\ \ \ \ $ \texttt{nondet = true;}\\
+$\ \ \ \ $ \texttt{break;}\\
+\end{tabular}\\
+$\ $\\
+\begin{tabular}{lcl}
+$\mathcal{E_S}(v)$ & $\coloneqq$ & \texttt{set\_forward(root,v\_}$v$\texttt{)}\\
+$\mathcal{E_S}(NODE(C_k,\overline e))$ & $\coloneqq$ & \texttt{set\_}$C$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
+$\mathcal{E_S}(NODE(f_k,\overline e))$ & $\coloneqq$ & \texttt{set\_}$f$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
+% & & $f$\texttt{\_hnf(root);}\\
+$\mathcal{E_S}(e_1 ? e_2)$ & $\coloneqq$ & \texttt{set\_choice}$(\mathcal{E}_M(e_1), \mathcal{E}_M(e_2))$\texttt{;}\\
+% & & \texttt{choose(root);}\\
+\end{tabular}\\
+$\ $\\
+\begin{tabular}{lcl}
+$\mathcal{E_M}(v)$ & $\coloneqq$ & \texttt{v\_}$v$\\
+$\mathcal{E_M}(NODE(C_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$C$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
+$\mathcal{E_M}(NODE(f_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$f$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
+$\mathcal{E_M}(e_1 ? e_2)$ & $\coloneqq$ & \texttt{make\_choice}$(\mathcal{E}_M(e_1), \mathcal{E}_M(e_2))$\texttt{;}\\
+\end{tabular}
+\caption{Code for generating cases, free variables, and expressions.}
+\label{fig:cexpr}
 \end{figure}
 
-\begin{figure}
-> showExpr :: IExpr -> CExpr
-> showExpr (IVar v)           = var v
-> showExpr (IVarAccess v ixs) = children (var v) ixs
-> showExpr (ILit l)           = toUnion (litType l) (showLit l)
-> showExpr (IFCall f es)
->  | isApply f                = "make_apply"++show (length es-1) ++ cargs (map showExpr es)
->  | otherwise                = showComb f es
-> showExpr (ICCall c es)      = showComb c es
-> showExpr (IFPCall f n es)   = showPart f n es
-> showExpr (ICPCall c n es)   = showPart c n es
-> showExpr (IOr e1 e2)        = call "make_choice" [showExpr e1, showExpr e2]
-> 
-> showComb :: IQName -> [IExpr] -> CExpr
-> showComb f es = call ("make_"++mangle f) (map showExpr es ++ ["0"])
-> 
-> showPart :: IQName -> Int -> [IExpr] -> CExpr
-> showPart f m es = call ("make_"++mangle f) (missingArgs es m)
-> 
-> missingArgs :: [IExpr] -> Int -> [CExpr]
-> missingArgs es m = (map showExpr es ++ replicate m nullf ++ [show m])
-\caption{Generating code to create new nodes.}
-\label{fig:cshow}
-\end{figure}
-
-\begin{figure}
-> 
-> setExpr :: IExpr -> [CStmt]
-> setExpr (IVar v)          = [scall "set_forward" ["root", var v]]
-> setExpr (IOr e1 e2)       = [scall "set_choice" ["root", showExpr e1, showExpr e2],
->                              scall "choose" ["root"]]
-> setExpr (IFCall f es)
->  | isApply f              = [scall ("set_apply"++show (length es-1)) ("root":map showExpr es),
->                              scall "apply_hnf" ["root"]]
->  | otherwise              = [setComb f es,
->                              scall (name++"_hnf") ["root"]]
-> setExpr (ICCall c es)     = [setComb c es]
-> setExpr (IFPCall f n es)  = [setPartComb f n es]
-> setExpr (ICPCall c n es)  = [setPartComb c n es]
-> 
-> setComb :: IQName -> [IExpr] -> CStmt
-> setComb f es = scall ("set_"++mangle f) ("root" : (map showExpr es) ++ ["0"])
-> 
-> setPartComb :: IQName -> Int -> [IExpr] -> CStmt
-> setPartComb f m es = scall ("set_"++mangle f) ("root" : missingArgs es m)
-> 
-\caption{Generating code to set nodes.}
-\label{fig:cset}
-\end{figure}
 
 In this chapter we used this library to transform FlatCurry programs into a canonical form that we could then
 translate to ICurry.  We also showed how to translate ICurry program to C.

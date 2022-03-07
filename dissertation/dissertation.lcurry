@@ -14,6 +14,7 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{tikz-cd}
+\usepackage{mathtools}
 \usepackage{imakeidx}
 \makeindex
 
@@ -23,8 +24,12 @@
 \newcommand{\xyS}[1]{\ar@@{-}@@/-6pt/[#1]}
 \newcommand{\xyU}[1]{\ar@@{-}@@/^6pt/[#1]}
 \newcommand{\xyD}[1]{\ar@@{-}@@/_6pt/[#1]}
+\newcommand{\xydD}[1]{\ar@@{->}@@/_6pt/[#1]}
+\newcommand{\xydU}[1]{\ar@@{->}@@/^6pt/[#1]}
+\newcommand{\xydS}[1]{\ar@@{->}@@/-6pt/[#1]}
 \newcommand{\graphxy}[1]{\xymatrix@@C=-2pt@@R=10pt@@C=5pt{#1}}
 \newcommand{\xynode}[1]{\llap{#1\,} \bullet }
+\newcommand{\yxnode}[1]{\bullet\ \ \ \llap{#1\,} }
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -49,52 +54,52 @@
 \tableofcontents
 
 \setcounter{chapter}{0}
-\chapter{Introduction}
+\chapter{Introduction} \label{ch:Introduction}
 
 %include 00_introduction.lcurry
 
 \mainmatter
 
-\chapter{Mathematical Background}
+\chapter{Mathematical Background} \label{ch:Mathematical Background}
 
 %include 01_Rewriting.lcurry
 
-\chapter{The Curry Language}
+\chapter{The Curry Language} \label{ch:The Curry Language}
 
 %include 02_Language.lcurry
 
-\chapter{The Generated Code}
+\chapter{The Generated Code} \label{ch:The Generated Code}
 
 %include 03_code.lcurry
 
-\chapter{Generating and Altering Subexpressions}
+\chapter{Generating and Altering Subexpressions} \label{ch:Generating and Altering Subexpressions}
 
 %include 04_gas.lcurry
 
-\chapter{The Compiler Pipeline}
+\chapter{The Compiler Pipeline} \label{ch:The Compiler Pipeline}
 
 %include 05_compiler.lcurry
 
-\chapter{Basic Optimizations}
+\chapter{Basic Optimizations} \label{ch:Basic Optimizations}
 
 %include 06_optimizations.lcurry
 
-\chapter{Memory Optimizations}
+\chapter{Memory Optimizations} \label{ch:Memory Optimizations}
 
 %include 07_mine.lcurry
 
-\chapter{Conclusion}
+\chapter{Conclusion} \label{ch:Conclusion}
 
 %include 08_conclusion.lcurry
 
 
 % \appendix
 %
-% \chapter{Derivation of fib}
+% \chapter{Derivation of fib} \label{ch:Derivation of fib}
 % 
 % %include A1_fib.lcurry
 % 
-% \chapter{Benchmarks Programs}
+% \chapter{Benchmarks Programs} \label{ch:Benchmarks Programs}
 % 
 % %include A2_benchmarks.lcurry
 

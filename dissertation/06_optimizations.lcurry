@@ -33,7 +33,7 @@ for FlatCurry includeing dead code elimination, case cancelling, and inlinig.
 Finally, we show these optimiztions at work optimizing the implementation
 the implementation |<=| for the |Bool| type.
 
-\subsection{A-Normal Form}
+\section{A-Normal Form}
 
 Before we discuss any substantial optimizations, we need to deal with a significant
 roadblock to optimizing Curry.
@@ -663,7 +663,7 @@ Fortunately there's a very natural solution.
 If possible we should optimize a function before we optimize any function that calls it.
 This turns out to be an exercise in Graph Theory.
 
-We define the Call Graph of a set of function |F = {f_1,f_2, ... f_n}|
+We define the Call Graph of a set of functions |F = {f_1,f_2, ... f_n}|
 to be the graph |G_F = (F, {f_i -> f_j `vert` f_i calls f_j})|.
 This problem reduces to finding the topological ordering of |G_F|.
 Unfortunately, if |F| contains any recursion, then the topological ordering isn't defined.

@@ -48,6 +48,8 @@ typedef struct Node
 A \texttt{field}\index{\texttt{field}} is a union of a \texttt{Node*} and the representations
 of the primitive types \texttt{Int}, \texttt{Float}, and \texttt{Char},
 as well as a \texttt{field*} to be described shortly.
+The use of fields instead of nodes for the children will be justified when we
+discuss primitive values and unboxing in chapter \ref{ch:Memory Optimizations}
 The \texttt{children}\index{\texttt{children}} field contains an array of children for this node.
 If a node could have more than three children, such as a node representing
 the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer

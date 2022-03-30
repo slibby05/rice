@@ -511,7 +511,7 @@ If the expression is a let or a free expression, then the principal expression i
 >asgn(case e of _)                         :=  x_e = expr(e)
 >
 >
->ret(case e' of (vec (C((vec x)) -> e)))   :=  case expr (e') of  iblock(vec x, e, x_e)
+>ret(case _ of (vec (C((vec x)) -> e)))    :=  case x_e of  iblock(vec x, e, x_e)
 >ret(e)                                    :=  return E(e)
 >
 >expr(x)                                   :=  x

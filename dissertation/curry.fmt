@@ -103,6 +103,7 @@
 %format g_n
 %format G_F
 %format g_B
+%format g_B'
 
 %format g_11 = "g_{1,1}"
 %format g_12 = "g_{1,2}"
@@ -201,6 +202,7 @@
 %format eq_p = =="_{\text{prim}}"
 %format x_p  = x"_{\text{prim}}"
 %format y_p  = y"_{\text{prim}}"
+%format n_p  = n"_{\text{prim}}"
 
 %format mkf_1
 %format mkf_2
@@ -218,6 +220,7 @@
 %format foldr_0 = "foldr_0"
 %format \* = "\bullet "
 %format \| = "\big\rvert"
+%format vert = "\vert"
 %format `vert` = " \vert "
 %format pcase          = "\textbf{pcase}"
 %format case_CT        = case"_{CaseType}"
@@ -263,6 +266,40 @@
 %format path e p = e"|_{"p"}"
 %format path (e) p = e"|_{"p"}"
 %format # = "\#"
+
+
+%format H a      = "\textbf{H}(" a ") "
+%format H (a)    = "\textbf{H}(" a ") "
+%format (H (a))  = "\textbf{H}(" a ") "
+
+%format H_pp a      = "\textbf{H}_{"++"}(" a ") "
+%format H_pp (a)    = "\textbf{H}_{"++"}(" a ") "
+%format (H_pp (a))  = "\textbf{H}_{"++"}(" a ") "
+
+%format H_length a      = "\textbf{H}_{length}(" a ") "
+%format H_length (a)    = "\textbf{H}_{length}(" a ") "
+%format (H_length (a))  = "\textbf{H}_{length}(" a ") "
+
+%format H_p a      = "\textbf{H}_{+}(" a ") "
+%format H_p (a)    = "\textbf{H}_{+}(" a ") "
+%format (H_p (a))  = "\textbf{H}_{+}(" a ") "
+
+%format H_m a      = "\textbf{H}_{-}(" a ") "
+%format H_m (a)    = "\textbf{H}_{-}(" a ") "
+%format (H_m (a))  = "\textbf{H}_{-}(" a ") "
+
+%format H_le a      = "\textbf{H}_{"<="}(" a ") "
+%format H_le (a)    = "\textbf{H}_{"<="}(" a ") "
+%format (H_le (a))  = "\textbf{H}_{"<="}(" a ") "
+
+%format H_fib a      = "\textbf{H}_{fib}(" a ") "
+%format H_fib (a)    = "\textbf{H}_{fib}(" a ") "
+%format (H_fib (a))  = "\textbf{H}_{fib}(" a ") "
+
+%format H_fibComp a      = "\textbf{H}_{fibComp}(" a ") "
+%format H_fibComp (a)    = "\textbf{H}_{fibComp}(" a ") "
+%format (H_fibComp (a))  = "\textbf{H}_{fibComp}(" a ") "
+
 
 %format rfunction = F"_"ifunction
 %format rinlinable = I"_"ifunction
@@ -317,6 +354,7 @@
 %format INLINE_LIT = "\textbf{Inline Literal}"
 %format INLINE_CASE = "\textbf{Inline Case in Case}"
 %format INLINE_BUILD = "\textbf{Inline foldr/build}"
+%format INLINE_BF = "\textbf{Inline foldr/build\_fold}"
 %format FOLD_BUILD = "\textbf{Deforest foldr/build}"
 %format BF_BUILD = "\textbf{Deforest build\_fold/build}"
 %format FOLD_BF = "\textbf{Deforest foldr/build\_fold}"

@@ -1,0 +1,379 @@
+
+Now that we've finally implemented all of the optimizations, we need
+to see if they were actually effective.
+Before we can look at the results, we need to discuss methodology.
+The test suite is based on the test suite from the Kics2 compiler \cite{kics2}.
+We've removed some tests, and added others in order to test specific properties
+of our compiler.
+
+Specifically, we removed all of the tests that evaluated the unification operator
+|=:=| or the functional pattern operator |=:<<=|.
+While the \ricesp compiler does support these operations,
+they are primitive operations with respect to Curry that can potentially
+do a substantial amount of work.
+This means that the operators are typically implemented in the target language
+of the compiler.
+While \ricesp does perform well with code containing these operators,
+we felt that it was an unfair comparison.
+It measured the implementation of the operators, instead of the quality of the generated code.
+
+Furthermore, we added a few tests to demonstrate the effectiveness of deforestation.
+The benchmark suite for Kics2 contained very few examples of code with multiple
+list operations.
+
+In order to characterize the effectiveness of our optimiztions,
+we are interested in two measurements.
+First, we want to show that the execution time of the programs is improved.
+Second, we want to show that optimized programs consume less memory.
+The second goal is very easy to achieve.
+We simply augment the runtime system with a counter that we increment
+every time we allocate memory.
+When the program is finished running, we simply print out the number of
+memory allocations.
+
+Execution time turns out to be much more difficult to measure.
+There are many factors which can affect the execution time of a program.
+To help aliviate these problems, we took the approach outlined by Mytkowicz et al. \cite{wrongData}.
+All programs were run multiple times, and compiled in multiple environments
+for each compiler.  We took the lowest execution time.
+We believe these results are as unbiased as we can hope for;
+however, it is important to remember that our results may vary across machines and environments.
+For most of our results the \ricesp compiler is a clear winner.
+However, when results are within 20 miliseconds we don't consider this a substantial improvement.
+
+
+\section{Tests}
+
+Our test suite is based on the Kics2 test suite \cite{kics2}.
+We split the functions into three groups:
+Numeric computations meant to test Unboxing;
+non-deterministic computations;
+and list computations meant to test Deforestation;
+
+\begin{itemize}
+
+\item \textbf{Numeric computations:}
+
+\begin{itemize}
+\item \textbf{fib} is the Fibonacci program from chapter 5.
+
+\item \textbf{fibNondet} This is the same program, but we call it with a non-deterministic argument.
+
+\item \textbf{tak} computes a long, mutually recursive, function with many numeric calculations.
+\end{itemize}
+
+\item \textbf{Non-deterministic computations:}
+
+\begin{itemize}
+\item \textbf{cent} attempts to find all expressions
+containing the numbers 1 to 5 that evaluate to 100.
+
+\item \textbf{half} computes half of a number defined using piano arithmetic by trial and error starting from 0.
+> half n | x + x == n = x
+>  where x free
+
+\item \textbf{ndTest} computes a variant of |fib| that non-deterministically returns many results.
+> fib n
+>  | n < 2 = 0 ? 1
+>  | otherwise = fib (n-1) + fib (n-2)
+
+
+\item \textbf{perm} computes all of the permutations of a list
+by computing a single permutation non-deterministically.
+
+\item \textbf{queensPerm} is the program from the introduction.
+It computes solutions to the n-queens problem
+by permuting a list, and checking if it's a valid solution.
+
+\item \textbf{primesort} non-deterministically sorts a list of very large prime numbers.
+
+\item \textbf{sort} sorts a list by finding a sorted permutation.
+\end{itemize}
+
+
+\item \textbf{Deforestation:}
+
+\begin{itemize}
+\item \textbf{queensDet} computes solutions to the n-queens problem
+using a backtracking solution and list comprehension.
+
+\item \textbf{reverseBuiltin} reverses a list without using functions or data types
+                                defined in the standard Prelude.
+
+\item \textbf{reverseFoldr} reverses a list using a reverse function written as a fold.
+
+\item \textbf{reversePrim} reverses a list using the built-in reverse function and primitive numbers.
+
+\item \textbf{sumSquares} computes |sum . map sqaure . filter odd . enumFromTo 1|.
+
+\item \textbf{buildFold} computes a long chain of list processing functions.
+
+\item \textbf{primes} computes a list of primes.
+
+\item \textbf{sieve} computes |sumPrimes| from Chapter 5.
+\end{itemize}
+
+\end{itemize}
+
+
+The results of running the tests are given in figure \ref{fig:time_rice} for timing,
+and \ref{fig:memory} for memory.
+All time is measured in seconds, and memory is measured in allocations of nodes.
+We also include a comparison all of 3 prominent Curry compilers, Pakcs, Kics2, and Mcc, against \ricesp
+in figure \ref{fig:time}.
+We optimized these compilers as much as possible to get the best results.
+For example Kics2 executed much quicker when run in the primitive depth first search mode.
+We increased the input size for tak, buildFold, and sieve in order to get a better comparison
+with these compilers.
+However, we were not able to run the buildFold test, or the reverseBuiltin test, for the Pakcs compiler. 
+They were both killed by the Operating System before they could complete.
+We timed every program with Kics2 \cite{kics2}, Pakcs \cite{pakcs}, and the Mcc \cite{mcc} compiler.
+Unfortunately we were not able to get an accurate result on how much memory any of these compilers
+allocated, so we were unable to compare our memory results.
+
+
+\begin{figure}
+\begin{tabular}{||||l||||r||r||r||r||||}
+\hhline{||||=||||=||=||=||=||||}
+                &  pakcs   & kics2 & mcc   & rice \\
+\hhline{||||=||||=||=||=||=||||}
+fib             &    30.24 &  0.06 &  0.03 & 0.00 \\
+\hline
+fibNondet       &    30.90 &  3.37 &  0.03 & 0.00 \\
+\hline
+tak             & 6,867.54 & 13.32 & 17.66 & 0.94 \\
+\hhline{||||=||||=||=||=||=||||}
+cent            &    65.63 & 26.74 &  0.28 & 0.43 \\
+\hline
+half            &   983.57 & 25.27 &  1.58 & 0.52 \\
+\hline
+ndtest          &   383.05 & 13.78 &  1.21 & 0.78 \\
+\hline
+perm            &    45.10 &  4.00 &  1.10 & 0.62 \\
+\hline
+queensPerm      &   568.81 &  2.98 &  0.11 & 0.11 \\
+\hline
+primesort       & 1,481.83 &  0.31 &  1.11 & 0.15 \\
+\hline
+sort            &   212.33 &  8.07 &  0.24 & 0.23 \\
+\hhline{||||=||||=||=||=||=||||}
+queensDet       &  1051.78 &  1.07 &  1.18 & 0.23 \\
+\hline
+reverseBuiltin  &      OoM &  0.79 &  0.44 & 0.28 \\
+\hline
+reverseFoldr    &   262.14 &  0.17 &  0.07 & 0.02 \\
+\hline
+reversePrim     &    27.96 &  0.18 &  0.05 & 0.02 \\
+\hline
+sumSquare       &    33.48 &  0.08 &  0.05 & 0.00 \\
+\hline
+buildFold       &      OoM & 13.98 &  5.16 & 0.58 \\
+\hline
+primes          & 6,480.61 & 31.36 &  7.52 & 0.62 \\
+\hline
+sieve           & 2,845.30 &  3.17 &  4.48 & 1.03 \\
+\hhline{||||=||||=||=||=||=||||}
+\end{tabular}
+
+\caption{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
+         Time is measured in seconds.}
+\label{fig:time}
+\end{figure}
+
+\begin{figure}
+\begin{tabular}{||||l||||r||r||r||r||r||r||||}
+\hhline{||||=||||=||=||=||=||=||=||||}
+                &   unopt & basic & unbox & shortcut & deforest &  all \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+fib             &    0.05 &  0.05 &  0.02 &     0.03 &     0.05 & 0.00 \\
+\hline
+fibNondet       &    0.05 &  0.04 &  0.02 &     0.04 &     0.06 & 0.00 \\
+\hline
+tak             &    2.15 &  2.02 &  0.52 &     0.70 &     2.07 & 0.16 \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+cent            &    1.00 &  0.90 &  0.74 &     0.91 &     0.94 & 0.43 \\
+\hline
+half            &    0.88 &  0.84 &  0.83 &     0.95 &     0.79 & 0.52 \\
+\hline
+ndtest          &    1.53 &  1.31 &  1.31 &     1.12 &     1.28 & 0.78 \\
+\hline
+perm            &    0.82 &  0.83 &  0.81 &     0.85 &     0.82 & 0.62 \\
+\hline
+queensPerm      &    0.60 &  0.38 &  0.17 &     0.30 &     0.37 & 0.11 \\
+\hline
+primesort       &    0.40 &  0.29 &  0.22 &     0.23 &     0.31 & 0.15 \\
+\hline
+sort            &    0.61 &  0.40 &  0.34 &     0.40 &     0.43 & 0.23 \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+queensDet       &    2.68 &  1.71 &  0.53 &     0.26 &     1.48 & 0.23 \\
+\hline
+reverseBuiltin  &    0.50 &  0.53 &  0.48 &     0.46 &     0.50 & 0.28 \\
+\hline
+reverseFoldr    &    0.06 &  0.08 &  0.03 &     0.07 &     0.07 & 0.02 \\
+\hline
+reversePrim     &    0.06 &  0.08 &  0.02 &     0.05 &     0.08 & 0.02 \\
+\hline
+sumSquare       &    0.08 &  0.09 &  0.02 &     0.04 &     0.06 & 0.00 \\
+\hline
+buildFold       &    2.84 &  2.31 &  1.59 &     2.15 &     1.24 & 0.23 \\
+\hline
+primes          &    1.96 &  1.45 &  0.97 &     1.18 &     1.48 & 0.62 \\
+\hline
+sieve           &    1.87 &  2.08 &  0.90 &     1.86 &     1.26 & 0.32 \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+\end{tabular}
+
+\caption{Results for execution time between the \rice compiler at several levels of optimization.\\
+         \emph{unopt} is the compiler without optimizations,
+         \emph{basic} is the optimizations described in chapter \ref{ch:Basic Optimizations},
+         \emph{unbox} is the unboxing optimization,
+         \emph{shortcut} is the shortcutting optimization,
+         \emph{deforest} is the deforestation optimization,
+         and \emph{all} is the compiler with all optimizations turned on.}
+\label{fig:time_rice}
+\end{figure}
+
+\begin{figure}
+\begin{tabular}{||||l||||r||r||r||r||r||r||||}
+\hhline{||||=||||=||=||=||=||=||=||||}
+                &    unopt &    basic &   unbox &  shortcut &  deforest &     all \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+fib             &   1,907K &   1,906K &    635K &    12,71K &    1,906K &       0 \\
+\hline
+fibNondet       &   1,907K &   1,906K &    635K &    12,71K &    1,906K &       5 \\
+\hline
+tak             &  94,785K &  94,784K & 28,435K &       267 &   94,784K &       0 \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+cent            &  22,644K &  21,358K & 18,304K &   21,358K &   21,358K & 18,304K \\
+\hline
+half            &  25,165K &  25,179K & 25,120K &   25,164K &   25,179K & 25,120K \\
+\hline
+ndtest          &  14,282K &  14,282K & 17,005K &   14,282K &   14,282K & 17,005K \\
+\hline
+perm            &   2,041K &   2,041K &  2,041K &    2,041K &    2,041K &  2,041K \\
+\hline
+queensPerm      &  19,362K &  11,899K &  4,122K &    7,543K &   11,899K &  2,940K \\
+\hline
+primesort       &  10,546K &   8,458K &  6,344K &    6,375K &    8,454K &  6,340K \\
+\hline
+sort            &  20,295K &  14,332K & 11,949K &   11,949K &   14,332K & 11,949K \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+queensDet       &  96,894K &  53,781K & 16,599K &   33,385K &   48,360K &  9,372K \\
+\hline
+reverseBuiltin  &  16,819K &  16,819K & 16,819K &   16,819K &   16,819K & 16,819K \\
+\hline
+reverseFoldr    &   2,883K &   3,407K &  1,572K &    3,145K &    3,145K &  1,310K \\
+\hline
+reversePrim     &   2,621K &   3,145K &  1,310K &    2,883K &    3,145K &  1,310K \\
+\hline
+sumSquare       &   2,500K &   2,899K &  1,199K &    2,499K &    2,499K &    599K \\
+\hline
+buildFold       & 120,000K &  99,999K & 71,999K &   95,999K &   67,999K &       3 \\
+\hline
+primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438K \\
+\hline
+sieve           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
+\hhline{||||=||||=||=||=||=||=||=||||}
+\end{tabular}
+\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
+\label{fig:memory}
+\end{figure}
+There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_out}, and \ref{fig:memory}
+that we feel are worth pointing out.
+First, it should be noted that the Mcc compiler performed very well,
+not only against both Kics2 and Pakcs, but it also performed well against \rice.
+In most examples it was competitive with the unoptimized code, and ahead of it in several tests.
+It even outperformed the optimized version in the cent example.
+We are currently unsure of why this happened, but we have two theories.
+First, the code generation and run-time system of Mcc may just be more efficient than \rice.
+While we worked to make the run-time system as efficient as possible, 
+it was not the focus of this compiler.
+Mcc also translated the code to Continuation Passing Style \cite{continuationsAppel}
+before generating target code.
+This may be responsible for the faster execution times.
+Our other theory is that Mcc supports an older version of Curry that does not include type classes.
+Mcc may have performed better simply by not having to deal with that overhead.
+
+Aside from the surprising performance of Mcc,
+we found a couple of results in our optimizations that surprised us as well.
+First, the |half| program used more memory with basic optimizations turned on
+then it did with no optimizations.
+This is because strictness analysis created a worker function, but it wasn't able to cancel
+out any of the new |Int| constructors.
+While this did cause memory usage to go up a little, it didn't effect the execution time.
+However, we could disable strictness analysis unless unboxing is turned on.
+Second, the |ndtest| used a bit (about 0.05\%) more memory with the unboxing optimization.
+This is because of a confluence of two side effects of the optimization.
+Without unboxing we can't determine that the parameters to primitive operations are
+needed, so we can't force evaluation.
+This means that instead of evaluating each piece of the Fibonacci function separately,
+we need to construct the entire contractum |fib (n-1) + fib (n-2)| and evaluate it.
+Because of this, the optimized code only contains a single case expression.
+The other factor is our solution to the non-determinism problem from section
+\ref{Non-determinism}.
+Since we are returning several results, and the unboxed |fib| function contains several cases,
+we have to push more case functions onto the backtracking stack.
+While this does allocate a little more memory, we believe that the 2x speed-up
+in execution time is worth the sacrifice.
+
+In terms of effectiveness, unboxing seemed to be the clear winner.
+Deforestation did not seem to be nearly as effective, but we believe this
+is more related to the test suite than anything else.
+These are all small programs that don't include many list processing operations.
+We believe that, on larger programs, deforestation would have more opportunities to fire.
+Shortcutting typically performed well, and compensated for the lack of unboxing in several situations.
+We think the most interesting part of these results is the effect of combining these optimizations.
+In particular, unboxing and shortcutting work very well together, 
+often reducing the amount of memory consumed more than either optimization alone.
+
+Generally \ricesp compares very favorably with all of the current compilers,
+only losing out to Mcc on the cent example.
+We focus on the Kics2 compiler, because that was the best performing compiler
+that is still in active development.
+With this comparison \ricesp performs very well,
+showing anywhere form a 2x to 50x execution speed-up on all of the non-deterministic programs,
+and a 3x to 50x improvement on the deterministic programs.
+Even comparing against Mcc, we typically see a 2x speed-up.
+The only excepts are cent, and programs that cannot be optimized, such as perm.
+
+These are great results, significantly better than we anticipated.
+In fact, they're so much better that they lead to a new problem to solve.
+In some cases we simply can't compare the optimized code to the other compilers.
+The optimized code runs so fast that the we can't accurately time it.
+This is true for fib, fibNondet, and sumSquares.
+
+We'll look at fibNondet, because it illustrates this problem particularly well.
+The algorithm for |fib| is an exponential time algorithm.
+Specifically, it runs in $\O(1.61^{n})$.
+This means that |fib n| runs roughly 1.61 times as fast as |fib (n+1)|.
+We also verified that this was true in practice for our compiled code.
+In running our example with a non-deterministic input,
+both Kics2 and Pakcs were only able to run up to |fib 27|.
+In contrast, fully optimized \ricesp was able to run |fib 42| in about the same amount of time.
+Using this as a very rough approximation,
+we find that our optimized code is running $1.61^{15} \approx 1000$ times faster.
+It should be noted that this is because we are passing a non-deterministic argument.
+In the deterministic case, we only get around a 10x speed-up.
+
+This is a very impressive speed-up, but we've already discussed the reason for it.
+After we applied Unboxing and Shortcutting, we were able eliminate all
+but a constant number of heap allocations from the program.
+This would be a great result on it's own, but it gets even better when we compare it to GHC.
+Compiling the same |fib| algorithm on GHC produced code
+that ran about twice as fast as our optimized \ricesp code,
+and when we turned off Optimizations for GHC we ran faster by a factor of 8.
+It's not surprising to us that our code ran slower than GHC.
+The run time system is likely much faster than ours,
+and there are several optimization in GHC that we have not implemented.
+In fact, we would be shocked if it managed to keep up.
+What is surprising, and encouraging, is that we were competitive at all.
+It suggests that Curry isn't inherently slower than Haskell.
+We believe that a more mature Curry compiler could run as fast as GHC for deterministic functions.
+This would give us the benefits of Curry, such as non-determinism and free variables,
+without sacrificing the speed of modern functional languages.
+
+
+In this chapter we've justified the benefit of these optimizations to Curry.
+In the next chapter we look at possible future directions to take this work, and we conclude.
+
+

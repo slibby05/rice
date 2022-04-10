@@ -754,7 +754,7 @@ in Curry in the next chapter.
 \begin{theorem}
 If |let x = e_1 in e| is a Curry expression in limited A-Normal Form, 
 and |e_1| is a constructor application, or partial application,
-then |extend e x e_1| computes the same results.
+then $e[x \to e_1]$ computes the same results.
 \end{theorem}
 
 \begin{proof}
@@ -905,10 +905,11 @@ Furthermore our functions only contain trivial arguments,
 so it's now valid to reduce any function we come across.
 
 \begin{theorem}[reduction]
-let |e| be an expression in limited A-Normal Form,
-and let |path e p = f (vec e)|,
-where |f| is a function symbol with definition |f (vec v) = b|.
-Then |extend e p (extend b (vec v) (vec e))|
+Let |e| be an expression in limited A-Normal Form,
+let |path e p = f (vec e)|,
+where |f| is a function symbol with definition |f (vec v) = b|,
+and let $\sigma = \{\overline{ v } \mapsto \overline{e}\}$.
+Then |extend e p ( sigma b )|
 has the same values as |e|.
 \end{theorem}
 
@@ -916,7 +917,7 @@ has the same values as |e|.
 First not that There is only one way to replace an expression
 where the root has symbol |f|, with the body of the definition for |f|.
 Therefore This is a deterministic step, and by the path compression theorem
-|e| and |extend e p (extend b (vec v) (vec e))| have the same values.
+|e| and |extend e p ( sigma b )| have the same values.
 \end{proof}
 
 We give the GAS rules for reduction in figure \ref{fig:reduce}.

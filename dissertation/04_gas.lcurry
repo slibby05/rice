@@ -165,7 +165,7 @@ As an example consider the definition for floating let-expressions:
 >   | Floatc Float
 >   | Charc  Char
 \caption{Curry representation of FlatCurry programs\\
-This is the standard representation of FlatCurry programs as defined in \cite{FlatCurry},
+This is the standard representation of FlatCurry programs as defined in \cite{currySemantics},
 We have removed |CaseType| and |Typed| from |Expr|, and 
 |TypeExpr| and |Visibility| from |FuncDecl|, because they are not used in our translation.}
 \label{fig:flatRep}

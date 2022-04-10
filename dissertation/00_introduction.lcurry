@@ -9,7 +9,7 @@ which is a shame, because Curry is actually a great languguage,
 and can solve many problems well.
 In this dissertation we aim to recitify the problem
 of Curry taking too long.
-We present the RICE Curry compiler,
+We present the \ricesp Curry compiler,
 and show how it can deliver a fast, satisfying, Curry.
 
 \subsection{Why Curry?}
@@ -23,12 +23,12 @@ Curry extends Haskell with two new concepts.
 First, there are non-deterministic functions, such as ``|?|''.  
 Semantically |a ? b| will evaluate
 |a| and |b| and will return both answers to the user.
-Second, there are free, or logic, variables, which are also called logic variable by some authors.
+Second, there are free, or logic, variables.
 A free variable is a variable that is not in the scope of the current function.
 The value of a free variable is not defined, but it may be constrained.
 
 Consider the following Curry code for solving n-queens:
-> queens = isEmpty (set1 unsafe p) = p
+> queens | isEmpty (set1 unsafe p) = p
 >  where p = permute [1..n]
 > 
 > unsafe (xs++[a]++ys++[b]++zs) = abs (a-b) =:= length ys
@@ -41,6 +41,10 @@ However, We've constrained the total list |xs++[a]++ys++[b]++zs|
 to be the same as the argument.
 The effect is that |a| and |b| are arbitrary elements in the list,
 and |ys| is the list of elements between |a| and |b|.
+If the difference between |a| and |b| is equal to the distance between
+the two element, then two queens could capture each other diagonally.
+So, we compute the set of all capturing queens,
+If the set is empty, then we return that permutation.
 
 Free variables are given concrete values in Curry programs through narrowing.
 The semantics of narrowing and non-determinism in Curry are given by 
@@ -62,11 +66,17 @@ The strategy is to compile to a virtual assembly language, known as LLVM.
 So far, Sprite has shown promising improvements over both Pakcs and Kics2 in performance,
 but it is not a mature compiler.
 
-One major disadvantage of all three compilers is that they all
+Similarly Mcc \cite{mcc} also worked to improve performance by compiling to C.
+While Mcc often ran faster than both Pakcs or Kics2,
+it could perform very slowly on common Curry examples.
+It's also no longer in active development.
+
+One major disadvantage of all four compilers is that they all
 attempt to pass off optimization to another compiler.
 Pakcs attempts to have Prolog optimize the non-deterministic code;
 Kics2 attempts to use Haskell to optimize
-deterministic code; and Sprite attempts to use LLVM to optimize the low level code.
+deterministic code; Sprite attempts to use LLVM to optimize the low level code;
+and Mcc simply didn't optimize its code.
 Unfortunately none of these approaches works very well.
 While some implementations of Prolog can optimize non-deterministic expressions,
 they have no concept of higher order functions,
@@ -88,25 +98,28 @@ Furthermore, the optimization fails to optimize several common programs.
 \subsection{The Need for Optimizations}
 
 So far, none of these approaches have included the large body 
-of work on program optimizations.
-\cite{optimizationAllen, dataflowAllen, dominatorFlow, dataflowKildall,
-dragon, continuationsAppel, compilersAppel, orbit, ssa, ssaOptimizations, ssaVariable,
-rabbit, stg, ANormal, lambdaRename, ultimateGoto,
-deforestationWadler, shortcutDeforestation, haskellInliner}
+of work on program optimizations
+\cite{orbit, dragon, optimizationAllen, dataflowAllen, ssa, compilersAppel, continuationsAppel, 
+ANormal, shortcutDeforestation, ultimateGoto, rabbit, lambdaRename, dataflowKildall, dominatorFlow, 
+haskellInliner, stg, ssaVariable, deforestationWadler, ssaOptimizations }.
 This leads to the inescapable conclusion that Curry needs an optimizer.
 We propose a new compiler environment for developing and testing optimizations.
-The Reduction Inspired Compiler Environment (RICE) Curry compiler.
+The Reduction Inspired Compiler Environment (\rice) Curry compiler.
 This compiler is intended to make developing new optimizations for Curry as simple as possible.
-We test this idea by developing several common optimizations for the RICE compiler.
+We test this idea by developing several common optimizations for the \ricesp compiler.
 Furthermore we implement three specific optimizations for Curry, 
 Unboxing \cite{unboxing}, Shortcutting \cite{shortcutting}, and Deforestation \cite{shortcutDeforestation}.
 We chose these optimizations specifically because they focus on reducing the amount of memory
 consumed by programs, which is a common problem for Curry programs \cite{proposal}.
 
 The rest of this dissertation is organized as follows:
-chapter 2 presents the mathematical background of Term and Graph Rewriting;
-chapter 3 presents the Curry Language and its semantics;
-chapter 4 introduces the GAS system for implementing optimizations;
-chapter 5 discusses the implementation of several common optimizations;
-chapter 6 discusses the implementation of Unboxing, Shortcutting, and Deforestation;
-and chapter 7 concludes by discussing results and future work.
+chapter \label{ch:Mathematical Background} presents the mathematical background of Term and Graph Rewriting;
+chapter \label{ch:The Curry Language} presents the Curry Language and its semantics;
+chapter \label{ch:The Generated Code} discusses the target code for this compiler;
+chapter \label{ch:Generating and Altering Subexpressions} introduces the GAS system for implementing optimizations;
+chapter \label{ch:The Compiler Pipeline} overviews the compiler pipeline, and the translation to C.
+chapter \label{ch:Basic Optimizations} discusses the implementation of several common optimizations;
+chapter \label{ch:Memory Optimizations} discusses the implementation of Unboxing, Shortcutting, and Deforestation;
+chapter \label{ch:Results} shows the results of our optimizations;
+and chapter \label{ch:Conclusion} concludes and discusses future work.
+

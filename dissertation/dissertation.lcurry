@@ -10,9 +10,11 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{array}
+\usepackage{hhline}
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{tikz}
+\usepackage{cite}
 \usepackage{tikz-cd}
 \usepackage{mathtools}
 \usepackage{imakeidx}
@@ -30,6 +32,13 @@
 \newcommand{\graphxy}[1]{\xymatrix@@C=-2pt@@R=10pt@@C=5pt{#1}}
 \newcommand{\xynode}[1]{\llap{#1\,} \bullet }
 \newcommand{\yxnode}[1]{\bullet\ \ \ \llap{#1\,} }
+\newcommand{\tif}[1]{\texttt{if(}#1\texttt{)}}
+
+\newcommand{\cuUnify}{\mathbin{=\!\!:\!\!=}}
+\newcommand{\cuFunPat}{\mathbin{=\!\!:\!\!<\!\!<\!\!=}}
+
+\newcommand{\rice}{\texttt{RICE}}
+\newcommand{\ricesp}{\texttt{RICE }}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -37,6 +46,8 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+
+\def\O{\mathcal{O}}
 
 \DeclareMathSymbol{:}{\mathord}{operators}{"3A}
 %include polycode.fmt
@@ -88,9 +99,13 @@
 
 %include 07_mine.lcurry
 
+\chapter{Results} \label{ch:Results}
+
+%include 08_results.lcurry
+
 \chapter{Conclusion} \label{ch:Conclusion}
 
-%include 08_conclusion.lcurry
+%include 09_conclusion.lcurry
 
 
 % \appendix

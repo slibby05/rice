@@ -1,0 +1,123 @@
+
+
+
+These results were honestly significantly better than we ever expected with this project.
+Initially, we hoped to compete with Kics2, since it was leveraging GHC's optimizer
+to produce efficient code.
+However, we found that not only could we beat Kics2 in all cases,
+and in many cases the results were simply incomparable.
+In some cases we were even able to compete with GHC itself.
+Furthermore, we've shown that the memory optimizations really were effective for Curry programs.
+This isn't much of a surprise.
+Allocating less memory is a good strategy for improving run-time performance.
+It is good to know that the presence of non-determinism doesn't affect this commonly held belief.
+
+It's a little more surprising that these optimizations all turned out to be valid in Curry.
+In fact, a surprising number of optimizations are valid in Curry under suitable conditions.
+This might not seem very significant until we look at what optimizations aren't valid.
+For example, common sub-expression elimination was not included in this compiler,
+because it simply isn't a valid Curry transformation.
+It introduces sharing where none existed.
+If the common sub-expression is non-deterministic, then we will change the set of results.
+On the other hand, common sub-expression elimination is fairly innocuous in most other languages.
+
+\subsection{Future Work}
+
+Most curries are made from curry powder and coconut milk,
+however our Curry was mostly made from low hanging fruit.
+As nice as our results are,
+we would like to see this work extended in the future.
+We believe that a better inliner and strictness analyzer
+would go a long way to producing even more efficient code.
+
+In fact, a general theory of inlining in Curry would be hugely beneficial.
+One of the biggest drawbacks to this compiler is that we can't represent 
+lambda expressions in FlatCurry, and inline them.
+Before we could even attempt this,
+we would need to know when it's safe to inline a lambda in Curry.
+
+We would also like to move from short-cut Deforestation to Stream Fusion.
+This should be possible, but it would require a more sophisticated strictness analyzer,
+and we may not be able to get away with our combinator approach.
+
+We would also like to see the development of new, Curry specific, optimizations.
+Right now the |?| operator acts as a hard barrier.
+We can move let-bound variables outside of it, but we can't move the choice itself.
+However, there may be an option for using pull-tabbing or bubbling
+to move the choice to make room for more optimizations.
+
+For personal reasons we would also like to bootstrap \ricesp with itself.
+This would significantly decrease the time it takes to compile large Curry programs.
+Right now, \ricesp is compiled using Pakcs.
+Currently Kics2 isn't a feasible option for compiling \rice,
+because of performance issues with non-deterministic function.
+So, compiling \ricesp in itself would significantly improve the performance of the compiler.
+
+We would also like to move from C to LLVM.
+This would allow for more optimizations including Tail Call Optimization.
+We currently are limited by the recursion depth of the machine,
+and TCO could allow us to compile more programs.
+Moving to LLVM would also greatly help in the development of a garbage collector.
+
+Finally, developing a better run-time system would also be an important improvement.
+While we did work to make sure our run time system was efficient,
+it could certainly be better.
+Integrating this work with the Sprite \cite{sprite} compiler might solve this issue.
+
+\subsection{Conclusion and Related Work}
+
+We have presented the \ricesp Optimizing Curry compiler.
+The compiler was primarily built to test the effectiveness of various optimizations on Curry programs.
+While testing these optimizations, we've also built
+an efficient evaluation method for backtracking Curry programs,
+as well as a general system for describing and implementing optimizations.
+The compiler itself is written in Curry.
+
+This system incorporated a lot of work from the functional language community,
+and the Haskell community in particular.
+The work on general optimizations \cite{haskellOpt}, 
+Inlining \cite{haskellInliner}, Unboxing \cite{unboxing},
+Deforestation \cite{shortcutDeforestation}, and the STG-machine \cite{evalApply, stg} 
+were all instrumental in the creation of this compiler,
+as well as the work by Appel and Peyton-Jones about functional compiler construction 
+ \cite{compilersAppel, continuationsAppel, lazyFunctionalCompilers}.
+
+While there has been some work on optimizations for functional-logic programs,
+there doesn't seem to be a general theory of optimization.
+Peem{\"o}ller and Ramos et al. \cite{peval, offlinePeval}
+have developed a theory of partial evaluation for Curry programs,
+and Moreno \cite{foldUnfold} has worked on the Fold/Unfold transformation from Logic programming.
+We hope that our work can help bridge the gap to traditional compiler optimizations.
+
+The implementation of the GAS system was instrumental in developing optimizations for this compiler.
+It not only allowed us to implement optimizations more efficiently,
+but also to test new optimizations,
+and through optimization derivations,
+discover which optimizations were effective,
+which were never used, and which were wrong.
+This greatly simplified debugging optimizations,
+but it also allowed us to test more complicated optimizations.
+Often we would just try an idea to see what code it produced,
+and if it fired in unintended places.
+It's difficult to overstate just how useful this system was in the compiler.
+
+While the run-time system was not the primary focus of this dissertation,
+we were able to produce some useful results.
+The path compression theorem,
+and the resulting improvement to backtracking,
+is a significant improvement to the current state-of-the-art for backtracking Curry programs.
+
+When starting this project, Shortcutting was already known
+to be valid for LOIS Rewrite Systems.
+It was developed for them specifically,
+so it's not too surprising that the idea can be translated to Curry programs.
+However, it was a nice surprise to find that
+Unboxing and Deforestation were both valid in Curry.
+It was even more remarkable that, with some simple restrictions,
+we could make inlining and reduction valid in Curry as well.
+
+We believe that this work is a good start for optimizing Curry compilers,
+and we would like to see it continue.
+After having a taste of optimized Curry, we want to turn up the heat,
+and deliver an even hotter dish.
+But for now, we've made a tasty Curry with \rice.

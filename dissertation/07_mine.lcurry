@@ -1072,7 +1072,7 @@ If the compiler can find where we will do this replacement,
 then we don't need to construct the list.
 On its own, this is a very hard problem, but we can help the compiler along.
 We just need a standard way to construct a list.
-This can be done with the |build| function \cite{shortcut_deforest}.
+This can be done with the |build| function \cite{shortcutDeforestation}.
 
 > build :: (forall b (a -> b -> b) -> b -> b) -> [a]
 > build g = g (:) []
@@ -1081,7 +1081,7 @@ The |build| function takes a function that constructs a list.
 However, instead of construction the list with |:| and |[]|,
 we abstract this by passing the constructors in as arguments, which we call |c| and |n| respectively.
 Now, with |build|, we can define what we mean by deforestation with a simple theorem from
-\cite{shortcut_deforest}.
+\cite{shortcutDeforestation}.
 
 \begin{theorem}
 For all |f : a -> b -> b|, |z : b|, and |g : (forall b (a -> b -> b) -> b -> b) -> [a]|,

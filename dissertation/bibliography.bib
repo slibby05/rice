@@ -277,8 +277,7 @@ numpages = {21}
 @MISC{CurryReport,
 author       = {Hanus (ed.), M.},
 title        = {Curry: An Integrated Functional Logic Language (Vers.\ 0.9.0)},
-year         = {2016},
-%howpublished = {Available at \url{http://www.curry-language.org}}
+year         = {2016}
 }
 
 @article{FunLog,
@@ -619,6 +618,22 @@ author = {Heinrich Hussmann},
 }
 
 
+@InProceedings{mcc,
+author="Lux, Wolfgang
+and Kuchen, Herbert",
+editor="Beiersd{\"o}rfer, Kurt
+and Engels, Gregor
+and Sch{\"a}fer, Wilhelm",
+title="An Efficient Abstract Machine for Curry",
+booktitle="Informatik'99",
+year="1999",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="390--399",
+isbn="978-3-662-01069-3"
+}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % functional compilers
@@ -758,13 +773,13 @@ edition = {International Conference on Functional Programming},
   issue_date = {April 1991},
   volume     = {13},
   number     = {2},
-  month      = apr,
+  month      = {apr},
   year       = {1991},
   issn       = {0164-0925},
   pages      = {181--210},
   numpages   = {30},
   publisher  = {ACM},
-  address    = {New York, NY, USA},
+  address    = {New York, NY, USA}
 } 
 
 %induction variable analysis
@@ -1056,6 +1071,18 @@ volume = {32},
 number = {1},
 }
 
+@inbook{haskellComp,
+author = {Peyton Jones, Simon},
+title = {Compiling Haskell by Program Transformation: A Report from the Trenches},
+booktitle = {Proceedings European Symposium on Programming (ESOP'96)},
+year = {1996},
+month = {January},
+publisher = {Springer},
+url = {https://www.microsoft.com/en-us/research/publication/compiling-haskell-by-program-transformation-a-report-from-the-trenches/},
+volume = {1058},
+edition = {Lecture Notes in Computer Science},
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % curry specific optimizations
@@ -1108,7 +1135,7 @@ number = {1},
 
 @article{foldUnfold,
     author = {Moreno, Ginés},
-    title  = {Transformation Rules and Strategies for Functional‐Logic Programs}
+    title  = {Transformation Rules and Strategies for Functional‐Logic Programs},
     year = {2002}
 }
 
@@ -1618,7 +1645,6 @@ number = {9},
 issn = {0362-1340},
 url = {https://doi.org/10.1145/1090189.1086390},
 doi = {10.1145/1090189.1086390},
-abstract = {We design and implement a library for adding backtracking computations to any Haskell monad. Inspired by logic programming, our library provides, in addition to the operations required by the MonadPlus interface, constructs for fair disjunctions, fair conjunctions, conditionals, pruning, and an expressive top-level interface. Implementing these additional constructs is easy in models of backtracking based on streams, but not known to be possible in continuation-based models. We show that all these additional constructs can be generically and monadically realized using a single primitive msplit. We present two implementations of the library: one using success and failure continuations; and the other using control operators for manipulating delimited continuations.},
 journal = {SIGPLAN Not.},
 month = {sep},
 pages = {192–203},

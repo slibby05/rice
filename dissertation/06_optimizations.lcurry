@@ -37,11 +37,14 @@ the implementation |<=| for the |Bool| type.
 
 Before we discuss any substantial optimizations, we need to deal with a significant
 roadblock to optimizing Curry.
-Equational reasoning is not valid when optimizing FlatCurry programs.
-The reason is that FlatCurry is made up of terms,
-and the GAS system rewrites these terms.
-Since the Curry semantics are defined for graph rewriting,
-we need to impose some restrictions.
+Equational reasoning,
+in the sense of replacing expressions with their derived values,
+is not valid when optimizing FlatCurry programs.
+The reason is that expressions in FlatCurry aren't reverentially transparent \cite{whyFPmatters}.
+The evaluation of Curry programs is graph rewriting,
+which maintains referential transparency,
+but since FlatCurry is composed of terms, and not graph,
+we can't substitute expressions with their values.
 
 While there have been graph intermediate representation proposed for
 languages \cite{graph_ir, dactl} FlatCurry is not one of these.
@@ -753,7 +756,7 @@ in Curry in the next chapter.
 
 \begin{theorem}
 If |let x = e_1 in e| is a Curry expression in limited A-Normal Form, 
-and |e_1| is a constructor application, or partial application,
+and |e_1| is rooted by a constructor application, or partial application,
 then $e[x \to e_1]$ computes the same results.
 \end{theorem}
 

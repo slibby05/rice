@@ -4,7 +4,7 @@
 These results were honestly significantly better than we ever expected with this project.
 Initially, we hoped to compete with Kics2, since it was leveraging GHC's optimizer
 to produce efficient code.
-However, we found that not only could we beat Kics2 in all cases,
+However, we found that could we beat Kics2 in all cases,
 and in many cases the results were simply incomparable.
 In some cases we were even able to compete with GHC itself.
 Furthermore, we've shown that the memory optimizations really were effective for Curry programs.
@@ -108,7 +108,7 @@ and the resulting improvement to backtracking,
 is a significant improvement to the current state-of-the-art for backtracking Curry programs.
 
 When starting this project, Shortcutting was already known
-to be valid for LOIS Rewrite Systems.
+to be valid for Inductively Sequential Rewrite Systems.
 It was developed for them specifically,
 so it's not too surprising that the idea can be translated to Curry programs.
 However, it was a nice surprise to find that

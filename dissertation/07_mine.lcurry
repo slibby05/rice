@@ -46,7 +46,7 @@ This is especially true in lazy languages where
 expressions such as |3 + 5| are represented by an expression
 graph that will eventually hold the value |8| after it is evaluated.
 It is important that every node that points to the expression graph of |3 + 5|
-at run-time, will then point to the expression graph of |8| after it is evaluated.
+at run-time will then point to the expression graph of |8| after it is evaluated.
 This update is difficult if |8| is the literal C integer \texttt 8.
 However, if |8| is instead a constructor node containing the value 8, then this is fine.
 We just replace the contents of the node labeled by |+| by a node labeled by |Int| with one child,
@@ -91,15 +91,17 @@ take on.
 \end{figure}
 
 Finally we need to give new definitions for primitive operations such as |+| and |<=|.
-All of the operators fit the same pattern, so we the definitions for |+| and |<=| for integers
+All of the operators fit the same pattern, so we only give the definitions for |+| and |<=| for integers
 in figure \ref{fig:primOp}.
-In order to evaluate a |+| node, we evaluate the first argument to it's box,
+In order to evaluate a |+| node, we evaluate the first argument to its box,
 then we unbox it with the case statement.
 We do not have any dummy branches for free variables.
 This represents the fact that |+| is a rigid operation.
 We proceed to evaluate and unbox the second argument.
 Finally, we return the result inside of a new box.
 The |pl_p| operation performs the addition, and is translated to an add expression in C.
+The |le_p| operation performs a comparison between two integers, and returns either
+|True| or |False| based on the result.
 
 \begin{figure}
 > (+) :: Int -> Int -> Int
@@ -108,7 +110,7 @@ The |pl_p| operation performs the addition, and is translated to an add expressi
 >                                Int y_p ->  let v = x_p pl_p y_p
 >                                            in Int v
 >
-> (<=) :: Int -> Int -> Int
+> (<=) :: Int -> Int -> Bool
 > x <= y = case  x of
 >                Int x_p -> case  y of
 >                                 Int y_p -> x_p le_p y_p 
@@ -130,10 +132,10 @@ simple if statements in C.
 We could compare the scrutinee to |True|, and if it is, then we evaluate the true branch,
 otherwise we evaluate the false branch.
 Unfortunately, this doesn't work for two reasons.
-First, Not all instances of |True| can be the static |True| nodes.
+First, not all instances of |True| can be the static |True| nodes.
 As an example, at run-time |not False| will evaluate to |True|,
 but the node is going to be in the same location as the original |not| node.
-Second, Even if we have a Boolean expression that has been evaluated to a value,
+Second, even if we have a Boolean expression that has been evaluated to a value,
 it could still be a \texttt{FAIL} or \texttt{FREE} node.
 
 The next optimization we can make is for the primitive types |Int|, |Char|, and |Float|.
@@ -315,7 +317,7 @@ If we have a |fib| node, then the argument to this node
 is expected to be another node.
 In C we can get around this by using a union.
 We created a union \texttt{field}, defined in figure \ref{fig:field}
-that can either represent an |Int|, |Char|, |Float|, node, or an array of \texttt{Node*}
+that can either represent an |Int|, |Char|, |Float|, \texttt{Node}, or an array of \texttt{Node*}
 in case a node has more than 3 children.
 
 \begin{figure}
@@ -349,10 +351,10 @@ We don't want to create an expression for a primitive value
 if we're only going to deconstruct it,
 so it becomes useful to know what parameters in a function must be evaluated,
 A parameter that must be evaluated by a function is called \emph{strict}\index{strict}.
-Formally, a function |f| is strict in parameter |x| if 
+Formally, a function |f| is strict in its parameter if 
 |f EXEMPT = EXEMPT|.
 
-We use |EXEMPT| here to mean that the value of |x| diverges,
+We use |EXEMPT| here to mean that the value of it's parameter does not evaluate to a value,
 this can come from a call to the |error| function, or
 an infinite computation.
 It does not mean that |f| failed to return a value.
@@ -368,11 +370,11 @@ This could cause an infinite loop in the following program:
 > main = (f loop) ? 1
 
 This should return a single result, and never try to evaluate |loop|.
-For this reason we consider failing computations to be similar to constructors for the purposes
-of strictness analysis.
+For this reason we consider failing computations to be 
+similar to expressions rooted by constructors for the purposes of strictness analysis.
 
 We implemented an earlier form of strictness analysis described by Peyton Jones et al. \cite{haskellOpt}.
-The idea is that we start by assuming every function is strict in all it's parameters.
+The idea is that we start by assuming every function is strict in all its parameters.
 Then as we analyze a function we determine which parameters can be relaxed.
 For example consider the following function:
 
@@ -415,13 +417,13 @@ The current state of the art for Haskell is backwards projection analysis \cite{
 Studying the validity and implementation of these strictness analyzers in regard to Curry
 would all be great candidates for future work.
 
-Once we know which arguments are strict we, can split the function into a wrapper function
+Once we know which arguments are strict we can split the function into a wrapper function
 and a worker function \cite{strictBack}.
 We can see this with |fib|.
 We take the current optimized version in figure \ref{fig:fibOpt2},
 and apply the worker/wrapper split in figure \ref{fig:fibOpt3}.
-This creates two function |fib|, which simply evaluates and unboxes the parameter,
-and |fib#worker| does the rest of the computation.
+This creates two functions, |fib|, which simply evaluates and unboxes the parameter,
+,and |fib#worker|, which does the rest of the computation.
 Then we optimize the function again resulting in figure \ref{fig:fibOpt4}.
 Notice that since |fib| is no longer recursive we can inline it.
 So we can inline the call to |fib| in the following code:
@@ -507,6 +509,7 @@ and the ideas were even implemented, and shown to be effective in the Packs comp
 
 We begin with a set of rewrite rules $R$, for an Inductively Sequential system,
 and define a \texttt{compile} function to translate the rules into
+a rewrite system that simulates
 an innermost rewriting system by adding two new rules \textbf{H} and \textbf{N}.
 These rules are roughly analogous to our \texttt{hnf} and \texttt{nf} functions
 from chapter \ref{ch:The Generated Code}.
@@ -571,8 +574,8 @@ but we already managed to avoid these node constructions with unboxing and inlin
 The more interesting point here is that we can avoid the construction of the recursive call to |fib|.
 So, how do we avoid constructing these nodes?
 There are two key pieces of information that will help us here.
-First, the node labeled by |fib| is constructed in the right hand side of the rewrite rule.
-Second, the node is needed in the right hand side.
+First, the node labeled by |fib| is not the root of the right hand side.
+Second, the node is needed in that expression.
 If both of these conditions are met, then we do not need to construct the node.
 We can \emph{shortcut} the construction, and just compute the value.
 
@@ -595,7 +598,7 @@ We can \emph{shortcut} the construction, and just compute the value.
 > H_fibComp(True,(x-y))      = H_m(x,y)
 > H_fibComp(True,(fib n))    = H_fib(n)
 > H_fibComp(False,n)         = H_p(H_fib(H_m(n,1)), H_fib(H_m(n,2)))
-\caption{The \textbf{H} function, and associated transformed functions for |++| and |length|.}
+\caption{The \textbf{H} function, and associated transformed functions for |fib|.}
 \label{fig:Hfib}
 \end{figure}
 
@@ -833,7 +836,7 @@ Recall our program from before.
 >              True   -> 0
 >              False  -> 1
 
-If the function |g x| is non-deterministic, 
+If the expression |g x| is non-deterministic, 
 then the node containing |f| will be marked as non-deterministic.
 However, |f 3| was stored in the \texttt{RET} node,
 so the \texttt{root} parameter will be \texttt{RET}.
@@ -1213,7 +1216,7 @@ We have the following three theorems about |build_fold|, which we will prove lat
 These are analogous to the |foldr/build| theorem.
 
 \begin{theorem}
-For all functions of the appropriate type in a deterministic program,
+For all functions of the appropriate type that evaluate no $?$ expressions,
 the following qualities hold.
 > build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
 > foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
@@ -1228,7 +1231,7 @@ we can look at the implementation.
 Deforestation turned out to be one of the easiest optimizations to implement.
 The implementation is entirely in GAS, and it proceeds in two steps.
 First we find any case where a |build| or |build_fold|
-is used exactly once in either a |build_fold| or |fold|.
+occurs exactly once in either a |build_fold| or |fold|.
 If this is the case, we inline the variable that |build| is bound to into it's single use.
 This temporarily takes our expression out of A-Normal Form,
 but we will restore that with the second step,
@@ -1304,7 +1307,9 @@ The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
 \end{minipage}\\
 \caption{The Deforestation optimization. \\
          The lambda in the build rule is a call to a known function.\\
-         The lets are added to keep the expression in A-Normal Form.}
+         The lets are added to keep the expression in A-Normal Form.\\
+         The expression |e || cond ==> e'| should be read as
+         ``|e| rewrites to |e'| given that |cond| holds.''}
 \label{fig:deforest}
 \end{figure}
 
@@ -1380,6 +1385,8 @@ While these results are very promising, we still need to know if Deforestation i
 \subsection{Correctness}
 First we show that the |build_fold| theorems are valid for a deterministic subset of Curry
 using the same reasoning as the original foldr-build rule.
+Without non-determinism and free variables, we can apply the same arguments as the original paper
+on shortcut deforestation \cite{shortcutDeforestation}.
 
 \begin{theorem}
 For any deterministic |f|, |z|, |g|, |mkf|, and |mkz|,
@@ -1390,7 +1397,8 @@ the following equations hold.
 \end{theorem}
 
 \begin{proof}
-Recall that the free theorem for |build| is
+Recall that the free theorem\cite{theoremsForFree} for |build|
+is for all |h|, |f|, and |f'| of the appropriate type:
 > (forall (a : A) (forall (b : B) h (f a b) = f' a (h b))) =>
 > forall (b : B) h (g_B f b) = g_B' f' (h b)
 
@@ -1437,10 +1445,12 @@ which establishes our result:
 \end{proof}
 
 While this gives us confidence that Deforestation is a possible optimization,
-we've already seen that referential transparency, 
+we've already seen that referential transparency \cite{whyFPmatters}, 
 and therefore equational reasoning, doesn't always apply in Curry.
+We need to show that both expressions will evaluate to the same set of values in
+any contest.
 In fact, as they are currently stated, 
-it's not surprising that this theorem doesn't actually hold in Curry.
+These theorems don't actually hold for Curry.
 However, with a few assumptions, we can remedy this problem.
 First, we need to rewrite our rules so that the reduced expression is in A-Normal form.
 
@@ -1477,12 +1487,15 @@ then the following equations are valid.
 We show the result for foldr-build, and the rest are similar calculations.
 We intend to show that for any |f|, |z|, and |g| that the following equation holds.
 > fold f z (build g (:) []) = g f z
+That is, we show that |fold f z (build g (:) [])| reduces to the same values as
+|g f z|.
 
 We proceed in a manner similar to \cite{freeTheoremsCurry}.
 First, notice that |build g (:) []| is constructing a list.
 However, since |g| is potentially non-deterministic, and it might fail,
-we may have a non-deterministic collection of lists when normalizing this expression.
+we may have a non-deterministic alternation of lists when evaluating this expression.
 Let's make this explicit.
+After evaluating |build g (:) []| we will produce an alternation of several lists.
 
 > build g (:) []  = g_11 : g_12 : g_13 : ... end_1
 >                 ? g_21 : g_22 : g_23 : ... end_2
@@ -1490,26 +1503,36 @@ Let's make this explicit.
 >                 ? g_k1 : g_k2 : g_k3 : ... end_k
 Where, for all |i|, |end_i = [] ? EXEMPT|.
 
-Here we have a collection of |k| lists,
+Here we have a alternation of |k| lists,
 and each list ends either with the empty list, or the computation may have failed along the way.
 Therefore, |end_i| may be either |[]| or |EXEMPT|.
 In fact, it might be the case that an entire list is |EXEMPT|,
 but this is fine, because that would still fit this form defined above.
 
-Now, let's see what happens when we normalize the entire expression.
-Recall that if all arguments are in A-Normal form, then function application distributes over choice.
-That is, if |f|, |a|, |b| are all in ANF, then |f (a ? b) = f a ? f b|.
-This is because the duplication of |f| doesn't matter, because it's a trivial expression.
+We can generalize this by passing arbitrary arguments to build.
+The expression |build g `f` z| evaluates to the following alternation of values.
+> build g `f` z
+>   =  (g_11 `f` g_12 `f` g_13 `f` ... z_end1) ? 
+>      (g_21 `f` g_22 `f` g_23 `f` ... z_end2) ? 
+>       ...
+>      (g_k1 `f` g_k2 `f` g_k3 `f` ... z_endk)
+Where, for all |i|, |z_endi| is |EXEMPT| if |end_i| is |EXEMPT| and |z| otherwise.
 
-> foldr f z (build g (:) []) 
->   =  let fold = foldr f z
+Now, let's see what happens when we normalize the entire expression.
+Recall that if |f| is a dominator of |a ? b|, then |f (a ? b) = f a ? f b| \cite{bubbling}.
+Therefore if all arguments are in A-Normal form, then function application distributes over choice.
+Since |foldr| is a dominator of everything in |foldr `f` z (build g (:) []| we have the following
+derivation.
+
+> foldr `f` z (build g (:) []) 
+>   =  let fold = foldr `f` z
 >      in fold (build g (:) [])
->   =  let fold = foldr f z
+>   =  let fold = foldr `f` z
 >      in fold (  g_11 : g_12 : g_13 : ... end_1 ? 
 >                 g_21 : g_22 : g_23 : ... end_2 ? 
 >                 ...
 >                 g_k1 : g_k2 : g_k3 : ... end_k)
->   =  let fold = foldr f z
+>   =  let fold = foldr `f` z
 >      in  fold (  g_11 : g_12 : g_13 : ... end_1) ? 
 >          fold (  g_21 : g_22 : g_23 : ... end_2) ? 
 >                  ...
@@ -1539,9 +1562,10 @@ If |f| is strict, then any failure in the list will cause the entire branch to f
 Consider the following expression:
 > foldr (\x y -> 1) 0 (build (\c n -> 0 `c` 1 `c` EXEMPT))
 
-Evaluating |build| to constructor normal form would produce a failure,
+Evaluating the expression rooted by |build| to constructor normal form would produce a failure,
 since the tail of the list is |EXEMPT|.
-However, since the |f| in |foldr| never looks at either of it's arguments,
+However, since the first parameter in the expression rooted by |foldr| 
+never looks at either of it's arguments,
 this branch of the computation can still return a result.
 
 

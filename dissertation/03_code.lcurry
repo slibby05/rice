@@ -121,40 +121,27 @@ and we will fill in details as we progress.
 
 \begin{figure}
 \begin{verbatim}
-void Prelude_not_hnf(field root)
-{
+void Prelude_not_hnf(field root) {
   field x = child_at(root, 0);
 
   field scrutenee = x;
-  while(true)
-  {
-    switch(TAG(scrutenee))
-    {
+  while(true) {
+    switch(TAG(scrutenee)) {
       case FAIL_TAG:
-      {
         fail(root);
         return;
-      }
       case FORWARD_TAG:
-      {
         scrutenee = child_at(scrutenee,0);
         break;
-      }
       case FUNCTION_TAG:
-      {
         HNF(scrutenee);
         break;
-      }
       case Prelude_True_TAG:
-      {
         set_Prelude_False(root, 0);
         return;
-      }
       case Prelude_False_TAG:
-      {
         set_Prelude_True(root, 0);
         return;
-      }
     }
   }
 }
@@ -384,14 +371,12 @@ void Prelude_not_hnf(field root) {
       case CHOICE_TAG:
         choose(scrutenee);
         break;
-
       case FREE_TAG:
         push(bt_stack(free_var())choose(scrutenee);
         push_frame(scrutenee, free_var());
         push_choice(scrutenee, make_Prelude_False(0));
         set_Prelude_True(scrutenee, 0);
         break;
-
       case Prelude_True_TAG:
         push_frame(root, make_Prelude_not_1(x));
         set_Prelude_False(root, 0);
@@ -401,7 +386,7 @@ void Prelude_not_hnf(field root) {
   }
 }
 \end{verbatim}
-\caption{implementation of |not| with possible non-deterministic values.}
+\caption{Implementation of |not| with possible non-deterministic values.}
 \label{fig:notNondet}
 \end{figure}
 
@@ -425,7 +410,6 @@ void Prelude_not_hnf(field root) {
   field x = child_at(root, 0);
   field scrutenee = x;
   bool nondet = false;
-
   while(true) {
     nondet |= scrutenee->nondet;
     switch(TAG(scrutenee)) {
@@ -439,14 +423,12 @@ void Prelude_not_hnf(field root) {
         choose(scrutenee);
         nondet = true;
         break;
-
       case FREE_TAG:
         push_frame(scrutenee, free_var());
         push_choice(scrutenee, make_Prelude_False(0));
         set_Prelude_True(scrutenee, 0);
         nondet = true;
         break;
-
       case Prelude_True_TAG:
         if(nondet) push_frame(root, make_Prelude_not_1(x));
         set_Prelude_False(root, 0);
@@ -457,7 +439,7 @@ void Prelude_not_hnf(field root) {
   }
 }
 \end{verbatim}
-\caption{implementation of |not| with possible non-deterministic values.}
+\caption{The full implementation of |not|.}
 \label{fig:notFull}
 \end{figure}
 

@@ -1008,7 +1008,8 @@ The first is that it is exact.
 There are many different ways to draw the same graph,
 but there is only one way to write it out a linear representation\cite{graphRewriting}
 The second is that this representation corresponds closely to the representation in a computer.
-The notation these graphs is given by the grammar
+The notation these graphs is given by the following grammar,
+where the set of nodes and the set of labels are disjoint.
 
 > Graph  ->  Node 
 > Node   ->  n : L(Node, ... Node) 

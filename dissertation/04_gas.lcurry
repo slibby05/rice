@@ -13,7 +13,7 @@ For our purposes we are concerned with
 \emph{compile time optimizations}\index{compile time optimizations}.
 These are transformations on a program, performed at compile time,
 that are intended to produce more efficient code.
-Most research in the Curry comunity has been done on \emph{run time optimizations}
+Most research in the Curry community has been done on \emph{run time optimizations}
 \index{run time optimizations}, which are improvements to the evaluation of Curry programs.
 This can include the development of new rewriting strategies, or improvements to
 pull-tabbing and bubbling \cite{sprite,bubblingPractical}.

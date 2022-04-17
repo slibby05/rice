@@ -554,7 +554,7 @@ When calling this function with a free variable, we have the derivation below in
    \item backtracking to the closest alternative
    \item backtracking stack is 
          |[(r,change,Continue), (x,free,Continue)]|
-   \item The stack is empty, and there are no alternatives.
+   \item Both rewrites are popped, and the stack is empty with no alternatives.
 \end{itemize}
 %}
 \caption{Evaluation of |change x where x free|}
@@ -741,7 +741,7 @@ This is clearly inefficient, so this isn't done in practice.
 A much faster method is to simply replace the contents, the label and children, of |n_1|
 with the contents of |n_2|.
 This works most of the time, but we run into a problem when
-function a rewrites to a single variable, such as the |id| function.
+a function can rewrite to a single variable, such as the |id| function.
 We call these functions \emph{collapsing functions}\index{collapsing functions}.
 One option to solve this problem is to evaluate the contractum 
 to head constructor form, and copy the constructor

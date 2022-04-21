@@ -518,7 +518,8 @@ and the \textbf{N} function computes an expression to constructor normal form
 by repeatedly calling the \textbf{H} function.
 We will focus on the \textbf{H} function itself, since that is where the optimization occurs.
 
-To translate $R$ to an innermost strategy, we traverse the definitional tree in post-order,
+To translate $R$ to a new rewritings system that simulates
+an innermost strategy, we traverse the definitional tree in post-order,
 and emit rules as we reach the leaves of the tree.
 We gloss over the details here, but an example of the \textbf{H} function for the curry function |++| and |length|
 are shown in figure \ref{fig:H}.

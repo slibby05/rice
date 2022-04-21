@@ -39,7 +39,6 @@ for each compiler.  We took the lowest execution time.
 We believe these results are as unbiased as we can hope for;
 however, it is important to remember that our results may vary across machines and environments.
 For most of our results the \ricesp compiler is a clear winner.
-However, when results are within 20 miliseconds we don't consider this a substantial improvement.
 
 
 \section{Tests}
@@ -48,7 +47,9 @@ Our test suite is based on the Kics2 test suite \cite{kics2}.
 We split the functions into three groups:
 Numeric computations meant to test Unboxing;
 non-deterministic computations;
-and list computations meant to test Deforestation;
+and list computations meant to test Deforestation.
+We don't have any specific tests for shortcutting, because it
+applies in almost every program.
 
 \begin{itemize}
 
@@ -435,7 +436,7 @@ sieve           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21
 \label{fig:memory}
 \end{figure}
 
-There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_out}, and \ref{fig:memory}
+There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_rice}, and \ref{fig:memory}
 that we feel are worth pointing out.
 First, it should be noted that the Mcc compiler performed very well,
 not only against both Kics2 and Pakcs, but it also performed well against \rice.

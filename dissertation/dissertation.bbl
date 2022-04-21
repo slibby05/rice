@@ -1,4 +1,4 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{100}
 
 \bibitem{synthesizedSetFunctions}
 Synthesizing set functions.
@@ -88,6 +88,12 @@ S.~Antoy, M.~Hanus, A.~Jost, and S.~Libby.
 \newblock Icurry.
 \newblock {\em CoRR}, abs/1908.11101, 2019.
 
+\bibitem{bubblingPractical}
+S.~Antoy and S.~Libby.
+\newblock {Making Bubbling Practical}.
+\newblock In {\em Proc.\ of the 27th International Workshop on Functional and
+  (Constraint) Logic Programming (WFLP 2018)}. Springer, 2018.
+
 \bibitem{DefinitionalTrees}
 Sergio Antoy.
 \newblock Definitional trees.
@@ -105,13 +111,6 @@ Sergio Antoy, Jacob Johannsen, and Steven Libby.
 \newblock {Needed Computations Shortcutting Needed Steps}.
 \newblock In {\em Electronic Proceedings in Theoretical Computer Science,
   EPTCS}, volume 183, pages 18--32. Open Publishing Association, 2015.
-
-\bibitem{reallyNeeded}
-Sergio Antoy and Andy Jost.
-\newblock Are needed redexes really needed?
-\newblock In {\em Proceedings of the 15th Symposium on Principles and Practice
-  of Declarative Programming}, PPDP '13, pages 61--71, New York, NY, USA, 2013.
-  ACM.
 
 \bibitem{sprite}
 Sergio Antoy and Andy Jost.
@@ -133,7 +132,15 @@ F.~Baader and T.~Nipkow.
 \newblock {\em {Term Rewriting and All That}}.
 \newblock Cambridge University Press, 1998.
 
-\bibitem{kics2Theory}
+\bibitem{graph_ir}
+H.~P. Barendregt, M.~C. J.~D. van Eekelen, J.~R.~W. Glauert, J.~R. Kennaway,
+  M.~J. Plasmeijer, and M.~R. Sleep.
+\newblock {Towards an intermediate language based on Graph Rewriting}.
+\newblock In J.~W. de~Bakker, A.~J. Nijman, and P.~C. Treleaven, editors, {\em
+  PARLE Parallel Architectures and Languages Europe}, pages 159--175, Berlin,
+  Heidelberg, 1987. Springer Berlin Heidelberg.
+
+\bibitem{Kics2Theory}
 B.~Brassel.
 \newblock {\em {Implementing Functional Logic Programs by Translation into
   Purely Functional Programs}}.
@@ -234,6 +241,13 @@ Andrew Gill, John Launchbury, and Simon~L. Peyton~Jones.
 Andrew~John Gill and Andrew~John Gill.
 \newblock Cheap deforestation for non-strict functional languages, 1996.
 
+\bibitem{dactl}
+J.~R.~W. Glauert, J.~R. Kennaway, and M.~R. Sleep.
+\newblock {Dactl: An experimental graph rewriting language}.
+\newblock In Hartmut Ehrig, Hans-J{\"o}rg Kreowski, and Grzegorz Rozenberg,
+  editors, {\em Graph Grammars and Their Application to Computer Science},
+  pages 378--395, Berlin, Heidelberg, 1991. Springer Berlin Heidelberg.
+
 \bibitem{crwl}
 J.~C. Gonz{\'a}lez-Moreno, M.~T. Hortal{\'a}-Gonz{\'a}lez, F.~J.
   L{\'o}pez-Fraguas, and M.~Rodr{\'i}guez-Artalejo.
@@ -304,6 +318,11 @@ G.~Huet and J.~L{\'e}vy.
 \newblock Computations in orthogonal rewriting systems, i.
 \newblock In {\em Computational Logic - Essays in Honor of Alan Robinson},
   1991.
+
+\bibitem{whyFPmatters}
+J.~Hughes.
+\newblock {Why Functional Programming Matters}.
+\newblock {\em Computer Journal}, 32(2):98--107, 1989.
 
 \bibitem{basicNarrowing}
 Jean-Marie Hullot.
@@ -396,6 +415,13 @@ Edward~S. Lowry and C.~W. Medlock.
 \newblock {Object Code Optimization}.
 \newblock {\em Commun. ACM}, 12(1):13--22, January 1969.
 
+\bibitem{mcc}
+Wolfgang Lux and Herbert Kuchen.
+\newblock An efficient abstract machine for curry.
+\newblock In Kurt Beiersd{\"o}rfer, Gregor Engels, and Wilhelm Sch{\"a}fer,
+  editors, {\em Informatik'99}, pages 390--399, Berlin, Heidelberg, 1999.
+  Springer Berlin Heidelberg.
+
 \bibitem{rewriteStrategies}
 Aart Middeldorp.
 \newblock Strategies for rewrite systems: Normalization and optimality.
@@ -404,6 +430,7 @@ Aart Middeldorp.
 \bibitem{foldUnfold}
 Ginés Moreno.
 \newblock Transformation rules and strategies for functional‐logic programs.
+\newblock 2002.
 
 \bibitem{lazyNarrowing}
 Juan~Jose Moreno-Navarro and Mario Rodriguez-Artalejo.
@@ -551,6 +578,12 @@ Valentin~F. Turchin.
 \newblock The concept of a supercompiler.
 \newblock {\em ACM Trans. Program. Lang. Syst.}, page 292–325, jun 1986.
 
+\bibitem{theoremsForFree}
+Philip Wadler.
+\newblock Theorems for free!
+\newblock In {\em FUNCTIONAL PROGRAMMING LANGUAGES AND COMPUTER ARCHITECTURE},
+  pages 347--359. ACM Press, 1989.
+
 \bibitem{deforestationWadler}
 Philip Wadler.
 \newblock {Deforestation: transforming programs to eliminate trees}.
@@ -559,7 +592,7 @@ Philip Wadler.
 \bibitem{ssaOptimizations}
 Mark~N. Wegman and F.~Kenneth Zadeck.
 \newblock {Constant Propagation with Conditional Branches}.
-\newblock {\em ACM Trans. Program. Lang. Syst.}, 13(2):181--210, April 1991.
+\newblock {\em ACM Trans. Program. Lang. Syst.}, 13(2):181--210, apr 1991.
 
 \bibitem{outerNarrowing}
 Jia-Huai You.

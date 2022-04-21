@@ -274,7 +274,7 @@ so we might as well evaluate the case expression right now.
 
 This transformation is called Case Canceling,
 and it's the workhorse of all of our other optimizations.
-The transformation is given and \ref{fig:CaseCode} 
+The transformation is given and \ref{fig:caseCode} 
 and examples of the transformation are given in \ref{fig:CaseCancel} .
 If the scrutinee of a case is labeled by a constructor,
 then we find the appropriate branch, and reduce to that branch.

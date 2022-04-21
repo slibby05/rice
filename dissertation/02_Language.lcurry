@@ -265,7 +265,7 @@ This issue of run-time choice semantics will appear throughout the compiler.
 The first step in the compiler pipeline is to parse a Curry program into FlatCurry\index{FlatCurry}.
 The definition is given in figure \ref{fig:flatSyntax}.
 The FlatCurry language is the standard for representing Curry programs
-in compilers \cite{pakcs, kics2, kics2Theory, sprite}, 
+in compilers \cite{pakcs, kics2, Kics2Theory, sprite}, 
 and has been used to define the semantics of Curry programs \cite{currySemantics}.
 
 

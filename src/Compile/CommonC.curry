@@ -1,7 +1,7 @@
 module Compile.CommonC where
 
 import Prelude hiding (lookup)
-import Sort (sort)
+import Sort (sortBy)
 import Util
 import ICurry.Types
 import Compile.IUtil
@@ -12,18 +12,17 @@ import Compile.PrimOps (primOps)
 type ShowBlock = FunPos -> IBlock -> [CStmt]
 
 showDecl :: IVarDecl -> String
-showDecl (IVarDecl  v) 
- | isRET v   = ""
- | otherwise = field v ++ ";"
+showDecl (IVarDecl  v) = field v ++ ";"
+-- | isRET v   = ""
+-- | otherwise = field v ++ ";"
 showDecl (IFreeDecl v) = (field v .= "free_var()") ++ ";"
 
 showAsgn :: IAssign -> [CStmt]
 showAsgn (INodeAssign v ixs e) = [(children (var v) ixs .= showExpr e) ++ ";"]
 showAsgn (IVarAssign  v e)
  | isRET v   = setCall e ++
-               ["field RET_forward" .=  "RET" ++ ";"]
- | otherwise = [var v .= showExpr e ++ ";",
-                "field " ++ fwd v .= var v ++ ";"]
+               [var v .= "RET;"]
+ | otherwise = [var v .= showExpr e ++ ";"]
 
 setCall :: IExpr -> [CStmt]
 setCall (IOr e1 e2) = [scall "set_choice" ["RET", showExpr e1, showExpr e2]]
@@ -37,6 +36,14 @@ setCall (IFCall f es)
 
 isApply :: IQName -> Bool
 isApply (m,n,_) = m == "Prelude" && n == "apply"
+
+
+getCall :: [IAssign] -> [CName]
+getCall vs = [c | (IVarAssign v e) <- vs, isRET v, c <- call e]
+ where call e = case e of
+                    (IFCall f es) -> if isApply f then ["apply_RET_hnf"] else [ret_hnf f]
+                    (IOr e1 e2)   -> ["choice_RET_hnf"]
+                    _             -> []
 
 ----------------------------------------
 -- handling string constants and escape characters
@@ -69,7 +76,7 @@ escChr c = case c of
 ----------------------------------------
 
 showPrim :: String -> IExpr -> String
-showPrim typ (IVar v) = fwd v ++ "."++typ
+showPrim typ (IVar v) = var v ++ "."++typ
 showPrim _   (ILit l) = showLit l
 
 showLit :: ILiteral -> String
@@ -81,80 +88,6 @@ showLit (IFloat f) = show f
 ------------------------------------------
 -- blocks
 ------------------------------------------
-
-
-failBlock :: FunPos -> IVarIndex -> Bool -> [CStmt]
-failBlock pos@(_,_,n) v retFunction = ccase "FAIL_TAG"
-                          (
-                              save pos v retFunction ++
-                              [scall "fail" [root],
-                               scall "debug" ["LOW", "\"leaving " ++ toName n Nothing ++ "\\n\""],
-                               scall "debug_expr" ["LOW", root],
-                               return]
-                          )
- where return = if retFunction then "return backup;" else "return;"
-       root = if retFunction then "RET" else "root"
-
-funBlock :: IVarIndex -> [CStmt]
-funBlock v = ccase "FUNCTION_TAG"
-             [
-                 symhnf (fwd v) ++ ";",
-                 cbreak
-             ]
-
-
-choiceBlock :: IVarIndex -> Bool -> [CStmt]
-choiceBlock v retFunction = ccase "CHOICE_TAG"
-                            [
-                                scall "choose" [fwd v],
-                                cbreak
-                            ]
-
-forwardBlock :: IVarIndex -> [CStmt]
-forwardBlock v = ccase "FORWARD_TAG"
-                 [
-                     fwd v .= children (fwd v) [0] ++ ";",
-                     cbreak
-                 ]
-
-freeCaseBlock :: IVarIndex -> [CName] -> [CStmt]
-freeCaseBlock v (b:bs) = ccase "FREE_TAG"
-                         (
-                            pushFree v b bs push set
-                         )
- where push v con = scall "push_choice" [v, "make_"++con++"_free()"]
-       set v b = scall ("set_"++b++"_free") [v]
-
-freeLitBlock :: IVarIndex -> CType -> [ILiteral] -> [CStmt]
-freeLitBlock v _     []     = ccase "FREE_TAG"
-                              [
-                                  scall "printf" ["\"free variable used in primitive operation\\n\""],
-                                  scall "exit" ["1"]
-                              ]
-freeLitBlock v ctype (b:bs) = ccase "FREE_TAG"
-                              (
-                                  pushFree v b bs push set
-                              )
- where push v l = scall "push_choice" [v, call ("make_"++ctype) [showLit l, "0"]]
-       set v b = scall ("set_"++ctype) [v, showLit b, "0"]
-
-pushFree :: IVarIndex -> a -> [a] -> (CName -> a -> CStmt) -> (CName -> a -> CStmt) -> [CStmt]
-pushFree v b bs push set = if isRET v
-                           then cifElse ((fwd v ++ ".n") .== "RET.n")
-                                (
-                                    [make_restore v] ++ 
-                                    makeCalls "RET" (var (abs v))
-                                )
-                                (
-                                    makeCalls (fwd v) (fwd v)
-                                )
-                           else makeCalls (fwd v) (fwd v)
- where makeCalls :: String -> String -> [CStmt]
-       makeCalls v bv = [scall "push_frame" [bv, "free_var()"]] ++
-                         map (push bv) bs ++
-                        [set v b,
-                         "nondet = true;",
-                         cbreak]
 
 showIfCase :: FunPos -> [IConsBranch] -> ShowBlock -> [CStmt]
 showIfCase pos [cond,t,f] block =  cifElse (showCond (exp cond))
@@ -177,12 +110,12 @@ showConsCase pos v bs call block retFunction
       nondetCode call ++
       cwhile "true"
       (
-        ["nondet" .|= nondet (fwd v) ++ ";"] ++
-        cswitch (symtag (fwd v))
+        ["nondet" .|= "scrutinee.n->nondet;"] ++
+        cswitch "scrutinee.n->symbol->tag"
         (
           [failBlock pos v retFunction,
            funBlock v,
-           choiceBlock v retFunction,
+           choiceBlock v,
            forwardBlock v,
            freeBlock] ++ 
           map (showConsBranch pos v block retFunction) bs'
@@ -196,14 +129,24 @@ showConsCase pos v bs call block retFunction
                    else freeCaseBlock v cons
        bs' = filter (\(IConsBranch (m,c,_) _ _) -> (m++c) /= "") bs
        btype = case bs of (IConsBranch ("",c,_) _ _ : _) -> "_"++c
-       nondetCode []           = []
-       nondetCode (ret_call:_) = [field (abs v) .= "(field)"++scall ret_call ["NULL"],
-                                  "RET_forward = RET;"] ++
-                                 cif ( node (abs v) .!= "NULL")
+       nondetCode []           = ["field scrutinee" .= var v ++ ";"]
+       nondetCode (ret_call:_) = ["field "++backup v .=  "(field)"++scall ret_call ["NULL"],
+                                  "field scrutinee = RET;"] ++
+                                 cif (nbackup v .!= "NULL")
                                  [
                                     "nondet = true;",
-                                    scall "memcpy" [node (abs v), "RET.n", "sizeof(Node)"]
-                                 ]
+                                    scall "memcpy" [nbackup v, "RET.n", "sizeof(Node)"]
+                                 ] ++
+                                 -- if RET isn't nondet, but it is a forwarding node,
+                                 -- then we want to store the node it forwards to
+                                 -- as our backup.
+                                 -- There's no need to copy/reevaluate RET,
+                                 -- but it's very important that we have a node to store
+                                 -- if the forwarding chain is nondet.
+                                 cElseIf ("RET.n->symbol->tag" .== "FORWARD_TAG",
+                                 [
+                                    backup v .= "RET.n->children[0];"
+                                 ])
                       
 
 
@@ -218,25 +161,90 @@ showConsBranch pos v block retFunction (IConsBranch c _ b)
 showLitCase :: FunPos -> IVarIndex -> [ILitBranch] -> ShowBlock -> Bool -> [String]
 showLitCase pos v bs block retFun = cifCase (zipWith caseCond bs [1..]) [scall "fail" ["root"], return]
  where btype = litBranchType (head bs)
-       caseCond b i = ((conv_t btype (fwd v)) .== litBranchValue b,
+       caseCond b i = ((conv_t btype (var v)) .== litBranchValue b,
                        block (descend i pos) (litBlock b))
        return = if retFun then "return backup;" else "return;"
 
 
 
-getCall :: [IAssign] -> [CName]
-getCall vs = [c | (IVarAssign v e) <- vs, isRET v, c <- call e]
- where call e = case e of
-                    (IFCall f es) -> if isApply f then ["apply_RET_hnf"] else [ret_hnf f]
-                    (IOr e1 e2)   -> ["choice_RET_hnf"]
-                    _             -> []
+failBlock :: FunPos -> IVarIndex -> Bool -> [CStmt]
+failBlock pos@(_,_,n) v retFunction = ccase "FAIL_TAG"
+                          (
+                              save pos v retFunction ++
+                              [scall "fail" ["root"],
+                               scall "debug" ["LOW", "\"leaving " ++ toName n Nothing ++ "\\n\""],
+                               scall "debug_expr" ["LOW", "root"],
+                               return]
+                          )
+ where return = if retFunction then "return backup;" else "return;"
+
+funBlock :: IVarIndex -> [CStmt]
+funBlock v = ccase "FUNCTION_TAG"
+             [
+                 "HNF(scrutinee);",
+                 cbreak
+             ]
+
+
+choiceBlock :: IVarIndex -> [CStmt]
+choiceBlock v = ccase "CHOICE_TAG"
+              [
+                  "choose(scrutinee);",
+                  cbreak
+              ]
+
+forwardBlock :: IVarIndex -> [CStmt]
+forwardBlock v = ccase "FORWARD_TAG"
+                 [
+                     "scrutinee = scrutinee.n->children[0];",
+                     cbreak
+                 ]
+
+freeCaseBlock :: IVarIndex -> [CName] -> [CStmt]
+freeCaseBlock v (b:bs) = ccase "FREE_TAG"
+                         (
+                            pushFree v b bs push set
+                         )
+ where push v con = scall "push_choice" [v, "make_"++con++"_free()"]
+       set v b' = scall ("set_"++b'++"_free") [v]
+
+freeLitBlock :: IVarIndex -> CType -> [ILiteral] -> [CStmt]
+freeLitBlock _ _     []     = ccase "FREE_TAG"
+                              [
+                                  scall "printf" ["\"free variable used in primitive operation\\n\""],
+                                  scall "exit" ["1"]
+                              ]
+freeLitBlock v ctype (b:bs) = ccase "FREE_TAG"
+                              (
+                                  pushFree v b bs push set
+                              )
+ where push v' l = scall "push_choice" [v', call ("make_"++ctype) [showLit l, "0"]]
+       set v' b' = scall ("set_"++ctype) [v', showLit b', "0"]
+
+pushFree :: IVarIndex -> a -> [a] -> (CName -> a -> CStmt) -> (CName -> a -> CStmt) -> [CStmt]
+pushFree v b bs push set
+ | not (isRET v) = makeCalls "scrutinee"
+ | otherwise   = cifElse ("scrutinee.n == RET.n")
+                 (
+                     [make_restore v] ++ 
+                     makeCalls (backup v)
+                 )
+                 (
+                     makeCalls "scrutinee"
+                 )
+ where makeCalls v' = [scall "push_frame" [v', "free_var()"]] ++
+                       map (push v') bs ++
+                      [set "scrutinee" b,
+                       "nondet = true;",
+                       cbreak]
+
 
 
 save :: FunPos -> IVarIndex -> Bool -> [CStmt]
 save (p,vs,n) v retFunction 
  | isRET v   = cif ("nondet")
                [
-                   make_restore v,
+                   --make_restore v,
                    saveCall
                ]
  | otherwise = cif ("nondet")
@@ -244,12 +252,25 @@ save (p,vs,n) v retFunction
                    saveCall
                ]
  where saveCall = if retFunction 
-                   then scall "backup = save_RET" ["backup", makePart n p (sort (map abs vs))]
-                   else scall "save" ["root", makePart n p (sort (map abs vs))]
+                   then "backup" .= scall "save_RET" ["backup", part]
+                   else scall "save" ["root", part]
+       part = makePart n p (sortBy absCmp vs)
+       absCmp x y = abs x <= abs y
+
+-- testing out how much nondet really helps
+-- save :: FunPos -> IVarIndex -> Bool -> [CStmt]
+-- save (p,vs,n) v retFunction 
+--  | isRET v   = [{-make_restore,-} saveCall]
+--  | otherwise = [saveCall]
+--  where saveCall = if retFunction 
+--                    then "backup" .= scall "save_RET" ["backup", part]
+--                    else scall "save" ["root", part]
+--        part = makePart n p (sortBy absCmp vs)
+--        absCmp x y = abs x <= abs y
 
 
 makePart :: IQName -> Path -> [IVarIndex] -> CExpr
-makePart n p vs = call ("make_"++getPathName n p) (map var vs ++ ["0"])
+makePart n p vs = call ("make_"++getPathName n p) (map backup vs ++ ["0"])
        
 
 ------------------------------------
@@ -258,7 +279,7 @@ makePart n p vs = call ("make_"++getPathName n p) (map var vs ++ ["0"])
 
 showExpr :: IExpr -> CExpr
 showExpr (IVar v)           = var v
-showExpr (IVarAccess v ixs) = children (fwd v) ixs
+showExpr (IVarAccess v ixs) = children (var v) ixs
 showExpr (ILit l)           = toUnion (litType l) (showLit l)
 showExpr (IFCall f es)
  | isApply f                = "make_apply"++show (length es-1) ++ cargs (map showExpr es)
@@ -288,7 +309,7 @@ missingArgs es m = (map showExpr es ++ replicate m nullf ++ [show m])
 ------------------------------------
 
 setExpr :: FunPos -> IExpr -> Bool -> [CStmt]
-setExpr pos (IVar v)          _  = [scall "set_forward" ["root", var v]]
+setExpr _   (IVar v)          _  = [scall "set_forward" ["root", var v]]
 setExpr _   (ILit (IInt   v)) _  = ["root.i" .= show v] -- this shouldn't happen?
 setExpr _   (ILit (IChar  v)) _  = ["root.c" .= show v]
 setExpr _   (ILit (IFloat v)) _  = ["root.f" .= show v]
@@ -309,7 +330,7 @@ setExpr _   (ICCall c es)     _
 setExpr _   (IFPCall f n es)  _  = [setPartComb f n es]
 setExpr _   (ICPCall c n es)  _  = [setPartComb c n es]
 
--- used to turn of the automatic evaluation of known funcitons
+-- used to turn off the automatic evaluation of known functions
 --setExpr _   (IFCall f es) retFun
 -- | isApply f                     = [scall ("set_apply"++show (length es-1)) ("root":map showExpr es)]
 -- | otherwise                     = case lookup f primOps of

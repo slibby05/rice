@@ -212,7 +212,7 @@ addLet k (v,ve) e = let (ve',k') = rename (k+1) ((v,k) @> id) ve
 caseCancel :: Opt
 caseCancel _ (Case _ c@(Comb ConsCall n es) (_++[Branch (Pattern n vs) e]++_))
  | run_unboxing || not (snd n `elem` ["int","char","float"])
- = (subGrounded e vs es, "CASE_CALCEL_CONS", 0)
+ = (subGrounded e vs es, "CASE_CANCEL_CONS", 0)
 
 -- used for turning off inlining
 --caseCancel _ (Case _ c@(Comb ConsCall n es) (_++[Branch (Pattern n vs) e]++_))

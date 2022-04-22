@@ -57,7 +57,8 @@ toBlock vs exp root =
       stmt  = toStmt exp
   in  IBlock decls asgns stmt
    where
-    asgnParam v i = IVarAssign v (IVarAccess root [i])
+    asgnParam v i = IVarAssign v (IVarAccess scrutinee [i])
+    scrutinee = if root == 0 then 0 else 1
 
 
 

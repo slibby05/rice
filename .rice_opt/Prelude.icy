@@ -1,0 +1,1 @@
+IProg "Prelude" ["PreludeBase","PreludeCompare","PreludeNum","PreludeList","PreludeString","PreludeRead","PreludeMonad","PreludeTuple"] [] []

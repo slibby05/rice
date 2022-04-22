@@ -6,13 +6,14 @@ import Compile.ToC_RET (funSource_RET)
 import Compile.C
 import Compile.IUtil
 import ICurry.Types
+import FlatUtils.DataTable (DataTable, constants)
 
 ----------------------------------------------------
 -- main.c file
 ----------------------------------------------------
 
-writeMain :: String -> String -> IO ()
-writeMain file name 
+writeMain :: String -> String -> DataTable -> IO ()
+writeMain file name dt
  = writeFile file $ unlines $
      ["#include <stdio.h>",
       cinclude "node",
@@ -24,26 +25,16 @@ writeMain file name
       "field RET;",
       "unsigned long mem;",
       "",
-      "field True;",
-      "field False;",
-      "field Nil;",
-      "field Num[256];",
-      "",
+      "field Num[256];"] ++
+      ["field "++mangle n++";" | n <- constants dt] ++
+      ["",
       "void makeCrap()",
-      "{",
-      "  True.n = (Node*)alloc(sizeof(Node));",
-      "  True.n->symbol = &Prelude_True_symbol;",
-      "  True.n->missing = 0;",
-      "",
-      "  False.n = (Node*)alloc(sizeof(Node));",
-      "  False.n->symbol = &Prelude_False_symbol;",
-      "  False.n->missing = 0;",
-      "",
-      "  Nil.n = (Node*)alloc(sizeof(Node));",
-      "  Nil.n->symbol = &Prelude__LB_RB_symbol;",
-      "  Nil.n->missing = 0;",
-      "",
-      "  for(int i = -127; i < 128; i++)",
+      "{"]++
+      concat [["  "++mangle c++".n = (Node*)alloc(sizeof(Node));",
+               "  "++mangle c++".n->symbol = &"++mangle c++"_symbol;",
+               "  "++mangle c++".n->missing = 0;",
+               "  "] | c <- constants dt] ++
+      ["  for(int i = -127; i < 128; i++)",
       "  {",
       "      Num[i+127].n = (Node*)alloc(sizeof(Node));",
       "      Num[i+127].n->symbol = &int_symbol;",
@@ -58,6 +49,7 @@ writeMain file name
         ["bt_stack = new_stack();",
          "RET.n = (Node*)alloc(sizeof(Node));",
          "",
+         "makeCrap();",
          "field root = make_"++(nameMangle name)++"_main(0);",
          "nf_all(root);",
          "return 0;"])

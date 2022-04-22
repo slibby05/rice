@@ -50,6 +50,7 @@ main = do
             else compileAll (head files) opts
 
 
+
 genCode :: String -> Bool -> IO ()
 genCode p isGcc = do icyName <- icyFile p
                      hasICurry <- doesFileExist icyName
@@ -60,8 +61,10 @@ genCode p isGcc = do icyName <- icyFile p
                      putStrLn (obj isGcc inc p)
                      system (obj isGcc inc p)
                      when (hasIMain icy) $
-                           do main_file <- mainFile
-                              writeMain main_file p
+                           do fcys <- readFlatWithImports p
+                              let dt = foldr DT.fillTable DT.empty (map fst fcys)
+                              main_file <- mainFile
+                              writeMain main_file p dt
                               imports <- icyImports [p] icy
                               let includeFiles = imports ++ ["runtime", "stack", "external", "main"]
                               let files = map (\x -> inc++x++".c") includeFiles
@@ -126,7 +129,7 @@ compileAll file args =
 
      when (hasMain file fcys) $
            do main_file <- mainFile
-              writeMain main_file file
+              writeMain main_file file dt
               let includeFiles = ((map (progName . fst) fcys') ++ ["runtime", "stack", "external", "main"])
               let files = map (\x -> inc++x++".c") includeFiles
               let comp = if gcc then "gcc" else "clang"

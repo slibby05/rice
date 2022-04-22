@@ -12,4 +12,4 @@ goal1 = primes!!24001
 goal2 = primes!!54001
 goal3 = primes!!4000
 
-main = goal0
+main = goal3

@@ -19,6 +19,7 @@ toHeader (IProg name imps types allFuns) write append
       makeIntro write name imps funs
       mapM_ (makeTags append) types 
       writeSymbols append types funs
+      mapM_ (declConstant append) [n | (IDataType _ cs) <- types, (n,0) <- cs]
       mapM_ (setType append) types 
       mapM_ (setFun append) funs  
       mapM_ (makeType append) types 
@@ -27,7 +28,7 @@ toHeader (IProg name imps types allFuns) write append
       mapM_ (setTypeFree append) types 
       mapM_ (makeTypeFree append) types 
       append $ "#endif //"++name++"_H"
- where iname (IFunction name _ _ _ _) = name
+ where iname (IFunction n _ _ _ _) = n
 
 makeIntro :: (String -> IO ()) -> String -> [String] -> [IFunction] -> IO ()
 makeIntro write name imps funs = write $ unlines $
@@ -42,7 +43,7 @@ makeIntro write name imps funs = write $ unlines $
                                      nl
 
 declareFun :: IFunction -> CStmt
-declareFun (IFunction f _ _ _ b) = cfunDecl "void" (hnf f) [("field", "root")]
+declareFun (IFunction f _ _ _ _) = cfunDecl "void" (hnf f) [("field", "root")]
 
 declareFunParts :: IFunction -> [CStmt]
 declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b) ++
@@ -51,9 +52,9 @@ declareFunParts (IFunction f _ _ _ b) = map declarePart (pathList b) ++
  where declarePart (p,_,_) = cfunDecl "void" (getPathName f p ++ "_hnf") [("field", "root")]
 
 makeTags :: (String -> IO ()) -> IDataType -> IO ()
-makeTags append (IDataType name cons) = append $ unlines $
-                                         map makeTag cons ++
-                                         nl
+makeTags append (IDataType _ cons) = append $ unlines $
+                                      map makeTag cons ++
+                                      nl
  where makeTag (n,_) = cdefine (tag n) (getTag n + 5)
 
 writeSymbols :: (String -> IO ()) -> [IDataType] -> [IFunction] -> IO ()
@@ -103,7 +104,7 @@ make path (name,arity)
              hfunDefn "field" ("make_"++(mname path)) (makeArgs [1..arity] ++ [("int", "missing")]) ++
              cblock (
                  [("field root;"),
-                  "root.n" .= calloc_n 1 ++ ";",
+                  "root.n" .= alloc_n 1 ++ ";",
                   symbol "root" .= ("&"++ (mname path) ++ "_symbol;"),
                   missing "root" .= "missing" ++ ";"] ++
                  makeArray False arity ++
@@ -116,8 +117,21 @@ make path (name,arity)
        mname Nothing  = mangle name
        mname (Just p) = getPathName name p
 
+declConstant :: (String -> IO ()) -> IQName -> IO ()
+declConstant append n = append ("extern field " ++ mangle n ++ ";\n")
+
+makeConstant :: IQName -> CStmt
+makeConstant name = unlines $ [comment (uninstance name)] ++
+                              hfunDefn "field" ("make_"++(mangle name)) [("int", "missing")] ++
+                              cblock (
+                                  ["return "++mangle name++";"]
+                              ) ++
+                              nl
+
 makeType :: (String -> IO ()) -> IDataType -> IO ()
-makeType append (IDataType _ cons) = append $ concat (map (make Nothing) cons)
+makeType append (IDataType _ cons) 
+  = append $ concat $ [make Nothing (n,a) | (n,a) <- cons, a > 0] ++
+                      [makeConstant n | (n,0) <- cons]
 
 makeFun :: (String -> IO ()) -> IFunction -> IO ()
 makeFun append (IFunction name arity _ _ _) = append $ make Nothing (name,arity)
@@ -150,7 +164,7 @@ makeConFree (n, a) = hfunDefn "field" ("make_"++mangle n++"_free") [] ++
                      cblock 
                      (
                          ["field root;",
-                          "root.n" .= calloc_n 1 ++ ";",
+                          "root.n" .= alloc_n 1 ++ ";",
                           nondet "root" .= "true" ++ ";",
                           symbol "root" .= "&"++mangle n++"_symbol;",
                           missing "root" .= "0" ++ ";"] ++
@@ -169,7 +183,7 @@ makeArgs = map (\v -> ("field", var v))
 
 makeArray :: Bool -> Int -> [String]
 makeArray nullable arity
- | arity > 3 = ["root.n->children[3].a" .= calloc_f (arity - 3) ++ ";"]
+ | arity > 3 = ["root.n->children[3].a" .= alloc_f (arity - 3) ++ ";"]
  | nullable  = ["root.n->children[3].a" .= "NULL;"]
  | otherwise = []
 

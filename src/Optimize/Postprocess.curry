@@ -68,7 +68,7 @@ showPostExpr ft f
                      let (e3,w3,_) = showWork fixLets (-1) e2
                      putStr w3
                      tfixLet <- time
-                     let e4 = uncaseVar e3
+                     let e4 = e3 -- uncaseVar e3
                      putStrLn "=> UNDO_CASE_VAR"
                      putStrLn $ showExpr e4
                      tuncasevar <- time
@@ -102,7 +102,9 @@ caseCall _ (Let [(v,ve)] e@(has (Case _ (Var v) _)))
   where isKnownFunction e = case e of 
                                  Comb ct n _ -> isFunc ct & 
                                                 isApp ct & 
-                                                n /= ("Prelude","apply")
+                                                not (n `elem` [("Prelude","apply"),
+                                                               ("Prelude","=:<="),
+                                                               ("Prelude","=:=")])
 
 --turn of shortcutting
 --caseCall _ _ = failed
@@ -225,17 +227,19 @@ outline ft n (Func name a vis xtype (Rule vs body))
                            putStrLn $ showExpr body ++ "\n"
                            putStrLn "found partial"
                            putStrLn $ showExpr e2
-                           (e2',vs2,lw) <- expandPart ft e2 k []
+                           (e2',vs',lw) <- expandPart ft e2 k []
                            let new_name = mapSnd (++("#P"++show n)) name
                            let fvs      = freeVars e2'
-                           let new_vars = map Var (fvs \\- vs2)
-                           let a2 = length fvs
-                           let f = Comb (FuncPartCall (length vs2)) new_name new_vars
-                           let e1' = sub ((k, f) @> idSub) e1
+                           let vs2      = (fvs ++- vs')
+                           let new_vars = map Var (fvs \\- vs')
+                           let a2       = length vs2
+                           let f        = Comb (FuncPartCall (length vs')) new_name new_vars
+                           let e1'      = sub ((k, f) @> idSub) e1
                            if lw > 1
                             then do putStrLn $ "\norigonal function: " ++ snd name ++ " " ++ 
                                                 concatMap ((++" ") . ('v':) . show) vs
                                     putStrLn $ showExpr e1' ++ "\n"
+                                    putStrLn $ "added variables: " ++ concatMap ((++" ") . ('v':) . show) vs'
                                     putStrLn $ "fixed partApp: " ++ snd new_name ++ "_" ++ show a2 ++ " " ++ 
                                                 concatMap ((++" ") . ('v':) . show) fvs
                                     putStrLn $ showExpr e2' ++ "\n"
@@ -243,7 +247,7 @@ outline ft n (Func name a vis xtype (Rule vs body))
                                     t' <- time
                                     putStrLn $ "outline time: " ++ show (t'-t)
                                     return [Func name     a  vis    xtype    (Rule vs  e1'),
-                                            Func new_name a2 Public (TVar 0) (Rule fvs e2')]
+                                            Func new_name a2 Public (TVar 0) (Rule vs2 e2')]
                             else do putStrLn "\nNo optimizations found."
                                     return []
   where k = newVar body

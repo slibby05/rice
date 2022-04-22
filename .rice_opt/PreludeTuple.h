@@ -1,0 +1,11138 @@
+#ifndef PreludeTuple_H
+#define PreludeTuple_H
+
+#include "runtime.h"
+#include "PreludeBase.h"
+#include "PreludeCompare.h"
+#include "PreludeNum.h"
+#include "PreludeList.h"
+#include "PreludeString.h"
+#include "PreludeRead.h"
+#include "PreludeMonad.h"
+
+void Prelude_curry_hnf(field root);
+void Prelude_uncurry_hnf(field root);
+void Prelude_zipWith_hnf(field root);
+void Prelude_zip_hnf(field root);
+void Prelude_readsUnit_hnf(field root);
+void Prelude_readsRParen_hnf(field root);
+void Prelude_readsVal_US1_hnf(field root);
+void Prelude_readsVal_US1_HTP0_hnf(field root);
+void Prelude_readsLParen_hnf(field root);
+void Prelude_c5_hnf(field root);
+void Prelude_c4_hnf(field root);
+void Prelude_c3_hnf(field root);
+void Prelude_c2_hnf(field root);
+void Prelude_readsComma_US1_hnf(field root);
+void Prelude_readsComma_US1_HTP2_hnf(field root);
+void Prelude_readsComma_US1_HTP1_hnf(field root);
+void Prelude_readsComma_US1_HTP1_HTP3_hnf(field root);
+void Prelude_readsVal_US2_hnf(field root);
+void Prelude_readsVal_US2_HTP4_hnf(field root);
+void Prelude_readsComma_US2_hnf(field root);
+void Prelude_readsComma_US2_HTP6_hnf(field root);
+void Prelude_readsComma_US2_HTP5_hnf(field root);
+void Prelude_readsComma_US2_HTP5_HTP7_hnf(field root);
+void Prelude_readsVal_US3_hnf(field root);
+void Prelude_readsVal_US3_HTP8_hnf(field root);
+void Prelude_readsComma_US3_hnf(field root);
+void Prelude_readsComma_US3_HTP10_hnf(field root);
+void Prelude_readsComma_US3_HTP9_hnf(field root);
+void Prelude_readsComma_US3_HTP9_HTP11_hnf(field root);
+void Prelude_readsVal_US4_hnf(field root);
+void Prelude_readsVal_US4_HTP12_hnf(field root);
+void Prelude_readsComma_US4_hnf(field root);
+void Prelude_readsComma_US4_HTP14_hnf(field root);
+void Prelude_readsComma_US4_HTP13_hnf(field root);
+void Prelude_readsComma_US4_HTP13_HTP15_hnf(field root);
+void Prelude_readsVal_US5_hnf(field root);
+void Prelude_readsVal_US5_HTP16_hnf(field root);
+void Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DORead_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude_showTuple_DO_US_HTlambda297_hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP15_HTzs_hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP14_HTys_hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP13_HTxs_hnf(field root);
+void Prelude_unzip_DO_US_HTselFP11_HTys_hnf(field root);
+void Prelude_unzip_DO_US_HTselFP10_HTxs_hnf(field root);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_hnf(field root);
+void Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_hnf(field root);
+void Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_hnf(field root);
+void Prelude_zipWith_USbuild_hnf(field root);
+void Prelude_zip_USbuild_hnf(field root);
+void Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_hnf(field root);
+void Prelude_unzip3_hnf(field root);
+void Prelude_unzip_hnf(field root);
+void Prelude_zipWith3_hnf(field root);
+void Prelude_zip3_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_hnf(field root);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_hnf(field root);
+void Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_hnf(field root);
+Node* Prelude_curry_RET_hnf(Node* backup);
+void Prelude_uncurry__hnf(field root);
+Node* Prelude_uncurry_RET_hnf(Node* backup);
+Node* Prelude_zipWith_RET_hnf(Node* backup);
+Node* Prelude_zip_RET_hnf(Node* backup);
+void Prelude_readsUnit__hnf(field root);
+void Prelude_readsUnit__1_hnf(field root);
+void Prelude_readsUnit__1_0_0_hnf(field root);
+void Prelude_readsUnit__1_0_0_1_hnf(field root);
+Node* Prelude_readsUnit_RET_hnf(Node* backup);
+void Prelude_readsRParen__hnf(field root);
+void Prelude_readsRParen__0_hnf(field root);
+void Prelude_readsRParen__0_1_hnf(field root);
+Node* Prelude_readsRParen_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US1_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US1_HTP0_RET_hnf(Node* backup);
+void Prelude_readsLParen__hnf(field root);
+void Prelude_readsLParen__1_hnf(field root);
+Node* Prelude_readsLParen_RET_hnf(Node* backup);
+void Prelude_c5__hnf(field root);
+void Prelude_c5__0_hnf(field root);
+Node* Prelude_c5_RET_hnf(Node* backup);
+void Prelude_c4__hnf(field root);
+void Prelude_c4__0_hnf(field root);
+Node* Prelude_c4_RET_hnf(Node* backup);
+void Prelude_c3__hnf(field root);
+void Prelude_c3__0_hnf(field root);
+Node* Prelude_c3_RET_hnf(Node* backup);
+void Prelude_c2__hnf(field root);
+Node* Prelude_c2_RET_hnf(Node* backup);
+void Prelude_readsComma_US1__hnf(field root);
+void Prelude_readsComma_US1__0_hnf(field root);
+void Prelude_readsComma_US1__0_1_hnf(field root);
+Node* Prelude_readsComma_US1_RET_hnf(Node* backup);
+void Prelude_readsComma_US1_HTP2__hnf(field root);
+Node* Prelude_readsComma_US1_HTP2_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US1_HTP1_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US1_HTP1_HTP3_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US2_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US2_HTP4_RET_hnf(Node* backup);
+void Prelude_readsComma_US2__hnf(field root);
+void Prelude_readsComma_US2__0_hnf(field root);
+void Prelude_readsComma_US2__0_1_hnf(field root);
+Node* Prelude_readsComma_US2_RET_hnf(Node* backup);
+void Prelude_readsComma_US2_HTP6__hnf(field root);
+Node* Prelude_readsComma_US2_HTP6_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US2_HTP5_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US2_HTP5_HTP7_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US3_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US3_HTP8_RET_hnf(Node* backup);
+void Prelude_readsComma_US3__hnf(field root);
+void Prelude_readsComma_US3__0_hnf(field root);
+void Prelude_readsComma_US3__0_1_hnf(field root);
+Node* Prelude_readsComma_US3_RET_hnf(Node* backup);
+void Prelude_readsComma_US3_HTP10__hnf(field root);
+Node* Prelude_readsComma_US3_HTP10_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US3_HTP9_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US3_HTP9_HTP11_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US4_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US4_HTP12_RET_hnf(Node* backup);
+void Prelude_readsComma_US4__hnf(field root);
+void Prelude_readsComma_US4__0_hnf(field root);
+void Prelude_readsComma_US4__0_1_hnf(field root);
+Node* Prelude_readsComma_US4_RET_hnf(Node* backup);
+void Prelude_readsComma_US4_HTP14__hnf(field root);
+Node* Prelude_readsComma_US4_HTP14_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US4_HTP13_RET_hnf(Node* backup);
+Node* Prelude_readsComma_US4_HTP13_HTP15_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US5_RET_hnf(Node* backup);
+Node* Prelude_readsVal_US5_HTP16_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DORead_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_hnf(field root);
+Node* Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_hnf(field root);
+Node* Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_hnf(field root);
+Node* Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_hnf(field root);
+Node* Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf(field root);
+Node* Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_1_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_1_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_1_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_RET_hnf(Node* backup);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__hnf(field root);
+void Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__0_hnf(field root);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__0_hnf(field root);
+Node* Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__0_hnf(field root);
+Node* Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude_showTuple_DO_US_HTlambda297_RET_hnf(Node* backup);
+void Prelude_unzip3_DO_US_HTselFP15_HTzs__hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP15_HTzs__0_hnf(field root);
+Node* Prelude_unzip3_DO_US_HTselFP15_HTzs_RET_hnf(Node* backup);
+void Prelude_unzip3_DO_US_HTselFP14_HTys__hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP14_HTys__0_hnf(field root);
+Node* Prelude_unzip3_DO_US_HTselFP14_HTys_RET_hnf(Node* backup);
+void Prelude_unzip3_DO_US_HTselFP13_HTxs__hnf(field root);
+void Prelude_unzip3_DO_US_HTselFP13_HTxs__0_hnf(field root);
+Node* Prelude_unzip3_DO_US_HTselFP13_HTxs_RET_hnf(Node* backup);
+void Prelude_unzip_DO_US_HTselFP11_HTys__hnf(field root);
+void Prelude_unzip_DO_US_HTselFP11_HTys__0_hnf(field root);
+Node* Prelude_unzip_DO_US_HTselFP11_HTys_RET_hnf(Node* backup);
+void Prelude_unzip_DO_US_HTselFP10_HTxs__hnf(field root);
+void Prelude_unzip_DO_US_HTselFP10_HTxs__0_hnf(field root);
+Node* Prelude_unzip_DO_US_HTselFP10_HTxs_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_hnf(field root);
+void Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_hnf(field root);
+void Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_0_hnf(field root);
+Node* Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__0_hnf(field root);
+Node* Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_hnf(field root);
+void Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_0_hnf(field root);
+Node* Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_RET_hnf(Node* backup);
+Node* Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude_zipWith_USbuild__hnf(field root);
+void Prelude_zipWith_USbuild__0_hnf(field root);
+void Prelude_zipWith_USbuild__0_0_hnf(field root);
+void Prelude_zipWith_USbuild__0_1_hnf(field root);
+void Prelude_zipWith_USbuild__1_hnf(field root);
+void Prelude_zipWith_USbuild__1_0_hnf(field root);
+Node* Prelude_zipWith_USbuild_RET_hnf(Node* backup);
+void Prelude_zip_USbuild__hnf(field root);
+void Prelude_zip_USbuild__0_hnf(field root);
+void Prelude_zip_USbuild__0_0_hnf(field root);
+void Prelude_zip_USbuild__0_1_hnf(field root);
+void Prelude_zip_USbuild__1_hnf(field root);
+void Prelude_zip_USbuild__1_0_hnf(field root);
+Node* Prelude_zip_USbuild_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__hnf(field root);
+void Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__0_hnf(field root);
+Node* Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude_unzip3__hnf(field root);
+void Prelude_unzip3__1_hnf(field root);
+Node* Prelude_unzip3_RET_hnf(Node* backup);
+void Prelude_unzip__hnf(field root);
+void Prelude_unzip__1_hnf(field root);
+Node* Prelude_unzip_RET_hnf(Node* backup);
+void Prelude_zipWith3__hnf(field root);
+void Prelude_zipWith3__1_hnf(field root);
+void Prelude_zipWith3__1_1_hnf(field root);
+Node* Prelude_zipWith3_RET_hnf(Node* backup);
+void Prelude_zip3__hnf(field root);
+void Prelude_zip3__1_hnf(field root);
+void Prelude_zip3__1_1_hnf(field root);
+Node* Prelude_zip3_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_RET_hnf(Node* backup);
+void Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27__hnf(field root);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_RET_hnf(Node* backup);
+Node* Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_RET_hnf(Node* backup);
+
+static Symbol Prelude_curry_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "curry", .hnf = &Prelude_curry_hnf, .hnf_RET = &Prelude_curry_RET_hnf};
+static Symbol Prelude_uncurry_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "uncurry", .hnf = &Prelude_uncurry_hnf, .hnf_RET = &Prelude_uncurry_RET_hnf};
+static Symbol Prelude_zipWith_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "zipWith", .hnf = &Prelude_zipWith_hnf, .hnf_RET = &Prelude_zipWith_RET_hnf};
+static Symbol Prelude_zip_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "zip", .hnf = &Prelude_zip_hnf, .hnf_RET = &Prelude_zip_RET_hnf};
+static Symbol Prelude_readsUnit_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsUnit", .hnf = &Prelude_readsUnit_hnf, .hnf_RET = &Prelude_readsUnit_RET_hnf};
+static Symbol Prelude_readsRParen_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsRParen", .hnf = &Prelude_readsRParen_hnf, .hnf_RET = &Prelude_readsRParen_RET_hnf};
+static Symbol Prelude_readsVal_US1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsVal_1", .hnf = &Prelude_readsVal_US1_hnf, .hnf_RET = &Prelude_readsVal_US1_RET_hnf};
+static Symbol Prelude_readsVal_US1_HTP0_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsVal_1#P0", .hnf = &Prelude_readsVal_US1_HTP0_hnf, .hnf_RET = &Prelude_readsVal_US1_HTP0_RET_hnf};
+static Symbol Prelude_readsLParen_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsLParen", .hnf = &Prelude_readsLParen_hnf, .hnf_RET = &Prelude_readsLParen_RET_hnf};
+static Symbol Prelude_c5_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c5", .hnf = &Prelude_c5_hnf, .hnf_RET = &Prelude_c5_RET_hnf};
+static Symbol Prelude_c4_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c4", .hnf = &Prelude_c4_hnf, .hnf_RET = &Prelude_c4_RET_hnf};
+static Symbol Prelude_c3_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c3", .hnf = &Prelude_c3_hnf, .hnf_RET = &Prelude_c3_RET_hnf};
+static Symbol Prelude_c2_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c2", .hnf = &Prelude_c2_hnf, .hnf_RET = &Prelude_c2_RET_hnf};
+static Symbol Prelude_readsComma_US1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsComma_1", .hnf = &Prelude_readsComma_US1_hnf, .hnf_RET = &Prelude_readsComma_US1_RET_hnf};
+static Symbol Prelude_readsComma_US1_HTP2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_1#P2", .hnf = &Prelude_readsComma_US1_HTP2_hnf, .hnf_RET = &Prelude_readsComma_US1_HTP2_RET_hnf};
+static Symbol Prelude_readsComma_US1_HTP1_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_1#P1", .hnf = &Prelude_readsComma_US1_HTP1_hnf, .hnf_RET = &Prelude_readsComma_US1_HTP1_RET_hnf};
+static Symbol Prelude_readsComma_US1_HTP1_HTP3_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_1#P1#P3", .hnf = &Prelude_readsComma_US1_HTP1_HTP3_hnf, .hnf_RET = &Prelude_readsComma_US1_HTP1_HTP3_RET_hnf};
+static Symbol Prelude_readsVal_US2_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsVal_2", .hnf = &Prelude_readsVal_US2_hnf, .hnf_RET = &Prelude_readsVal_US2_RET_hnf};
+static Symbol Prelude_readsVal_US2_HTP4_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsVal_2#P4", .hnf = &Prelude_readsVal_US2_HTP4_hnf, .hnf_RET = &Prelude_readsVal_US2_HTP4_RET_hnf};
+static Symbol Prelude_readsComma_US2_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsComma_2", .hnf = &Prelude_readsComma_US2_hnf, .hnf_RET = &Prelude_readsComma_US2_RET_hnf};
+static Symbol Prelude_readsComma_US2_HTP6_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_2#P6", .hnf = &Prelude_readsComma_US2_HTP6_hnf, .hnf_RET = &Prelude_readsComma_US2_HTP6_RET_hnf};
+static Symbol Prelude_readsComma_US2_HTP5_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsComma_2#P5", .hnf = &Prelude_readsComma_US2_HTP5_hnf, .hnf_RET = &Prelude_readsComma_US2_HTP5_RET_hnf};
+static Symbol Prelude_readsComma_US2_HTP5_HTP7_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_2#P5#P7", .hnf = &Prelude_readsComma_US2_HTP5_HTP7_hnf, .hnf_RET = &Prelude_readsComma_US2_HTP5_HTP7_RET_hnf};
+static Symbol Prelude_readsVal_US3_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsVal_3", .hnf = &Prelude_readsVal_US3_hnf, .hnf_RET = &Prelude_readsVal_US3_RET_hnf};
+static Symbol Prelude_readsVal_US3_HTP8_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsVal_3#P8", .hnf = &Prelude_readsVal_US3_HTP8_hnf, .hnf_RET = &Prelude_readsVal_US3_HTP8_RET_hnf};
+static Symbol Prelude_readsComma_US3_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_3", .hnf = &Prelude_readsComma_US3_hnf, .hnf_RET = &Prelude_readsComma_US3_RET_hnf};
+static Symbol Prelude_readsComma_US3_HTP10_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_3#P10", .hnf = &Prelude_readsComma_US3_HTP10_hnf, .hnf_RET = &Prelude_readsComma_US3_HTP10_RET_hnf};
+static Symbol Prelude_readsComma_US3_HTP9_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "readsComma_3#P9", .hnf = &Prelude_readsComma_US3_HTP9_hnf, .hnf_RET = &Prelude_readsComma_US3_HTP9_RET_hnf};
+static Symbol Prelude_readsComma_US3_HTP9_HTP11_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_3#P9#P11", .hnf = &Prelude_readsComma_US3_HTP9_HTP11_hnf, .hnf_RET = &Prelude_readsComma_US3_HTP9_HTP11_RET_hnf};
+static Symbol Prelude_readsVal_US4_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsVal_4", .hnf = &Prelude_readsVal_US4_hnf, .hnf_RET = &Prelude_readsVal_US4_RET_hnf};
+static Symbol Prelude_readsVal_US4_HTP12_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "readsVal_4#P12", .hnf = &Prelude_readsVal_US4_HTP12_hnf, .hnf_RET = &Prelude_readsVal_US4_HTP12_RET_hnf};
+static Symbol Prelude_readsComma_US4_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsComma_4", .hnf = &Prelude_readsComma_US4_hnf, .hnf_RET = &Prelude_readsComma_US4_RET_hnf};
+static Symbol Prelude_readsComma_US4_HTP14_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_4#P14", .hnf = &Prelude_readsComma_US4_HTP14_hnf, .hnf_RET = &Prelude_readsComma_US4_HTP14_RET_hnf};
+static Symbol Prelude_readsComma_US4_HTP13_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "readsComma_4#P13", .hnf = &Prelude_readsComma_US4_HTP13_hnf, .hnf_RET = &Prelude_readsComma_US4_HTP13_RET_hnf};
+static Symbol Prelude_readsComma_US4_HTP13_HTP15_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_4#P13#P15", .hnf = &Prelude_readsComma_US4_HTP13_HTP15_hnf, .hnf_RET = &Prelude_readsComma_US4_HTP13_HTP15_RET_hnf};
+static Symbol Prelude_readsVal_US5_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "readsVal_5", .hnf = &Prelude_readsVal_US5_hnf, .hnf_RET = &Prelude_readsVal_US5_RET_hnf};
+static Symbol Prelude_readsVal_US5_HTP16_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "readsVal_5#P16", .hnf = &Prelude_readsVal_US5_HTP16_hnf, .hnf_RET = &Prelude_readsVal_US5_HTP16_RET_hnf};
+static Symbol Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#readsPrec#Prelude.Read#(,,,,)", .hnf = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_inst#Prelude.Read#(,,,,)", .hnf = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#readsPrec#Prelude.Read#(,,,)", .hnf = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_inst#Prelude.Read#(,,,)", .hnf = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#readsPrec#Prelude.Read#(,,)", .hnf = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_inst#Prelude.Read#(,,)", .hnf = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#readsPrec#Prelude.Read#(,)", .hnf = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_inst#Prelude.Read#(,)", .hnf = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#readsPrec#Prelude.Read#()", .hnf = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DORead_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Read#()", .hnf = &Prelude__USinst_HTPrelude_DORead_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DORead_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#compare#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#compare#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#compare#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#compare#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#>#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#<#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#>=#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#<=#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#max#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#min#Prelude.Ord#(,,,,)", .hnf = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#>#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#<#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#>=#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#<=#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#max#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#min#Prelude.Ord#(,,,)", .hnf = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#>#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#<#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#>=#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#<=#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#max#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#min#Prelude.Ord#(,,)", .hnf = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>=#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<=#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#max#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#min#Prelude.Ord#(,)", .hnf = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#max#Prelude.Ord#()", .hnf = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#min#Prelude.Ord#()", .hnf = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#>#Prelude.Ord#()", .hnf = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#<#Prelude.Ord#()", .hnf = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#>=#Prelude.Ord#()", .hnf = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#<=#Prelude.Ord#()", .hnf = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#/=#Prelude.Eq#(,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#/=#Prelude.Eq#(,,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#/=#Prelude.Eq#(,,,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#/=#Prelude.Eq#(,,,,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#/=#Prelude.Eq#(,,,,,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#/=#Prelude.Eq#(,,,,,,)", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#==#Prelude.Eq#(,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#==#Prelude.Eq#(,,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#==#Prelude.Eq#(,,,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#==#Prelude.Eq#(,,,,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#==#Prelude.Eq#(,,,,,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#==#Prelude.Eq#(,,,,,,)", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_inst#Prelude.Eq#(,,,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_inst#Prelude.Eq#(,,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_inst#Prelude.Eq#(,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_inst#Prelude.Ord#(,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A4", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A3", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A2", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A1", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A0", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_inst#Prelude.Eq#(,,,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_inst#Prelude.Ord#(,,,)", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A8", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A7", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A6", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A5", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_inst#Prelude.Eq#(,,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_inst#Prelude.Ord#(,,)", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_inst#Prelude.Eq#(,)", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_inst#Prelude.Ord#(,)", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#/=#Prelude.Eq#()", .hnf = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#==#Prelude.Eq#()", .hnf = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Eq#()", .hnf = &Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Ord#()", .hnf = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude_showTuple_DO_US_HTlambda297_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "showTuple._#lambda297", .hnf = &Prelude_showTuple_DO_US_HTlambda297_hnf, .hnf_RET = &Prelude_showTuple_DO_US_HTlambda297_RET_hnf};
+static Symbol Prelude_unzip3_DO_US_HTselFP15_HTzs_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP15#zs", .hnf = &Prelude_unzip3_DO_US_HTselFP15_HTzs_hnf, .hnf_RET = &Prelude_unzip3_DO_US_HTselFP15_HTzs_RET_hnf};
+static Symbol Prelude_unzip3_DO_US_HTselFP14_HTys_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP14#ys", .hnf = &Prelude_unzip3_DO_US_HTselFP14_HTys_hnf, .hnf_RET = &Prelude_unzip3_DO_US_HTselFP14_HTys_RET_hnf};
+static Symbol Prelude_unzip3_DO_US_HTselFP13_HTxs_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP13#xs", .hnf = &Prelude_unzip3_DO_US_HTselFP13_HTxs_hnf, .hnf_RET = &Prelude_unzip3_DO_US_HTselFP13_HTxs_RET_hnf};
+static Symbol Prelude_unzip_DO_US_HTselFP11_HTys_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP11#ys", .hnf = &Prelude_unzip_DO_US_HTselFP11_HTys_hnf, .hnf_RET = &Prelude_unzip_DO_US_HTselFP11_HTys_RET_hnf};
+static Symbol Prelude_unzip_DO_US_HTselFP10_HTxs_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP10#xs", .hnf = &Prelude_unzip_DO_US_HTselFP10_HTxs_hnf, .hnf_RET = &Prelude_unzip_DO_US_HTselFP10_HTxs_RET_hnf};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#maxBound#Prelude.Bounded#(,,,,)", .hnf = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#minBound#Prelude.Bounded#(,,,,)", .hnf = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_inst#Prelude.Bounded#(,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#maxBound#Prelude.Bounded#(,,,)", .hnf = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#minBound#Prelude.Bounded#(,,,)", .hnf = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_inst#Prelude.Bounded#(,,,)", .hnf = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#maxBound#Prelude.Bounded#(,,)", .hnf = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#minBound#Prelude.Bounded#(,,)", .hnf = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_inst#Prelude.Bounded#(,,)", .hnf = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#maxBound#Prelude.Bounded#(,)", .hnf = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#minBound#Prelude.Bounded#(,)", .hnf = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_inst#Prelude.Bounded#(,)", .hnf = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#enumFromThenTo#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#enumFromTo#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#enumFromThen#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFrom#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#fromEnum#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#toEnum#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#pred#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#succ#Prelude.Enum#()", .hnf = &Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Enum#()", .hnf = &Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#maxBound#Prelude.Bounded#()", .hnf = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#minBound#Prelude.Bounded#()", .hnf = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Bounded#()", .hnf = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,,)#P17", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_inst#Prelude.Show#(,,,,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,)#P18", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_inst#Prelude.Show#(,,,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#showsPrec#Prelude.Show#(,,,,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#showsPrec#Prelude.Show#(,,,,,)#P19", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_inst#Prelude.Show#(,,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#showsPrec#Prelude.Show#(,,,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#showsPrec#Prelude.Show#(,,,,)#P20", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_inst#Prelude.Show#(,,,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#showsPrec#Prelude.Show#(,,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#showsPrec#Prelude.Show#(,,,)#P21", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_inst#Prelude.Show#(,,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#showsPrec#Prelude.Show#(,,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#showsPrec#Prelude.Show#(,,)#P22", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_inst#Prelude.Show#(,,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#showsPrec#Prelude.Show#(,)", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#showsPrec#Prelude.Show#(,)#P23", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_inst#Prelude.Show#(,)", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#showsPrec#Prelude.Show#()", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#showsPrec#Prelude.Show#()#P24", .hnf = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_hnf, .hnf_RET = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_RET_hnf};
+static Symbol Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 0, .name = "_inst#Prelude.Show#()", .hnf = &Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_hnf, .hnf_RET = &Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_RET_hnf};
+static Symbol Prelude_zipWith_USbuild_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "zipWith_build", .hnf = &Prelude_zipWith_USbuild_hnf, .hnf_RET = &Prelude_zipWith_USbuild_RET_hnf};
+static Symbol Prelude_zip_USbuild_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "zip_build", .hnf = &Prelude_zip_USbuild_hnf, .hnf_RET = &Prelude_zip_USbuild_RET_hnf};
+static Symbol Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#readList#Prelude.Read#(,,,,)", .hnf = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#readList#Prelude.Read#(,,,)", .hnf = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#readList#Prelude.Read#(,,)", .hnf = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#readList#Prelude.Read#(,)", .hnf = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#readList#Prelude.Read#()", .hnf = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#compare#Prelude.Ord#()", .hnf = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_RET_hnf};
+static Symbol Prelude_unzip3_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3", .hnf = &Prelude_unzip3_hnf, .hnf_RET = &Prelude_unzip3_RET_hnf};
+static Symbol Prelude_unzip_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip", .hnf = &Prelude_unzip_hnf, .hnf_RET = &Prelude_unzip_RET_hnf};
+static Symbol Prelude_zipWith3_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "zipWith3", .hnf = &Prelude_zipWith3_hnf, .hnf_RET = &Prelude_zipWith3_RET_hnf};
+static Symbol Prelude_zip3_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "zip3", .hnf = &Prelude_zip3_hnf, .hnf_RET = &Prelude_zip3_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#showList#Prelude.Show#(,,,,,,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#show#Prelude.Show#(,,,,,,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#showList#Prelude.Show#(,,,,,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#show#Prelude.Show#(,,,,,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#showList#Prelude.Show#(,,,,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#show#Prelude.Show#(,,,,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#showList#Prelude.Show#(,,,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#show#Prelude.Show#(,,,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#showList#Prelude.Show#(,,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#show#Prelude.Show#(,,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#showList#Prelude.Show#(,,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#show#Prelude.Show#(,,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#showList#Prelude.Show#(,)", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#showList#Prelude.Show#(,)#P25", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#showList#Prelude.Show#(,)#P25#P26", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#show#Prelude.Show#(,)", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#showList#Prelude.Show#()", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#showList#Prelude.Show#()#P27", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_RET_hnf};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#showList#Prelude.Show#()#P27#P28", .hnf = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_hnf, .hnf_RET = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_RET_hnf};
+static Symbol Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#show#Prelude.Show#()", .hnf = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_hnf, .hnf_RET = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_RET_hnf};
+static Symbol Prelude_uncurry__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "uncurry@[]", .hnf = Prelude_uncurry__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsUnit__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsUnit@[]", .hnf = Prelude_readsUnit__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsUnit__1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsUnit@[1]", .hnf = Prelude_readsUnit__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsUnit__1_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsUnit@[1,0,0]", .hnf = Prelude_readsUnit__1_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsUnit__1_0_0_1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsUnit@[1,0,0,1]", .hnf = Prelude_readsUnit__1_0_0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsRParen__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsRParen@[]", .hnf = Prelude_readsRParen__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsRParen__0_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsRParen@[0]", .hnf = Prelude_readsRParen__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsRParen__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsRParen@[0,1]", .hnf = Prelude_readsRParen__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsLParen__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsLParen@[]", .hnf = Prelude_readsLParen__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsLParen__1_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsLParen@[1]", .hnf = Prelude_readsLParen__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_c5__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c5@[]", .hnf = Prelude_c5__hnf, .hnf_RET = NULL};
+static Symbol Prelude_c5__0_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "c5@[0]", .hnf = Prelude_c5__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_c4__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c4@[]", .hnf = Prelude_c4__hnf, .hnf_RET = NULL};
+static Symbol Prelude_c4__0_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "c4@[0]", .hnf = Prelude_c4__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_c3__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c3@[]", .hnf = Prelude_c3__hnf, .hnf_RET = NULL};
+static Symbol Prelude_c3__0_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "c3@[0]", .hnf = Prelude_c3__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_c2__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "c2@[]", .hnf = Prelude_c2__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US1__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "readsComma_1@[]", .hnf = Prelude_readsComma_US1__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US1__0_symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsComma_1@[0]", .hnf = Prelude_readsComma_US1__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US1__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_1@[0,1]", .hnf = Prelude_readsComma_US1__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US1_HTP2__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_1#P2@[]", .hnf = Prelude_readsComma_US1_HTP2__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US2__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "readsComma_2@[]", .hnf = Prelude_readsComma_US2__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US2__0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_2@[0]", .hnf = Prelude_readsComma_US2__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US2__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsComma_2@[0,1]", .hnf = Prelude_readsComma_US2__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US2_HTP6__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_2#P6@[]", .hnf = Prelude_readsComma_US2_HTP6__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US3__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "readsComma_3@[]", .hnf = Prelude_readsComma_US3__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US3__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsComma_3@[0]", .hnf = Prelude_readsComma_US3__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US3__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "readsComma_3@[0,1]", .hnf = Prelude_readsComma_US3__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US3_HTP10__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_3#P10@[]", .hnf = Prelude_readsComma_US3_HTP10__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US4__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "readsComma_4@[]", .hnf = Prelude_readsComma_US4__hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US4__0_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "readsComma_4@[0]", .hnf = Prelude_readsComma_US4__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US4__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "readsComma_4@[0,1]", .hnf = Prelude_readsComma_US4__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_readsComma_US4_HTP14__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "readsComma_4#P14@[]", .hnf = Prelude_readsComma_US4_HTP14__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#compare#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#compare#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#compare#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#compare#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#compare#Prelude.Ord#(,,)@[0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#compare#Prelude.Ord#(,,)@[0,0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#compare#Prelude.Ord#(,,)@[0,0,2]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#compare#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#compare#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#compare#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#compare#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 11, .name = "_impl#compare#Prelude.Ord#(,,,,)@[0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#compare#Prelude.Ord#(,,,,)@[0,0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#compare#Prelude.Ord#(,,,,)@[0,0,2]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>=#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<=#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#max#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,,,)@[0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,,,)@[1]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,,,)@[2]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#min#Prelude.Ord#(,,,,)@[]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,,,)@[0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,,,)@[1]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,,,)@[2]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#>#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#>#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#>#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#<#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#<#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#<#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#>=#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#>=#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#>=#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>=#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#<=#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#<=#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#<=#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<=#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#max#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#max#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 12, .name = "_impl#max#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#max#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#min#Prelude.Ord#(,,,)@[]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#min#Prelude.Ord#(,,,)@[0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 12, .name = "_impl#min#Prelude.Ord#(,,,)@[0,0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#min#Prelude.Ord#(,,,)@[0,0,2]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>=#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<=#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#max#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,)@[0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,)@[1]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#max#Prelude.Ord#(,,)@[2]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#min#Prelude.Ord#(,,)@[]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,)@[0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,)@[1]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#min#Prelude.Ord#(,,)@[2]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#>#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#<#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>=#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#>=#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#>=#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#>=#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<=#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#<=#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#<=#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#<=#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#max#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#max#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#max#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#max#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#min#Prelude.Ord#(,)@[]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#min#Prelude.Ord#(,)@[0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#min#Prelude.Ord#(,)@[0,0]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#min#Prelude.Ord#(,)@[0,0,2]", .hnf = Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#/=#Prelude.Eq#(,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#/=#Prelude.Eq#(,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#/=#Prelude.Eq#(,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#/=#Prelude.Eq#(,,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#/=#Prelude.Eq#(,,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#/=#Prelude.Eq#(,,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_1_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#/=#Prelude.Eq#(,,)@[0,0,1]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#/=#Prelude.Eq#(,,,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#/=#Prelude.Eq#(,,,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#/=#Prelude.Eq#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#/=#Prelude.Eq#(,,,)@[0,0,1]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_1_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#/=#Prelude.Eq#(,,,)@[0,0,1,1]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#/=#Prelude.Eq#(,,,,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 11, .name = "_impl#/=#Prelude.Eq#(,,,,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#/=#Prelude.Eq#(,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#/=#Prelude.Eq#(,,,,,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#/=#Prelude.Eq#(,,,,,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 16, .name = "_impl#/=#Prelude.Eq#(,,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_1_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#/=#Prelude.Eq#(,,,,,)@[0,0,1]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#/=#Prelude.Eq#(,,,,,,)@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 15, .name = "_impl#/=#Prelude.Eq#(,,,,,,)@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 19, .name = "_impl#/=#Prelude.Eq#(,,,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#==#Prelude.Eq#(,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#==#Prelude.Eq#(,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#==#Prelude.Eq#(,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#==#Prelude.Eq#(,,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#==#Prelude.Eq#(,,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#==#Prelude.Eq#(,,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#==#Prelude.Eq#(,,)@[0,0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#==#Prelude.Eq#(,,,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#==#Prelude.Eq#(,,,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#==#Prelude.Eq#(,,,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#==#Prelude.Eq#(,,,)@[0,0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#==#Prelude.Eq#(,,,)@[0,0,0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#==#Prelude.Eq#(,,,,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 11, .name = "_impl#==#Prelude.Eq#(,,,,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#==#Prelude.Eq#(,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#==#Prelude.Eq#(,,,,,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#==#Prelude.Eq#(,,,,,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 16, .name = "_impl#==#Prelude.Eq#(,,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 13, .name = "_impl#==#Prelude.Eq#(,,,,,)@[0,0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#==#Prelude.Eq#(,,,,,,)@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 15, .name = "_impl#==#Prelude.Eq#(,,,,,,)@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 19, .name = "_impl#==#Prelude.Eq#(,,,,,,)@[0,0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A4@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A4@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A3@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A3@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A2@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A2@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A1@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A1@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A0@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,,)#A0@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A8@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A8@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A7@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A7@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A6@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A6@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A5@[]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_inst#Prelude.Ord#(,,,)#A5@[0]", .hnf = Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#/=#Prelude.Eq#()@[]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#/=#Prelude.Eq#()@[0]", .hnf = Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#==#Prelude.Eq#()@[]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#==#Prelude.Eq#()@[0]", .hnf = Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP15_HTzs__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP15#zs@[]", .hnf = Prelude_unzip3_DO_US_HTselFP15_HTzs__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP15_HTzs__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP15#zs@[0]", .hnf = Prelude_unzip3_DO_US_HTselFP15_HTzs__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP14_HTys__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP14#ys@[]", .hnf = Prelude_unzip3_DO_US_HTselFP14_HTys__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP14_HTys__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP14#ys@[0]", .hnf = Prelude_unzip3_DO_US_HTselFP14_HTys__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP13_HTxs__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP13#xs@[]", .hnf = Prelude_unzip3_DO_US_HTselFP13_HTxs__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3_DO_US_HTselFP13_HTxs__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3._#selFP13#xs@[0]", .hnf = Prelude_unzip3_DO_US_HTselFP13_HTxs__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip_DO_US_HTselFP11_HTys__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP11#ys@[]", .hnf = Prelude_unzip_DO_US_HTselFP11_HTys__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip_DO_US_HTselFP11_HTys__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP11#ys@[0]", .hnf = Prelude_unzip_DO_US_HTselFP11_HTys__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip_DO_US_HTselFP10_HTxs__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP10#xs@[]", .hnf = Prelude_unzip_DO_US_HTselFP10_HTxs__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip_DO_US_HTselFP10_HTxs__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip._#selFP10#xs@[0]", .hnf = Prelude_unzip_DO_US_HTselFP10_HTxs__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#maxBound#Prelude.Bounded#(,,,,)@[]", .hnf = Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#minBound#Prelude.Bounded#(,,,,)@[]", .hnf = Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#maxBound#Prelude.Bounded#(,,,)@[]", .hnf = Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#minBound#Prelude.Bounded#(,,,)@[]", .hnf = Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#maxBound#Prelude.Bounded#(,,)@[]", .hnf = Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#minBound#Prelude.Bounded#(,,)@[]", .hnf = Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#maxBound#Prelude.Bounded#(,)@[]", .hnf = Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#minBound#Prelude.Bounded#(,)@[]", .hnf = Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#enumFromThenTo#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#enumFromThenTo#Prelude.Enum#()@[0]", .hnf = Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFromThenTo#Prelude.Enum#()@[0,0]", .hnf = Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFromThenTo#Prelude.Enum#()@[0,0,0]", .hnf = Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#enumFromTo#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFromTo#Prelude.Enum#()@[0]", .hnf = Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#enumFromThen#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFromThen#Prelude.Enum#()@[0]", .hnf = Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFromThen#Prelude.Enum#()@[0,0]", .hnf = Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#enumFrom#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#fromEnum#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#toEnum#Prelude.Enum#()@[]", .hnf = Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#maxBound#Prelude.Bounded#()@[]", .hnf = Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#minBound#Prelude.Bounded#()@[]", .hnf = Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#showsPrec#Prelude.Show#(,,,,,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#showsPrec#Prelude.Show#(,,,,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#showsPrec#Prelude.Show#(,,,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#showsPrec#Prelude.Show#(,,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#showsPrec#Prelude.Show#(,,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#showsPrec#Prelude.Show#(,)@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#showsPrec#Prelude.Show#()@[]", .hnf = Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "zipWith_build@[]", .hnf = Prelude_zipWith_USbuild__hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__0_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "zipWith_build@[0]", .hnf = Prelude_zipWith_USbuild__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zipWith_build@[0,0]", .hnf = Prelude_zipWith_USbuild__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zipWith_build@[0,1]", .hnf = Prelude_zipWith_USbuild__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__1_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "zipWith_build@[1]", .hnf = Prelude_zipWith_USbuild__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith_USbuild__1_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zipWith_build@[1,0]", .hnf = Prelude_zipWith_USbuild__1_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "zip_build@[]", .hnf = Prelude_zip_USbuild__hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__0_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "zip_build@[0]", .hnf = Prelude_zip_USbuild__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__0_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zip_build@[0,0]", .hnf = Prelude_zip_USbuild__0_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__0_1_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zip_build@[0,1]", .hnf = Prelude_zip_USbuild__0_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__1_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "zip_build@[1]", .hnf = Prelude_zip_USbuild__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip_USbuild__1_0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "zip_build@[1,0]", .hnf = Prelude_zip_USbuild__1_0_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#compare#Prelude.Ord#()@[]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__0_symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#compare#Prelude.Ord#()@[0]", .hnf = Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__0_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip3@[]", .hnf = Prelude_unzip3__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip3__1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "unzip3@[1]", .hnf = Prelude_unzip3__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "unzip@[]", .hnf = Prelude_unzip__hnf, .hnf_RET = NULL};
+static Symbol Prelude_unzip__1_symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "unzip@[1]", .hnf = Prelude_unzip__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith3__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "zipWith3@[]", .hnf = Prelude_zipWith3__hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith3__1_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "zipWith3@[1]", .hnf = Prelude_zipWith3__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zipWith3__1_1_symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "zipWith3@[1,1]", .hnf = Prelude_zipWith3__1_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip3__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "zip3@[]", .hnf = Prelude_zip3__hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip3__1_symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "zip3@[1]", .hnf = Prelude_zip3__1_hnf, .hnf_RET = NULL};
+static Symbol Prelude_zip3__1_1_symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "zip3@[1,1]", .hnf = Prelude_zip3__1_1_hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 10, .name = "_impl#showList#Prelude.Show#(,,,,,,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 9, .name = "_impl#showList#Prelude.Show#(,,,,,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 8, .name = "_impl#showList#Prelude.Show#(,,,,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 7, .name = "_impl#showList#Prelude.Show#(,,,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 6, .name = "_impl#showList#Prelude.Show#(,,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 5, .name = "_impl#showList#Prelude.Show#(,,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP__symbol = {.tag = FUNCTION_TAG, .arity = 4, .name = "_impl#showList#Prelude.Show#(,)@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25__symbol = {.tag = FUNCTION_TAG, .arity = 3, .name = "_impl#showList#Prelude.Show#(,)#P25@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP__symbol = {.tag = FUNCTION_TAG, .arity = 2, .name = "_impl#showList#Prelude.Show#()@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP__hnf, .hnf_RET = NULL};
+static Symbol Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27__symbol = {.tag = FUNCTION_TAG, .arity = 1, .name = "_impl#showList#Prelude.Show#()#P27@[]", .hnf = Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27__hnf, .hnf_RET = NULL};
+
+// curry
+__attribute__((always_inline)) 
+static inline void set_Prelude_curry(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_curry_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// uncurry
+__attribute__((always_inline)) 
+static inline void set_Prelude_uncurry(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_uncurry_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// zipWith
+__attribute__((always_inline)) 
+static inline void set_Prelude_zipWith(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_zipWith_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// zip
+__attribute__((always_inline)) 
+static inline void set_Prelude_zip(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_zip_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// readsUnit
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsUnit(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsUnit_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsRParen
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsRParen(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsRParen_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsVal_1
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US1(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// readsVal_1#P0
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US1_HTP0(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US1_HTP0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// readsLParen
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsLParen(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_readsLParen_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// c5
+__attribute__((always_inline)) 
+static inline void set_Prelude_c5(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_c5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// c4
+__attribute__((always_inline)) 
+static inline void set_Prelude_c4(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_c4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// c3
+__attribute__((always_inline)) 
+static inline void set_Prelude_c3(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_c3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// c2
+__attribute__((always_inline)) 
+static inline void set_Prelude_c2(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_c2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_1
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US1(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_1#P2
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US1_HTP2(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US1_HTP2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_1#P1
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US1_HTP1(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US1_HTP1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsComma_1#P1#P3
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US1_HTP1_HTP3(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US1_HTP1_HTP3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsVal_2
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US2(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// readsVal_2#P4
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US2_HTP4(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US2_HTP4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsComma_2
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US2(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// readsComma_2#P6
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US2_HTP6(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US2_HTP6_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_2#P5
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US2_HTP5(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US2_HTP5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// readsComma_2#P5#P7
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US2_HTP5_HTP7(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US2_HTP5_HTP7_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsVal_3
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US3(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsVal_3#P8
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US3_HTP8(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US3_HTP8_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// readsComma_3
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US3(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsComma_3#P10
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US3_HTP10(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US3_HTP10_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_3#P9
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US3_HTP9(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US3_HTP9_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// readsComma_3#P9#P11
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US3_HTP9_HTP11(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US3_HTP9_HTP11_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsVal_4
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US4(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// readsVal_4#P12
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US4_HTP12(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US4_HTP12_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// readsComma_4
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US4(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// readsComma_4#P14
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US4_HTP14(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US4_HTP14_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// readsComma_4#P13
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US4_HTP13(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US4_HTP13_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// readsComma_4#P13#P15
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsComma_US4_HTP13_HTP15(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_readsComma_US4_HTP13_HTP15_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// readsVal_5
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US5(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// readsVal_5#P16
+__attribute__((always_inline)) 
+static inline void set_Prelude_readsVal_US5_HTP16(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude_readsVal_US5_HTP16_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of readsPrec in Read for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// instance of Read for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of readsPrec in Read for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// instance of Read for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of readsPrec in Read for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// instance of Read for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of readsPrec in Read for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// instance of Read for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of readsPrec in Read for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Read for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DORead_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of compare in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of compare in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of compare in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of compare in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of > in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of < in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of >= in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of <= in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of max in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of min in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of > in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of < in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of >= in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of <= in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of max in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of min in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of > in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of < in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of >= in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of <= in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of max in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of min in Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of > in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of < in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of >= in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of <= in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of max in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of min in Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of max in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of min in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of > in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of < in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of >= in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of <= in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of /= in Eq for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of /= in Eq for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of /= in Eq for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of /= in Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of /= in Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of /= in Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// implementation of == in Eq for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of == in Eq for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of == in Eq for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of == in Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of == in Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of == in Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// instance of Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// instance of Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// instance of Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Eq for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Eq for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// instance of Ord for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// instance of Eq for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of /= in Eq for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of == in Eq for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Eq for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEq_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// showTuple._#lambda297
+__attribute__((always_inline)) 
+static inline void set_Prelude_showTuple_DO_US_HTlambda297(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_showTuple_DO_US_HTlambda297_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// unzip3._#selFP15#zs
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip3_DO_US_HTselFP15_HTzs(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP15_HTzs_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip3._#selFP14#ys
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip3_DO_US_HTselFP14_HTys(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP14_HTys_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip3._#selFP13#xs
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip3_DO_US_HTselFP13_HTxs(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP13_HTxs_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip._#selFP11#ys
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip_DO_US_HTselFP11_HTys(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP11_HTys_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip._#selFP10#xs
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip_DO_US_HTselFP10_HTxs(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP10_HTxs_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of maxBound in Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of minBound in Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// instance of Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of maxBound in Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of minBound in Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// instance of Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of maxBound in Bounded for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of minBound in Bounded for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// instance of Bounded for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of maxBound in Bounded for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of minBound in Bounded for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// instance of Bounded for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of enumFromThenTo in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of enumFromTo in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of enumFromThen in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of enumFrom in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of fromEnum in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of toEnum in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of pred in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of succ in Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Enum for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of maxBound in Bounded for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of minBound in Bounded for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Bounded for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of showsPrec in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// instance of Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// instance of Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// instance of Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// instance of Show for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// instance of Show for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// instance of Show for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of showsPrec in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// instance of Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of showsPrec in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of showsPrec in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// instance of Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USinst_HTPrelude_DOShow_HT_LP_RP(field root, int missing)
+{
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0).n = NULL;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// zipWith_build
+__attribute__((always_inline)) 
+static inline void set_Prelude_zipWith_USbuild(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude_zipWith_USbuild_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// zip_build
+__attribute__((always_inline)) 
+static inline void set_Prelude_zip_USbuild(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_zip_USbuild_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of readList in Read for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of readList in Read for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of readList in Read for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of readList in Read for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of readList in Read for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of compare in Ord for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip3
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip3(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// unzip
+__attribute__((always_inline)) 
+static inline void set_Prelude_unzip(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude_unzip_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// zipWith3
+__attribute__((always_inline)) 
+static inline void set_Prelude_zipWith3(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude_zipWith3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// zip3
+__attribute__((always_inline)) 
+static inline void set_Prelude_zip3(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude_zip3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of showList in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+}
+
+// implementation of show in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// implementation of showList in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+}
+
+// implementation of show in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of showList in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+}
+
+// implementation of show in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of showList in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+}
+
+// implementation of show in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of showList in Show for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+}
+
+// implementation of show in Show for (,,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of showList in Show for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+}
+
+// implementation of show in Show for (,,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, field v4, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of show in Show for (,)
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP(field root, field scrutinee, field v2, field v3, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP(field root, field scrutinee, field v2, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// implementation of show in Show for ()
+__attribute__((always_inline)) 
+static inline void set_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP(field root, field scrutinee, int missing)
+{
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = NULL;
+  child_at(root, 0) = scrutinee;
+  child_at(root, 1).n = NULL;
+  child_at(root, 2).n = NULL;
+}
+
+// curry
+__attribute__((always_inline)) 
+static inline field make_Prelude_curry(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_curry_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// uncurry
+__attribute__((always_inline)) 
+static inline field make_Prelude_uncurry(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_uncurry_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// zipWith
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// zip
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsUnit
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsUnit(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsUnit_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsRParen
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsRParen(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsRParen_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsVal_1
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsVal_1#P0
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US1_HTP0(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US1_HTP0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsLParen
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsLParen(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsLParen_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c5
+__attribute__((always_inline)) 
+static inline field make_Prelude_c5(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c5_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c4
+__attribute__((always_inline)) 
+static inline field make_Prelude_c4(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c4_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c3
+__attribute__((always_inline)) 
+static inline field make_Prelude_c3(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c3_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c2
+__attribute__((always_inline)) 
+static inline field make_Prelude_c2(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsComma_1
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsComma_1#P2
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1_HTP2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1_HTP2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_1#P1
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1_HTP1(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1_HTP1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_1#P1#P3
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1_HTP1_HTP3(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1_HTP1_HTP3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsVal_2
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US2(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsVal_2#P4
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US2_HTP4(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US2_HTP4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_2
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsComma_2#P6
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2_HTP6(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2_HTP6_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_2#P5
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2_HTP5(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2_HTP5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_2#P5#P7
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2_HTP5_HTP7(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2_HTP5_HTP7_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsVal_3
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US3(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsVal_3#P8
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US3_HTP8(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US3_HTP8_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_3
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_3#P10
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3_HTP10(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3_HTP10_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_3#P9
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3_HTP9(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3_HTP9_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// readsComma_3#P9#P11
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3_HTP9_HTP11(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3_HTP9_HTP11_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsVal_4
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US4(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsVal_4#P12
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US4_HTP12(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US4_HTP12_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// readsComma_4
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_4#P14
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4_HTP14(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4_HTP14_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_4#P13
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4_HTP13(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4_HTP13_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// readsComma_4#P13#P15
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4_HTP13_HTP15(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4_HTP13_HTP15_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsVal_5
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US5(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US5_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// readsVal_5#P16
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsVal_US5_HTP16(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsVal_US5_HTP16_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of readsPrec in Read for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// instance of Read for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of readsPrec in Read for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// instance of Read for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of readsPrec in Read for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// instance of Read for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of readsPrec in Read for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// instance of Read for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of readsPrec in Read for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadsPrec_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// instance of Read for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DORead_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// implementation of compare in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// instance of Eq for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// instance of Eq for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEq_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEq_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// instance of Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// showTuple._#lambda297
+__attribute__((always_inline)) 
+static inline field make_Prelude_showTuple_DO_US_HTlambda297(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_showTuple_DO_US_HTlambda297_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP15#zs
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP15_HTzs(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP15_HTzs_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP14#ys
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP14_HTys(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP14_HTys_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP13#xs
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP13_HTxs(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP13_HTxs_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP11#ys
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP11_HTys(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP11_HTys_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP10#xs
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP10_HTxs(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP10_HTxs_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// instance of Bounded for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// instance of Bounded for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// instance of Bounded for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// instance of Bounded for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThenTo in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromTo in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThen in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFrom in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of fromEnum in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of toEnum in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of pred in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTpred_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of succ in Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTsucc_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Enum for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOEnum_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// implementation of maxBound in Bounded for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Bounded for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOBounded_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_HTP17_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_HTP18_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_HTP19_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_HTP20_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_HTP21_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_HTP22_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_HTP23_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// instance of Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_HTP24_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOShow_HT_LP_RP(int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  return root;
+}
+
+// zipWith_build
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// zip_build
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of readList in Read for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of readList in Read for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of readList in Read for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of readList in Read for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of readList in Read for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTreadList_HTPrelude_DORead_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// unzip3
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zipWith3
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith3(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith3_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// zip3
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip3(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip3_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_HTP26_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for (,)
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_CM_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_HTP28_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of show in Show for ()
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshow_HTPrelude_DOShow_HT_LP_RP_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// uncurry @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_uncurry_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_uncurry__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsUnit @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsUnit_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsUnit__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsUnit @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsUnit__1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsUnit__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsUnit @ [1,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsUnit__1_0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsUnit__1_0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsUnit @ [1,0,0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsUnit__1_0_0_1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsUnit__1_0_0_1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsRParen @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsRParen_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsRParen__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsRParen @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsRParen__0(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsRParen__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsRParen @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsRParen__0_1(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsRParen__0_1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsLParen @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsLParen_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsLParen__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsLParen @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsLParen__1(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsLParen__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// c5 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_c5_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c5__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c5 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_c5__0(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c5__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// c4 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_c4_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c4__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c4 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_c4__0(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c4__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// c3 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_c3_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c3__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// c3 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_c3__0(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c3__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// c2 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_c2_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_c2__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsComma_1 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// readsComma_1 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1__0(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsComma_1 @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1__0_1(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1__0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_1#P2 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US1_HTP2_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US1_HTP2__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_2 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// readsComma_2 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2__0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_2 @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2__0_1(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2__0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_2#P6 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US2_HTP6_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US2_HTP6__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_3 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// readsComma_3 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_3 @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3__0_1(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3__0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// readsComma_3#P10 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US3_HTP10_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US3_HTP10__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// readsComma_4 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// readsComma_4 @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// readsComma_4 @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4__0_1(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4__0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// readsComma_4#P14 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_readsComma_US4_HTP14_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_readsComma_US4_HTP14__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(8 * sizeof(field));
+  child_at(root, 0) = v11;
+  child_at(root, 1) = v10;
+  child_at(root, 2) = v9;
+  child_at(root, 3) = v8;
+  child_at(root, 4) = v7;
+  child_at(root, 5) = v6;
+  child_at(root, 6) = v5;
+  child_at(root, 7) = v4;
+  child_at(root, 8) = v3;
+  child_at(root, 9) = v2;
+  child_at(root, 10) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for (,,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,,) @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,,) @ [2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,,) @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,,) @ [2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP__2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(9 * sizeof(field));
+  child_at(root, 0) = v12;
+  child_at(root, 1) = v11;
+  child_at(root, 2) = v10;
+  child_at(root, 3) = v9;
+  child_at(root, 4) = v8;
+  child_at(root, 5) = v7;
+  child_at(root, 6) = v6;
+  child_at(root, 7) = v5;
+  child_at(root, 8) = v4;
+  child_at(root, 9) = v3;
+  child_at(root, 10) = v2;
+  child_at(root, 11) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(9 * sizeof(field));
+  child_at(root, 0) = v12;
+  child_at(root, 1) = v11;
+  child_at(root, 2) = v10;
+  child_at(root, 3) = v9;
+  child_at(root, 4) = v8;
+  child_at(root, 5) = v7;
+  child_at(root, 6) = v6;
+  child_at(root, 7) = v5;
+  child_at(root, 8) = v4;
+  child_at(root, 9) = v3;
+  child_at(root, 10) = v2;
+  child_at(root, 11) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,) @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,,) @ [2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,) @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,,) @ [2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_CM_RP__2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of > in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of < in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of >= in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_GT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of <= in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_LT_EQ_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of max in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmax_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of min in Ord for (,) @ [0,0,2]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmin_HTPrelude_DOOrd_HT_LP_CM_RP__0_0_2_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,) @ [0,0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_1(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,) @ [0,0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,) @ [0,0,1,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_1(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_1_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(8 * sizeof(field));
+  child_at(root, 0) = v11;
+  child_at(root, 1) = v10;
+  child_at(root, 2) = v9;
+  child_at(root, 3) = v8;
+  child_at(root, 4) = v7;
+  child_at(root, 5) = v6;
+  child_at(root, 6) = v5;
+  child_at(root, 7) = v4;
+  child_at(root, 8) = v3;
+  child_at(root, 9) = v2;
+  child_at(root, 10) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, field v16, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(13 * sizeof(field));
+  child_at(root, 0) = v16;
+  child_at(root, 1) = v15;
+  child_at(root, 2) = v14;
+  child_at(root, 3) = v13;
+  child_at(root, 4) = v12;
+  child_at(root, 5) = v11;
+  child_at(root, 6) = v10;
+  child_at(root, 7) = v9;
+  child_at(root, 8) = v8;
+  child_at(root, 9) = v7;
+  child_at(root, 10) = v6;
+  child_at(root, 11) = v5;
+  child_at(root, 12) = v4;
+  child_at(root, 13) = v3;
+  child_at(root, 14) = v2;
+  child_at(root, 15) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,) @ [0,0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_1(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(12 * sizeof(field));
+  child_at(root, 0) = v15;
+  child_at(root, 1) = v14;
+  child_at(root, 2) = v13;
+  child_at(root, 3) = v12;
+  child_at(root, 4) = v11;
+  child_at(root, 5) = v10;
+  child_at(root, 6) = v9;
+  child_at(root, 7) = v8;
+  child_at(root, 8) = v7;
+  child_at(root, 9) = v6;
+  child_at(root, 10) = v5;
+  child_at(root, 11) = v4;
+  child_at(root, 12) = v3;
+  child_at(root, 13) = v2;
+  child_at(root, 14) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for (,,,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, field v16, field v17, field v18, field v19, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(16 * sizeof(field));
+  child_at(root, 0) = v19;
+  child_at(root, 1) = v18;
+  child_at(root, 2) = v17;
+  child_at(root, 3) = v16;
+  child_at(root, 4) = v15;
+  child_at(root, 5) = v14;
+  child_at(root, 6) = v13;
+  child_at(root, 7) = v12;
+  child_at(root, 8) = v11;
+  child_at(root, 9) = v10;
+  child_at(root, 10) = v9;
+  child_at(root, 11) = v8;
+  child_at(root, 12) = v7;
+  child_at(root, 13) = v6;
+  child_at(root, 14) = v5;
+  child_at(root, 15) = v4;
+  child_at(root, 16) = v3;
+  child_at(root, 17) = v2;
+  child_at(root, 18) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,) @ [0,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_RP__0_0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,) @ [0,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,) @ [0,0,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_0(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_RP__0_0_0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(8 * sizeof(field));
+  child_at(root, 0) = v11;
+  child_at(root, 1) = v10;
+  child_at(root, 2) = v9;
+  child_at(root, 3) = v8;
+  child_at(root, 4) = v7;
+  child_at(root, 5) = v6;
+  child_at(root, 6) = v5;
+  child_at(root, 7) = v4;
+  child_at(root, 8) = v3;
+  child_at(root, 9) = v2;
+  child_at(root, 10) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, field v16, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(13 * sizeof(field));
+  child_at(root, 0) = v16;
+  child_at(root, 1) = v15;
+  child_at(root, 2) = v14;
+  child_at(root, 3) = v13;
+  child_at(root, 4) = v12;
+  child_at(root, 5) = v11;
+  child_at(root, 6) = v10;
+  child_at(root, 7) = v9;
+  child_at(root, 8) = v8;
+  child_at(root, 9) = v7;
+  child_at(root, 10) = v6;
+  child_at(root, 11) = v5;
+  child_at(root, 12) = v4;
+  child_at(root, 13) = v3;
+  child_at(root, 14) = v2;
+  child_at(root, 15) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,) @ [0,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_RP__0_0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(10 * sizeof(field));
+  child_at(root, 0) = v13;
+  child_at(root, 1) = v12;
+  child_at(root, 2) = v11;
+  child_at(root, 3) = v10;
+  child_at(root, 4) = v9;
+  child_at(root, 5) = v8;
+  child_at(root, 6) = v7;
+  child_at(root, 7) = v6;
+  child_at(root, 8) = v5;
+  child_at(root, 9) = v4;
+  child_at(root, 10) = v3;
+  child_at(root, 11) = v2;
+  child_at(root, 12) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(12 * sizeof(field));
+  child_at(root, 0) = v15;
+  child_at(root, 1) = v14;
+  child_at(root, 2) = v13;
+  child_at(root, 3) = v12;
+  child_at(root, 4) = v11;
+  child_at(root, 5) = v10;
+  child_at(root, 6) = v9;
+  child_at(root, 7) = v8;
+  child_at(root, 8) = v7;
+  child_at(root, 9) = v6;
+  child_at(root, 10) = v5;
+  child_at(root, 11) = v4;
+  child_at(root, 12) = v3;
+  child_at(root, 13) = v2;
+  child_at(root, 14) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for (,,,,,,) @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, field v11, field v12, field v13, field v14, field v15, field v16, field v17, field v18, field v19, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_CM_CM_CM_CM_CM_CM_RP__0_0_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(16 * sizeof(field));
+  child_at(root, 0) = v19;
+  child_at(root, 1) = v18;
+  child_at(root, 2) = v17;
+  child_at(root, 3) = v16;
+  child_at(root, 4) = v15;
+  child_at(root, 5) = v14;
+  child_at(root, 6) = v13;
+  child_at(root, 7) = v12;
+  child_at(root, 8) = v11;
+  child_at(root, 9) = v10;
+  child_at(root, 10) = v9;
+  child_at(root, 11) = v8;
+  child_at(root, 12) = v7;
+  child_at(root, 13) = v6;
+  child_at(root, 14) = v5;
+  child_at(root, 15) = v4;
+  child_at(root, 16) = v3;
+  child_at(root, 17) = v2;
+  child_at(root, 18) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA4__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA3__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA2__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA1__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_CM_RP_HTA0__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA8__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA7__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA6__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// instance of Ord for (,,,) @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USinst_HTPrelude_DOOrd_HT_LP_CM_CM_CM_RP_HTA5__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of /= in Eq for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_FS_EQ_HTPrelude_DOEq_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of == in Eq for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HT_EQ_EQ_HTPrelude_DOEq_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP15#zs @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP15_HTzs_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP15_HTzs__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP15#zs @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP15_HTzs__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP15_HTzs__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP14#ys @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP14_HTys_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP14_HTys__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP14#ys @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP14_HTys__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP14_HTys__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP13#xs @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP13_HTxs_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP13_HTxs__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3._#selFP13#xs @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_DO_US_HTselFP13_HTxs__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3_DO_US_HTselFP13_HTxs__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP11#ys @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP11_HTys_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP11_HTys__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP11#ys @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP11_HTys__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP11_HTys__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP10#xs @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP10_HTxs_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP10_HTxs__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip._#selFP10#xs @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_DO_US_HTselFP10_HTxs__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip_DO_US_HTselFP10_HTxs__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThenTo in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThenTo in Enum for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThenTo in Enum for () @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThenTo in Enum for () @ [0,0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThenTo_HTPrelude_DOEnum_HT_LP_RP__0_0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromTo in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromTo in Enum for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromTo_HTPrelude_DOEnum_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThen in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThen in Enum for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of enumFromThen in Enum for () @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFromThen_HTPrelude_DOEnum_HT_LP_RP__0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of enumFrom in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTenumFrom_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of fromEnum in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTfromEnum_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of toEnum in Enum for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTtoEnum_HTPrelude_DOEnum_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of maxBound in Bounded for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTmaxBound_HTPrelude_DOBounded_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of minBound in Bounded for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTminBound_HTPrelude_DOBounded_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showsPrec in Show for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowsPrec_HTPrelude_DOShow_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild__0(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild__0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild__0_1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__0_1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild__1(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// zipWith_build @ [1,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith_USbuild__1_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith_USbuild__1_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zip_build @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// zip_build @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild__0(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// zip_build @ [0,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild__0_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__0_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zip_build @ [0,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild__0_1(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__0_1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// zip_build @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild__1(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// zip_build @ [1,0]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip_USbuild__1_0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip_USbuild__1_0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of compare in Ord for () @ [0]
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__0(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTcompare_HTPrelude_DOOrd_HT_LP_RP__0_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip3 @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip3__1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip3__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// unzip @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+// unzip @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_unzip__1(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_unzip__1_symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// zipWith3 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith3_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith3__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// zipWith3 @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith3__1(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith3__1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// zipWith3 @ [1,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zipWith3__1_1(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zipWith3__1_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// zip3 @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip3_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip3__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// zip3 @ [1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip3__1(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip3__1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// zip3 @ [1,1]
+__attribute__((always_inline)) 
+static inline field make_Prelude_zip3__1_1(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude_zip3__1_1_symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, field v10, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(7 * sizeof(field));
+  child_at(root, 0) = v10;
+  child_at(root, 1) = v9;
+  child_at(root, 2) = v8;
+  child_at(root, 3) = v7;
+  child_at(root, 4) = v6;
+  child_at(root, 5) = v5;
+  child_at(root, 6) = v4;
+  child_at(root, 7) = v3;
+  child_at(root, 8) = v2;
+  child_at(root, 9) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, field v9, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(6 * sizeof(field));
+  child_at(root, 0) = v9;
+  child_at(root, 1) = v8;
+  child_at(root, 2) = v7;
+  child_at(root, 3) = v6;
+  child_at(root, 4) = v5;
+  child_at(root, 5) = v4;
+  child_at(root, 6) = v3;
+  child_at(root, 7) = v2;
+  child_at(root, 8) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, field v8, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(5 * sizeof(field));
+  child_at(root, 0) = v8;
+  child_at(root, 1) = v7;
+  child_at(root, 2) = v6;
+  child_at(root, 3) = v5;
+  child_at(root, 4) = v4;
+  child_at(root, 5) = v3;
+  child_at(root, 6) = v2;
+  child_at(root, 7) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, field v7, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(4 * sizeof(field));
+  child_at(root, 0) = v7;
+  child_at(root, 1) = v6;
+  child_at(root, 2) = v5;
+  child_at(root, 3) = v4;
+  child_at(root, 4) = v3;
+  child_at(root, 5) = v2;
+  child_at(root, 6) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, field v6, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(3 * sizeof(field));
+  child_at(root, 0) = v6;
+  child_at(root, 1) = v5;
+  child_at(root, 2) = v4;
+  child_at(root, 3) = v3;
+  child_at(root, 4) = v2;
+  child_at(root, 5) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP_(field scrutinee, field v2, field v3, field v4, field v5, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(2 * sizeof(field));
+  child_at(root, 0) = v5;
+  child_at(root, 1) = v4;
+  child_at(root, 2) = v3;
+  child_at(root, 3) = v2;
+  child_at(root, 4) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_(field scrutinee, field v2, field v3, field v4, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP__symbol;
+  root.n->missing = missing;
+  root.n->children[3].a = (field*)alloc(sizeof(field));
+  child_at(root, 0) = v4;
+  child_at(root, 1) = v3;
+  child_at(root, 2) = v2;
+  child_at(root, 3) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for (,) @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25_(field scrutinee, field v2, field v3, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_CM_RP_HTP25__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v3;
+  child_at(root, 1) = v2;
+  child_at(root, 2) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_(field scrutinee, field v2, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = v2;
+  child_at(root, 1) = scrutinee;
+  return root;
+}
+
+// implementation of showList in Show for () @ []
+__attribute__((always_inline)) 
+static inline field make_Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27_(field scrutinee, int missing)
+{
+  field root;
+  root.n = (Node*)alloc(sizeof(Node));
+  root.n->symbol = &Prelude__USimpl_HTshowList_HTPrelude_DOShow_HT_LP_RP_HTP27__symbol;
+  root.n->missing = missing;
+  child_at(root, 0) = scrutinee;
+  return root;
+}
+
+#endif //PreludeTuple_H

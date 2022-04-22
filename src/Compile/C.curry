@@ -88,18 +88,18 @@ cdefine :: CName -> Int -> CStmt
 cdefine name val = "#define " ++ name ++ " " ++ show val
 
 children :: CName -> [Int] -> CExpr
-children node xs = foldl childAt node xs
+children n xs = foldl childAt n xs
  where childAt x y = "child_at("++x++", "++show y++")"
 
 child_t :: CType -> CName -> CExpr
-child_t "int" node   = "child_at_i("++node++",0)"
-child_t "char" node  = "child_at_c("++node++",0)"
-child_t "float" node = "child_at_f("++node++",0)"
+child_t "int" n   = "child_at_i("++n++",0)"
+child_t "char" n  = "child_at_c("++n++",0)"
+child_t "float" n = "child_at_f("++n++",0)"
 
 conv_t :: CType -> CName -> CExpr
-conv_t "int" node   = "((field)"++node++").i"
-conv_t "char" node  = "((field)"++node++").c"
-conv_t "float" node = "((field)"++node++").f"
+conv_t "int" n   = "((field)"++n++").i"
+conv_t "char" n  = "((field)"++n++").c"
+conv_t "float" n = "((field)"++n++").f"
 
 toUnion :: CType -> CExpr -> CExpr
 toUnion "int" exp   = "(field)(long)("++exp++")"
@@ -125,10 +125,14 @@ scall name es = name ++ cargs es ++ ";"
 retCall :: CName -> [CExpr] -> CStmt
 retCall name es = "return " ++ name ++ cargs es ++ ";"
 
-calloc_n :: Int -> CExpr
-calloc_n num = "(Node*)calloc("++show num++", sizeof(Node))"
-calloc_f :: Int -> CExpr
-calloc_f num = "(field*)calloc("++show num++", sizeof(field))"
+alloc_n :: Int -> CExpr
+alloc_n num
+ | num == 1  = "(Node*)alloc(sizeof(Node))"
+ | otherwise = "(Node*)alloc("++show num++" * sizeof(Node))"
+alloc_f :: Int -> CExpr
+alloc_f num
+ | num == 1  = "(field*)alloc(sizeof(field))"
+ | otherwise = "(field*)alloc("++show num++" * sizeof(field))"
 
 
 creturn :: CStmt
@@ -146,20 +150,20 @@ cif c b = ["if(" ++ c ++ ")"] ++
 
 
 cifCase :: [(CExpr, [CStmt])] -> [CStmt] -> [CStmt]
-cifCase ((c,b):bs) defaultBlock = cif c b ++ celseCase bs
- where
-    celseCase ((c,b):bs) = ["else if(" ++ c ++ ")"] ++
-                           cblock b ++
-                           celseCase bs
-    celseCase []         = ["else"] ++ 
-                           cblock defaultBlock
-
+cifCase ((c,b):bs) defaultBlock = cif c b ++ foldr ((++) . cElseIf) (cblock defaultBlock) bs
 
 
 cifElse :: CExpr -> [CStmt] -> [CStmt] -> [CStmt]
 cifElse c t f = cif c t ++ 
-                ["else"] ++
-                cblock f
+                cElse f
+
+cElse :: [CStmt] -> [CStmt]
+cElse b = ["else"] ++
+            cblock b
+
+cElseIf :: (CExpr, [CStmt]) -> [CStmt]
+cElseIf (c,b) = ["else if("++c++")"] ++
+                cblock b
 
 cwhile :: CExpr -> [CStmt] -> [CStmt]
 cwhile c b = ["while(" ++ c ++ ")"] ++
@@ -200,6 +204,7 @@ list = intercalate ", "
 cargs :: [CExpr] -> CExpr
 cargs xs = "(" ++ list xs ++ ")"
 
+cparams :: [(CExpr,CExpr)] -> CExpr
 cparams ps = "(" ++ list (map param ps) ++ ")"
  where param (t,x) = t ++ " " ++ x
 
@@ -225,8 +230,12 @@ tag f = mangle f ++ "_TAG"
 var :: Int -> CExpr
 var v
  | v == 0    = "root"
- | isRET v   = "RET"
- | otherwise = "v"++show v
+ | v == 1    = "scrutinee"
+ -- | isRET v   = "RET"
+ | otherwise = "v"++show (abs v)
+
+node :: Int -> CExpr
+node v = var v ++ ".n"
 
 fwd :: Int -> CExpr
 fwd v = var v ++ if v == 0 then "" else "_forward"
@@ -236,6 +245,9 @@ hasRET = not . null . filter (<(-1))
 
 isRET :: IVarIndex -> Bool
 isRET v = v < (-1)
+
+isScrutenee :: IVarIndex -> Bool
+isScrutenee v = v == 1
 
 symbol :: String -> CExpr
 symbol v = v ++ ".n->symbol"
@@ -258,9 +270,17 @@ nondet v = v ++ ".n->nondet"
 missing :: CExpr -> CExpr
 missing v = v ++ ".n->missing"
 
+
 nullf :: CExpr
 nullf = "(field)(Node*)NULL"
 
 make_restore :: IVarIndex -> CStmt
-make_restore v = (var (abs v) ++ ".n") .= scall "make_restore" [var (abs v)++".n"]
+make_restore v = nbackup v .= scall "make_restore" [nbackup v]
 
+backup :: IVarIndex -> CExpr
+backup v
+ | v < 0 = "backup"++show (abs v)
+ | otherwise = var v
+
+nbackup :: IVarIndex -> CExpr
+nbackup v = backup v ++ ".n"

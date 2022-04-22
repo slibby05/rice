@@ -1,6 +1,6 @@
 module FlatUtils.DataTable (exempt,  DataTable, empty,   fillTable, 
                             addType, getType,   getCons, fillCons, 
-                            getConstructor,
+                            getConstructor, constants,
                             showTable) where
 
 import FlatCurry.Types
@@ -56,11 +56,11 @@ addType (Type name _ _ cons) (tmap,cmap) = (M.insert name (map consName cons) tm
        consPair (Cons cname _ _ _) = (cname, name)
 
 getType :: QName -> DataTable -> QName
-getType cons (tmap,cmap) = M.findWithDefault cerror cons cmap
+getType cons (_,cmap) = M.findWithDefault cerror cons cmap
  where cerror = error $ "couldn't find constructor " ++ show cons
 
 getCons :: QName -> DataTable -> [QName]
-getCons dtype (tmap,cmap) = map fst $ M.findWithDefault cerror dtype tmap
+getCons dtype (tmap,_) = map fst $ M.findWithDefault cerror dtype tmap
  where cerror = error $ "couldn't find data type " ++ show dtype
 
 fillCons :: QName -> DataTable -> [QName]
@@ -73,6 +73,9 @@ getConstructor (TCons dtype _)  (tmap,_) = case M.lookup dtype tmap of
                                                 Just [c] -> [c]
                                                 _        -> []
 getConstructor (ForallType _ _) _        = []
+
+constants :: DataTable -> [(String,String,Int)]
+constants (types,_) = [(q,n,0) | (_,cs) <- M.toList types, ((q,n),0) <- cs]
 
 
 showTable :: DataTable -> String

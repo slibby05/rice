@@ -1,0 +1,124 @@
+interface deforestation where {
+import Prelude;
+(++) 2 :: [a] -> [a] -> [a];
+append_build 4 :: [a] -> [a] -> ([a] -> b -> b) -> b -> b;
+bf 5 :: (a -> b -> c -> c) -> (d -> c) -> a -> d -> [b] -> c;
+build 1 :: ((a -> [a] -> [a]) -> [b] -> c) -> c;
+build_fold
+3
+::
+((a -> [a] -> [a]) -> b -> c -> c) -> ([d] -> c) -> [b] -> c;
+concat 0 :: [[a]] -> [a];
+concat_mkc 3 :: (a -> b -> b) -> [a] -> b -> b;
+enumFromThenTo_
+3
+::
+Prelude.Int -> Prelude.Int -> Prelude.Int -> [Prelude.Int];
+enumFromThenTo_build
+5
+::
+Prelude.Int -> Prelude.Int -> Prelude.Int ->
+(Prelude.Int -> [Prelude.Int] -> [Prelude.Int]) -> [Prelude.Int] ->
+[Prelude.Int];
+enumFromThen_ 2 :: Prelude.Int -> Prelude.Int -> [Prelude.Int];
+enumFromTo_ 2 :: Prelude.Int -> Prelude.Int -> [Prelude.Int];
+enumFromTo_build
+4
+::
+Prelude.Int -> Prelude.Int ->
+(Prelude.Int -> [Prelude.Int] -> [Prelude.Int]) -> [Prelude.Int] ->
+[Prelude.Int];
+enumFrom_ 1 :: Prelude.Int -> [Prelude.Int];
+filter 1 :: (a -> Prelude.Bool) -> [a] -> [a];
+filter_mkc
+4
+::
+(a -> Prelude.Bool) -> (a -> b -> b) -> a -> b -> b;
+iterate 2 :: (a -> a) -> a -> [a];
+iterate_build 4 :: (a -> a) -> a -> (a -> b -> b) -> c -> b;
+length 0 :: [a] -> Prelude.Int;
+length_fold 2 :: a -> Prelude.Int -> Prelude.Int;
+lookup 1 :: Prelude.Eq a => a -> [(a, b)] -> Prelude.Maybe b;
+lookup_fold
+3
+::
+Prelude.Eq a => a -> (a, b) -> Prelude.Maybe b -> Prelude.Maybe b;
+map 1 :: (a -> b) -> [a] -> [b];
+map_mkc 4 :: (a -> b) -> (b -> c -> c) -> a -> c -> c;
+mk_build 5 :: (a -> b -> c) -> (d -> a) -> (e -> b) -> d -> e -> c;
+null 0 :: [a] -> Prelude.Bool;
+null_fold 2 :: a -> b -> Prelude.Bool;
+repeat 1 :: a -> [a];
+repeat_build 3 :: a -> (a -> b -> b) -> c -> b;
+zip 2 :: [a] -> [b] -> [(a, b)];
+zipWith 3 :: (a -> b -> c) -> [a] -> [b] -> [c];
+zipWith_build
+5
+::
+(a -> b -> c) -> [a] -> [b] -> (c -> d -> d) -> d -> d;
+zip_build 4 :: [a] -> [b] -> ((a, b) -> c -> c) -> c -> c;
+hiding data Prelude.Int;
+hiding data Prelude.Bool;
+hiding class Prelude.Eq a;
+hiding data Prelude.Maybe a;
+instance Prelude.Eq () {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b) => Prelude.Eq (a, b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b,
+          Prelude.Eq c) => Prelude.Eq (a, b, c) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c,
+          Prelude.Eq d) => Prelude.Eq (a, b, c, d) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e) => Prelude.Eq (a, b, c, d, e) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f) => Prelude.Eq (a, b, c, d, e, f) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f, Prelude.Eq g) => Prelude.Eq (a, b, c,
+                                                                   d, e, f, g) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq [a] {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Bool {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Char {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a,
+          Prelude.Eq b) => Prelude.Eq (Prelude.Either a b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Float {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.IOError {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Int {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq (Prelude.Maybe a) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Ordering {
+  (==) 2
+} {-# MODULE Prelude #-};
+hiding data Prelude.Char;
+hiding data Prelude.Either a b;
+hiding data Prelude.Float;
+hiding data Prelude.IOError;
+hiding data Prelude.Ordering
+}

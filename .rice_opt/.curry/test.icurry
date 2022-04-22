@@ -1,0 +1,7 @@
+interface test where {
+import Prelude;
+t2 0 :: [Prelude.Int];
+t3 0 :: [Prelude.Int];
+t4 0 :: [Prelude.Int];
+hiding data Prelude.Int
+}

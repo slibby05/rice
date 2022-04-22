@@ -1,0 +1,767 @@
+interface replace where {
+import Prelude;
+data Either a b = Left a | Right b;
+data IOError
+  = IOError [Prelude.Char]
+  | UserError [Prelude.Char]
+  | FailError [Prelude.Char]
+  | NondetError [Prelude.Char];
+data Maybe a = Nothing | Just a;
+newtype RepBool = B Prelude.Bool;
+newtype RepChar = RC Prelude.Char;
+newtype RepFloat = RF Prelude.Float;
+newtype RepInt = RI Prelude.Int;
+newtype RepList a = RL [a];
+newtype RepT2 a b = RT2 (a, b);
+newtype RepT3 a b c = RT3 (a, b, c);
+newtype RepT4 a b c d = RT4 (a, b, c, d);
+newtype RepT5 a b c d e = RT5 (a, b, c, d, e);
+newtype RepT6 a b c d e f = RT6 (a, b, c, d, e, f);
+newtype RepT7 a b c d e f g = RT7 (a, b, c, d, e, g, f);
+newtype RepUnit = RT0 ();
+(!!) 2 :: [a] -> Prelude.Int -> a;
+(*$) 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+(+$) 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+(-$) 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+c2 2 :: a -> (b, [Prelude.Char]) -> (RepT2 a b, [Prelude.Char]);
+c3
+2
+::
+a -> (RepT2 b c, [Prelude.Char]) -> (RepT3 a b c, [Prelude.Char]);
+c4
+2
+::
+a -> (RepT3 b c d, [Prelude.Char]) ->
+(RepT4 a b c d, [Prelude.Char]);
+c5
+2
+::
+a -> (RepT4 b c d e, [Prelude.Char]) ->
+(RepT5 a b c d e, [Prelude.Char]);
+cond 2 :: Prelude.Bool -> a -> a;
+def_Ord_LtEq 2 :: Prelude.Ord a => a -> a -> Prelude.Bool;
+div_ 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+eqChar 2 :: Prelude.Char -> Prelude.Char -> Prelude.Bool;
+eqFloat 2 :: Prelude.Float -> Prelude.Float -> Prelude.Bool;
+eqInt 2 :: Prelude.Int -> Prelude.Int -> Prelude.Bool;
+failed 0 :: a;
+halve 1 :: Prelude.Int -> Prelude.Int;
+isAlpha 1 :: Prelude.Char -> Prelude.Bool;
+isAlphaNum 1 :: Prelude.Char -> Prelude.Bool;
+isBinDigit 1 :: Prelude.Char -> Prelude.Bool;
+isDigit 1 :: Prelude.Char -> Prelude.Bool;
+isHexDigit 1 :: Prelude.Char -> Prelude.Bool;
+isOctDigit 1 :: Prelude.Char -> Prelude.Bool;
+isSpace 1 :: Prelude.Char -> Prelude.Bool;
+isUpper 1 :: Prelude.Char -> Prelude.Bool;
+lex 1 :: [Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lexDigits
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lexLitChar
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lexLitChar_isAt 1 :: [Prelude.Char] -> Prelude.Bool;
+lexLitChar_isCharName 1 :: Prelude.Char -> Prelude.Bool;
+lexLitChar_lexEsc
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lexLitChar_lexPrefix 2 :: a -> ([a], b) -> ([a], b);
+lexLitChar_runEsc
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_1
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_2
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_3
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_4
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_5
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lexLitChar_runEsc_6
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lex_else
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lex_else_frac 3 :: a -> [a] -> ([a], b) -> ([a], b);
+lex_filterSingleQuote
+1
+::
+([Prelude.Char], [Prelude.Char]) -> Prelude.Bool;
+lex_isIdChar 1 :: Prelude.Char -> Prelude.Bool;
+lex_isSingle 1 :: Prelude.Char -> Prelude.Bool;
+lex_isSym 1 :: Prelude.Char -> Prelude.Bool;
+lex_lexDoubleQuote 1 :: ([Prelude.Char], a) -> ([Prelude.Char], a);
+lex_lexExp
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lex_lexFracExp
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lex_lexFracExp_dot
+1
+::
+([Prelude.Char], [Prelude.Char], [Prelude.Char]) ->
+([Prelude.Char], [Prelude.Char]);
+lex_lexFracExp_exp
+1
+::
+([Prelude.Char], [Prelude.Char]) ->
+[([Prelude.Char], [Prelude.Char], [Prelude.Char])];
+lex_lexPMExp
+2
+::
+Prelude.Char -> [Prelude.Char] ->
+[([Prelude.Char], [Prelude.Char])];
+lex_lexPMExp_sgn
+3
+::
+Prelude.Char -> [Prelude.Char] ->
+([Prelude.Char], [Prelude.Char]) ->
+([Prelude.Char], [Prelude.Char]);
+lex_lexSingleQuote
+1
+::
+([Prelude.Char], [Prelude.Char]) ->
+([Prelude.Char], [Prelude.Char]);
+lex_lexStrItem
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lex_lexString
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+lex_lexString_build
+1
+::
+([Prelude.Char], [Prelude.Char], [Prelude.Char]) ->
+([Prelude.Char], [Prelude.Char]);
+lex_lexString_string
+1
+::
+([Prelude.Char], [Prelude.Char]) ->
+[([Prelude.Char], [Prelude.Char], [Prelude.Char])];
+lines 1 :: [Prelude.Char] -> [[Prelude.Char]];
+loop 0 :: a;
+ltEqChar 2 :: Prelude.Char -> Prelude.Char -> Prelude.Bool;
+ltEqFloat 2 :: Prelude.Float -> Prelude.Float -> Prelude.Bool;
+ltEqInt 2 :: Prelude.Int -> Prelude.Int -> Prelude.Bool;
+makeFailError
+1
+::
+([Prelude.Char], [Prelude.Char]) -> (IOError, [Prelude.Char]);
+makeIOError
+1
+::
+([Prelude.Char], [Prelude.Char]) -> (IOError, [Prelude.Char]);
+makeJust 1 :: (a, [Prelude.Char]) -> (Maybe a, [Prelude.Char]);
+makeLeft 1 :: (a, [Prelude.Char]) -> (Either a b, [Prelude.Char]);
+makeNondetError
+1
+::
+([Prelude.Char], [Prelude.Char]) -> (IOError, [Prelude.Char]);
+makeRight 1 :: (a, [Prelude.Char]) -> (Either b a, [Prelude.Char]);
+makeTriple 2 :: a -> (b, c) -> (a, b, c);
+makeUserError
+1
+::
+([Prelude.Char], [Prelude.Char]) -> (IOError, [Prelude.Char]);
+mod_ 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+pow 2 :: Prelude.Float -> Prelude.Int -> Prelude.Float;
+powaux
+3
+::
+Prelude.Float -> Prelude.Float -> Prelude.Int -> Prelude.Float;
+quot_ 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+readCharLiteral
+1
+::
+[Prelude.Char] -> [(Prelude.Char, [Prelude.Char])];
+readDotNat
+1
+::
+[Prelude.Char] -> [(Prelude.Float, [Prelude.Char])];
+readDotNat1 1 :: [Prelude.Char] -> (Prelude.Float, [Prelude.Char]);
+readENat 1 :: [Prelude.Char] -> [(Prelude.Int, [Prelude.Char])];
+readFailError 1 :: [Prelude.Char] -> [(IOError, [Prelude.Char])];
+readFalse 1 :: [Prelude.Char] -> [(RepBool, [Prelude.Char])];
+readFloatLiteral
+1
+::
+[Prelude.Char] -> [(Prelude.Float, [Prelude.Char])];
+readIOError 1 :: [Prelude.Char] -> [(IOError, [Prelude.Char])];
+readJust
+1
+::
+Prelude.Read a => [Prelude.Char] -> [(Maybe a, [Prelude.Char])];
+readLeft
+1
+::
+Prelude.Read a => [Prelude.Char] -> [(Either a b, [Prelude.Char])];
+readNat
+2
+::
+[Prelude.Char] -> Prelude.Int -> (Prelude.Int, [Prelude.Char]);
+readNatLiteral
+1
+::
+[Prelude.Char] -> [(Prelude.Int, [Prelude.Char])];
+readNondetError 1 :: [Prelude.Char] -> [(IOError, [Prelude.Char])];
+readNothing 1 :: [Prelude.Char] -> [(Maybe a, [Prelude.Char])];
+readPosFloat
+1
+::
+[Prelude.Char] -> [(Prelude.Float, [Prelude.Char])];
+readRight
+1
+::
+Prelude.Read b => [Prelude.Char] -> [(Either a b, [Prelude.Char])];
+readStringLiteral
+1
+::
+[Prelude.Char] -> [([Prelude.Char], [Prelude.Char])];
+readTrue 1 :: [Prelude.Char] -> [(RepBool, [Prelude.Char])];
+readUserError 1 :: [Prelude.Char] -> [(IOError, [Prelude.Char])];
+readsComma_1
+1
+::
+Prelude.Read b => (a, [Prelude.Char]) ->
+                  [(RepT2 a b, [Prelude.Char])];
+readsComma_2
+1
+::
+(Prelude.Read b, Prelude.Read c) => (a, [Prelude.Char]) ->
+                                    [(RepT3 a b c, [Prelude.Char])];
+readsComma_3
+1
+::
+(Prelude.Read b, Prelude.Read c, Prelude.Read d) => (a,
+                                                     [Prelude.Char]) ->
+                                                    [(RepT4 a b c d, [Prelude.Char])];
+readsComma_4
+1
+::
+(Prelude.Read b, Prelude.Read c, Prelude.Read d,
+ Prelude.Read e) => (a, [Prelude.Char]) ->
+                    [(RepT5 a b c d e, [Prelude.Char])];
+readsLParen
+2
+::
+([Prelude.Char] -> [(a, [Prelude.Char])]) -> [Prelude.Char] ->
+[(a, [Prelude.Char])];
+readsRParen 1 :: (a, [Prelude.Char]) -> [(a, [Prelude.Char])];
+readsUnit 1 :: [Prelude.Char] -> [(RepUnit, [Prelude.Char])];
+readsVal_1
+1
+::
+Prelude.Read a => [Prelude.Char] -> [(a, [Prelude.Char])];
+readsVal_2
+1
+::
+(Prelude.Read a, Prelude.Read b) => [Prelude.Char] ->
+                                    [(RepT2 a b, [Prelude.Char])];
+readsVal_3
+1
+::
+(Prelude.Read a, Prelude.Read b,
+ Prelude.Read c) => [Prelude.Char] ->
+                    [(RepT3 a b c, [Prelude.Char])];
+readsVal_4
+1
+::
+(Prelude.Read a, Prelude.Read b, Prelude.Read c,
+ Prelude.Read d) => [Prelude.Char] ->
+                    [(RepT4 a b c d, [Prelude.Char])];
+readsVal_5
+1
+::
+(Prelude.Read a, Prelude.Read b, Prelude.Read c, Prelude.Read d,
+ Prelude.Read e) => [Prelude.Char] ->
+                    [(RepT5 a b c d e, [Prelude.Char])];
+rem_ 2 :: Prelude.Int -> Prelude.Int -> Prelude.Int;
+span 2 :: (a -> Prelude.Bool) -> [a] -> ([a], [a]);
+splitAt 2 :: Prelude.Int -> [a] -> ([a], [a]);
+splitline 1 :: [Prelude.Char] -> ([Prelude.Char], [Prelude.Char]);
+square 1 :: Prelude.Float -> Prelude.Float;
+take 2 :: Prelude.Int -> [a] -> [a];
+words 1 :: [Prelude.Char] -> [[Prelude.Char]];
+instance (Prelude.Read a, Prelude.Read b) => Prelude.Read (Either a
+                                                                  b) {
+  readsPrec 2
+};
+hiding data Prelude.Char;
+instance Prelude.Read IOError {
+  readsPrec 2
+};
+instance Prelude.Show IOError {
+  showsPrec 2
+};
+instance Prelude.Read a => Prelude.Read (Maybe a) {
+  readsPrec 2
+};
+hiding data Prelude.Bool;
+instance Prelude.Eq RepBool {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Ord RepBool {
+  compare 2;
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2
+};
+instance Prelude.Read RepBool {
+  readsPrec 2
+};
+instance Prelude.Eq RepChar {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Ord RepChar {
+  compare 2;
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2
+};
+hiding data Prelude.Float;
+instance Prelude.Eq RepFloat {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Ord RepFloat {
+  compare 2;
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2
+};
+hiding data Prelude.Int;
+instance Prelude.Eq RepInt {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Integral RepInt {
+  quotRem 2;
+  divMod 2;
+  rem 2;
+  quot 2;
+  mod 2;
+  div 2
+};
+instance Prelude.Num RepInt {
+  fromInt 1;
+  signum 1;
+  abs 1;
+  negate 1;
+  (*) 2;
+  (-) 2;
+  (+) 2
+};
+instance Prelude.Ord RepInt {
+  compare 2;
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2
+};
+instance Prelude.Real RepInt {
+};
+instance Prelude.Eq a => Prelude.Eq (RepList a) {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Ord a => Prelude.Ord (RepList a) {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2;
+  compare 2
+};
+instance (Prelude.Eq a, Prelude.Eq b) => Prelude.Eq (RepT2 a b) {
+  (/=) 2;
+  (==) 2
+};
+instance (Prelude.Ord a, Prelude.Ord b) => Prelude.Ord (RepT2 a
+                                                              b) {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2;
+  compare 2
+};
+instance (Prelude.Read a, Prelude.Read b) => Prelude.Read (RepT2 a
+                                                                 b) {
+  readsPrec 1
+};
+instance (Prelude.Eq a, Prelude.Eq b,
+          Prelude.Eq c) => Prelude.Eq (RepT3 a b c) {
+  (/=) 2;
+  (==) 2
+};
+instance (Prelude.Ord a, Prelude.Ord b,
+          Prelude.Ord c) => Prelude.Ord (RepT3 a b c) {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2;
+  compare 2
+};
+instance (Prelude.Read a, Prelude.Read b,
+          Prelude.Read c) => Prelude.Read (RepT3 a b c) {
+  readsPrec 1
+};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c,
+          Prelude.Eq d) => Prelude.Eq (RepT4 a b c d) {
+  (/=) 2;
+  (==) 2
+};
+instance (Prelude.Ord a, Prelude.Ord b, Prelude.Ord c,
+          Prelude.Ord d) => Prelude.Ord (RepT4 a b c d) {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2;
+  compare 2
+};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d) => Prelude.Read (RepT4 a b c d) {
+  readsPrec 1
+};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e) => Prelude.Eq (RepT5 a b c d e) {
+  (/=) 2;
+  (==) 2
+};
+instance (Prelude.Ord a, Prelude.Ord b, Prelude.Ord c,
+          Prelude.Ord d, Prelude.Ord e) => Prelude.Ord (RepT5 a b c d e) {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2;
+  compare 2
+};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d, Prelude.Read e) => Prelude.Read (RepT5 a b c d e) {
+  readsPrec 1
+};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f) => Prelude.Eq (RepT6 a b c d e f) {
+  (/=) 2;
+  (==) 2
+};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f, Prelude.Eq g) => Prelude.Eq (RepT7 a b
+                                                                         c d e f g) {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Eq RepUnit {
+  (/=) 2;
+  (==) 2
+};
+instance Prelude.Ord RepUnit {
+  max 2;
+  min 2;
+  (>) 2;
+  (<) 2;
+  (>=) 2;
+  (<=) 2
+};
+instance Prelude.Read RepUnit {
+  readsPrec 1
+};
+hiding class Prelude.Eq a => Prelude.Ord a;
+hiding class Prelude.Read a;
+hiding class Prelude.Show a;
+hiding class Prelude.Eq a;
+hiding class Prelude.Real a => Prelude.Integral a;
+hiding class Prelude.Num a;
+hiding class (Prelude.Num a, Prelude.Ord a) => Prelude.Real a;
+instance Prelude.Ord () {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Ord a, Prelude.Ord b) => Prelude.Ord (a, b) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Ord a, Prelude.Ord b,
+          Prelude.Ord c) => Prelude.Ord (a, b, c) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Ord a, Prelude.Ord b, Prelude.Ord c,
+          Prelude.Ord d) => Prelude.Ord (a, b, c, d) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Ord a, Prelude.Ord b, Prelude.Ord c,
+          Prelude.Ord d, Prelude.Ord e) => Prelude.Ord (a, b, c, d, e) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord a => Prelude.Ord [a] {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord Prelude.Bool {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord Prelude.Char {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Ord a,
+          Prelude.Ord b) => Prelude.Ord (Prelude.Either a b) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord Prelude.Float {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord Prelude.Int {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord a => Prelude.Ord (Prelude.Maybe a) {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Ord Prelude.Ordering {
+  (<=) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read () {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b) => Prelude.Read (a, b) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b,
+          Prelude.Read c) => Prelude.Read (a, b, c) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d) => Prelude.Read (a, b, c, d) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a, Prelude.Read b, Prelude.Read c,
+          Prelude.Read d, Prelude.Read e) => Prelude.Read (a, b, c, d, e) {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read a => Prelude.Read [a] {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Bool {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Char {
+  readList 1;
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance (Prelude.Read a,
+          Prelude.Read b) => Prelude.Read (Prelude.Either a b) {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Float {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.IOError {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Int {
+  readsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Read a => Prelude.Read (Prelude.Maybe a) {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Read Prelude.Ordering {
+  readsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show () {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b) => Prelude.Show (a, b) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b,
+          Prelude.Show c) => Prelude.Show (a, b, c) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d) => Prelude.Show (a, b, c, d) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e) => Prelude.Show (a, b, c, d, e) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f) => Prelude.Show (a,
+                                                                           b, c, d, e, f) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f,
+          Prelude.Show g) => Prelude.Show (a, b, c, d, e, f, g) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a, Prelude.Show b, Prelude.Show c,
+          Prelude.Show d, Prelude.Show e, Prelude.Show f, Prelude.Show g,
+          Prelude.Show h) => Prelude.Show (a, b, c, d, e, f, g, h) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show a => Prelude.Show [a] {
+  showsPrec 1
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Bool {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Char {
+  showList 1;
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Show a,
+          Prelude.Show b) => Prelude.Show (Prelude.Either a b) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Float {
+  showsPrec 0
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.IOError {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Int {
+  showsPrec 0
+} {-# MODULE Prelude #-};
+instance Prelude.Show a => Prelude.Show (Prelude.Maybe a) {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Show Prelude.Ordering {
+  showsPrec 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq () {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b) => Prelude.Eq (a, b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b,
+          Prelude.Eq c) => Prelude.Eq (a, b, c) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c,
+          Prelude.Eq d) => Prelude.Eq (a, b, c, d) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e) => Prelude.Eq (a, b, c, d, e) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f) => Prelude.Eq (a, b, c, d, e, f) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a, Prelude.Eq b, Prelude.Eq c, Prelude.Eq d,
+          Prelude.Eq e, Prelude.Eq f, Prelude.Eq g) => Prelude.Eq (a, b, c,
+                                                                   d, e, f, g) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq [a] {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Bool {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Char {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance (Prelude.Eq a,
+          Prelude.Eq b) => Prelude.Eq (Prelude.Either a b) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Float {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.IOError {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Int {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq a => Prelude.Eq (Prelude.Maybe a) {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Eq Prelude.Ordering {
+  (==) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Integral Prelude.Int {
+  quotRem 2;
+  divMod 2
+} {-# MODULE Prelude #-};
+instance Prelude.Num Prelude.Float {
+  fromInt 1;
+  signum 1;
+  abs 1;
+  negate 1;
+  (*) 2;
+  (-) 2;
+  (+) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Num Prelude.Int {
+  fromInt 1;
+  signum 1;
+  abs 1;
+  negate 1;
+  (*) 2;
+  (-) 2;
+  (+) 2
+} {-# MODULE Prelude #-};
+instance Prelude.Real Prelude.Float {
+} {-# MODULE Prelude #-};
+instance Prelude.Real Prelude.Int {
+} {-# MODULE Prelude #-};
+hiding data Prelude.Either a b;
+hiding data Prelude.Maybe a;
+hiding data Prelude.Ordering;
+hiding data Prelude.IOError
+}

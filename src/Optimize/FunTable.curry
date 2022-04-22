@@ -11,6 +11,7 @@ import FlatUtils.FlatUtils (newVar)
 import FlatCurry.Pretty (ppExp, Options(..), QualMode(..))
 import Text.Pretty (pPrint)
 import Integer ((^))
+import Optimize.Flags (run_unboxing)
 
 sizeLimit :: Int
 sizeLimit = 35
@@ -125,6 +126,30 @@ inlinable ft n = case lookup n ft of
                                                         && size < sizeLimit 
                                                         && n /= ("Prelude","build")
                                                         && n /= ("Prelude","build_fold")
+                                                        && (run_unboxing || (not (primitive n)))
+  where primitive x = case snd x of
+                           "eqChar"      -> True
+                           "eqInt"       -> True
+                           "eqFloat"     -> True
+                           "ltEqChar"    -> True
+                           "ltEqInt"     -> True
+                           "ltEqFloat"   -> True
+                           "ord"         -> True
+                           "chr"         -> True
+                           "i2f"         -> True
+                           "+$"          -> True
+                           "-$"          -> True
+                           "*$"          -> True
+                           "div_"        -> True
+                           "mod_"        -> True
+                           "quot_"       -> True
+                           "rem_"        -> True
+                           "negateFloat" -> True
+                           "+."          -> True
+                           "-."          -> True
+                           "*."          -> True
+                           "/."          -> True
+                           _             -> False
 
 simple :: FunTable -> QName -> Bool
 simple ft n = case lookup n ft of

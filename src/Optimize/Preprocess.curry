@@ -438,6 +438,6 @@ unapply (n,_) (applyf (Comb pcall f es) as)
        missing (ConsPartCall x) = x
        call (FuncPartCall _) = FuncCall
        call (ConsPartCall _) = ConsCall
-       partcall (FuncPartCall _) n = FuncPartCall n
-       partcall (ConsPartCall _) n = ConsPartCall n
+       partcall (FuncPartCall _) x = FuncPartCall x
+       partcall (ConsPartCall _) x = ConsPartCall x
 

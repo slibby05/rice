@@ -159,7 +159,7 @@ showConsBranch pos v block retFunction (IConsBranch c _ b)
      )
 
 showLitCase :: FunPos -> IVarIndex -> [ILitBranch] -> ShowBlock -> Bool -> [String]
-showLitCase pos v bs block retFun = cifCase (zipWith caseCond bs [1..]) [scall "fail" ["root"], return]
+showLitCase pos v bs block retFun = cifCase (zipWith caseCond bs [0..]) [scall "fail" ["root"], return]
  where btype = litBranchType (head bs)
        caseCond b i = ((conv_t btype (var v)) .== litBranchValue b,
                        block (descend i pos) (litBlock b))

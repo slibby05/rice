@@ -1,16 +1,16 @@
 
 When cooking, it is very important to follow the rules.
-You don't need to stick to an exact recipe, 
+You do not need to stick to an exact recipe, 
 but you do need to know the how ingredients will react to temperature
 and how different combinations will taste.
 Otherwise you might get some unexpected reactions.
 
-Similarly, there isn't a single way to compile Curry programs,
+Similarly, there is not a single way to compile Curry programs,
 however we do need to know the rules of the game.
-Throughout this compiler, we'll be transforming Curry programs
-in many different ways, and it's important to make sure that all
+Throughout this compiler, we will be transforming Curry programs
+in many different ways, and it is important to make sure that all
 of these transformations respect the rules of Curry.
-As we'll see, if we break these rules, 
+As we will see, if we break these rules, 
 then we may get some unexpected results.
 
 We introduce the concept of Rewriting, 
@@ -27,8 +27,8 @@ While there are other semantics \cite{currySemantics, crwl, monadSemantics},
 rewriting is a common formalism for many functional languages,
 and the general theory of Curry grew out of this discipline \cite{Needed},
 a good fit for Curry \cite{CurryReport}.
-We'll give a definition of rewrite systems,
-then we'll look at two distinct types of rewrite systems:
+We will give a definition of rewrite systems,
+then we will look at two distinct types of rewrite systems:
 Term Rewrite Systems, which are used to implement transformations and optimizations
 on the Curry syntax trees;
 and Graph Rewrite Systems, which define the operational semantics for Curry programs.
@@ -37,7 +37,7 @@ even in the presence of laziness, non-determinism, and free variables.
 
 An Abstract Rewriting System (ARS)\index{Abstract Rewriting System}
 is a set $A$ along with a relation $\to$\index{$\to$}.
-We write $a \to b$ instead of $(a,b) \in \to$, and we have several modifiers on our relation.
+We use $a \to b$ as a shorthand for $(a,b) \in \to$, and we have several modifiers on our relation.
 \begin{itemize}
     \item $a \to^n b$\index{$\to^n$} iff $a = x_0 \to x_1 \to \ldots x_n = b$.
     \item $a \to^{\le n} b$\index{$\to^{\le n}$} b iff $a \to^i b$ and $i \leq n$.
@@ -54,7 +54,7 @@ A rewrite system is meant to invoke the feeling of algebra.
 In fact, rewrite system are much more general, but they can still retain the feeling.
 If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in figure \ref{fig:reduce}.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{tabular}{rll}
           & $(x\cdot x + 1)(2 + x)$                          & \\
     $\to$ & $(x\cdot x + 1)(x + 2)$                          & by commutativity of addition \\
@@ -65,23 +65,23 @@ If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the 
 \end{tabular}\\
     \caption{reducing $(x\cdot x + 1)(2 + x)$ using the standard rules of algebra}
     \label{fig:reduce}
-\end{figure}
+\end{boxfigure}
 
 We can conclude that $(x\cdot x + 1)(x + 2) \to^+ x^3 + 2x^2 + x + 2$.
 This idea of rewriting invokes the feel of algebraic rules.
 The mechanical process of rewriting allows for a simple implementation on a computer.
 
-It's worth understanding the properties and limitations of these rewrite systems.
+It is worth understanding the properties and limitations of these rewrite systems.
 Traditionally there are two important questions to answer about any rewrite system.
 Is it \emph{confluent}? Is it \emph{terminating}?
 
 A \emph{confluent}\index{confluent} system is a system 
-where the order of the rewrites doesn't change the final result.
+where the order of the rewrites does not change the final result.
 For example, consider the distributive rule.
 When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.
 Both of these reductions arrived at the same answer as can be seen in figure \ref{fig:confluent}.
 
-\begin{figure}[h]
+\begin{boxfigure}
   \begin{subfigure}{.5\textwidth}
       \centering
     \fbox{
@@ -108,14 +108,14 @@ Both of these reductions arrived at the same answer as can be seen in figure \re
     \caption{Two possible reductions of $3\cdot(4 + 5)$.  
              Since this is a confluent system, they both can rewrite to 27.}
     \label{fig:confluent}
-\end{figure}
+\end{boxfigure}
 
 In a \emph{terminating}\index{terminating} system every derivation is finite.
 That means that eventually there are no rules that can be applied.
 The distributive rule is terminating, 
 whereas the commutative rule is not terminating.  See figure \ref{fig:terminate}.
 
-\begin{figure}[h]
+\begin{boxfigure}
   \begin{subfigure}{.5\textwidth}
     \centering
     \fbox{
@@ -140,12 +140,12 @@ whereas the commutative rule is not terminating.  See figure \ref{fig:terminate}
              but any system with a commutative rule is not.
              Note that $x + y \to^2 x + y$}
     \label{fig:terminate}
-\end{figure}
+\end{boxfigure}
 
 Confluence and termination are important topics in rewriting, but we will largely ignore them.
 After all, Curry programs are neither confluent nor terminating.
 However, there will be a few cases where these concepts will be important.
-For example, if our optimizer isn't terminating, then we'll never actually compile a program.
+For example, if our optimizer is not terminating, then we will never actually compile a program.
 
 Now that we have a general notation for rewriting, we can introduce two important rewriting frameworks:
 term rewriting and graph rewriting, where we are transforming trees and graphs respectively.
@@ -164,7 +164,7 @@ but we require that $V$ be countably infinite, and $\Sigma \cap V = \emptyset$ t
 A \emph{signature}\index{signature} $f^{(n)}$ consists of a name $f \in \Sigma$ and an arity $n\in \mathbb{N}$.
 A \emph{variable}\index{variable} $v\in V$ is just a name.
 Finally a \emph{term}\index{term} is defined inductively.
-The term $t$ is either a variable $v$, or it's a signature $f^{(n)}$ with children $t_1,t_2, \ldots t_n$,
+The term $t$ is either a variable $v$, or it is a signature $f^{(n)}$ with children $t_1,t_2, \ldots t_n$,
 where $t_1,t_2, \ldots t_n$ are all terms.
 We write the set of terms all as $T(\Sigma,V)$\index{$T(\Sigma,V)$}.
 If $t \in T(\Sigma,V)$ then we write $Var(t)$ to denote the set of variables in $t$.
@@ -179,11 +179,11 @@ Every term can be converted into a tree like this and vice versa.
 The symbol at the top of the tree is called the root of the term.
 
 
-\begin{figure}[ht]
+\begin{boxfigure}
     \Tree[.$*$ [.$+$ $0$ [.$S$ $0$ ] ] [.$+$ [.$S$ $0$ ] $0$ ] ]\\
     \caption{Tree representation of the term $*(+(0, S(0)), +(S(0), 0))$.}
     \label{fig:tree}
-\end{figure}
+\end{boxfigure}
 
 A \emph{child}\index{child} $c$ of term $f(t_1, t_2, \ldots t_n)$ is one of $t_1, t_2, \ldots t_n$.
 A \emph{subterm}\index{subterm} $s$ of $t$ is either $t$ itself, or it is a subterm of a child of $t$.
@@ -202,18 +202,18 @@ One occurrence is at path $[0,1]$, and the other is at path $[1,0]$.
 We write $t[p \to r]$\index{$t[p \to r]$} to denote replacing subterm $t||_p$ with $r$.
 We define the algorithm for this in figure \ref{fig:subterm}.
 
-\begin{figure}[ht]
+\begin{boxfigure}
     $t[\epsilon \to r] = r$\\
     $f(t_1,\ldots t_i,\ldots t_n)[i:p \to r] = f(t_1,\ldots t_i[p\to r],\ldots t_n) $\\
     \caption{algorithm for finding a subterm of $t$.}
     \label{fig:subterm}
-\end{figure}
+\end{boxfigure}
 
 In our above example $t =*(+(0, S(0), +(S(0), 0)))$,
 We can compute the rewrite  $t[[0,1] \to *(S(0),S(0))]$, and we get the term
 $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
 
-\begin{figure}[h]
+\begin{boxfigure}
     \begin{center}
     \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
         \Tree[.$*$ [.$+$ $0$ [.$S$ $0$ ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] &
@@ -223,7 +223,7 @@ $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
     \end{center}
     \caption{The result of the computation $t[[0,1] \to S(0)]$}
     \label{fig:subtree}
-\end{figure}
+\end{boxfigure}
 
 A substitution replaces variables with terms.
 Formally, a \emph{substitution}\index{substitution} is a mapping from 
@@ -233,12 +233,12 @@ We write $\sigma = \{v_1 \mapsto t_1, \ldots v_n \mapsto t_n\}$ to denote the su
 where $s(v_i) = t_i$ for $i \in \{1\ldots n\}$, and $s(v) = v$ otherwise.
 We can uniquely extend $\sigma$ to a function on terms by figure \ref{fig:substitute}
 
-\begin{figure}[h]
+\begin{boxfigure}
     $\sigma'(v) = \sigma(v)$\\
     $\sigma'(f(t_1,\ldots t_n) = f(\sigma'(t_1) \ldots \sigma'(t_n))$\\
     \caption{Algorithm for applying a substitution.}
     \label{fig:substitute}
-\end{figure}
+\end{boxfigure}
 
 Since this extension is unique, we will just write $\sigma$ instead of $\sigma'$.
 Term $t_1$ \emph{matches} term $t_2$
@@ -254,8 +254,8 @@ there is some substitution $\nu$ such that $\tau = \nu \circ \sigma$.
 The relation $\sigma \leq \tau$ should be read as $\sigma$ is more general than $\tau$,
 and it is a quasi-order on the set of substitutions.
 A unifier $u$ for two terms is \emph{most general} (or an mgu), iff, for all unifiers $v$, $v \le u$.
-Mgu's are unique up to renaming of variables.
-That is, if $u_1$ and $u_2$ are mgu's for two terms, then $u_1 = \sigma_1 \circ u_2$
+Mgus are unique up to renaming of variables.
+That is, if $u_1$ and $u_2$ are mgus for two terms, then $u_1 = \sigma_1 \circ u_2$
 and $u_2 = \sigma_2 \circ u_1$.
 This can only happen if $\sigma_1$ and $\sigma_2$ just rename the variables in their terms.
 
@@ -291,7 +291,7 @@ Two terms $s$ and $t$ are \emph{overlapping}\index{overlapping} if $t$ unifies w
 or $s$ unifies with a subterm of $t$ at a non-variable position \cite{AdvancedTRS}[Def. 4.3.3].
 Two rules $l_1 \to r_1$ and $l_2 \to r_2$ if $l_1$ and $l_2$ overlap.
 A rewrite system is \emph{overlapping} if, and only if, any two rules overlap.
-Otherwise it's non-overlapping.
+Otherwise it is non-overlapping.
 Any non-overlapping left linear system is \emph{orthogonal}\index{orthogonal} \cite{AdvancedTRS}[Def.4.3.4].
 Orthogonal systems have several nice properties, such as the following theorem \cite{AdvancedTRS}[Thm. 4.3.11].
 
@@ -300,11 +300,11 @@ Every orthogonal TRS is confluent.
 \end{theorem}
 
 As an example, in figure \ref{fig:overlap} examples (b) and (c) both overlap.
-It's clear that these systems aren't confluent,
+It is clear that these systems are not confluent,
 but non-confluence can arise in more subtle ways.
-The converse to theorem 2.1 isn't true. There can be overlapping systems which are confluent.
+The converse to theorem 2.1 is not true. There can be overlapping systems which are confluent.
 
-\begin{figure}[h]
+\begin{boxfigure}
     \begin{subfigure}{.26\textwidth}
     \fbox{
     \begin{tabular}{c}
@@ -335,11 +335,11 @@ The converse to theorem 2.1 isn't true. There can be overlapping systems which a
     \caption{A system that overlaps at a subterm}
     \end{subfigure}
     \caption{Three TRSs demonstrating how rules can overlap.
-            In (a) they don't overlap at all,
+            In (a) they do not overlap at all,
             In (b) both rules overlap at the root,
             and in (c) rule 2 overlaps with a subterm of rule 1.}
     \label{fig:overlap}
-\end{figure}
+\end{boxfigure}
 
 When defining rewrite systems we usually follow the constructor discipline;
 we separate the set $\Sigma = C \uplus F$.
@@ -350,7 +350,7 @@ and every other symbol is a constructor or variable.
 We call such systems \textit{constructor systems}.
 As an example, the rewrite system for Peano arithmetic is a constructor system.
 
-\begin{figure}[h]
+\begin{boxfigure}
     \begin{tabular}{lclcl}
         $R_1$ &    : & $0    + y$      & $\to$ & $y$       \\
         $R_2$ &    : & $S(x) + y$      & $\to$ & $S(x+y)$  \\
@@ -370,7 +370,7 @@ As an example, the rewrite system for Peano arithmetic is a constructor system.
     \caption{The rewrite rules for Peano Arithmetic with addition, multiplicaton,
              subtraction, and comparison.  All operators use infix notation.}
     \label{fig:peano}
-\end{figure}
+\end{boxfigure}
 
 The two sets are $C = \{0, S, True, False\}$ and $F = \{+,*,-,\le\}$,
 and the root of the left hand side of each rule is a function symbol.
@@ -379,10 +379,10 @@ While $S,K,I$ can all be constructors, the $Ap$ symbol appears in both root
 and non-root positions of the left hand side of rules.
 This example will become important for us in Curry.
 We will do something similar to implement higher order functions.
-This means that Curry programs won't directly follow the constructor discipline.
+This means that Curry programs will not directly follow the constructor discipline.
 Therefore, we must be careful when specifying the semantics of function application.
 
-\begin{figure}[h]
+\begin{boxfigure}
     \begin{tabular}{lcl}
         $Ap(I,x)$             & $\to$ & $x$\\
         $Ap(Ap(K,x),y)$       & $\to$ & $x$\\
@@ -390,15 +390,15 @@ Therefore, we must be careful when specifying the semantics of function applicat
     \end{tabular}
     \caption{The SKI system from combinatorial logic.}
     \label{fig:SKI}
-\end{figure}
+\end{boxfigure}
 
 
 Constructor systems have several nice properties.
 They are usually easy to analyze for confluence and termination.
-For example, if the left hand side of two rules don't unify, then they cannot overlap.
-We don't need to check if subterms overlap.
+For example, if the left hand side of two rules do not unify, then they cannot overlap.
+We do not need to check if subterms overlap.
 Furthermore, any term that consists entirely of constructors and variables is in normal form.
-For this reason, it's not surprising that most functional languages are based on constructor systems.
+For this reason, it is not surprising that most functional languages are based on constructor systems.
 
 %Finally, we can introduce conditions to rewriting systems.
 %We introduce a new symbol $True$ to the rewrite system's alphabet $\Sigma$.
@@ -415,7 +415,7 @@ For this reason, it's not surprising that most functional languages are based on
 %Figure \ref{fig:gcd} gives an example of a conditional rewrite system for computing
 %greatest common divisor.  It uses the rule defined in \ref{fig:peano}.
 %
-%\begin{figure}
+%\begin{boxfigure}
 %    \begin{tabular}{lllcl}
 %        $gcd(x,x)$ &         &           & $\to$ & $x$ \\
 %        $gcd(x,y)$ & $\vert$ & $y \le x$ & $\to$ & $gcd(x-y,y)$ \\
@@ -423,11 +423,11 @@ For this reason, it's not surprising that most functional languages are based on
 %    \end{tabular}
 %    \caption{Conditional rewrite system for computing greatest common divisor.}
 %    \label{fig:gcd}
-%\end{figure}
+%\end{boxfigure}
 %
 %While most treatments of conditional rewriting \cite{IntegrationFunLog,condKaplan}
 %define a condition as a pair $s = t$ where $s$ and $t$ mutually rewrite to each other,
-%We chose this definition because it's closer to the definition of Curry,
+%We chose this definition because it is closer to the definition of Curry,
 %where the condition must reduce to the boolean value \texttt{True} for the rule to apply.
 %
 %Curry uses conditional rewriting extensively,
@@ -439,8 +439,8 @@ For this reason, it's not surprising that most functional languages are based on
 \section{Narrowing}
 
 Narrowing was originally developed to solve the problem of semantic unification.
-The goal was, given a set of equations $E = \{a_1 = b_2, a_2 = b_2, \ldots a_n = b_n\}$ 
-how do you solve the $t_1 = t_2$ for arbitrary terms $t_1$ and $t_2$.
+The goal was, given a set of equations $E = \{a_1 = b_2, a_2 = b_2, \ldots a_n = b_n\}$,
+to solve the equation $t_1 = t_2$ for arbitrary terms $t_1$ and $t_2$.
 Here a solution to $t_1 = t_2$ is a substitution $\sigma$ such that $\sigma(t_1)$
 can be transformed into $\sigma(t_2)$ by the equations in $E$.
 
@@ -449,7 +449,7 @@ Then the equation $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$
 is solved by $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.
 The derivation is in figure \ref{fig:narrow}.
 
-\begin{figure}[h]
+\begin{boxfigure}
 \begin{tabular}{ll}
     $\sigma(*(1,+(x,3)))$                & = \\
     $*(1,+(+(4,5),3))$                   & = \\
@@ -460,7 +460,7 @@ The derivation is in figure \ref{fig:narrow}.
     \caption{Derivation of $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$ with
              $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.}
     \label{fig:narrow}
-\end{figure}
+\end{boxfigure}
 
 Unsurprisingly, there is a lot of overlap with rewriting.
 One of the earlier solutions to this problem was to convert 
@@ -489,12 +489,12 @@ Notice that this is almost identical to the definition of rewriting.
 The only difference is that $\sigma$ is a unifier instead of a matcher.
 
 Narrowing was first developed to solve equations for automated theorem provers \cite{narrowing}.
-However, for our purposes it's more important that narrowing allows us to
+However, for our purposes it is more important that narrowing allows us to
 rewrite terms with free variables. \cite{multiparadigm}
 
 At this point, rewrite systems are a nice curiosity,
 but they are completely impractical. 
-This is because we don't have a plan for solving equations in them.
+This is because we do not have a plan for solving equations in them.
 In the definition for both rewriting and narrowing,
 we did not specify how to find $\sigma$ the correct rule to apply, or even
 what subterm to apply the rule.
@@ -502,11 +502,11 @@ what subterm to apply the rule.
 In confluent terminating rewrite systems, we could simply try every possible rule
 at every possible position with every possible substitution.
 Since the system is confluent, we could choose the first rule that could be successfully applied,
-and since the system is terminating, we'd be sure to find a normal form.
+and since the system is terminating, we would be sure to find a normal form.
 In a narrowing system, this is still not guaranteed to halt, because there could be
 an infinite number of substitutions.
 This is the best possible case for rewrite systems, 
-and we still can ensure that our algorithm will finish.
+and we still cannot ensure that our algorithm will finish.
 We need a systematic method for deciding what rule should be applied,
 what subterm to apply it to,
 and what substitution to use.
@@ -546,7 +546,7 @@ We rewrite the highest possible term that matches a rewrite rule.
 
 A strategy is \emph{normalizing}\index{normalizing} if, when a term $t$ has a normal form, 
 then the strategy will eventually find it.
-While outermost rewriting isn't normalizing in general,
+While outermost rewriting is not normalizing in general,
 it is for left-normal systems, 
 which is a large subclass of orthogonal rewrite systems \cite{termRewriting}.
 This matches the intuition from programming languages.
@@ -556,11 +556,11 @@ While both of these strategies are well understood, we can actually make a stron
 We want to reduce only the redexes that are necessary to find a normal form.
 To formalize this we need to understand what can happen when we rewrite a term.
 Specifically for a redex $s$ that is a subterm of $t$, how can $s$ change as we rewrite $t$.
-If we're rewriting at position $p$ with rule $l \to r$, then there are 3 cases to consider.\\
+If we were rewriting at position $p$ with rule $l \to r$, then there are 3 cases to consider.\\
 Case 1: we are rewriting $s$ itself.  That is, $s$ is the subterm $t\vert_p$.
 Then $s$ disappears entirely.\\
 Case 2: $s$ is either above $t\vert_p$, or they are completely disjoint.
-In this case $s$ doesn't change.\\
+In this case $s$ does not change.\\
 Case 3: $s$ is a subterm of $t\vert_p$.
 In this case $s$ may be duplicated, or erased, moved, or left unchanged.
 It depends on whether the rule is duplicating, erasing, or right linear.\\
@@ -569,14 +569,14 @@ We can formalize this with the notion of descendants with the following definiti
 \cite{AdvancedTRS}[Def. 4.3.6].
 
 
-\begin{figure}
+\begin{boxfigure}
   \begin{subfigure}{.6\textwidth}
     \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
         \Tree[.$S$ [.\fbox{$+$} [.$S$ $0$ ] [.$+$ [.$S$ $0$ ] $0$ ] ] ] &
         {\huge $\Rightarrow$} &
         \Tree[.$S$ [.\fbox{$+$} [.$S$ $0$ ] [.$S$ [.$+$ $0$ $0$ ] ] ] ] \\
     \end{tabular}
-    \caption{rewrite $R_1$ at position $[0,1]$ doesn't affect $t\vert_{[0]}$.}
+    \caption{rewrite $R_1$ at position $[0,1]$ does not affect $t\vert_{[0]}$.}
   \end{subfigure}
   \begin{subfigure}{.4\textwidth}
     \begin{tabular}{>{\centering\arraybackslash}m{1.5cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{1.5cm}} 
@@ -584,7 +584,7 @@ We can formalize this with the notion of descendants with the following definiti
         {\huge $\Rightarrow$} &
         \Tree[.$*$ [.\fbox{.$+$} $0$ $0$ ] $0$ ] \\
     \end{tabular}
-    \caption{rewrite $R_4$ at position $[1]$ doesn't affect $t\vert_{[0]}$.}
+    \caption{rewrite $R_4$ at position $[1]$ does not affect $t\vert_{[0]}$.}
   \end{subfigure}
   \begin{subfigure}{.6\textwidth}
     \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
@@ -614,7 +614,7 @@ We can formalize this with the notion of descendants with the following definiti
              The boxed term is either left alone, duplicated, or erased, or moved.
              The rules are defined in figure \ref{fig:peano}}
     \label{fig:descendant}
-\end{figure}
+\end{boxfigure}
 
 
 \theoremstyle{definition}
@@ -650,7 +650,7 @@ a normal form.
     a descendant of $s$ is the root of a rewrite.
 \end{definition}
 
-This definition is good because it's immediately clear that, if we're going
+This definition is good because it is immediately clear that, if we were going
 to rewrite a term to normal form, we need to rewrite all of the needed redexes.
 In fact, we can guarantee more than that with the following theorem \cite{condKaplan}.
 
@@ -664,7 +664,7 @@ We can compute normal forms by rewriting needed redexes.
 This is also, in some sense, the best possible strategy.
 Every needed redex needs to be rewritten.
 Now we just need to make sure our strategy only rewrites needed redexes.
-There's only one problem with this plan.
+There is only one problem with this plan.
 Determining if a redex is needed is undecidable in general.
 However, with some restrictions, there are rewrite systems where this is possible
 \cite{termRewriting}[def. 3.3.7].\footnote{The original definition used the notion of a
@@ -682,7 +682,7 @@ If we have a sequential rewrite system,
 then this leads to an efficient algorithm for reducing terms to normal form.
 Unfortunately, sequential is also an undecidable property.
 There is still hope.
-As we'll see in the next section,
+As we will see in the next section,
 with certain restrictions we can ensure the our rewrite systems are sequential.
 Actually we can make a stronger guarantee.
 The rewrite system will admit a narrowing strategy that only narrows needed redexes.
@@ -698,7 +698,7 @@ standard \cite{standardNarrowing}, and lazy \cite{lazyNarrowing}.
 Unfortunately, each of these strategies are too restrictive on the rewrite systems they allow.
 
 
-\begin{figure}[h]
+\begin{boxfigure}
   \begin{subfigure}{.45\textwidth}
       $(x + x) + x = 0$
     \caption{This fails for eager narrowing, because evaluating $x + x$ can produce infinitely many answers.
@@ -711,21 +711,21 @@ Unfortunately, each of these strategies are too restrictive on the rewrite syste
   \begin{subfigure}{.45\textwidth}
       $x \le y + y$
     \caption{With a lazy narrowing strategy we may end up computing more than is necessary.
-             If $x$ is instantiated to $0$, then we don't need to evaluate $y + y$ at all.}
+             If $x$ is instantiated to $0$, then we do not need to evaluate $y + y$ at all.}
   \end{subfigure}
     \caption{examples of where eager and lazy narrowing can fail using the rewrite system
              if figure \ref{fig:peano}.}
     \label{NarrowingComp}
-\end{figure}
+\end{boxfigure}
 
 
-Fortunately there exists a narrowing strategy that's defined on a large class of rewrite systems,
+Fortunately there exists a narrowing strategy that is defined on a large class of rewrite systems,
 only narrows needed expressions, and is sound and complete.
 However this strategy requires a new construct called a definitional tree.
 
 The idea is that since we are working with constructor rewrite systems,
 we can group all of the rules defined for the same function symbol together.
-We'll put them together in a tree structure defined below, and 
+We will put them together in a tree structure defined below, and 
 then we can compute a narrowing step by traversing the tree for the defined symbol.
 
 
@@ -759,7 +759,7 @@ This gives us a simple algorithm for outermost rewriting with definitional trees
 However, we need to extend this to narrowing.
 
 
-\begin{figure}
+\begin{boxfigure}
   \begin{subfigure}{.4\textwidth}
     \begin{tabular}{lcl}
         $0    + y$      & $\to$ & $y$       \\
@@ -798,7 +798,7 @@ However, we need to extend this to narrowing.
   \end{subfigure} 
   \caption{Definitional trees for $ + $, $ \le $, and $ = $.}
   \label{fig:defTree}
-\end{figure}
+\end{boxfigure}
 
 
 In order to extend the strategy from rewriting to narrowing we need
@@ -806,16 +806,16 @@ to figure out how to compute a substitution,
 and we need to define what it means for a narrowing step to be needed.
 The earliest definition involved finding a most general unifier for the substitution.
 This has some nice properties.
-There is a well known algorithm for computing mgu's, which are unique up to renaming of variables.
+There is a well known algorithm for computing mgus, which are unique up to renaming of variables.
 However, this turned out to be the wrong approach.
-Computing mgu's is too restrictive.
+Computing mgus is too restrictive.
 Consider the step $x \le y + z \rightsquigarrow_{2\cdot \epsilon,R_1,\{y \mapsto 0\}} x \le z$.  
 Without further substitutions $x \le z$ is a normal form, and $\{y \mapsto 0\}$ is an mgu.
 Therefore this should be a needed step.
 But if we were to instead narrow $x$, 
 we have $x \le y + z \rightsquigarrow_{\epsilon,R_8,\{x \mapsto 0\}} True$.
 This step never needs to compute a substitution for $y$.
-Therefore we need a definition that isn't dependent on substitutions that might be computed later.
+Therefore we need a definition that is not dependent on substitutions that might be computed later.
 
 
 \theoremstyle{definition}
@@ -825,14 +825,14 @@ Therefore we need a definition that isn't dependent on substitutions that might 
     there is a needed redex at $p$ in $\eta(t)$.
 \end{definition}
 
-Here we don't require that $\sigma$ be an mgu, but, for any less general substitution,
-it must be the case that we're rewriting a needed redex.
+Here we do not require that $\sigma$ be an mgu, but, for any less general substitution,
+it must be the case that we were rewriting a needed redex.
 So our example, $x \le y + z \rightsquigarrow_{2\dot \epsilon,R_1,\{y \mapsto 0\}} x \le z$,
-isn't a needed narrowing step because $x \le y + z \rightsquigarrow_{2\dot \epsilon,R_1,\{x \mapsto 0, y \mapsto 0\}} 0 \le z$,
-Isn't a needed rewriting step.
+is not a needed narrowing step because $x \le y + z \rightsquigarrow_{2\dot \epsilon,R_1,\{x \mapsto 0, y \mapsto 0\}} 0 \le z$,
+Is not a needed rewriting step.
 
 Unfortunately, this definition raises a new problem.
-Since we are no longer using mgu's for our unifiers, we may not have a unique step for an expression.
+Since we are no longer using mgus for our unifiers, we may not have a unique step for an expression.
 For example, $x < y \rightsquigarrow_{\epsilon, R_8, \{x\mapsto 0\}} True $, and
 $x < y \rightsquigarrow_{\epsilon, R_9, \{x\rightarrow S(u), t \mapsto S(v)\}} u \le v $
 are both possible needed narrowing steps.
@@ -857,7 +857,7 @@ At this point we have everything we need to define a needed narrowing strategy.
                                      & t\ \text{unifies with}\ T_i \\
                                      & (p, R, \sigma) \in \lambda(t, T_i) \\
         (o:p, R, \sigma \circ \tau)  & \text{if}\ T = branch(\pi, o, T_1, \ldots T_n) \\
-                                     & t\ \text{does not unifies with any}\ T_i \\
+                                     & t\ \text{does not unify with any}\ T_i \\
                                      & \tau = mgu(t, \pi) \\
                                      & T'\ \text{is the definitional tree for}\ t\vert_o \\
                                      & (p, R, \sigma) \in \lambda(t\vert_o, T') \\
@@ -871,7 +871,7 @@ and it returns a position, rule and substitution for a narrowing step.
 If we reach a rule node, then we can just rewrite;
 if we reach an exempt node, then there is no possible rewrite;
 if we reach a branch node, then we match a constructor;
-but if the subterm we're looking at isn't a constructor, then we need to narrow that subterm first.
+but if the subterm we were looking at is not a constructor, then we need to narrow that subterm first.
 
 
 \begin{theorem}
@@ -881,7 +881,7 @@ but if the subterm we're looking at isn't a constructor, then we need to narrow 
 
 It should be noted that while $\lambda$ is complete with respect to finding substitutions
 and selecting rewrite rules \cite{Needed},
-this says nothing about the underlying completeness of the rewrite system we're narrowing.
+this says nothing about the underlying completeness of the rewrite system we were narrowing.
 We may still have non-terminating derivations.
 
 This needed narrowing strategy is important in developing the evaluation strategy for Curry programs.
@@ -915,10 +915,10 @@ and a path form $v$ to $u$.
 A path $p$ is a cycle
 \footnote{Some authors will use walk and tour and
           reserve path and cycle for the cases where there are no repeated vertices.
-          This distinction isn't relevant for our work.}
+          This distinction is not relevant for our work.}
 if its endpoints are the same.
 A graph is acyclic if it contains no cycles.
-Such graphs are referred to as Directed Acyclic Graphs, or DAG's.
+Such graphs are referred to as Directed Acyclic Graphs, or DAGs.
 A graph $H$ is a \emph{subgraph}\index{subgraph} of $G$, $H \subseteq G$ if, and only if, $V_H \subseteq V_G$
 and $E_H \subseteq E_G$.
 A strongly connected component $S$ of $G$ is a subgraph that is strongly connected.
@@ -933,9 +933,9 @@ Let $\Sigma = C \uplus F$ be an alphabet of constructor and function names respe
 and $V$ be a countably infinite set of variables.
 A \emph{term graph}\index{term graph} is a rooted graph $G$ with nodes in
 $N$ where each node $n$ has a label in $\Sigma \cup V$.
-We'll write $L(n)$ to refer to the label of a node.
+We will write $L(n)$ to refer to the label of a node.
 If $(n, s) \in E$ is an edge, then $s$ is a successor of $n$.
-In most applications the order of the outgoing edges doesn't matter, 
+In most applications the order of the outgoing edges does not matter, 
 however it is very important in term graphs.
 So, we will refer to the first successor, second successor and so on.
 We denote this the same way we did with terms $n_i$ is the $i$th successor of $n$.
@@ -945,7 +945,7 @@ Finally, no two nodes can be labeled by the same variable.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % EXAMPLES (\label{termGraphs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}
+\begin{boxfigure}
 \begin{enumerate}
     \item $
           \begin{tikzcd}
@@ -992,7 +992,7 @@ Finally, no two nodes can be labeled by the same variable.
          3. $1:+(2:4, 1)$\\
          4. $1:+(2:S(3:0), 4:S(2)) \Rightarrow 5:S(6:+(3:0), 4:S(2:S(3)))$}
 \label{fig:termGraph}
-\end{figure}
+\end{boxfigure}
 
 
 
@@ -1015,10 +1015,10 @@ where the set of nodes and the set of labels are disjoint.
 > Node   ->  n : L(Node, ... Node) 
 >        |   n
 
-We start with the root node, and for each node in the graph, If we haven't encountered
+We start with the root node, and for each node in the graph, If we have not encountered
 it yet, then we write down the node, the label, and the list of successors.
 If we have seen it, then we just write down the node.
-If a node doesn't have any successors, then we'll omit the parentheses entirely,
+If a node does not have any successors, then we will omit the parentheses entirely,
 and just write down the label.
 
 A few examples are shown in figure \ref{fig:termGraph}.
@@ -1037,7 +1037,7 @@ Let $p$ be a node in $G$, then the \emph{subgraph} $G\vert_p$ is a new graph roo
 The nodes are restricted to only those reachable from $p$.
 \end{definition}
 
-Notice that we don't define subgraphs by paths like we did with subterms.
+Notice that we do not define subgraphs by paths like we did with subterms.
 This is because there may be more than one path to the node $p$.
 It may be the case that $G\vert_p$ and $G$ have the same nodes, such as if the root of $G$ is in a loop.
 
@@ -1050,14 +1050,15 @@ Add all other edges from $E_g$ and $E_u$.
 If $p$ is the root of $g$, then $root_u$ is now the root.
 \end{definition}
 
-It should be noted that when implementing Curry, we don't actually change
+It should be noted that when implementing Curry, we do not actually change
 any of the pointers when doing a replacement.
 Traversing the graph to find all of the pointers to $p$ would be horribly inefficient.
 Instead we change the contents of $p$ to be the contents of $u$.
 
 We can define matching in a similar way to terms, but we need to be more careful.
-When matching terms the structure of the term needed to be the same,
-however when matching graphs the structure can be wildly different.
+When matching terms the structure of the term must to be the same.
+That is, both terms must have exactly the same tree.
+However, when matching graphs the structure can be wildly different.
 Consider the following graph.
 
 $$
@@ -1087,7 +1088,7 @@ As long as the node matches each sub pattern, then the graph will match.
 We extend substitutions to graphs in the obvious way.
 A substitution $\sigma$ maps variables to Nodes.
 In this definition for matching $\sigma$ may have multiple variables map to the same node,
-but this doesn't cause a problem.
+but this does not cause a problem.
 
 \theoremstyle{definition}
 \begin{definition}
@@ -1106,7 +1107,7 @@ in term rewriting.
 At this point we have discussed the difference between graphs and terms,
 and how a replacement can be done in a graph.
 For our purposes in this compiler, that is all that is needed,
-but the definition of narrowing and properties about inductively sequential GRS's
+but the definition of narrowing and properties about inductively sequential GRSs
 can be found in Echaned and Janodet \cite{graphRewriting}.
 They also show that the needed narrowing strategy is still valid for graph rewriting systems.
 
@@ -1126,12 +1127,12 @@ who gave a decidable criteria for a subset of sequential systems.
 This led to the work of Antoy on inductively sequential systems \cite{DefinitionalTrees}.
 The needed narrowing strategy came from Hanus, Antoy, and Echahed \cite{Needed}.
 Graph rewriting is a bit more disconnected.  
-Currently there isn't a consensus on how to represent graphs mathematically.
+Currently there is not a consensus on how to represent graphs mathematically.
 We went with the presentation in \cite{graphRewriting}, 
 but there are also alternatives in \cite{termRewriting, termAndAllThat, AdvancedTRS}
 
 Here we saw how we can rewrite terms and graphs.
-We'll use this idea in the next chapter to rewrite entire programs.
+We will use this idea in the next chapter to rewrite entire programs.
 This will become the semantics for our language.
-Now that we have some tools, It's time to find out how to make Curry!
+Now that we have some tools, It is time to find out how to make Curry!
 

@@ -7,16 +7,16 @@ to produce efficient code.
 However, we found that could we beat Kics2 in all cases,
 and in many cases the results were simply incomparable.
 In some cases we were even able to compete with GHC itself.
-Furthermore, we've shown that the memory optimizations really were effective for Curry programs.
-This isn't much of a surprise.
+Furthermore, we have shown that the memory optimizations really were effective for Curry programs.
+This is not much of a surprise.
 Allocating less memory is a good strategy for improving run-time performance.
-It is good to know that the presence of non-determinism doesn't affect this commonly held belief.
+It is good to know that the presence of non-determinism does not affect this commonly held belief.
 
-It's a little more surprising that these optimizations all turned out to be valid in Curry.
+It is a little more surprising that these optimizations all turned out to be valid in Curry.
 In fact, a surprising number of optimizations are valid in Curry under suitable conditions.
-This might not seem very significant until we look at what optimizations aren't valid.
+This might not seem very significant until we look at what optimizations are not valid.
 For example, common sub-expression elimination was not included in this compiler,
-because it simply isn't a valid Curry transformation.
+because it simply is not a valid Curry transformation.
 It introduces sharing where none existed.
 If the common sub-expression is non-deterministic, then we will change the set of results.
 On the other hand, common sub-expression elimination is fairly innocuous in most other languages.
@@ -31,10 +31,10 @@ We believe that a better inliner and strictness analyzer
 would go a long way to producing even more efficient code.
 
 In fact, a general theory of inlining in Curry would be hugely beneficial.
-One of the biggest drawbacks to this compiler is that we can't represent 
+One of the biggest drawbacks to this compiler is that we can not represent 
 lambda expressions in FlatCurry, and inline them.
 Before we could even attempt this,
-we would need to know when it's safe to inline a lambda in Curry.
+we would need to know when it is safe to inline a lambda in Curry.
 
 We would also like to move from short-cut Deforestation to Stream Fusion.
 This should be possible, but it would require a more sophisticated strictness analyzer,
@@ -42,14 +42,14 @@ and we may not be able to get away with our combinator approach.
 
 We would also like to see the development of new, Curry specific, optimizations.
 Right now the |?| operator acts as a hard barrier.
-We can move let-bound variables outside of it, but we can't move the choice itself.
+We can move let-bound variables outside of it, but we can not move the choice itself.
 However, there may be an option for using pull-tabbing or bubbling
 to move the choice to make room for more optimizations.
 
 For personal reasons we would also like to bootstrap \ricesp with itself.
 This would significantly decrease the time it takes to compile large Curry programs.
 Right now, \ricesp is compiled using Pakcs.
-Currently Kics2 isn't a feasible option for compiling \rice,
+Currently Kics2 is not a feasible option for compiling \rice,
 because of performance issues with non-deterministic function.
 So, compiling \ricesp in itself would significantly improve the performance of the compiler.
 
@@ -68,7 +68,7 @@ Integrating this work with the Sprite \cite{sprite} compiler might solve this is
 
 We have presented the \ricesp Optimizing Curry compiler.
 The compiler was primarily built to test the effectiveness of various optimizations on Curry programs.
-While testing these optimizations, we've also built
+While testing these optimizations, we have also built
 an efficient evaluation method for backtracking Curry programs,
 as well as a general system for describing and implementing optimizations.
 The compiler itself is written in Curry.
@@ -83,7 +83,7 @@ as well as the work by Appel and Peyton-Jones about functional compiler construc
  \cite{compilersAppel, continuationsAppel, lazyFunctionalCompilers}.
 
 While there has been some work on optimizations for functional-logic programs,
-there doesn't seem to be a general theory of optimization.
+there does not seem to be a general theory of optimization.
 Peem{\"o}ller and Ramos et al. \cite{peval, offlinePeval}
 have developed a theory of partial evaluation for Curry programs,
 and Moreno \cite{foldUnfold} has worked on the Fold/Unfold transformation from Logic programming.
@@ -99,7 +99,7 @@ This greatly simplified debugging optimizations,
 but it also allowed us to test more complicated optimizations.
 Often we would just try an idea to see what code it produced,
 and if it fired in unintended places.
-It's difficult to overstate just how useful this system was in the compiler.
+It is difficult to overstate just how useful this system was in the compiler.
 
 While the run-time system was not the primary focus of this dissertation,
 we were able to produce some useful results.
@@ -110,7 +110,7 @@ is a significant improvement to the current state-of-the-art for backtracking Cu
 When starting this project, Shortcutting was already known
 to be valid for Inductively Sequential Rewrite Systems.
 It was developed for them specifically,
-so it's not too surprising that the idea can be translated to Curry programs.
+so it is not too surprising that the idea can be translated to Curry programs.
 However, it was a nice surprise to find that
 Unboxing and Deforestation were both valid in Curry.
 It was even more remarkable that, with some simple restrictions,
@@ -120,4 +120,4 @@ We believe that this work is a good start for optimizing Curry compilers,
 and we would like to see it continue.
 After having a taste of optimized Curry, we want to turn up the heat,
 and deliver an even hotter dish.
-But for now, we've made a tasty Curry with \rice.
+But for now, we have made a tasty Curry with \rice.

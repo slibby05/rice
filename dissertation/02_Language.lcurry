@@ -4,7 +4,7 @@ logic programming paradigms \cite{multiparadigm}.
 Originally there were two approaches to combine these paradigms,
 adding functional features to logic languages,
 and adding logic features to functional languages.
-The latter approach was very popular and spawned several new languages
+The former approach was very popular and spawned several new languages
 including Ciao-Prolog \cite{ciao}, Mercury \cite{mercury}, HAL \cite{hal}, and Oz \cite{oz}.
 The extension of functional languages lead to fewer new languages,
 but it did lead to libraries like the logict monad in Haskell \cite{logict}.
@@ -23,10 +23,10 @@ Finally we give an example of generated code to demonstrate how we compile Curry
 \section{The Curry Language} \label{The Curry Language}
 
 In order to write a compiler for Curry, we need to understand how Curry works.
-We'll start by looking at some examples of Curry programs.
-We'll see how Curry programs differ from Haskell and Prolog programs.
-Then we'll move on to defining a small interpreter for Curry.
-Finally we'll use this interpreter to define equivalent C code.
+We will start by looking at some examples of Curry programs.
+We will see how Curry programs differ from Haskell and Prolog programs.
+Then we will move on to defining a small interpreter for Curry.
+Finally we will use this interpreter to define equivalent C code.
 
 Curry combines the two most popular paradigms of declarative programming:
 Functional languages and logic languages.
@@ -43,12 +43,12 @@ Then we will simplify the program by adding features of Curry.
 This will demonstrate the features of Curry that we need to handle in the compiler,
 and also give a good basis for how we can write the compiler.
 
-First, let's consider an example of a permutation function.
+First, let us consider an example of a permutation function.
 This is not the only way to permute a list in Haskell,
-and you could easily argue that it's not the most elegant way,
-but I chose it for two reasons.
+and you could easily argue that it is not the most elegant way,
+but we chose it for three reasons.
 There is no syntactic sugar,
-and the only two library functions are |concat| and |map|, both very common functions.
+and the only two library functions are |concat| and |map|, both very common functions,
 and the algorithm for permuting a list is similar to the algorithm we will use in Curry.
 
 > perms         :: [a] -> [[a]]
@@ -66,9 +66,9 @@ The |perms| function splits the list into a head |x| and tail |xs|.
 First, it computes all permutations of |xs|, then it will insert |x| into every possible position
 of every permutation.
 
-While this algorithm is not terribly complex, it's really more complex than it needs to be.
+While this algorithm is not terribly complex, it is really more complex than it needs to be.
 The problem is that we need to keep track of all of the permutations we generate.
-This doesn't seem like a big problem here.
+This does not seem like a big problem here.
 We just put each permutation in a list, and return the whole list of permutations.
 However, now every part of the program has to deal with the entire list of results.
 As our programs grow, we will need more data structures for this plumbing, and this problem will grow too.
@@ -101,12 +101,12 @@ and when we insert |x| into |ys|, we only insert into a single arbitrary positio
 >     insert x (y:ys)  = x:y:ys ? y : insert x ys
 
 In many cases functions that return multiple results can lead to much simpler code.
-Curry has another feature that's just as useful.
+Curry has another feature that is just as useful.
 We can declare a \textit{free variable} in Curry.
-This is a variable that hasn't been assigned a value.
+This is a variable that has not been assigned a value.
 We can then constrain the value of a variable later in the program.
 In the following example |begin|, |x|, and |end| are all free variables,
-but they're constrained by the guard so that |begin++[x]++end| is equal to |xs|.
+but they are constrained by the guard so that |begin++[x]++end| is equal to |xs|.
 Our algorithm then becomes: pick an arbitrary |x| in the list,
 move it to the front, and permute the rest of the list.
 
@@ -117,14 +117,14 @@ move it to the front, and permute the rest of the list.
 >  where begin, x, end free
 
 Look at that.
-We've reduced the number of lines of code by 25\%.
+We have reduced the number of lines of code by 25\%.
 In fact, this pattern of declaring free variables, and then immediately constraining them
 is used so often in Curry that we have syntactic sugar for it.
 A \textit{functional pattern} is any pattern that contains a function that is not at the
 root.\footnote{
-    This isn't completely correct.  While the above code would fully evaluate the list,
+    This is not completely correct.  While the above code would fully evaluate the list,
     a functional pattern is allowed to be more lazy.
-    Since the elements don't need to be checked for equality, they can be left unevaluated.
+    Since the elements do not need to be checked for equality, they can be left unevaluated.
 }
 We can use functional patterns to simplify our |perm| function even further.
 
@@ -134,21 +134,21 @@ We can use functional patterns to simplify our |perm| function even further.
 > perm (begin++[x]++end)  = x : perm (begin++end)
 
 Now the real work of our algorithm is a single line.
-Even better, it's easy to read what this line means.
+Even better, it is easy to read what this line means.
 Decompose the list into |begin|, |x|, and |end|, then put |x| at the front, and permute |begin| and |end|.
 This is almost exactly how we would describe the algorithm in English.
 
 There is one more important feature of Curry.
 We can let expressions fail.
-In fact we've already seen it, but a more explicit example would be helpful.
-We've shown how we can generate all permutations of a list by generating an arbitrary permutation,
+In fact we have already seen it, but a more explicit example would be helpful.
+We have shown how we can generate all permutations of a list by generating an arbitrary permutation,
 and letting the language take care of the exhaustive search.
-However, we usually don't need, or even want, every permutation.
-So, how do we filter out the permutations we don't want?
+However, we usually do not need, or even want, every permutation.
+So, how do we filter out the permutations we do not want?
 The answer is surprisingly simple.  We just let expressions fail.
 An expression fails if it cannot be reduced to a constructor form.
 The common example here is |head []|, but a more useful example might be sorting a list.
-We can build a sorting algorithm by permuting a list, and only keeping the permutation that's sorted.
+We can build a sorting algorithm by permuting a list, and only keeping the permutation that is sorted.
 
 > sort :: (Ord a) => [a] -> [a]
 > sort xs | sorted ys = ys
@@ -158,9 +158,9 @@ We can build a sorting algorithm by permuting a list, and only keeping the permu
 >   sorted [x]       = True
 >   sorted (x:y:ys)  = x <= y && sorted (y:ys)
 
-In this example every permutation of |xs| that isn't sorted will fail in the guard.
+In this example every permutation of |xs| that is not sorted will fail in the guard.
 Once an expression has failed, computation on it stops, and other alternatives are tried.
-As we'll see later on, this ability to conditionally execute a function will 
+As we will see later on, this ability to conditionally execute a function will 
 become crucial when developing optimizations.
 
 These are some of the useful programming constructs in Curry.
@@ -169,7 +169,7 @@ if we are going to implement them in a compiler.
 
 \section{Semantics} \label{Semantics}
 
-As we've seen, the syntax of Curry is very similar to Haskell.
+As we have seen, the syntax of Curry is very similar to Haskell.
 Functions are declared by defining equations, and new data types are declared as algebraic data types.
 Function application is represented by juxtaposition,
 so |f x| represents the function |f| applied to the variable |x|.
@@ -190,7 +190,7 @@ To see the difference consider the usual definition of factorial.
 > fac n = n * fac (n-1)
 
 This seems like an innocuous Haskell program, 
-however It's non-terminating for every possible input for Curry.
+however It is non-terminating for every possible input for Curry.
 The reason is that |fac 0| could match either rule.
 In Haskell all defining equations are ordered sequentially,
 which results in control flow similar to the following C implementation.
@@ -215,12 +215,12 @@ In the following equations let |p_i| be a pattern and |E_i| be an expression.
 > f p_n  = E_n
 Then this is semantically equivalent to the following.
 
-> f p_1                         = E_1
-> f not p_1  && p_2             = E_2
+> f p_1                                = E_1
+> f not p_1  && p_2                    = E_2
 > ...
-> f not p_1  && not p_2 && p_n  = E_n
+> f not p_1  && not p_2 && ... && p_n  = E_n
 
-Here |not p_i| means that we don't match pattern |i|.
+Here |not p_i| means that we do not match pattern |i|.
 This ensures that we will only ever reduce to a single expression.
 Specifically we reduce to the first expression where we match the pattern.
 
@@ -233,9 +233,9 @@ Exactly how Curry reduces an expression non-deterministically will be discussed 
 but for now we can think in terms of sets.
 If the expression |e -> e_1| and |e -> e_2|,
 |e_1 ->* v_1| and |e_2 ->* v_2|, then 
-|e ->* {v_1, v_2}|.\footnote{This should really be thought of as a multiset, since it's possible for |v_1| and |v_2| to be the same value.}
+|e ->* {v_1, v_2}|.\footnote{This should really be thought of as a multiset, since it is possible for |v_1| and |v_2| to be the same value.}
 
-This addition of non-determinism can lead to problems if we're not careful.
+This addition of non-determinism can lead to problems if we we are not careful.
 Consider the following example:\\
 
 > coin = 0 ? 1
@@ -274,7 +274,7 @@ The semantics of Curry have already been studied extensively \cite{currySemantic
 so we informally recall some of the more important points.
 A FlatCurry program consists of datatype and function definitions.
 For simplicity we assume that all programs are self contained,
-because the module system isn't relevant to our work.
+because the module system is not relevant to our work.
 However, the Rice compiler does support modules.
 A FlatCurry function contains a single rule, 
 which is responsible for pattern matching and rewriting an expression.
@@ -296,7 +296,7 @@ we must represent free variables in FlatCurry.
 Finally, we add an explicit failure expression |EXEMPT| to represent a branch
 that is not present in the definitional tree.
 While this is meant to simply represent a failing computation,
-we've also occasionally found it useful in optimization.
+we have also occasionally found it useful in optimization.
 
 \subsection{Evaluation} \label{Evaluation}
 
@@ -305,7 +305,7 @@ The program executes by reducing the expression |main|
 to a \emph{Constructor Normal 
 Form}\index{Constructor Normal Form}\footnote{This is constructor normal form, and not simply a normal form,
               because a failing expression, like |head []|, is a normal form,
-              since it can't be rewritten, but it contains a function at the root.} 
+              since it can not be rewritten, but it contains a function at the root.} 
 as defined in figure \ref{fig:normalForm}.
 Similar to Kics2, Pakcs, and Sprite, \cite{kics2, pakcs, sprite}
 we compute constructor normal form by first reducing the |main| to 
@@ -313,35 +313,35 @@ we compute constructor normal form by first reducing the |main| to
 That is where the expression is rooted by a constructor.
 Then each child of the root is reduced to constructor normal form.
 
-\begin{figure}
+\begin{boxfigure}
 
-> f           =>  f {v} = e
+> f           =>  f (vec v) = e
 > e           =>  v                                        Variable
 >             |   l                                        Literal
 >             |   e_1 ? e_2                                Choice
 >             |   EXEMPT                                   Failed
->             |   f_k {e}                                  Function Application
->             |   C_k {e}                                  Constructor Application
->             |   let {v = e} in e                         Variable Declaration
->             |   let {v} free in e                        Free Variable Declaration
->             |   case e of {p -> e}                       Case Expression
-> p           =>  C {v}                                    Constructor Pattern
+>             |   f_k (vec e)                              Function Application
+>             |   C_k (vec e)                              Constructor Application
+>             |   let (vec (v = e)) in e                   Variable Declaration
+>             |   let (vec v) free in e                    Free Variable Declaration
+>             |   case e of (vec (p -> e))                 Case Expression
+> p           =>  C (vec v)                                Constructor Pattern
 >             |   l                                        Literal Pattern
 \caption{Syntax definition for FlatCurry\\
 This is largely the same as other presentations \cite{currySemantics,icurry}
 but we have elected to add more information that will become relevant for optimizations later.
-The notation |{e}| refers to a variable length list |e_1 e_2 ... e_n|.}
+The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
 \label{fig:flatSyntax}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
-> n =>  l                literal
->   |   C_k n_1 ... n_k  constructor
+\begin{boxfigure}
+> n =>  l            literal
+>   |   C_k (vec n)  constructor
 \caption{constructor normal forms in FlatCurry.\\
          A CNF is an expression that contains only constructor and literal symbols.
          All CNFs are normal forms in our system.}
 \label{fig:normalForm}
-\end{figure}
+\end{boxfigure}
 
 Most of the work of evaluation is reducing an expression to head constructor form.
 Kics2 and Pakcs are able to transform FlatCurry programs into an equivalent rewrite
@@ -354,34 +354,34 @@ This function is inductively sequential, however both Pakcs and Kics2 will trans
 into a series of flat function calls with a single case at the root.
 Since this would drastically increase the number of function calls, we avoid this transformation.
 It would also defeat much of the purpose of an optimizing compiler 
-if we weren't allowed to inline functions.
+if we were not allowed to inline functions.
 
-\begin{figure}
+\begin{boxfigure}
 Original FlatCurry representation of |==| on lists.
 > (==) v_2 v_3 = case  v_2 of
->                    [] -> case  v_3 of
->                                [] -> True
->                                v_4 : v_5 -> False
->                    v_6 : v_7 -> case  v_3 of
->                                     [] -> False
->                                     v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
+>                      [] -> case  v_3 of
+>                                  [] -> True
+>                                  v_4 : v_5 -> False
+>                      v_6 : v_7 -> case  v_3 of
+>                                         [] -> False
+>                                         v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
 Transformed FlatCurry representation of |==| on lists.
 > (==) v_2 v_3 = case  v_2 of
->                    [] -> eqListNil v_3
->                    v_6 : v_7 -> eqListCons v_3 v_6 v_7
+>                      [] -> eqListNil v_3
+>                      v_6 : v_7 -> eqListCons v_3 v_6 v_7
 > eqListNil v_3 = case  v_3 of
->                      [] -> True
->                      v_4 : v_5 -> False
+>                       [] -> True
+>                       v_4 : v_5 -> False
 > eqListCons v_3 v_6 v_7 = case  v_3 of 
->                             [] -> False
->                             v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
+>                                [] -> False
+>                                v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
 
 \caption{Transformation of FlatCurry |==| function into a flat representation
          for Pakcs and Kics2.}
 \label{fig:eqList}
-\end{figure}
+\end{boxfigure}
 
 \subsection{Non-determinism} \label{Non-determinism}
 
@@ -390,9 +390,9 @@ Currently there are three approaches to evaluating non-deterministic expression 
 \emph{backtracking}\index{backtracking}, 
 \emph{Pull-Tabbing}\index{pull-tabbing}\cite{pulltab}, and 
 \emph{Bubbling}\index{bubbling}\cite{bubbling}.
-At this time there are complete strategies for evaluating Curry programs,
+At this time there are no complete strategies for evaluating Curry programs,
 so we have elected to use backtracking.
-It is the simplest to implement, and it's well understood.
+It is the simplest to implement, and it is well understood.
 
 In our system, backtracking is implemented in the usual way.
 When an expression rooted by a node |n| with label by |f| 
@@ -404,27 +404,27 @@ then we push |(n, n_q, Stop)| onto the backtracking stack to denote that this
 was an alternative, and we should stop backtracking.
 
 Unfortunately, while backtracking is well defined for rewriting systems,
-our representation of FlatCurry programs isn't a graph rewrite system.
-This is because we don't flatten our FlatCurry functions like Pakcs and Kics2.
-As an example of why FlatCurry programs aren't a graph rewriting system,
+our representation of FlatCurry programs is not a graph rewrite system.
+This is because we do not flatten our FlatCurry functions like Pakcs and Kics2.
+As an example of why FlatCurry programs are not a graph rewriting system,
 consider the FlatCurry function |weird| \ref{fig:weird}.
-This function defines a local variables |x| which is used in a case expression.
+This function defines a local variable |x| which is used in a case expression.
 If this were a rewrite system, then we would be able to translate the
-|case| expression into pattern matching, but a rule can't pattern match on a locally defined variable.
+|case| expression into pattern matching, but a rule can not pattern match on a locally defined variable.
 We show the reduction of |wierd| in figure \ref{fig:weirdEval}.
 
-\begin{figure}
+\begin{boxfigure}
 > weird = let x = False ? True
 >         in case  x of
 >                  False -> True
 >                  True -> False
 \caption{The function |weird|\\
-         This can't be expressed as rewrite rules, because the expression
-         we're pattern matching on is defined locally.}
+         This can not be expressed as rewrite rules, because the expression
+         we are pattern matching on is defined locally.}
 \label{fig:weird}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 \noindent
 \begin{itemize}
    \item We start with a root |r| labeled by |weird|.
@@ -440,12 +440,12 @@ We show the reduction of |wierd| in figure \ref{fig:weirdEval}.
 \end{itemize}
 \caption{Evaluation of the function |weird|.}
 \label{fig:weirdEval}
-\end{figure}
+\end{boxfigure}
 
 
-We've entered an infinite loop of computing the same rewrite.
-The problem is that when we're backtracking,
-and replacing nodes with their original versions, we're going too far
+We have entered an infinite loop of computing the same rewrite.
+The problem is that when we were backtracking,
+and replacing nodes with their original versions, we were going too far
 back in the computation.
 In this example, when backtracking |weird|, we want to backtrack to a point
 where |x| has been created, and we just want to evaluate the case again.
@@ -454,7 +454,7 @@ We solve this problem by creating a new function for each case expression in our
 Figure \ref{fig:caseFuncs} show an example for |weird| and |==| which were defined above.
 This is actually very similar to how Pakcs and Kics2 transformed their programs into
 rewrite systems by flattening them.
-The difference is that we don't need to make any extra function calls unless
+The difference is that we do not need to make any extra function calls unless
 we are already backtracking.
 There is no efficiency cost in either time or space with our solution.
 The only cost is a little more complexity in the code generator,
@@ -462,7 +462,7 @@ and an increase in the generated code size.
 This seems like an acceptable trade off, 
 since our programs are still similar in size to equivalent programs compiled with GHC.
 
-\begin{figure}
+\begin{boxfigure}
 > weird =  let x = False ? True
 >          in case  x of
 >                   False -> True
@@ -489,11 +489,11 @@ since our programs are still similar in size to equivalent programs compiled wit
 >                              v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 \caption{Functions at case for |weird| and |==| for lists.}
 \label{fig:caseFuncs}
-\end{figure}
+\end{boxfigure}
 
 
 
-As far as we're aware, this is a novel approach for improving the efficiency of backtracking
+As far as we are aware, this is a novel approach for improving the efficiency of backtracking
 in rewriting systems.
 The correctness of this method follows 
 from the redex contraction theorem, which is proved later.
@@ -512,7 +512,7 @@ If the free variable is replaced by a constructor with arguments, such as |Just|
 then we instantiate the arguments with free variables.
 
 
-\begin{figure}
+\begin{boxfigure}
 > data Light = Red | Yellow | Green
 >
 > change x = case  x of
@@ -521,14 +521,14 @@ then we instantiate the arguments with free variables.
 >                  Yellow  -> Red
 \caption{A simple traffic light program}
 \label{fig:light}
-\end{figure}
+\end{boxfigure}
 
 This is easier to see with an example.
 Consider the traffic light function in figure \ref{fig:light}.
 The |change| function moves the light from |Red| to |Green| to |Yellow|.
 When calling this function with a free variable, we have the derivation below in figure \ref{fig:lightEval}.
 
-\begin{figure}
+\begin{boxfigure}
 %{
 %format free = "\Varid{free}"
 \begin{itemize}
@@ -559,7 +559,7 @@ When calling this function with a free variable, we have the derivation below in
 %}
 \caption{Evaluation of |change x where x free|}
 \label{fig:lightEval}
-\end{figure}
+\end{boxfigure}
 
 \subsection{Higher Order Functions} \label{Higher Order Functions}
 
@@ -574,22 +574,24 @@ where |apply f_k e_1 e_2 ... e_n| applies |f_k| to the arguments |e_1 e_2 ... e_
 
 The behavior of |apply| is specified below.
 
+\begin{samepage}
 > apply f_k x_1 ... x_n
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
 >  | k < n   = apply (f x_1 ... x_k) x_k1 ... x_n
+\end{samepage}
 
 If the first argument |f| of |apply| is not partially applied,
 then evaluate |f| until it is, and proceed as above.
 In the case that |f| is a free variable, then we return |EXEMPT|, 
-because we don't support higher order narrowing.
+because we do not support higher order narrowing.
 
 \subsection{Backtracking Performance} \label{Backtracking Performance}
 
-Now that we've established a method for implementing non-determinism,
+Now that we have established a method for implementing non-determinism,
 we would like to improve the performance.
 Currently we push nodes on the backtracking stack for every rewrite.
-Often, we don't need to push most of these rewrites.
+Often, we do not need to push most of these rewrites.
 Consider the following code for computing Fibonacci numbers:
 
 > fib n = case  n < 2 of
@@ -604,7 +606,7 @@ and then, when it discoverers that |fib 20 /= 1|, it will undo all of those comp
 only to redo them immediately afterwards!
 This is clearly not what we want.
 Since |fib| is a deterministic function, we would like to avoid pushing these rewrites onto the stack.
-Unfortunately, this isn't as simple as it would first seems for two reasons.
+Unfortunately, this is not as simple as it would first seems for two reasons.
 First, determining if a function is non-deterministic in general is undecidable,
 so any algorithm we developed would push rewrites for some deterministic computations.
 Second, a function may have a non-deterministic argument.
@@ -614,33 +616,33 @@ For example, we could easily change the above program to:
 >              True -> putStrLn "found answer"
 
 Now the expression with |fib| is no longer deterministic.
-We sidestep the whole issue by noticing that while it's impossible to tell 
+We sidestep the whole issue by noticing that while it is impossible to tell 
 if an expression is non-deterministic at compile time,
-it's very easy to tell if it is at run time.
+it is very easy to tell if it is at run time.
 
-As far as we're aware, this is another novel solution.
+As far as we are aware, this is another novel solution.
 Each expression contains a Boolean flag that marks if it is non-deterministic.
 We called these \emph{nondet}\index{nondet} flags,
 and we refer to an expression whose root node is marked with a nondet flag as nondet.
 The rules for determining if an expression |e| is nondet are:
 if |e| is labeled by a choice, then |e| is nondet;
-if |e| is labeled by a function that has a case who's scrutinee is nondet,
+if |e| is labeled by a function that has a case who is scrutinee is nondet,
 or is a forward to a nondet, then |e| is nondet;
 if |e' ->* e| and |e'| is nondet, then |e| is nondet.
 
-Any node not marked as nondet doesn't need to be pushed on the stack
-because it's not part of a choice, 
+Any node not marked as nondet does not need to be pushed on the stack
+because it is not part of a choice, 
 all of its case statements scrutinized deterministic nodes,
-and it's not forwarding to a non-deterministic node.
+and it is not forwarding to a non-deterministic node.
 However proving this is a more substantial problem.
 
 We prove this for the class of limited overlapping inductively sequential graph rewriting systems, 
 with the understanding our system is equivalent.
 This proof is based on a corresponding proof for set functions in Curry \cite{setFunctions}[Lemma 2].
 The original proof was concerned with a deterministic derivation from an expression to a value.
-While the idea is similar, we don't want to necessarily derive an expression to a value.
+While the idea is similar, we do not want to necessarily derive an expression to a value.
 Instead we define a deterministic redex, and deterministic step below, and show that there
-is an analogous theorem for a derivation of deterministic steps, even if it doesn't compute a value.
+is an analogous theorem for a derivation of deterministic steps, even if it does not compute a value.
 
 \begin{definition}
 Given a rewrite system $R$ with fixed strategy $\phi$, 
@@ -681,8 +683,8 @@ that scrutinizes a nondet node should be nondet.
 Finally, the third property is that nondet should be a persistent attribute.
 This corresponds to the definition we gave for nondet nodes above.
 
-If $n$ is a redex that isn't marked as nondet,
-then $n$ can't be labeled by a choice.
+If $n$ is a redex that is not marked as nondet,
+then $n$ ca not be labeled by a choice.
 Since choice is the only rule in a LOIS system that is non-deterministic,
 $n$ must be a deterministic redex.
 We recall a theorem used to prove the correctness of set function.\cite{setFunctions}[Def. 1, Lemma 1]
@@ -732,12 +734,12 @@ This establishes our result.
 \subsection{Collapsing Functions} \label{Collapsing Functions}
 
 While this result is great, and it allows us to avoid creating a large number of stack frames,
-there's a subtle aspect of graph rewriting that gets in the way.
+there is a subtle aspect of graph rewriting that gets in the way.
 If a node |n_1| labeled by function |f| is rewritten to |n_2|,
 then the definition of applying a rewrite rule \cite{graphRewriting}[Def. 8, Def. 10, Def. 19]
 would require us to traverse the graph, and find every node that has |n_1| as a child,
 and redirect that pointer to |n_2|.
-This is clearly inefficient, so this isn't done in practice.
+This is clearly inefficient, so this is not done in practice.
 A much faster method is to simply replace the contents, the label and children, of |n_1|
 with the contents of |n_2|.
 This works most of the time, but we run into a problem when
@@ -756,10 +758,10 @@ Consider the expression following expression.
 
 When |y| is evaluated, then it will evaluate |x|, and |x| will evaluate to |True|.
 If we then copy the |True| constructor to |y|, then we have two copies of |True|.
-But, since |y| is deterministic, we don't need to undo |y| when backtracking.
+But, since |y| is deterministic, we do not need to undo |y| when backtracking.
 So, |y| will remain |True| after backtracking, instead of returning to |id x|.
 While constructor copying is definitely invalid with fast backtracking,
-it's unclear if it would be valid with a normal backtracking algorithm.
+it is unclear if it would be valid with a normal backtracking algorithm.
 
 We can solve this problem by using forwarding nodes\index{forwarding node}, 
 sometimes called indirection nodes
@@ -784,23 +786,20 @@ Consider the following function.
 When reducing this function, we create two forwarding nodes
 that are represented by the variables $x$ and $y$.
 We refer to these nodes as $FORWARD_x$ and $FORWARD_y$ respectively.
-While evaluating |y| in the case expression, we create two forwarding nodes
-that are represented by the variables $x$ and $y$ respectively.
-We refer to these nodes as $FORWARD_x$ and $FORWARD_y$ respectively.
 So $x$ is reduced to $FORWARD_x(True)$, and $y$ is reduced to $FORWARD_y(FORWARD_x(True))$.
 If we contract |y| to $FORWARD_y(True)$,
 then when we backtrack we replace |x| with $FORWARD_x(False)$, and |y|
 is replaced with $id(True)$.
-The reason that $y$ doesn't change to $id(False)$ is because $y$ 
+The reason that $y$ does not change to $id(False)$ is because $y$ 
 has lost its reference to $x$.
-Now, not only do we fail to find a solution for |f|, we've ended up in a state
+Now, not only do we fail to find a solution for |f|, we have ended up in a state
 where |x| and |y| have different values.
 
 
 
-In this chapter we've discussed the Curry language, and overviewed the semantics of Curry programs.
-We've shown different approaches to implementing a system for running Curry programs,
-and we've discussed the choices we've made.
+In this chapter we have discussed the Curry language, and overviewed the semantics of Curry programs.
+We have shown different approaches to implementing a system for running Curry programs,
+and we have discussed the choices that we made.
 When a decision needed to be made, we prioritized correctness, then efficient execution,
 and then ease of implementation.
 In the next chapter we discuss the implementation at a low level.

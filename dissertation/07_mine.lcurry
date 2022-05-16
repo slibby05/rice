@@ -16,7 +16,7 @@ and give a formulation that can apply to combinator languages.
 
 \section{Unboxing}
 
-So far we've avoided talking about operations in Curry for 
+So far we have avoided talking about operations in Curry for 
 primitive data types |Int|, |Char|, and |Float|.
 This is primarily because in all current implementations of Curry,
 primitive values are boxed.
@@ -32,7 +32,7 @@ we decided to use our representation from the beginning.
 We chose to follow the style of Unboxing from Launchbury et al. \cite{unboxing}
 and represent all boxes explicitly in FlatCurry,
 as opposed to other system which may represent the boxes at run-time,
-but don't mention the boxes at compile time.
+but do not mention the boxes at compile time.
 This has several advantages, but one of the most important
 is that we can apply optimizations to the boxes themselves.
 
@@ -61,7 +61,7 @@ are explicitly represented in the intermediate representation.
 In order to represent boxes we need to make three changes to our FlatCurry programs.
 
 The first is that every primitive value, a literal value of type |Int|, |Float|, or |Char|
-is replaces with a constructor of the appropriate type.
+is replaced with a constructor of the appropriate type.
 For example |5 + 6| is transformed into the expression |(Int 5) + (Int 6)|.
 
 Second, we need to wrap cases of literal values with cases that remove the box.
@@ -72,7 +72,7 @@ We also add one dummy branch to the unboxing case for each branch in the primiti
 These branches are there to instruct the code generator on what values a free variable could
 take on.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{minipage}{.4\textwidth}
 > case  x of
 >       0 -> False
@@ -88,7 +88,7 @@ take on.
 \end{minipage}
 \caption{Wrapping a primitive case with a case to remove the box.}
 \label{fig:caseWrap}
-\end{figure}
+\end{boxfigure}
 
 Finally we need to give new definitions for primitive operations such as |+| and |<=|.
 All of the operators fit the same pattern, so we only give the definitions for |+| and |<=| for integers
@@ -103,7 +103,7 @@ The |pl_p| operation performs the addition, and is translated to an add expressi
 The |le_p| operation performs a comparison between two integers, and returns either
 |True| or |False| based on the result.
 
-\begin{figure}
+\begin{boxfigure}
 > (+) :: Int -> Int -> Int
 > x + y = case  x of
 >               Int x_p -> case  y of
@@ -116,10 +116,10 @@ The |le_p| operation performs a comparison between two integers, and returns eit
 >                                 Int y_p -> x_p le_p y_p 
 \caption{Definitions for |+| and |<=| taking boxed integers.}
 \label{fig:primOp}
-\end{figure}
+\end{boxfigure}
 
 Before we even look at trying to remove these boxes,
-it's worth taking a second to see if we can optimize literal values.
+it is worth taking a second to see if we can optimize literal values.
 There are actually a couple of significant improvements we can make
 that apply more broadly.
 
@@ -131,7 +131,7 @@ For example, if we could turn case statements of Boolean expressions into
 simple if statements in C.
 We could compare the scrutinee to |True|, and if it is, then we evaluate the true branch,
 otherwise we evaluate the false branch.
-Unfortunately, this doesn't work for two reasons.
+Unfortunately, this does not work for two reasons.
 First, not all instances of |True| can be the static |True| nodes.
 As an example, at run-time |not False| will evaluate to |True|,
 but the node is going to be in the same location as the original |not| node.
@@ -142,34 +142,35 @@ The next optimization we can make is for the primitive types |Int|, |Char|, and 
 Since these constructors have an argument, namely the primitive value,
 we cannot make a single static node for them.
 We might try to create a single static node for every literal value used in the program.
-Unfortunately this doesn't tend to help us that much.
+Unfortunately this does not tend to help us that much.
 Consider the standard factorial program:
 
-> fac 0 = 1
-> fac n = n * fac(n-1)
+> fac n = case  n of
+>               0 -> 1
+>               n -> n * fac(n-1)
 
-Now if we evaluate |fac 42|, we'll allocate memory up front for |0|, |1|, and |42|.
+Now if we evaluate |fac 42|, we will allocate memory up front for |0|, |1|, and |42|.
 This will certainly save some memory, but not as much as we would hope.
-We'll still construct every number between |2| and |41|.
+We will still construct every number between |2| and |41|.
 
 A better solution is to employ the flyweight pattern similar to the JVM.
 The idea is that small integers are likely to come up often.
 So, we statically allocate all of the integers between |-128| and |128|.
 We do a similar allocation for characters.
-Unfortunately, this patterns didn't show improved performance for floating point numbers.
+Unfortunately, this patterns did not show improved performance for floating point numbers.
 
-Now that we've seen how to represent boxes,
+Now that we have seen how to represent boxes,
 we can work on removing them, and see what we actually gain from it.
 
 \subsection{Unboxed Values}
 
 
-In order to get an idea of the effectiveness of unboxing, let's look at an example.
+In order to get an idea of the effectiveness of unboxing, let us look at an example.
 Consider the function to compute Fibonacci numbers if figure \ref{fig:fib}.
 We will work with this example extensively in the next couple of optimizations,
 in an attempt to see how much we can optimize it.
 
-\begin{figure}
+\begin{boxfigure}
 > fib :: Int -> Int
 > fib n = case  n <= 1 of
 >               True   -> n
@@ -201,18 +202,18 @@ After adding boxes:
 
 \caption{A program for generating Fibonacci numbers translated to ANF, and adding boxes.}
 \label{fig:fib}
-\end{figure}
+\end{boxfigure}
 
-Unfortunately, using the optimizations we've already discussed,
-this function can't be optimized any further.
-The |fib| function is recursive, so we can't reduce it,
+Unfortunately, using the optimizations we have already discussed,
+this function can not be optimized any further.
+The |fib| function is recursive, so we can not reduce it,
 and |n-1| contains a primitive operation.
 However, we allocate a lot of memory while evaluating this function.
 We create 5 nodes for each recursive call, |cont, n_1, f_1, n_2, f_2|.
-We don't create a node for |f_1 + f_2| since that will replace the root node
+We do not create a node for |f_1 + f_2| since that will replace the root node
 during evaluation.
 We can statically allocate a node for each integer, because the integers are constant.
-However, there's still no need for this much allocation.
+However, there is still no need for this much allocation.
 The problem is that each of our primitive operations and recursive calls 
 must be represented as a node to fit in with our definition of an expression graph.
 
@@ -220,7 +221,7 @@ However, after explicitly representing the boxes, and using our
 new definitions for |+| and |<=|,
 we can optimize |fib| to the program given in figure \ref{fig:fibOpt1}.
 
-\begin{figure}[t]
+\begin{boxfigure}
 > fib n = case  n of
 >               Int  v_2 ->  let  cond = v_2 le_p 1
 >                            in  case  cond
@@ -235,23 +236,23 @@ we can optimize |fib| to the program given in figure \ref{fig:fibOpt1}.
 >                                                                                           in Int r
 \caption{Optimized |fib| after Unboxing}
 \label{fig:fibOpt1}
-\end{figure}
+\end{boxfigure}
 
 As we can see, the code is significantly longer,
-but now we've included the primitive operations in our code.
-The variables |v_2, n_1, n_2, p_1, p_2| are all primitive values, so we don't need to allocate
-any memory for them, so they won't be represented as nodes in our expression graph.
-This seems like a big win, but it's a little deceptive.
-We're still allocating 1 node for |cond, f_1, f_2| and 2 nodes for the |Int| constructors.
-So, we're still allocating 5 nodes, which is just as much memory as before.
+but now we have included the primitive operations in our code.
+The variables |v_2, n_1, n_2, p_1, p_2| are all primitive values, so we do not need to allocate
+any memory for them, so they will not be represented as nodes in our expression graph.
+This seems like a big win, but it is a little deceptive.
+We are still allocating 1 node for |cond, f_1, f_2| and 2 nodes for the |Int| constructors.
+So, we are still allocating 5 nodes, which is just as much memory as before.
 This is an improvement in efficiency, but we can certainly do better.
 
 \subsection{Primitive Conditions}
 
-The first optimization is that we really don't need to allocate memory for |cond|.
+The first optimization is that we really do not need to allocate memory for |cond|.
 |x le_p y| should compile down to an expression involving the primitive \texttt{<=} operation in C,
 and return a Boolean value.
-However, right now there's no way to signal that to the code generator,
+However, right now there is no way to signal that to the code generator,
 so we introduce the |pcase| construct.
 
 The |primCond| must be a primitive condition expression, which is either |eq_p| or |le_p|,
@@ -260,7 +261,7 @@ The semantics of |pcase| are exactly what be expected,
 but now we can translate it into a simple \texttt{if} 
 statement in C, as shown in figure \ref{fig:primcond}.
 
-\begin{figure}
+\begin{boxfigure}
 > pcase  primCond of
 >        True -> e_t
 >        False -> e_f
@@ -278,19 +279,19 @@ $\ \ $ \texttt{\}}\\
 \end{tabular}
 \caption{The syntax and translation for |primcond|}
 \label{fig:primcond}
-\end{figure}
+\end{boxfigure}
 
 This has several advantages.
-First we don't construct a node for the boolean value.
+First we do not construct a node for the boolean value.
 Even if we are statically allocating a single node value for |True|
 and |False|, we avoid the cost of switch case loop,
 and the cost of checking if |primcond| is non-deterministic.
 It must be deterministic, because both of its operands are primitive values.
 After implementing this construct, the new version is in figure \ref{fig:fibOpt2}.
-Now we're down to 4 nodes, but we can still do better.
+Now we are down to 4 nodes, but we can still do better.
 The next challenge is unboxing the arguments in the call to |fib|.
 
-\begin{figure}
+\begin{boxfigure}
 > fib n = case  n of
 >               Int v_2 -> pcase  v_2 le_p 1
 >                                 True   ->  n
@@ -304,7 +305,7 @@ The next challenge is unboxing the arguments in the call to |fib|.
 >                                                                                      in   Int r
 \caption{The |fib| function with primitive cases}
 \label{fig:fibOpt2}
-\end{figure}
+\end{boxfigure}
 
 \subsection{Strictness Analysis}
 
@@ -320,7 +321,7 @@ We created a union \texttt{field}, defined in figure \ref{fig:field}
 that can either represent an |Int|, |Char|, |Float|, \texttt{Node}, or an array of \texttt{Node*}
 in case a node has more than 3 children.
 
-\begin{figure}
+\begin{boxfigure}
 
 \begin{verbatim}
 typedef union field
@@ -334,7 +335,7 @@ typedef union field
 \end{verbatim}
 \caption{Definition of \texttt{field} type.}
 \label{fig:field}
-\end{figure}
+\end{boxfigure}
 
 The problem with storing a primitive value in a node,
 instead moves to identifying when a value is primitive.
@@ -347,14 +348,14 @@ Fortunately, this is a well studied problem
 \cite{strictProj, strictAbstract, strictBack}.
 
 Lazy functional languages often try to remove laziness for efficiency reasons.
-We don't want to create an expression for a primitive value 
-if we're only going to deconstruct it,
+We do not want to create an expression for a primitive value 
+if we are only going to deconstruct it,
 so it becomes useful to know what parameters in a function must be evaluated,
 A parameter that must be evaluated by a function is called \emph{strict}\index{strict}.
 Formally, a function |f| is strict in its parameter if 
 |f EXEMPT = EXEMPT|.
 
-We use |EXEMPT| here to mean that the value of it's parameter does not evaluate to a value,
+We use |EXEMPT| here to mean that the value of it is parameter does not evaluate to a value,
 this can come from a call to the |error| function, or
 an infinite computation.
 It does not mean that |f| failed to return a value.
@@ -382,11 +383,11 @@ For example consider the following function:
 >                 True   -> y
 >                 False  -> y + z
 
-It's clear that |x| must be strict, but we don't know about |y| or |z|.
+It is clear that |x| must be strict, but we do not know about |y| or |z|.
 After analyzing the case branches, we see that since |y| appears in both branches,
-and |+| is strict in both of it's arguments, |y| must be strict as well.
-Finally, since there's a branch that |z| doesn't appear in, |z| may not be evaluated,
-so it's not strict.
+and |+| is strict in both of it is arguments, |y| must be strict as well.
+Finally, since there is a branch that |z| does not appear in, |z| may not be evaluated,
+so it is not strict.
 
 This syntactic traversal of an expression is useful,
 but it fails when working with a recursively defined function.
@@ -397,7 +398,7 @@ Consider the factorial function with an accumulator:
 >                    False  -> n * faca (n-1) (n*acc)
 
 We can see with a syntactic check that |n| is strict, but what about |acc|.
-|acc| does appear in both branches, but it's the argument to the recursive call of |faca|.
+|acc| does appear in both branches, but it is the argument to the recursive call of |faca|.
 Therefore we have |acc|, the second parameter of |faca|, is strict if, and only if, the second
 parameter of |faca| is strict.
 We can solve this problem by iteratively running the strictness analyzer on |faca| until
@@ -439,7 +440,7 @@ Which can be optimized to:
 
 > let  f_1 = fib#worker n_1
 
-\begin{figure}
+\begin{boxfigure}
 > fib n = case  n of
 >               Int v_2 -> fib#worker v_2
 >
@@ -458,9 +459,9 @@ Which can be optimized to:
 >                                                                              in Int r
 \caption{The |fib| function after strictness analysis.}
 \label{fig:fibOpt3}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > fib#worker v_2 = 
 >   pcase  v_2 le_p 1 of
 >          True  ->  Int v_2
@@ -474,26 +475,26 @@ Which can be optimized to:
 >                                                              in Int r
 \caption{The |fib| function after strictness analysis and optimization.}
 \label{fig:fibOpt4}
-\end{figure}
+\end{boxfigure}
 
-We're down to allocating 2 nodes.
+We are down to allocating 2 nodes.
 We only need to allocate nodes for the calls to |fib#worker|.
-This means that we've reduced our memory consumption by 60\%.
-That's a huge improvement, but we can still do better.
+This means that we have reduced our memory consumption by 60\%.
+That is a huge improvement, but we can still do better.
 With the next optimization we look at how to remove the remaining allocations.
 
 \section{Shortcutting}
 
 In the last section were able to optimize the |fib| function from allocating 
 5 nodes per recursive call to only allocating 2 nodes per recursive call.
-However, we were left with a problem that we can't solve by a code transformation.
+However, we were left with a problem that we can not solve by a code transformation.
 
 > let f_1 = fib#worker n_1
 > in case  f_1 of
 >          Int p_1 ->  ...
 
 In this section we aim to eliminate these final two nodes.
-However, in order to do this, we'll have to step outside of compile-time optimizations,
+However, in order to do this, we will have to step outside of compile-time optimizations,
 and look into previous work on run-time optimizations for Curry.
 Specifically we are going to use an idea inspired by the shortcutting optimizations \cite{shortcutting}.
 We first look into the shortcutting optimization itself,
@@ -531,16 +532,16 @@ When looking at the $\textbf{H}_{length}$ function, we notice something interest
 
 > H_length(x:xs) = H_p(1,H_length(xs))
 
-We don't actually construct a node for $+$ or |length xs|.
-Even with our current implementation, and unboxing strategy, we'd still have to construct
+We do not actually construct a node for $+$ or |length xs|.
+Even with our current implementation, and unboxing strategy, we would still have to construct
 a node for |length xs| in order to evaluate it.
-It's recursive, so we couldn't inline the call to length, and it's possible that
+It is recursive, so we could not inline the call to length, and it is possible that
 it could be non-deterministic.
 The shortcutting compiler has managed to avoid constructing a node that our compiler has to construct.
 This is worth looking into.
 
 
-\begin{figure}
+\begin{boxfigure}
 > [] ++ ys       = ys
 > (x:xs) ++ ys   = x : (xs++ys)
 > length []      = 0
@@ -564,11 +565,11 @@ This is worth looking into.
 > H_length(xs++ys) = H_length(H_pp(xs,ys))
 \caption{The \textbf{H} function, and associated transformed functions for |++| and |length|.}
 \label{fig:H}
-\end{figure}
+\end{boxfigure}
 
 In keeping with our example,
-let's see what the shortcutting compiler produces with our |fib| example.
-We have restructured the example as rewrite rules, but it's still performing the same computation.
+let us see what the shortcutting compiler produces with our |fib| example.
+We have restructured the example as rewrite rules, but it is still performing the same computation.
 The results are shown in figure \ref{fig:Hfib}.
 As we can see, we can avoid constructing nodes for |<=|, |+| and |-|,
 but we already managed to avoid these node constructions with unboxing and inlining.
@@ -580,7 +581,7 @@ Second, the node is needed in that expression.
 If both of these conditions are met, then we do not need to construct the node.
 We can \emph{shortcut} the construction, and just compute the value.
 
-\begin{figure}
+\begin{boxfigure}
 > fib n             = fibComp (n < 2) n
 >
 > fibComp True   n  = n
@@ -601,12 +602,12 @@ We can \emph{shortcut} the construction, and just compute the value.
 > H_fibComp(False,n)         = H_p(H_fib(H_m(n,1)), H_fib(H_m(n,2)))
 \caption{The \textbf{H} function, and associated transformed functions for |fib|.}
 \label{fig:Hfib}
-\end{figure}
+\end{boxfigure}
 
 Now that we have a theoretical idea of how to eliminate nodes with shortcutting,
 we need to apply it to our actual generated code.
-By our two conditions, we're looking for a node that's generated by the right hand side of a rewrite rule,
-and we're looking for a node that's needed in that expression.
+By our two conditions, we are looking for a node that is generated by the right hand side of a rewrite rule,
+and we are looking for a node that is needed in that expression.
 The equivalent in our compiled code is when a let bound variable is rooted by a function,
 and is used exactly once as the scrutinee of a case expression.
 In the Fibonacci example in figure \ref{fig:fibOpt4}
@@ -616,7 +617,7 @@ and instead of generating a node only to evaluate it, the compiler would produce
 that would return the value of that node.
 
 It is worth looking at an attempt to try to replace the node with a function call.
-One possibility would be to try to statically analyze a function |f| and determine if it's deterministic.
+One possibility would be to try to statically analyze a function |f| and determine if it is deterministic.
 This is a reasonable idea, but it has two major drawbacks.
 First, determining if a function is non-deterministic is undecidable,
 so the best we could do is an approximation.
@@ -626,15 +627,15 @@ This is going to be very restrictive for any possible optimization.
 
 In the example in figure \ref{fig:fibOpt4} we need a node to hold the value for |fib#worker n_1|,
 but this value will only be used in the case expression.
-In fact, it's not possible for this node to be shared with any part of the expression graph.
+In fact, it is not possible for this node to be shared with any part of the expression graph.
 If this expression is only ever scrutinized by the case expression,
 then we only need to keep the value around temporarily.
 The idea here is simple, but the implementation becomes tricky.
 We want to use a single, statically allocated, node for every variable
-that's only used as the scrutinee of a case.
+that is only used as the scrutinee of a case.
 
 There are two steps to the optimization.
-The first step is marking every node that's only used as the scrutinee.
+The first step is marking every node that is only used as the scrutinee.
 The second step happens during code generation.
 Instead of dynamically allocating memory for a marked node,
 we store all of the information in a single, statically allocated, node.
@@ -645,9 +646,9 @@ function, but before we celebrate, we need to make sure that
 code generated using this transformation actually produces the same results.
 There are a few things the can potentially go wrong.
 
-First, let's look at the case where the scrutinee is deterministic.
+First, let us look at the case where the scrutinee is deterministic.
 In that case, there is only one thing that could go wrong.
-It's possible that in order to reduce the scrutinee 
+It is possible that in order to reduce the scrutinee 
 we need to reduce another expression that could be stored in \texttt{RET}.
 For example, consider the following program:
 
@@ -662,15 +663,15 @@ For example, consider the following program:
 In the evaluation of |main|, |f 3| can be stored in the \texttt{RET} node,
 then we can evaluate |f 3| to head constructor form,
 but while we are evaluating |f 3|, we store |g 3| in the same \texttt{RET} node.
-While this is concerning, it's not actually a problem.
+While this is concerning, it is not actually a problem.
 As shown in chapter \ref{ch:The Generated Code}, 
 at the beginning of \texttt{f\_hnf}, 
 we store all of the children of \texttt{root} as local variables, 
-and then when we've computed the value, we overwrite the \texttt{root} node.
+and then when we have computed the value, we overwrite the \texttt{root} node.
 In our case the \texttt{root} node in our function is \texttt{RET}.
 However, aside from the very start and end of the function, 
 we never interact with the \texttt{root} node,
-so even if we reuse \texttt{RET} in the middle of evaluating |f|, it doesn't actually
+so even if we reuse \texttt{RET} in the middle of evaluating |f|, it does not actually
 affect the results.
 
 A portion of the generated code for |f| can be seen in figure \ref{fig:gen_f}.
@@ -678,11 +679,11 @@ As we can see, the only time that we use the \texttt{root} node
 is at the very start of the function to store the variables,
 and right before we return.
 Even if \texttt{root} happens to be \texttt{RET},
-this doesn't actually affect the evaluation.
+this does not actually affect the evaluation.
 The \texttt{RET} node is overwritten with the contents of |g x|,
-then it's evaluated, and finally it's overwritten with the result of |f| right before returning.
+then it is evaluated, and finally it is overwritten with the result of |f| right before returning.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{verbatim}
 void f_hnf(Node* root)
 {
@@ -706,7 +707,7 @@ void f_hnf(Node* root)
 \end{verbatim}
 \caption{Part of the generated code for |f|.}
 \label{fig:gen_f}
-\end{figure}
+\end{boxfigure}
 
 It seems like we should be able to 
 store these marked variables in the \texttt{RET} node, and then 
@@ -714,7 +715,7 @@ just call the appropriate \texttt{\_hnf} function.
 In fact this was the first idea we tried.
 The generated code for main is given in figure \ref{fig:RET1}.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{verbatim}
 void main_hnf(Node* root)
 {
@@ -737,16 +738,16 @@ void main_hnf(Node* root)
 \end{verbatim}
 \caption{First attempt at compiling |main| with Shortcutting.}
 \label{fig:RET1}
-\end{figure}
+\end{boxfigure}
 
 This initial version actually works very well.
-In fact, for |fib#worker| we're able to remove the remaining 2 allocations.
-This is fantastic, and we'll come back to this point later,
-but before we celebrate, we need to deal with a looming problem.
+In fact, for |fib#worker| we are able to remove the remaining 2 allocations.
+This is fantastic, and we will come back to this point later,
+but we need to deal with a looming problem.
 
 \subsection{Non-deterministic RET Nodes}
 
-The problem with the scheme we've developed so far is that
+The problem with the scheme we have developed so far is that
 if \texttt{RET} is non-deterministic, 
 then the rewrite rule we push on the backtracking stack may
 contain a pointer to \texttt{RET}.
@@ -756,15 +757,15 @@ by the time backtracking occurs.
 
 This optimization was built on the idea that \texttt{RET}
 is only ever used in a single case expression.
-Therefore, it's important that we never put \texttt{RET} on the backtracking stack.
+Therefore, it is important that we never put \texttt{RET} on the backtracking stack.
 We need rethink on our idea.
 Initially, we wanted to avoid allocating a node if a variable is used in a single case.
 Instead, we will only allocate a node if \texttt{RET} is non-deterministic.
-This means that for deterministic expression, we don't allocate any memory,
+This means that for deterministic expression, we do not allocate any memory,
 but for non-deterministic expression, we still have a persistent variable on the stack.
 This lead to the second implementation in figure \ref{fig:RET2}.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{verbatim}
 void main_hnf(Node* root)
 {
@@ -791,12 +792,12 @@ void main_hnf(Node* root)
 \end{verbatim}
 \caption{Second attempt at compiling |main| with Shortcutting.}
 \label{fig:RET2}
-\end{figure}
+\end{boxfigure}
 
 \subsection{RET hnf Functions}
 
 This solution is better, because any rewrites we push onto the stack
-contain a copy of \texttt{RET}, but it's still not correct.
+contain a copy of \texttt{RET}, but it is still not correct.
 Three things can still go wrong here.
 These are very subtle errors that are very easy to overlook,
 and even harder to track down the real cause of the errors.
@@ -804,9 +805,9 @@ and even harder to track down the real cause of the errors.
 The first problem is that \texttt{RET} might have been reduced to a
 forwarding node, so it might be deterministic, but forward to a non-deterministic node.
 For example, in |case id (0 ? 1) of ...|
-there's clearly non-determinism,
-but the |id| node isn't the cause of it, 
-so that rewrite shouldn't be pushed on the backtracking stack.
+there is clearly non-determinism,
+but the |id| node is not the cause of it, 
+so that rewrite should not be pushed on the backtracking stack.
 
 Another problem is that, if \texttt{RET} is a forwarding node,
 when evaluating the node it forwards to, we might have reused \texttt{RET}.
@@ -824,9 +825,9 @@ we need to make a copy of \texttt{RET}
 as part of the rewrite we push on the backtracking stack.
 However, before we can even do that, we need to evaluate |h 4|,
 and the expression |x > 3| will be stored in \texttt{RET}.
-Now we've lost the information in \texttt{RET} before we can copy it.
+Now we have lost the information in \texttt{RET} before we can copy it.
 
-Finally, we still haven't avoided putting \texttt{RET} on the backtracking stack.
+Finally, we still have not avoided putting \texttt{RET} on the backtracking stack.
 Recall our program from before.
 
 > f x = case  g x of
@@ -842,7 +843,7 @@ then the node containing |f| will be marked as non-deterministic.
 However, |f 3| was stored in the \texttt{RET} node,
 so the \texttt{root} parameter will be \texttt{RET}.
 Now \texttt{RET} is still pushed on the backtracking stack,
-but this time it's on the left hand side of the rewrite.
+but this time it is on the left hand side of the rewrite.
 
 This is starting to seem hopeless,
 when we fix one problem, 3 much more subtle problems pop up.
@@ -858,16 +859,16 @@ The third function only reduces |f| that has been stored in a \texttt{RET} node.
 
 The difference between \texttt{f\_hnf} and \texttt{f\_RET\_hnf} is that
 instead of passing the root node, we pass \texttt{Node* backup}.
-The \texttt{backup} node is where we'll store the contents of \texttt{RET}
+The \texttt{backup} node is where we will store the contents of \texttt{RET}
 if we discover evaluating the expression rooted by |f| is non-deterministic.
 Finally we return \texttt{backup}.
 Now both the caller and callee agree on \texttt{backup}.
 Furthermore, since \texttt{backup} is a local variable,
-it's not affected if |f| reuses \texttt{RET} over the course of its evaluation.
+it is not affected if |f| reuses \texttt{RET} over the course of its evaluation.
 We can see the final implementation of shortcutting for |main| in figure \ref{fig:RET3}.
 We also give the definition for \texttt{f\_RET\_hnf} in figure \ref{fig:RET_f}.
 
-\begin{figure}
+\begin{boxfigure}
 \begin{verbatim}
 void main_hnf(Node* root)
 {
@@ -904,9 +905,9 @@ void main_hnf(Node* root)
 \end{verbatim}
 \caption{Final version of |main| with Shortcutting.}
 \label{fig:RET3}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 \begin{verbatim}
 Node* f_RET_hnf(Node* backup)
 {
@@ -942,7 +943,7 @@ Node* f_RET_hnf(Node* backup)
 \end{verbatim}
 \caption{Compiling |f| with Shortcutting.}
 \label{fig:RET_f}
-\end{figure}
+\end{boxfigure}
 
 Now, we finally have a working function.
 We only allocate memory if the scrutinee of the case is non-deterministic.
@@ -963,7 +964,7 @@ Suppose we have the following Curry code:
 
 In this case |f| is a recursive function,
 so when we reduce |f 4|, we need to reduce |f 3|.
-This is no problem at all, because we're reducing |f 4| with \texttt{f\_RET\_hnf}.
+This is no problem at all, because we are reducing |f 4| with \texttt{f\_RET\_hnf}.
 Ignoring the complications of Unboxing for the moment, we can generate the following code
 for the return of |f|.
 
@@ -975,7 +976,7 @@ return f_RET_hnf(backup);
 
 \subsection{Shortcutting Results}
 
-Before we move onto our next optimization, we should look back at what we've done so far.
+Before we move onto our next optimization, we should look back at what we have done so far.
 Initially, we had a |fib| function that allocated 5 nodes for every recursive call.
 Then, through Unboxing, we were able to cut that down to only 2 allocations per call.
 Finally, using Shortcutting, we were able to eliminate those two allocations.
@@ -985,14 +986,14 @@ The |fib| function runs in exponential time,
 and since each step allocates some memory, the original |fib| function
 allocated an exponential amount of memory on the heap.
 However, our fully optimized |fib| function only allocates a static node at startup.
-We've moved from exponential memory allocated on the heap to constant space.
+We have moved from exponential memory allocated on the heap to constant space.
 While |fib| still runs in exponential time,
-it runs much faster, since it doesn't need to allocate memory.
+it runs much faster, since it does not need to allocate memory.
 Surprisingly, |fib| is still just as efficient with non-deterministic arguments.
 If the argument is non-deterministic, the wrapper function will evaluate it
 before calling the worker.
 
-Now that we've removed most of the implicitly allocated memory
+Now that we have removed most of the implicitly allocated memory
 with Unboxing and Shortcutting, 
 we can work on removing explicitly allocated memory
 with a technique from functional languages.
@@ -1005,7 +1006,7 @@ For example, consider the program:
 
 > sumPrimes   =  sum . filter isPrime . enumFromTo 2
 
-While this style is concise and readable, it isn't efficient.
+While this style is concise and readable, it is not efficient.
 First, we create a list of integers,
 then we create a new list of all of the integers in our list that are prime,
 and finally we sum the values in that list.
@@ -1019,12 +1020,12 @@ It would be much more efficient to compute this sum directly.
 
 
 This pipeline pattern is pervasive in functional programming,
-so it's worth understanding and optimizing it.
+so it is worth understanding and optimizing it.
 In particular, we want to eliminate the two intermediate lists created here.
 This is the goal of Deforestation.
 
 \subsection{The Original Scheme}
-Deforestation has actually gone through several forms throughout it's history.
+Deforestation has actually gone through several forms throughout it is history.
 The original optimization proposed by Wadler \cite{deforestationWadler}
 was very general, but it required a complicated algorithm, and it could fail to terminate.
 There have been various attempts to improve this algorithm \cite{turchin_supercompiler} and 
@@ -1071,9 +1072,9 @@ But wait, this looks very similar to our construction of a list.
 > 1  :  (2  :  (3  :  (4  :  (5  :  ([])))))
 > 1  +  (2  +  (3  +  (4  +  (5  +  (0)))))
 
-We've just replaced the |:| with |+| and the |[]| with |0|.
+We have just replaced the |:| with |+| and the |[]| with |0|.
 If the compiler can find where we will do this replacement,
-then we don't need to construct the list.
+then we do not need to construct the list.
 On its own, this is a very hard problem, but we can help the compiler along.
 We just need a standard way to construct a list.
 This can be done with the |build| function \cite{shortcutDeforestation}.
@@ -1094,7 +1095,7 @@ For all |f : a -> b -> b|, |z : b|, and |g : (forall b (a -> b -> b) -> b -> b) 
 
 So, if we can construct standard list functions using |build| and |foldr|,
 then we can remove these function using the above theorem.
-As an example, let's look at the function |enumFromTo a b| that constructs
+As an example, let us look at the function |enumFromTo a b| that constructs
 a list of integers from |a| to |b|.
 > enumFromTo a b
 >  | a > b      = []
@@ -1110,22 +1111,22 @@ We can create build functions for several list creation functions
 found in the standard library.
 In fact, for this optimization we replace several functions in both the
 Prelude and List library with equivalent functions constructed with |foldr| and |build|.
-Now we're ready to apply Deforestation to Curry.
+Now we are ready to apply Deforestation to Curry.
 Unfortunately there are two problems we need to solve.
 The first is an implementation problem,
 and the second is a theoretical problem.
-First, while we can apply foldr/build Deforestation, we can't actually optimize the results.
-Second, we still need to show it's valid for curry.
+First, while we can apply foldr/build Deforestation, we can not actually optimize the results.
+Second, we still need to show it is valid for curry.
 
 \subsection{The Combinator Problem}
 
-Let's look back at the motivating example,
+Let us look back at the motivating example,
 and see how it could be optimized in Haskell,
 or any language that can inline lambda expressions.
 The derivation in figure \ref{fig:sumPrimes_deforest} comes from the 
 original paper \cite{shortcutDeforestation}.
 
-\begin{figure}
+\begin{boxfigure}
 > sumPrimes m = sum (filter isPrime (enumFromTo 2 m))
 > ==>
 > sumPrimes m = foldr (\x y -> x + y) 0 
@@ -1162,20 +1163,20 @@ original paper \cite{shortcutDeforestation}.
 >                                       else (enumToFrom_build (k+1) m c z)
 \caption{Optimization derivation for for short-cut Deforestation}
 \label{fig:sumPrimes_deforest}
-\end{figure}
+\end{boxfigure}
 
 This looks good.
 In fact, we obtained the original expression we were trying for.
-Unfortunately we don't get the same optimization in Rice.
+Unfortunately we do not get the same optimization in Rice.
 The problem is actually the definition of |filter|.
 
 > filter f = build (\c n -> foldr (\x y -> if f x then x `c` y else y) n)
 
 Functions that transform lists, such as |filter|, |map|, and |concat|,
 are rewritten in the standard library as a build applied to a fold.
-Unfortunately our inliner can't produce this derivation.
-We don't inline lambda expressions, and reductions
-can only be applied to let bound variables, so we simply can't do this reduction.
+Unfortunately our inliner can not produce this derivation.
+We do not inline lambda expressions, and reductions
+can only be applied to let bound variables, so we simply can not do this reduction.
 Instead we need a new solution.
 
 \subsection{Solution build\_fold}
@@ -1224,7 +1225,7 @@ the following qualities hold.
 > build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
 \end{theorem}
 
-Now that we've removed all of the lambdas from our definitions,
+Now that we have removed all of the lambdas from our definitions,
 we can look at the implementation.
 
 \subsection{Implementation}
@@ -1233,7 +1234,7 @@ Deforestation turned out to be one of the easiest optimizations to implement.
 The implementation is entirely in GAS, and it proceeds in two steps.
 First we find any case where a |build| or |build_fold|
 occurs exactly once in either a |build_fold| or |fold|.
-If this is the case, we inline the variable that |build| is bound to into it's single use.
+If this is the case, we inline the variable that |build| is bound to into it is single use.
 This temporarily takes our expression out of A-Normal Form,
 but we will restore that with the second step,
 which is the actual Deforestation transformation,
@@ -1242,7 +1243,7 @@ or one of the three |build_fold| theorems from above.
 The definitions for the deforest transformation are given in figure \ref{fig:deforest}
 The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
 
-\begin{figure}
+\begin{boxfigure}
 \textbf{Inline foldr/build:}\\
 \begin{minipage}{.40\textwidth}
 > let x = build g in e 
@@ -1312,10 +1313,10 @@ The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
          The expression |e || cond ==> e'| should be read as
          ``|e| rewrites to |e'| given that |cond| holds.''}
 \label{fig:deforest}
-\end{figure}
+\end{boxfigure}
 
 
-\begin{figure}
+\begin{boxfigure}
 > let v_1 = appOpt (enumFromTo 2 n)
 > in let v_2 = appOpt (filter isPrime v_1)
 > in appOpt (sum v_2)
@@ -1351,24 +1352,24 @@ The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
 > in enumFromTo_build 2 n f z
 \caption{Derivation for |sumPrimes|}
 \label{fig:sumOpt}
-\end{figure}
+\end{boxfigure}
 
-So far we've done a decent job.
-It's not as efficient as the Haskell version,
-but that's not surprising.
+So far we have done a decent job.
+It is not as efficient as the Haskell version,
+but that is not surprising.
 However, we can still improve this.
-The main problem here is that we can't optimize a partial application.
+The main problem here is that we can not optimize a partial application.
 This is unfortunate, because the |build_fold|
 function tends to create large expressions of partially applied functions.
-Fortunately we've already solved this problem earlier in our compiler.
+Fortunately we have already solved this problem earlier in our compiler.
 We already have a way to detect if an expression is partially applied,
 so, in the post processing phase, we do a scan for any partially applied functions.
 If we find one, then we move the code into a newly created function, and attempt to optimize it.
-We call this function outlining, since it's the opposite of inlining.
-If we can't optimize the outlined function, then we do nothing.
+We call this function outlining, since it is the opposite of inlining.
+If we can not optimize the outlined function, then we do nothing.
 Otherwise, we make a new function, and replace the call to the partially applied function
 with a call to the outlined function.
-This would actually be worth doing even if we didn't implement Deforestation.
+This would actually be worth doing even if we did not implement Deforestation.
 With function outlining our final optimized code is given below.
 
 > sumPrimes n = enumFromTo_build 2 n f' 0
@@ -1379,7 +1380,7 @@ With function outlining our final optimized code is given below.
 >  | a > b      = n
 >  | otherwise  = a `c` enumFromTo_build (a+1) b c n
 
-This certainly isn't perfect, but it's much closer to what we were hoping for.
+This certainly is not perfect, but it is much closer to what we were hoping for.
 Combining this with Unboxing and Shortcutting gives us some very efficient code.
 While these results are very promising, we still need to know if Deforestation is even valid for Curry.
 
@@ -1417,16 +1418,16 @@ Finally, working backwards from the definition of |build| we have our theorem.
 \noindent
 Again with |foldr| we have the free theorem\\
 if |forall (a : A) (forall (b : B) b (x op y) = (a x) ot (b y)| and |b u = u'|\\
-then |b . fold op u = fold ot u' . (map a)|\\
+then |b . foldr op u = foldr ot u' . (map a)|\\
 Here we take |b = build_fold mkf mkz|, |op = f|, and |ot = mkf f| |a = id|\\
-then the statment becomes:\\
+then the statement becomes:\\
 $\ $\\
 if |build_fold mkf mkz (f x y) = (mkf f) x (build_fold mkf mkz y)|\\
 and |build_fold mkf mkz [] = mkz []|\\
-then |build_fold mkf mkz . fold f z = fold (mkf f) (mkz z)|\\
+then |build_fold mkf mkz . foldr f z = foldr (mkf f) (mkz z)|\\
 $\ $\\
 Since both conditions follow directly from the definition of |build_fold| we are left with
-> build_fold mkf mkz . fold f z = fold (mkf f) (mkz z)
+> build_fold mkf mkz . foldr f z = foldr (mkf f) (mkz z)
 which is exactly what we wanted.
 Free theorems are fun!\\
 
@@ -1446,12 +1447,12 @@ which establishes our result:
 \end{proof}
 
 While this gives us confidence that Deforestation is a possible optimization,
-we've already seen that referential transparency \cite{whyFPmatters}, 
-and therefore equational reasoning, doesn't always apply in Curry.
+we have already seen that referential transparency \cite{whyFPmatters}, 
+and therefore equational reasoning, does not always apply in Curry.
 We need to show that both expressions will evaluate to the same set of values in
 any contest.
 In fact, as they are currently stated, 
-These theorems don't actually hold for Curry.
+These theorems do not actually hold for Curry.
 However, with a few assumptions, we can remedy this problem.
 First, we need to rewrite our rules so that the reduced expression is in A-Normal form.
 
@@ -1469,7 +1470,7 @@ First, we need to rewrite our rules so that the reduced expression is in A-Norma
 Now we are ready to state our result.
 \begin{theorem}
 suppose |f|, |z|, |g|, |mkf|, and |mkz| are all FlatCurry functions
-who's right had side is an expression in A-Normal form,
+whose right had side is an expression in A-Normal form,
 then the following equations are valid.
 > build_fold mkf mkz (build g) =  let g' = (\c n ->  let  f = mkf c
 >                                                         z = mkz n
@@ -1487,7 +1488,7 @@ then the following equations are valid.
 \begin{proof}
 We show the result for foldr-build, and the rest are similar calculations.
 We intend to show that for any |f|, |z|, and |g| that the following equation holds.
-> fold f z (build g (:) []) = g f z
+> foldr f z (build g (:) []) = g f z
 That is, we show that |fold f z (build g (:) [])| reduces to the same values as
 |g f z|.
 
@@ -1495,7 +1496,7 @@ We proceed in a manner similar to \cite{freeTheoremsCurry}.
 First, notice that |build g (:) []| is constructing a list.
 However, since |g| is potentially non-deterministic, and it might fail,
 we may have a non-deterministic alternation of lists when evaluating this expression.
-Let's make this explicit.
+Let us make this explicit.
 After evaluating |build g (:) []| we will produce an alternation of several lists.
 
 > build g (:) []  = g_11 : g_12 : g_13 : ... end_1
@@ -1519,7 +1520,7 @@ The expression |build g `f` z| evaluates to the following alternation of values.
 >      (g_k1 `f` g_k2 `f` g_k3 `f` ... z_endk)
 Where, for all |i|, |z_endi| is |EXEMPT| if |end_i| is |EXEMPT| and |z| otherwise.
 
-Now, let's see what happens when we normalize the entire expression.
+Now, let us see what happens when we normalize the entire expression.
 Recall that if |f| is a dominator of |a ? b|, then |f (a ? b) = f a ? f b| \cite{bubbling}.
 Therefore if all arguments are in A-Normal form, then function application distributes over choice.
 Since |foldr| is a dominator of everything in |foldr `f` z (build g (:) []| we have the following
@@ -1551,13 +1552,13 @@ This proves the result.
 
 Note that while this does prove the result, there are still some interesting points here.
 First, we never made any assumptions about |f| or |z|.
-In fact, we didn't really make any assumptions about |g|,
+In fact, we did not really make any assumptions about |g|,
 but we did at least give an explicit form for its values.
 This form is guaranteed by the type.
 This line of reasoning looks like a promising direction
 for future explorations into parametricity for functional-logic programming.
 
-Second, it should be noted that branches in |g| that produce |EXEMPT| don't necessarily
+Second, it should be noted that branches in |g| that produce |EXEMPT| do not necessarily
 fail when evaluated.
 If |f| is strict, then any failure in the list will cause the entire branch to fail.
 Consider the following expression:
@@ -1566,13 +1567,13 @@ Consider the following expression:
 Evaluating the expression rooted by |build| to constructor normal form would produce a failure,
 since the tail of the list is |EXEMPT|.
 However, since the first parameter in the expression rooted by |foldr| 
-never looks at either of it's arguments,
+never looks at either of it is arguments,
 this branch of the computation can still return a result.
 
 
-In this chapter we've developed three optimizations to help reduce the memory allocated by
+In this chapter we have developed three optimizations to help reduce the memory allocated by
 Curry programs.
-These optimizations seem effective, and we've shown why they're correct,
+These optimizations seem effective, and we have shown why they are correct,
 but we still need to find out how effective they are.
 In the next chapter we show how well our compiler compares to 
 Pakcs, Kics2, and MCC on the benchmarking suite provided by Kics2.

@@ -2,10 +2,10 @@
 In the last chapter we saw how the GAS tool
 let us write transformation rules as rewrite rules in Curry.
 The power of this tool came from two aspects.
-The first is that it's easy to write rules syntactically.
+The first is that it is easy to write rules syntactically.
 The second is that the rules are written in Curry,
 so we are not limited by our rewriting system.
-We'll put this second part to use in optimizating Curry expressions.
+We will put this second part to use in optimizating Curry expressions.
 
 In this chapter we outline a number of optimizations that were necessary
 to implement in order for unboxing, deforestation, and shortcutting to be effective.
@@ -13,7 +13,7 @@ We start by introducing a new restriction on FlatCurry expressions
 called Administrative Normal Form, or A-Normal Form.
 This is a common form for functional program optimizers to take,
 and it provides several benefits to Curry too.
-We describe the transformation, and why it's useful,
+We describe the transformation, and why it is useful,
 then we detail a few smaller optimizations that move let-expressions around.
 The goal is to move the let-expression to a position just before the variable is used in the expression.
 Finally we discuss four optimizations that will do most of the work in the compiler:
@@ -21,7 +21,7 @@ Case canceling, dead code elimination, inlining, and reduction.
 These optimization are an important part of any optimizing compiler,
 but they are often tricky to get right.
 In fact, with the exception of dead code elimination, 
-It's not clear at all that they are even valid for Curry.
+It is not clear at all that they are even valid for Curry.
 We show an effective method to implement them
 in a way that they remain valid for Curry expressions.
 
@@ -40,11 +40,11 @@ roadblock to optimizing Curry.
 Equational reasoning,
 in the sense of replacing expressions with their derived values,
 is not valid when optimizing FlatCurry programs.
-The reason is that expressions in FlatCurry aren't reverentially transparent \cite{whyFPmatters}.
+The reason is that expressions in FlatCurry are not referentially transparent \cite{whyFPmatters}.
 The evaluation of Curry programs is graph rewriting,
 which maintains referential transparency,
 but since FlatCurry is composed of terms, and not graph,
-we can't substitute expressions with their values.
+we can not substitute expressions with their values.
 
 While there have been graph intermediate representation proposed for
 languages \cite{graph_ir, dactl} FlatCurry is not one of these.
@@ -52,7 +52,7 @@ We do think that incorporating the graph based IR
 might improve the optimization process, and we believe
 it is a promising area of future work.
 
-To see an example of why this an issue, let's consider the following program.
+To see an example of why this an issue, let us consider the following program.
 
 > double x  = x + x
 > main      = double (0 ? 1)
@@ -63,7 +63,7 @@ So we should be able to rewrite |main| to |(0 ? 1) + (0 ? 1)|,
 but this expression will produce a different set of answers.
 This is the primary problem with optimizing functional logic languages,
 but exactly why this happens is a bit tricky to pin down.
-The non-determinism isn't the only problem, for example evaluating |id (0 ? 1)| 
+The non-determinism is not the only problem, for example evaluating |id (0 ? 1)| 
 at compile time is fine.
 We can even duplicate non-deterministic expressions with the following example.
 > double x  = x + x
@@ -116,7 +116,7 @@ If we construct the graph for the first expression we see:
 
 Now the real issue comes to light.
 In the second example, while we copied a non-deterministic expression in the code,
-we didn't copy the non-deterministic expression in the graph.
+we did not copy the non-deterministic expression in the graph.
 This gives us a powerful tool when reasoning about Curry expressions.
 Even if a variable is duplicated in the source code, it is not copied in the graph.
 Since this duplication of non-deterministic expressions was the main concern for correctness,
@@ -141,7 +141,7 @@ We give the definition of A-Normal Form for Curry programs in figure
 and we implement the transformation using GAS in figure
 \ref{fig:anormalTransform} with the Curry implementation in figure \ref{fig:anormalCurry}.
 
-\begin{figure}
+\begin{boxfigure}
 \textbf{ANF:}
 > a  =>  v                       Variable
 >    |   l                       Literal
@@ -157,9 +157,9 @@ Restricting Curry expressions to A-Normal Form.\\
 An atom is either a variable, a literal, or a failure.
 Compound expressions are only allowed to contain atoms.}
 \label{fig:anormal}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > case e of alts              ==> let x = e    in case x of alts
 > f a_1 a_2 ... e_k ... e_n   ==> let x = e_k  in f a_1 a_2 ... x ... e_n
 > C a_1 a_2 ... e_k ... e_n   ==> let x = e_k  in C a_1 a_2 ... x ... e_n
@@ -171,8 +171,8 @@ Compound expressions are only allowed to contain atoms.}
     and |x| is a fresh variable name.  
     }
 \label{fig:anormalTransform}
-\end{figure}
-\begin{figure}
+\end{boxfigure}
+\begin{boxfigure}
 > toANF :: Opt
 > toANF (n,_) (Case ct e bs)
 >  | not (trivial e) = Let [(n,e)] (Case ct (Var n) bs)
@@ -187,12 +187,12 @@ Compound expressions are only allowed to contain atoms.}
     Curry implementation of A-Normal Form transformation.
     }
 \label{fig:anormalCurry}
-\end{figure}
+\end{boxfigure}
 
 As long as we enforce this A-Normal Form structure,
 we restore equational reasoning for Curry programs.
-We don't even need to enforce A-Normal Form strictly here.
-During optimization, it's often useful to be able to replace
+We do not even need to enforce A-Normal Form strictly here.
+During optimization, it is often useful to be able to replace
 variable bound to constructors and partial applications with their definitions.
 Since these nodes have no rewrite rules that can apply at the root,
 we can do this replacement without fear of problems with non-deterministic expressions.
@@ -206,7 +206,7 @@ it produces more uniform programs,
 and more optimizing transformations become valid.
 Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
 
-\begin{figure}
+\begin{boxfigure}
 \fbox{
 \begin{minipage}{.40\textwidth}
 > fib n =  case n < 1
@@ -252,13 +252,13 @@ Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
 }
 \caption{Examples of Curry programs translated to A-Normal Form}
 \label{fig:anormalExample}
-\end{figure}
+\end{boxfigure}
 
 \section{Case Canceling}
 
 Finally, we come to our first example of an optimization.
 In fact, this is arguably our most important optimization.
-It's a very simple optimization, but it proves to be very powerful.
+It is a very simple optimization, but it proves to be very powerful.
 Consider the following code:
 
 > notTrue = case  True of
@@ -266,16 +266,16 @@ Consider the following code:
 >                 False -> True
 
 Expressions like this come up frequently during optimization.
-This is fantastic, because it's clear what we should do here.
+This is fantastic, because it is clear what we should do here.
 We know that the |True| branch will be taken, 
 so we might as well evaluate the case expression right now.
 
 > notTrue = False
 
 This transformation is called Case Canceling,
-and it's the workhorse of all of our other optimizations.
+and it is the workhorse of all of our other optimizations.
 The transformation is given and \ref{fig:caseCode} 
-and examples of the transformation are given in \ref{fig:CaseCancel} .
+and examples of the transformation are given in \ref{fig:CaseCancel}.
 If the scrutinee of a case is labeled by a constructor,
 then we find the appropriate branch, and reduce to that branch.
 The only real complication is that we need to keep the expression in
@@ -286,7 +286,7 @@ We also include two other optimizations.
 These optimizations are really about cleaning up after Case Canceling runs.
 The first is Case Variable elimination.
 Consider the expression from the optimization of |compare| for |Bool| in figure \ref{fig:caseBool}.
-\begin{figure}
+\begin{boxfigure}
 >     in case  v_2 of
 >              True   -> LT
 >              False  -> case  appOpt v_2 of
@@ -312,16 +312,15 @@ Consider the expression from the optimization of |compare| for |Bool| in figure 
 \caption{a piece of the optimization derivation for the implementation of |compare|
 for |Bool|.}
 \label{fig:caseBool}
-\end{figure}
+\end{boxfigure}
 The use of Case Variable elimination allows us to set up
 a situation where a case can cancel later.
 This occurs a lot in practice, but this optimization may raise red flags for some.
-In general it's not valid to replace a variable with an expression in FlatCurry.
+In general it is not valid to replace a variable with an expression in FlatCurry.
 That variable could be shared, and it could represent a non-deterministic expression.
 Fortunately, this is still viable in Curry.
 
-We give a short sketch of the why Case Variable elimination is viable in Curry with the following
-example.
+We give a short sketch of why Case Variable elimination is viable in Curry with the following example.
 Suppose I have the following FlatCurry definition for |notHead|.
 This function will look at the first element of a list, and return |not True|
 if the head of the list evaluates to True.
@@ -330,9 +329,9 @@ if the head of the list evaluates to True.
 >                                 True -> not x
 
 We use a key fact from Brassels work \cite{Kics2Theory}[Lemma 4.1.10].
-Lifting a case into it's own function Does not change the set of values
+Lifting a case into it is own function Does not change the set of values
 an expression evaluates to.
-We can use this to lift the inner case into it's own function.
+We can use this to lift the inner case into it is own function.
 > notHead xs = case  xs of
 >                    x:_ -> notHead_1 x
 > notHead_1 x = case x of
@@ -354,7 +353,7 @@ Finally, by the path compression theorem we can reduce the call in |notHead| to 
 
 This gives us a general procedure for converting FlatCurry programs to the same program
 after performing Case Variable elimination.
-While we don't perform these steps in practice, each one has already been shown to be valid
+While we do not perform these steps in practice, each one has already been shown to be valid
 on their own, so our transformation is also valid.
 
 Finally we have Dead Code Elimination.
@@ -363,11 +362,11 @@ In short, if we have an empty |let| or |free| expression,
 then we can remove them.
 This may happen due to the aliasing rule from last chapter.
 Furthermore if a variable is never used, then it can also be removed.
-Finally, if we have |let x = e in x|, then we don't need to create the variable |x|.
+Finally, if we have |let x = e in x|, then we do not need to create the variable |x|.
 These are correct
-as long as we're careful to make sure that our variable definitions aren't recursive.
+as long as we are careful to make sure that our variable definitions are not recursive.
 
-\begin{figure}
+\begin{boxfigure}
 > caseCancel :: Opt
 > caseCancel (Case (Comb ConsCall n es) (_++[Branch (Pattern n vs) e] ++ _))
 >  = foldr Let e (zip vs es)
@@ -391,9 +390,9 @@ as long as we're careful to make sure that our variable definitions aren't recur
 >  | not (hasVar x e)   = e
 \caption{The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
 \label{fig:caseCode}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 \textbf{Case Cancel}\\
 \begin{minipage}{.40\textwidth}
 > case C_i (vec e) of
@@ -458,26 +457,26 @@ as long as we're careful to make sure that our variable definitions aren't recur
 \end{minipage}\\
     \caption{Case Canceling, Case Variable, and Dead Code Elimination optimizations.}
     \label{fig:CaseCancel}
-\end{figure}
+\end{boxfigure}
 
-Now that we've finally created an optimization,
+Now that we have finally created an optimization,
 we can get back to moving code around in convoluted patterns.
 In the next section we look at how we can inline functions.
-Unlike Case Canceling, It's harder to determine the correctness of Inlining.
+Unlike Case Canceling, It is harder to determine the correctness of Inlining.
 In fact, we have to do a lot of work to inline functions in Curry.
 
 \section{Inlining}
 
-As mentioned at the start of this chapter, inlining isn't generally valid in Curry.
+As mentioned at the start of this chapter, inlining is not generally valid in Curry.
 So, we need to establish cases when inlining is valid,
-determine when it's a good idea to inline,
+determine when it is a good idea to inline,
 and ensure that our inlining algorithm is correct.
 This work is largely based on \cite{haskellInliner, CarruthInline}.
 
 Similarly to \cite{haskellInliner}, we need to make a distinction between
 inlining and reduction.
 When we use the term \textit{inlining} we are referring to replacing a let bound variable with
-it's definition.
+it is definition.
 For example |let x = True in not x| could inline to |not True|.
 When we use the term \textit{reduction}, we are referring to replacing a function call
 with the body of the function where the parameters of the function are replaced
@@ -495,15 +494,15 @@ Consider the expression:
 If we were to inline this variable, we could potentially send the optimizer into an infinite loop.
 So, we need to somehow mark all recursive variables and functions.
 The next problem follows immediately after that.
-So far we've done transformations with local information,
+So far we have done transformations with local information,
 but reduction is going to require global information.
 In fact, for reduction to be effective, it will require information from different modules.
 Consider the function:
 > sumPrimes = foldr (+) 0 . filter isPrime . enumFromTo 1
 
 Aside from the fact that |sumPrimes| contains mostly recursive functions,
-we wouldn't be able to optimize it anyway, because |.| is defined in the standard Prelude.
-If we can't reduce the definition of |.|, then we're fighting a losing battle.
+we would not be able to optimize it anyway, because |.| is defined in the standard Prelude.
+If we can not reduce the definition of |.|, then we are fighting a losing battle.
 
 This brings us to our third problem with inlining.
 The |sumPrimes| function is actually partially applied.
@@ -511,8 +510,8 @@ Its type should be |sumPrimes :: Int -> Int|,
 but |sumPrimes| is defined in a point-free style.
 Point-free programming causes a lot of problems, specifically because
 FlatCurry is a combinator language.
-In IR's like Haskell's Core, we could solve this problem by inlining 
-a lambda expression, but it's not clear at all that inlining a lambda
+In IRs like Haskell's Core, we could solve this problem by inlining 
+a lambda expression, but it is not clear at all that inlining a lambda
 expression is valid in Curry.
 Instead, to solve this problem, we convert functions to be fully applied.
 
@@ -526,18 +525,18 @@ the current number of variables in a function;
 the size of the function;
 and the function definition.
 This map is updated every time we optimize a new function,
-so we can reduce all functions that we've already optimized.
+so we can reduce all functions that we have already optimized.
 We will use this map to determine when it is safe and effective to reduce a function.
 
 \subsection{Partial Applications}
 
 Dealing with partial applications is a bit more tricky.
-In fact, we can't use the GAS system to solve this problem
-because we may not know if a function is a partial application until we've optimized it.
+In fact, we can not use the GAS system to solve this problem
+because we may not know if a function is a partial application until we have optimized it.
 Consider the |sumPrimes| function again.
-It doesn't look like a partial application because the root function, |.|, is fully applied.
-Let's look at the definition for |.|.
-In Curry it's defined using a lambda expression.
+It does not look like a partial application because the root function, |.|, is fully applied.
+Let us look at the definition for |.|.
+In Curry it is defined using a lambda expression.
 > f . g = \x -> f (g x)
 
 However, when translated to FlatCurry, this lambda expression is turned into a combinator.
@@ -570,10 +569,10 @@ So, when we try to optimize |sumPrimes| we end up with the following derivation.
 > in compLambda_1 v_2 v_6
 
 The |REDUCE_BASE| and |REDUCE_LET| transformations will be described later.
-At this point there's no more optimization that can be done,
+At this point there is no more optimization that can be done,
 because everything is a partial function.
-But this isn't a great result.
-We've created a pipeline, and when we pass it a variable, then everything will be fully applied.
+But this is not a great result.
+We have created a pipeline, and when we pass it a variable, then everything will be fully applied.
 So, how do we solve the problem?
 
 The key is to notice that if the root of the body of a function is a partial application,
@@ -594,7 +593,7 @@ The transformation
 The |sumPrimes| functions is transformed with the derivation in \ref{fig:addvarDeriv}
 and we can continue to optimize the function.
 
-\begin{figure}
+\begin{boxfigure}
 > let v_1 = (+)
 > in let v_2 = foldr v_1 0
 > in let v_3 = isPrime
@@ -628,10 +627,10 @@ and we can continue to optimize the function.
 > in compLambda v_2 v_6 x_1
     \caption{Adding a missing variable to |sumPrimes|}
     \label{fig:addvarDeriv}
-\end{figure}
+\end{boxfigure}
 
 \subsection{The Function Table} \label{sec:funTab}
-In order to keep track of all of the functions we've optimized we create a function lookup table
+In order to keep track of all of the functions we have optimized we create a function lookup table
 called |rfunction| \index{$F_{\mathcal{F}}$}.
 The function table is just a map from function names to information about the function.
 We use the following definitions for lookups into the function table.
@@ -645,10 +644,10 @@ should not lead to an infinite derivation.
 in the expression |let x = f ... in e| would be useful.
 Again this heuristic is easily tweakable, but currently,
 a function is useful if |x| is returned from the function,
-it's used as the scrutinee of a case expression,
-or it's used in a function that's likely to be reduced.
+it is used as the scrutinee of a case expression,
+or it is used in a function that is likely to be reduced.
 |rsimple f| \index{$S_{\mathcal{F}}$} returns True if |f| is a simple reduction with no case expressions.
-It's always useful to reduce these functions.
+It is always useful to reduce these functions.
 |rcancels f [e_1, ... e_n]| \index{$C_{\mathcal{F}}$} returns true if reducing |f| with |e_1 ... e_n|
 will likely cause Case Canceling.
 
@@ -662,14 +661,14 @@ and the solutions for other languages apply equally well to Curry.
 
 The problem seems very complicated at the start.
 We want to know what is the best order to optimize functions.
-Fortunately there's a very natural solution.
+Fortunately there is a very natural solution.
 If possible we should optimize a function before we optimize any function that calls it.
 This turns out to be an exercise in Graph Theory.
 
 We define the Call Graph of a set of functions |F = {f_1,f_2, ... f_n}|
 to be the graph |G_F = (F, {f_i -> f_j `vert` f_i calls f_j})|.
 This problem reduces to finding the topological ordering of |G_F|.
-Unfortunately, if |F| contains any recursion, then the topological ordering isn't defined.
+Unfortunately, if |F| contains any recursion, then the topological ordering is not defined.
 So, instead, we split |G_F| into strongly connected components, and find the topological ordering
 of those components.
 Within each component, we pick an arbitrary function, called the \emph{loop breaker}\index{loop breaker},
@@ -731,8 +730,8 @@ When we optimize |h|, we are free to reduce |f| and |g|.
 
 Now that we have everything in order, we can start developing the inlining transformation.
 As mentioned before, we need to be careful with inlining.
-In general, unrestricted inlining isn't valid in Curry.
-This is a large change from lazy languages like Haskell, where it's valid,
+In general, unrestricted inlining is not valid in Curry.
+This is a large change from lazy languages like Haskell, where it is valid,
 but not always a good idea.
 The other major distinction is that FlatCurry is a combinator language.
 This means that we have no lambda expressions,
@@ -742,15 +741,15 @@ Fortunately for us, these problems actually end up canceling each other out.
 In Peyton-Jones work \cite{haskellInliner} most of the focus was on inlining let bound variables,
 because this is where duplication of computation could occur.
 However, we have two things working for us.
-The first is that we can't inline a lambda since they don't exist.
-The second is that we've translated FlatCurry to A-Normal Form.
+The first is that we can not inline a lambda since they do not exist.
+The second is that we have translated FlatCurry to A-Normal Form.
 While Haskell programs are put into A-Normal Form when translating to STG code \cite{stg},
 this is not the case for Core.
 Certain constraints are enforced, such as the trivial constructor argument invariant,
 but in general Core is less restricted.
 
 Translating to A-Normal form gives us an important result.
-If we inline a constructor then we don't affect the computed results.
+If we inline a constructor then we do not affect the computed results.
 This same result holds for literal values, but we will discuss how we handle literals
 in Curry in the next chapter.
 
@@ -768,7 +767,7 @@ only for examining one while evaluating an apply node.
 
 If $e_1$ is a constructor, or partial application,
 then it is a normal form.
-Therefore it's a deterministic expression by definition \ref{def:deterministic}.
+Therefore it is a deterministic expression by definition \ref{def:deterministic}.
 Since $e_1$ is deterministic by the path compression theorem,
 $e$ evaluates to the same values as |extend e x e_1|
 \end{proof}
@@ -777,7 +776,7 @@ Now we have enough information to inline variables as long as we restrict inlini
 literals, constructors, variables, and partial applications,
 although the case for variables is already subsumed by the |ALIAS| rule \ref{fig:canonical2}.
 We add two new rules.  |LET_FOLDING| allows us to move variable definitions
-closer to where they're actually used,
+closer to where they are actually used,
 and |UNAPPLY| allows us to simplify expressions involving |apply|.
 Both of these are useful for inlining and reduction.
 The GAS rules are given in figure \ref{fig:inline}.
@@ -786,7 +785,7 @@ in our semantics.
 The inlining rules correspond to the cases discussed above.
 We add one more rule.  We inline a variable bound to a case expression,
 if that expression occurs once in a needed position.
-Since we can't determine if the variable occurs in a needed position at compile time,
+Since we can not determine if the variable occurs in a needed position at compile time,
 we can use check if it occurs in a strict position \cite{strictAbstract}.
 This is usually good enough.
 The implementation of Inlining in the Gas system is given in figure \ref{fig:inlineCode}.
@@ -795,11 +794,11 @@ It means that we add we add $x \to e$ to the substitution |sigma|.
 The |idSub| substitution is just the identity.
 In the |letFold| rule, |hasVar| checks is expression |e| contains variable |v|.
 In the fist Inlining rule, the |strict| and |uses| functions are just to ensure that |x|
-is a in a strict position, and that it's only at one position in |e|.
-These aren't required for correctness,
-we've found that this restrictions generate better code.
+is a in a strict position, and that it is only at one position in |e|.
+These are not required for correctness,
+we have found that these restrictions generate better code.
 
-\begin{figure}
+\begin{boxfigure}
 \textbf{Let Folding}\\
 \begin{minipage}{.30\textwidth}
 > let  v = e_v 
@@ -855,14 +854,14 @@ we've found that this restrictions generate better code.
 >  extend e x l
 \end{minipage}\\
 \caption{rules for variable inlining.\\
-         We need to ensure that |x| isn't used recursively before we inline it.
+         We need to ensure that |x| is not used recursively before we inline it.
          Guards indicate that the rule fire only if the guard is satisfied.
          The notation $\in_1$ indicates that the variable $x$ occurs exactly once in $e'$,
          and |strict x| indicates that $x$ is strict, so the case will be evaluated.}
 \label{fig:inline}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > unapply :: Opt
 > unapply (v,_) (apply (Comb (FuncPartCall k) f es) as)
 >  = case  compare k n of
@@ -890,14 +889,14 @@ we've found that this restrictions generate better code.
 
 \caption{Gas implementation of the inlining rules.}
 \label{fig:inlineCode}
-\end{figure}
+\end{boxfigure}
 
 \subsection{Reduce}
 
 Finally we come to reduction.
 While this was a simpler task than inlining in GHC,
 it becomes a very tricky prospect in Curry.
-Fortunately, we've already done the hard work.
+Fortunately, we have already done the hard work.
 At this point, in any given function definition,
 the only place a function symbol is allowed to appear in our expressions is
 as the root of the body,
@@ -905,7 +904,7 @@ as the root of a branch in a |case| expression,
 as the root the result of a |let| expression,
 or as a variable assignment in a let-expression.
 Furthermore our functions only contain trivial arguments,
-so it's now valid to reduce any function we come across.
+so it is now valid to reduce any function we come across.
 
 \begin{theorem}[reduction]
 Let |e| be an expression in limited A-Normal Form,
@@ -917,7 +916,7 @@ has the same values as |e|.
 \end{theorem}
 
 \begin{proof}
-First not that There is only one way to replace an expression
+First note that There is only one way to replace an expression
 where the root has symbol |f|, with the body of the definition for |f|.
 Therefore This is a deterministic step, and by the path compression theorem
 |e| and |extend e p ( sigma b )| have the same values.
@@ -929,9 +928,9 @@ We make sure that |rbody f| replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.
 This strategy was taken from \cite{haskellInliner} and it works very well.
 Although, since FlatCurry uses numbers exclusively to represent variables,
-we don't get the same readable code.
+we do not get the same readable code.
 
-\begin{figure}
+\begin{boxfigure}
 \textbf{Reduce Base:}\\
 \begin{minipage}{.30\textwidth}
 > f (vec e)
@@ -978,11 +977,11 @@ we don't get the same readable code.
          All expressions are kept in A-Normal Form.
          |REDUCE_BASE| is only run at the root of the body.
          While the last three rules are very similar,
-         It's useful to keep them separated for debugging reduction derivations.}
+         It is useful to keep them separated for debugging reduction derivations.}
 \label{fig:reduce}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > reduce :: FunTable -> Opt
 > reduce funs  = reduce_base funs
 >              ? reduce_branch funs
@@ -1026,25 +1025,25 @@ we don't get the same readable code.
          correspond to |rinlinable, ruseful, rsimple| and |rcancels| respectively.}
 \label{fig:reduce_code}
 
-\end{figure}
+\end{boxfigure}
 
 We end by giving a couple of examples of reductions to see how they work in practice.
 The first example returns from the start of this chapter.
-We see that |double (0 ? 1)| is reduced so we don't make a needless call to |double|,
-but we've avoided the problem of run time choice semantics.
+We see that |double (0 ? 1)| is reduced so we do not make a needless call to |double|,
+but we have avoided the problem of run time choice semantics.
 
 Our next function comes from a possible implementation of |<=| for Boolean values.
 In fact, this is the implementation we chose for the instance of the |Ord| class for |Bool|.
 The example is a bit long, but it shows how many of these optimizations work together
 to produce efficient code.
 
-In the next chapter we discuss three more optimizations, Unboxing, Shortcutting, and Deforestation.
+In the next chapter we discuss three more optimizations, Unboxing, Case Shortcutting, and Deforestation.
 While Unboxing and Deforestation are in common use in lazy function compilers,
 they have not been used for functional-logic languages before.
-Shortcutting is a new optimization to Curry.
+Case Shortcutting is a new optimization to Curry.
 
 
-\begin{figure}
+\begin{boxfigure}
 > double x = x + x
 > main = double (0 ? 1)
 >
@@ -1057,9 +1056,9 @@ Shortcutting is a new optimization to Curry.
 > in v_1 + v_1
 \caption{Derivation of |double (0 ? 1)| showing that we still arrive at an equivalent expression.}
 \label{fig:doubleReduce}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > not v_1 = case  v_1 of 
 >                 True   -> False
 >                 False  -> True
@@ -1072,9 +1071,9 @@ Shortcutting is a new optimization to Curry.
 > v_1 <= v_2 = not v_1 || v_2
 \caption{Definition of |<=| for |Bool|.}
 \label{fig:boolLeq}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > appOpt ((not v_1) || v_2)
 > ==> ANF_APP []
 > let v_3 = appOpt (not v_1)
@@ -1106,9 +1105,9 @@ Shortcutting is a new optimization to Curry.
 >       False  -> v_2
 \caption{Derivation of |<=| for |Bool| condinued}
 \label{fig:LtEqReduce2}
-\end{figure}
+\end{boxfigure}
 
-\begin{figure}
+\begin{boxfigure}
 > ==> CASE_IN_CASE []
 > case  v_1 of
 >       True   ->  let appOpt (v7 = False)  in case  v7 of 
@@ -1142,5 +1141,5 @@ Shortcutting is a new optimization to Curry.
 >       True   -> v_2
 >       False  -> True
 
-\end{figure}
+\end{boxfigure}
 

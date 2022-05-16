@@ -20,6 +20,7 @@
 \usepackage{imakeidx}
 \makeindex
 
+\usepackage{verbatim}
 
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 \def\N{\mathbb{N}}
@@ -46,6 +47,17 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+
+\newenvironment{boxfigure}
+     { \begin{figure} \begin{mdframed} }
+     { \end{mdframed} \end{figure} }
+%\newenvironment{boxfigure}%
+%{%
+%\expandafter\comment%
+%}%
+%{%
+%\expandafter\endcomment%
+%}%
 
 \def\O{\mathcal{O}}
 

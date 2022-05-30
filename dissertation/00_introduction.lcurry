@@ -1,8 +1,8 @@
 
 With all of the chaos in the world today,
-sometimes it's nice to just relax and make a nice Curry.
+sometimes it is nice to just relax and make a nice Curry.
 But people today are impatient.
-They can't wait; they want their Curry fast.
+They cannot wait; they want their Curry fast.
 This is a problem, because Curry has historically been considered slow.
 Some have considered it unusably slow,
 which is a shame, because Curry is actually a great languguage,
@@ -18,7 +18,7 @@ Functional logic programming is a very powerful technique for
 expressing complicated ideas in a simple form.
 Curry implements these ideas with a clean, easy to read syntax,
 which is similar to Haskell, a well known functional programming language.
-It's also lazy, so evaluation of Curry programs is similar to Haskell as well.
+It is also lazy, so evaluation of Curry programs is similar to Haskell as well.
 Curry extends Haskell with two new concepts.
 First, there are non-deterministic functions, such as ``|?|''.  
 Semantically |a ? b| will evaluate
@@ -37,7 +37,7 @@ Consider the following Curry code for solving n-queens:
 In the |unsafe| function the input list is broken into 5 pieces.
 Two of the pieces, |a| and |b|, are lists with a single element.
 The sublists, |xs|, |ys|, and |zs| are free to be as long as they want.
-However, We've constrained the total list |xs++[a]++ys++[b]++zs|
+However, We have constrained the total list |xs++[a]++ys++[b]++zs|
 to be the same as the argument.
 The effect is that |a| and |b| are arbitrary elements in the list,
 and |ys| is the list of elements between |a| and |b|.
@@ -49,6 +49,12 @@ If the set is empty, then we return that permutation.
 Free variables are given concrete values in Curry programs through narrowing.
 The semantics of narrowing and non-determinism in Curry are given by 
 Antoy et al. \cite{Needed}
+Whenever the value of a free variable is needed, then 
+we select a possible value to fill it in.
+For example if |xs| is a list, we might fill it in with either |[]|
+or |(a:as) where a,as free|.
+We give a fuller account of narrowing in chapters \ref{ch:Mathematical Background} 
+and \ref{ch:The Curry Language},
 
 \subsection{Current Compilers}
 
@@ -64,19 +70,19 @@ Unfortunately neither of these compilers perform well in both circumstances.
 Sprite \cite{sprite}, an experimental compiler, aims to fix these inefficiencies.
 The strategy is to compile to a virtual assembly language, known as LLVM.
 So far, Sprite has shown promising improvements over both Pakcs and Kics2 in performance,
-but it is not a mature compiler.
+but it is not readily available for testing at the time of this writing.
 
 Similarly Mcc \cite{mcc} also worked to improve performance by compiling to C.
 While Mcc often ran faster than both Pakcs or Kics2,
 it could perform very slowly on common Curry examples.
-It's also no longer in active development.
+It is also no longer in active development.
 
 One major disadvantage of all four compilers is that they all
 attempt to pass off optimization to another compiler.
 Pakcs attempts to have Prolog optimize the non-deterministic code;
 Kics2 attempts to use Haskell to optimize
 deterministic code; Sprite attempts to use LLVM to optimize the low level code;
-and Mcc simply didn't optimize its code.
+and Mcc simply did not optimize its code.
 Unfortunately none of these approaches works very well.
 While some implementations of Prolog can optimize non-deterministic expressions,
 they have no concept of higher order functions,
@@ -85,8 +91,8 @@ Kics2 is in a similar situation.
 In order to incorporate non-deterministic computations in Haskell, 
 a significant amount of code must be threaded through each computation.
 This means that any non-deterministic expression cannot be optimized in Kics2.
-Finally, since LLVM doesn't know about either higher order functions or non-determinism,
-it loses many easy opprotunities for optimization.
+Finally, since LLVM does not know about either higher order functions or non-determinism,
+it loses many easy opportunities for optimization.
 
 Curry programs have one last hope for efficient execution.
 Recently, many scientists \cite{peval, offline_peval} 
@@ -103,23 +109,45 @@ of work on program optimizations
 ANormal, shortcutDeforestation, ultimateGoto, rabbit, lambdaRename, dataflowKildall, dominatorFlow, 
 haskellInliner, stg, ssaVariable, deforestationWadler, ssaOptimizations }.
 This leads to the inescapable conclusion that Curry needs an optimizer.
-We propose a new compiler environment for developing and testing optimizations.
-The Reduction Inspired Compiler Environment (\rice) Curry compiler.
+We propose a new compiler environment for developing and testing optimizations,
+which we call the Reduction Inspired Compiler Environment (\rice) Curry compiler.
 This compiler is intended to make developing new optimizations for Curry as simple as possible.
 We test this idea by developing several common optimizations for the \ricesp compiler.
 Furthermore we implement three specific optimizations for Curry, 
-Unboxing \cite{unboxing}, Shortcutting \cite{shortcutting}, and Deforestation \cite{shortcutDeforestation}.
+Unboxing \cite{unboxing}, Case Shortcutting \cite{shortcutting}, 
+and Deforestation \cite{shortcutDeforestation}.
+While Unboxing and Deforestation are well known in the function languages community,
+the techniques have not been applied in a function logic setting.
+Case Shortcutting is a unique optimization for functional logic programs.
 We chose these optimizations specifically because they focus on reducing the amount of memory
 consumed by programs, which is a common problem for Curry programs \cite{proposal}.
 
-The rest of this dissertation is organized as follows:
-chapter \label{ch:Mathematical Background} presents the mathematical background of Term and Graph Rewriting;
-chapter \label{ch:The Curry Language} presents the Curry Language and its semantics;
-chapter \label{ch:The Generated Code} discusses the target code for this compiler;
-chapter \label{ch:Generating and Altering Subexpressions} introduces the GAS system for implementing optimizations;
-chapter \label{ch:The Compiler Pipeline} overviews the compiler pipeline, and the translation to C.
-chapter \label{ch:Basic Optimizations} discusses the implementation of several common optimizations;
-chapter \label{ch:Memory Optimizations} discusses the implementation of Unboxing, Shortcutting, and Deforestation;
-chapter \label{ch:Results} shows the results of our optimizations;
-and chapter \label{ch:Conclusion} concludes and discusses future work.
+The rest of this dissertation is organized as follows.
+Chapter \ref{ch:Mathematical Background} presents the mathematical background of Term and Graph Rewriting.
+Notions from rewriting will be used throughout this dissertation,
+both because the operational semantics of Curry were first described using rewriting,
+and because our optimizing engine is based on constructing rewrite rules.
+Chapter \ref{ch:The Curry Language} presents the Curry Language and its semantics.
+We introduce the Curry language and describe the IR FlatCurry as well as some conceptual hurdles
+with implementing a functional logic language.
+We also introduce two novel approaches to improving the performance of evaluation, case function
+and fast backtracking.
+Case functions can be applied to any evaluation model for Curry,
+while fast backtracking is specific to backtracking implementations.
+Chapter \ref{ch:The Generated Code} discusses the target code for this compiler.
+We describe, by example, the generated code for simple functions,
+then we describe the changed needed to add additional features of Curry.
+Chapter \ref{ch:Generating and Altering Subexpressions} introduces the GAS system for implementing optimizations.
+This is arguably the most important contribution to this paper,
+as it showcases how Curry can improve the process of writing large pieces of software like
+optimizing compilers.
+We describe the system, its implementation, and show how to construct optimizations with it.
+Chapter \ref{ch:The Compiler Pipeline} overviews the compiler pipeline, and the translation to C.
+We show the compiler pipeline, and how GAS simplifies several of the transformations.
+Chapter \ref{ch:Basic Optimizations} discusses the implementation of several common optimizations.
+We show several common optimizations including inlining, reduction, and case canceling.
+We also introduce A-Normal form, which is required for the correctness of these optimizations.
+Chapter \ref{ch:Memory Optimizations} discusses the implementation of Unboxing, Shortcutting, and Deforestation.
+Chapter \ref{ch:Results} shows the results of our optimizations.
+Finally, chapter \ref{ch:Conclusion} concludes and discusses future work.
 

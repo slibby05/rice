@@ -3,12 +3,11 @@ In this chapter we develop three new optimizations for Curry.
 First, Unboxing is an attempt to remove boxed values from our language.
 We discuss our implementation of primitive values and operations,
 and how explicitly representing the boxes around these values leads to optimizations.
-Second, we adapt the shortcutting optimization,
-which was designed for rewrite systems,
-to work in our compilation scheme for Curry.
-The techniques used in shortcutting allow us to
-skip the construction of the scrutenee of a case expression.
-Finally, Shortcut Deforestation is a optimization for removing intermediate lists.
+Second, we look at an entirely new idea for removing 
+node constructions that are quickly evaluated by case expressions
+that we call Case Shortcutting.
+Finally, Deforestation, specifically Shortcut Deforestation,
+is a optimization for removing intermediate lists.
 This has been studied extensively in functional languages,
 but it has not been shown to be valid in the presence of non-determinism.
 We prove its validity in Curry,
@@ -143,11 +142,13 @@ Since these constructors have an argument, namely the primitive value,
 we cannot make a single static node for them.
 We might try to create a single static node for every literal value used in the program.
 Unfortunately this does not tend to help us that much.
+\begin{samepage}
 Consider the standard factorial program:
 
 > fac n = case  n of
 >               0 -> 1
 >               n -> n * fac(n-1)
+\end{samepage}
 
 Now if we evaluate |fac 42|, we will allocate memory up front for |0|, |1|, and |42|.
 This will certainly save some memory, but not as much as we would hope.
@@ -257,6 +258,8 @@ so we introduce the |pcase| construct.
 
 The |primCond| must be a primitive condition expression, which is either |eq_p| or |le_p|,
 and the arguments must be primitive values.
+Perhaps surprisingly, these are the only primitive relational operators in Curry.
+All other relations operators are converted to combinations of |eq_p|, |le_p|, and |not|.
 The semantics of |pcase| are exactly what be expected,
 but now we can translate it into a simple \texttt{if} 
 statement in C, as shown in figure \ref{fig:primcond}.
@@ -360,28 +363,35 @@ this can come from a call to the |error| function, or
 an infinite computation.
 It does not mean that |f| failed to return a value.
 We explicitly exclude that case, because that can change the results of some Curry programs.
+\begin{samepage}
 For example consider the function:
 
 > f x = head []
+\end{samepage}
 
+\begin{samepage}
 If we were to mark |x| as strict, then we may try to evaluate |x| before computing |f|.
 This could cause an infinite loop in the following program:
 
 > loop = loop
 > main = (f loop) ? 1
+\end{samepage}
 
 This should return a single result, and never try to evaluate |loop|.
 For this reason we consider failing computations to be 
 similar to expressions rooted by constructors for the purposes of strictness analysis.
 
 We implemented an earlier form of strictness analysis described by Peyton Jones et al. \cite{haskellOpt}.
+This is a very limited form of abstract interpretation.
 The idea is that we start by assuming every function is strict in all its parameters.
 Then as we analyze a function we determine which parameters can be relaxed.
+\begin{samepage}
 For example consider the following function:
 
 > f x y z = case  x of
 >                 True   -> y
 >                 False  -> y + z
+\end{samepage}
 
 It is clear that |x| must be strict, but we do not know about |y| or |z|.
 After analyzing the case branches, we see that since |y| appears in both branches,
@@ -391,11 +401,13 @@ so it is not strict.
 
 This syntactic traversal of an expression is useful,
 but it fails when working with a recursively defined function.
+\begin{samepage}
 Consider the factorial function with an accumulator:
 
 > faca n acc = case  n == 0 of
 >                    True   -> acc
 >                    False  -> n * faca (n-1) (n*acc)
+\end{samepage}
 
 We can see with a syntactic check that |n| is strict, but what about |acc|.
 |acc| does appear in both branches, but it is the argument to the recursive call of |faca|.
@@ -427,18 +439,22 @@ This creates two functions, |fib|, which simply evaluates and unboxes the parame
 ,and |fib#worker|, which does the rest of the computation.
 Then we optimize the function again resulting in figure \ref{fig:fibOpt4}.
 Notice that since |fib| is no longer recursive we can inline it.
+\begin{samepage}
 So we can inline the call to |fib| in the following code:
 
 > let  f_1 = fib (Int n_1)
+
 
 This results in:
 
 > let  f_1 = case (Int n_1) of
 >               Int v_2 -> fib#worker v_2
 
+
 Which can be optimized to:
 
 > let  f_1 = fib#worker n_1
+\end{samepage}
 
 \begin{boxfigure}
 > fib n = case  n of
@@ -483,135 +499,36 @@ This means that we have reduced our memory consumption by 60\%.
 That is a huge improvement, but we can still do better.
 With the next optimization we look at how to remove the remaining allocations.
 
-\section{Shortcutting}
+\section{Case Shortcutting}
 
 In the last section were able to optimize the |fib| function from allocating 
 5 nodes per recursive call to only allocating 2 nodes per recursive call.
+\begin{samepage}
 However, we were left with a problem that we can not solve by a code transformation.
 
 > let f_1 = fib#worker n_1
 > in case  f_1 of
 >          Int p_1 ->  ...
+\end{samepage}
 
 In this section we aim to eliminate these final two nodes.
 However, in order to do this, we will have to step outside of compile-time optimizations,
 and look into previous work on run-time optimizations for Curry.
 Specifically we are going to use an idea inspired by the shortcutting optimizations \cite{shortcutting}.
-We first look into the shortcutting optimization itself,
-then we show how a couple of ideas from it can be applied to our compiler.
-However, the analogy will be a bit imprecise, 
-since shortcutting was developed for Graph Rewrite Systems.
+However, shortcutting was designed for rewrite systems,
+and the idea doesn't quite match how our run-time evaluates expressions.
+However the goal of shortcutting was to eliminate the construction of
+nodes using a systematic transformation of the rewriting system.
+In this spirit, we have transformed the generated code
+to eliminate nodes that are constructed, only to be quickly evaluated
+and deconstructed by case statements.
+This ``case shortcutting'' has proven to be very effective in eliminating
+many memory allocations.
 
-\subsection{The Original Shortcutting Optimizations}
-
-Initially shortcutting was developed for Inductively Sequential Graph Rewrite Systems \cite{shortcutting}.
-However, the application to functional logic languages was clearly in mind,
-and the ideas were even implemented, and shown to be effective in the Packs compiler.
-
-We begin with a set of rewrite rules $R$, for an Inductively Sequential system,
-and define a \texttt{compile} function to translate the rules into
-a rewrite system that simulates
-an innermost rewriting system by adding two new rules \textbf{H} and \textbf{N}.
-These rules are roughly analogous to our \texttt{hnf} and \texttt{nf} functions
-from chapter \ref{ch:The Generated Code}.
-The \textbf{H} function computes an expression to head constructor form,
-and the \textbf{N} function computes an expression to constructor normal form
-by repeatedly calling the \textbf{H} function.
-We will focus on the \textbf{H} function itself, since that is where the optimization occurs.
-
-To translate $R$ to a new rewritings system that simulates
-an innermost strategy, we traverse the definitional tree in post-order,
-and emit rules as we reach the leaves of the tree.
-We gloss over the details here, but an example of the \textbf{H} function for the curry function |++| and |length|
-are shown in figure \ref{fig:H}.
-Our transformed code is actually very similar to what the compiler already does.
-We generate a new \textbf{H} function for every function symbol.
-For example, $\textbf{H}_{length}$ computes the length of a list to head constructor form.
-This corresponds to the $O_R$ code described in the original paper.
-When looking at the $\textbf{H}_{length}$ function, we notice something interesting.
-
-> H_length(x:xs) = H_p(1,H_length(xs))
-
-We do not actually construct a node for $+$ or |length xs|.
-Even with our current implementation, and unboxing strategy, we would still have to construct
-a node for |length xs| in order to evaluate it.
-It is recursive, so we could not inline the call to length, and it is possible that
-it could be non-deterministic.
-The shortcutting compiler has managed to avoid constructing a node that our compiler has to construct.
-This is worth looking into.
-
-
-\begin{boxfigure}
-> [] ++ ys       = ys
-> (x:xs) ++ ys   = x : (xs++ys)
-> length []      = 0
-> length (x:xs)  = 1 + length xs
-> sp
-> H([]++[]) = []
-> H([]++(y:ys)) = y:ys
-> H([]++y) = H(y)
-> H((x:xs)++ys) = x : H(xs++ys)
-> H(xs++ys) = H(H(xs)++ys)
-> H(length []) = 0
-> H(length (x:xs)) = H(1 + length xs)
-> H(length xs) = H(length (H(xs)))
-> sp
-> H_pp([],[]) = []
-> H_pp([],(y:ys)) = y:ys
-> H_pp([],(us++vs)) = H_pp(us,vs)
-> H_pp((x:xs),ys) = x : H_pp(xs,ys)
-> H_length([]) = 0
-> H_length(x:xs) = H_p(1,H_length(xs))
-> H_length(xs++ys) = H_length(H_pp(xs,ys))
-\caption{The \textbf{H} function, and associated transformed functions for |++| and |length|.}
-\label{fig:H}
-\end{boxfigure}
-
-In keeping with our example,
-let us see what the shortcutting compiler produces with our |fib| example.
-We have restructured the example as rewrite rules, but it is still performing the same computation.
-The results are shown in figure \ref{fig:Hfib}.
-As we can see, we can avoid constructing nodes for |<=|, |+| and |-|,
-but we already managed to avoid these node constructions with unboxing and inlining.
-The more interesting point here is that we can avoid the construction of the recursive call to |fib|.
-So, how do we avoid constructing these nodes?
-There are two key pieces of information that will help us here.
-First, the node labeled by |fib| is not the root of the right hand side.
-Second, the node is needed in that expression.
-If both of these conditions are met, then we do not need to construct the node.
-We can \emph{shortcut} the construction, and just compute the value.
-
-\begin{boxfigure}
-> fib n             = fibComp (n < 2) n
->
-> fibComp True   n  = n
-> fibComp False  n  = fib (n-1) + fib (n-2)
->
-> sp
-> H(fib n)                   = H(fibComp (n<=2) n)
-> H(fibComp True (Int n_p))  = Int n_p
-> H(fibComp True n)          = H(n)
-> H(fibComp False n)         = H(fib (n-1) + fib (n-2))
->
-> sp
-> H_fib(n)                   = H_fibComp(H_le(n,2), n)
-> H_fibComp(True,(Int n_p))  = Int n_p
-> H_fibComp(True,(x+y))      = H_p(x,y)
-> H_fibComp(True,(x-y))      = H_m(x,y)
-> H_fibComp(True,(fib n))    = H_fib(n)
-> H_fibComp(False,n)         = H_p(H_fib(H_m(n,1)), H_fib(H_m(n,2)))
-\caption{The \textbf{H} function, and associated transformed functions for |fib|.}
-\label{fig:Hfib}
-\end{boxfigure}
-
-Now that we have a theoretical idea of how to eliminate nodes with shortcutting,
-we need to apply it to our actual generated code.
-By our two conditions, we are looking for a node that is generated by the right hand side of a rewrite rule,
-and we are looking for a node that is needed in that expression.
-The equivalent in our compiled code is when a let bound variable is rooted by a function,
-and is used exactly once as the scrutinee of a case expression.
-In the Fibonacci example in figure \ref{fig:fibOpt4}
-both $f_1$ and $f_2$ meet these conditions.
+We will often find examples of expressions that are constructed,
+and immediately evaluated by a case statement,
+after which, the results are never used again.
+Both $f_1$ and $f_2$ in figure \ref{fig:fibOpt4} are excellent examples of such expressions.
 Typically a compiler for a lazy language would recognize this situation,
 and instead of generating a node only to evaluate it, the compiler would produce a function call
 that would return the value of that node.
@@ -650,6 +567,7 @@ First, let us look at the case where the scrutinee is deterministic.
 In that case, there is only one thing that could go wrong.
 It is possible that in order to reduce the scrutinee 
 we need to reduce another expression that could be stored in \texttt{RET}.
+\begin{samepage}
 For example, consider the following program:
 
 > f x = case  g x of
@@ -659,6 +577,7 @@ For example, consider the following program:
 > main = case  f 3 of
 >              True   -> 0
 >              False  -> 1
+\end{samepage}
 
 In the evaluation of |main|, |f 3| can be stored in the \texttt{RET} node,
 then we can evaluate |f 3| to head constructor form,
@@ -811,13 +730,15 @@ so that rewrite should not be pushed on the backtracking stack.
 
 Another problem is that, if \texttt{RET} is a forwarding node,
 when evaluating the node it forwards to, we might have reused \texttt{RET}.
-Consider the following program.
+\begin{samepage}
+Consider the following program:
 
 > h x = case  x > 3 of 
 >             False  -> 3
 >             True   -> 4
 > main = case  (h 4 ? h 2) of
 >              4 -> True
+\end{samepage}
 
 Here |main| evaluates |h 4 ? h 2|.
 Since |?| is non-deterministic, and reduces to a forwarding node,
@@ -827,6 +748,7 @@ However, before we can even do that, we need to evaluate |h 4|,
 and the expression |x > 3| will be stored in \texttt{RET}.
 Now we have lost the information in \texttt{RET} before we can copy it.
 
+\begin{samepage}
 Finally, we still have not avoided putting \texttt{RET} on the backtracking stack.
 Recall our program from before.
 
@@ -837,6 +759,7 @@ Recall our program from before.
 > main = case  f 3 of
 >              True   -> 0
 >              False  -> 1
+\end{samepage}
 
 If the expression |g x| is non-deterministic, 
 then the node containing |f| will be marked as non-deterministic.
@@ -951,6 +874,7 @@ If the expression is non-deterministic in multiple places,
 then the same \texttt{backup} node is pushed on the stack,
 so our expression graphs stay consistent.
 
+\begin{samepage}
 This also works well if we have multiple reductions in a row.
 Suppose we have the following Curry code:
 
@@ -961,6 +885,7 @@ Suppose we have the following Curry code:
 > f n = case  n of
 >             0 -> True
 >             _ -> f (n-1)
+\end{samepage}
 
 In this case |f| is a recursive function,
 so when we reduce |f 4|, we need to reduce |f 3|.
@@ -1002,14 +927,17 @@ with a technique from functional languages.
 We now turn to our final optimization, Deforestation.
 The goal of this optimization is to remove intermediate data structures.
 Programmers often write in a pipeline style when writing functional programs.
+\begin{samepage}
 For example, consider the program:
 
 > sumPrimes   =  sum . filter isPrime . enumFromTo 2
+\end{samepage}
 
 While this style is concise and readable, it is not efficient.
 First, we create a list of integers,
 then we create a new list of all of the integers in our list that are prime,
 and finally we sum the values in that list.
+\begin{samepage}
 It would be much more efficient to compute this sum directly.
 
 > sumPrimes n = go 2 n
@@ -1017,6 +945,7 @@ It would be much more efficient to compute this sum directly.
 >         | k >= n     = 0
 >         | isPrime k  = k + go (k+1) n
 >         | otherwise  = go (k+1) n
+\end{samepage}
 
 
 This pipeline pattern is pervasive in functional programming,
@@ -1049,12 +978,15 @@ All lists in Curry are built up from cons and nil cells.
 The list |[1,2,3,4]| is really |1 : 2 : 3 : 4 : []|.
 One very common list processing technique is a fold,
 which takes a binary operation and a starting element, and reduces a list to a single value.
+\begin{samepage}
 In Curry, the |foldr| function is defined as:
 
 > foldr :: (a -> b -> b) -> b -> [a] -> b
 > foldr `f` z []      = z
 > foldr `f` z (x:xs)  = x `f` foldr f z xs
+\end{samepage}
 
+\begin{samepage}
 As an example, we can define the |sum| function as |sum xs = foldr (+) 0|.
 To see what this is really doing we can unroll the recursion.
 Suppose we evaluate |foldr (+) 0 [1,2,3,4,5]|, then we have:
@@ -1066,21 +998,26 @@ Suppose we evaluate |foldr (+) 0 [1,2,3,4,5]|, then we have:
 > => 1 + (2 + (3 + (4 + foldr (+) 0 [5])))
 > => 1 + (2 + (3 + (4 + (5 + foldr (+) 0 []))))
 > => 1 + (2 + (3 + (4 + (5 + 0))))
+\end{samepage}
 
+\begin{samepage}
 But wait, this looks very similar to our construction of a list.
 
 > 1  :  (2  :  (3  :  (4  :  (5  :  ([])))))
 > 1  +  (2  +  (3  +  (4  +  (5  +  (0)))))
+\end{samepage}
 
 We have just replaced the |:| with |+| and the |[]| with |0|.
 If the compiler can find where we will do this replacement,
 then we do not need to construct the list.
 On its own, this is a very hard problem, but we can help the compiler along.
 We just need a standard way to construct a list.
+\begin{samepage}
 This can be done with the |build| function \cite{shortcutDeforestation}.
 
 > build :: (forall b (a -> b -> b) -> b -> b) -> [a]
 > build g = g (:) []
+\end{samepage}
 
 The |build| function takes a function that constructs a list.
 However, instead of construction the list with |:| and |[]|,
@@ -1095,17 +1032,21 @@ For all |f : a -> b -> b|, |z : b|, and |g : (forall b (a -> b -> b) -> b -> b) 
 
 So, if we can construct standard list functions using |build| and |foldr|,
 then we can remove these function using the above theorem.
+\begin{samepage}
 As an example, let us look at the function |enumFromTo a b| that constructs
 a list of integers from |a| to |b|.
 > enumFromTo a b
 >  | a > b      = []
 >  | otherwise  = a : enumFromTo (a+1) b
+\end{samepage}
 
+\begin{samepage}
 We can turn this into a build function.
 > enumFromTo a b = build (enumFromTo_build a b)
 > enumFromTo_build a b c n
 >  | a > b      = n
 >  | otherwise  = a `c` enumFromTo_build (a+1) b c n
+\end{samepage}
 
 We can create build functions for several list creation functions
 found in the standard library.
@@ -1168,9 +1109,11 @@ original paper \cite{shortcutDeforestation}.
 This looks good.
 In fact, we obtained the original expression we were trying for.
 Unfortunately we do not get the same optimization in Rice.
+\begin{samepage}
 The problem is actually the definition of |filter|.
 
 > filter f = build (\c n -> foldr (\x y -> if f x then x `c` y else y) n)
+\end{samepage}
 
 Functions that transform lists, such as |filter|, |map|, and |concat|,
 are rewritten in the standard library as a build applied to a fold.
@@ -1181,17 +1124,21 @@ Instead we need a new solution.
 
 \subsection{Solution build\_fold}
 
+\begin{samepage}
 Our solution to this problem is to introduce a new combinator for transforming lists.
 We call this |build_fold| since it is a build applied to a fold.
 
 > build_fold :: ((c -> b -> b) -> (a -> b -> b)) -> (b -> b) -> [a] -> b
 > build_fold mkf mkz xs = foldr (mkf (:)) (mkz []) xs
+\end{samepage}
 
 The idea behind this combinator is a combination of a build and a fold.
 This function was designed to be easily composable with both build and fold.
 Ideally, it could fit in the middle of build and fold and still reduce.
+\begin{samepage}
 As and example:
 > foldr (+) 0 (build_fold filter_mkf filter_mkz (build enumFromTo_build))
+\end{samepage}
 
 Ideally, this function should reduce into something relatively efficient,
 Furthermore we wanted |build_fold| to compose nicely with itself.
@@ -1202,6 +1149,7 @@ The two functions |mkf| and |mkz| make the |f| and |z| functions from fold,
 however they take |c| and |n| as arguments similar to |build|.
 The idea is that |mkf| takes an |f| from |foldr| as a parameter,
 and returns a new |f|.
+\begin{samepage}
 The |map| and |filter| implementations are given below.
 
 > map f = build_fold (map_mkf f) map_mkz
@@ -1211,6 +1159,7 @@ The |map| and |filter| implementations are given below.
 > filter p = build_fold (filter_mkc p) filter_mkz
 > filter_mkf p c x y = if p x then x `c` y else y
 > filter_mkz n = n
+\end{samepage}
 
 The purpose of the convoluted definition of |build_fold| is that
 it plays nicely with |build| and |foldr|.
@@ -1218,6 +1167,7 @@ We have the following three theorems about |build_fold|, which we will prove lat
 These are analogous to the |foldr/build| theorem.
 
 \begin{theorem}
+\label{thm:buildFold}
 For all functions of the appropriate type that evaluate no $?$ expressions,
 the following qualities hold.
 > build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
@@ -1225,6 +1175,7 @@ the following qualities hold.
 > build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
 \end{theorem}
 
+The proof of this theorem will be given in the next section.
 Now that we have removed all of the lambdas from our definitions,
 we can look at the implementation.
 
@@ -1370,6 +1321,7 @@ If we can not optimize the outlined function, then we do nothing.
 Otherwise, we make a new function, and replace the call to the partially applied function
 with a call to the outlined function.
 This would actually be worth doing even if we did not implement Deforestation.
+\begin{samepage}
 With function outlining our final optimized code is given below.
 
 > sumPrimes n = enumFromTo_build 2 n f' 0
@@ -1379,6 +1331,7 @@ With function outlining our final optimized code is given below.
 > enumFromTo_build a b c n
 >  | a > b      = n
 >  | otherwise  = a `c` enumFromTo_build (a+1) b c n
+\end{samepage}
 
 This certainly is not perfect, but it is much closer to what we were hoping for.
 Combining this with Unboxing and Shortcutting gives us some very efficient code.
@@ -1390,13 +1343,13 @@ using the same reasoning as the original foldr-build rule.
 Without non-determinism and free variables, we can apply the same arguments as the original paper
 on shortcut deforestation \cite{shortcutDeforestation}.
 
-\begin{theorem}
+\begin{refThm}
 For any deterministic |f|, |z|, |g|, |mkf|, and |mkz|,
 the following equations hold.
 > build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
 > foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
 > build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
-\end{theorem}
+\end{refThm}
 
 \begin{proof}
 Recall that the free theorem\cite{theoremsForFree} for |build|
@@ -1454,6 +1407,7 @@ any contest.
 In fact, as they are currently stated, 
 These theorems do not actually hold for Curry.
 However, with a few assumptions, we can remedy this problem.
+\begin{samepage}
 First, we need to rewrite our rules so that the reduced expression is in A-Normal form.
 
 > build_fold mkf mkz (build g) =  let g' = (\c n ->  let  f = mkf c
@@ -1466,7 +1420,9 @@ First, we need to rewrite our rules so that the reduced expression is in A-Norma
 > build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) =  let  mkf = mkf_2 . mkf_1
 >                                                            mkz = mkz_2 . mkz_1
 >                                                       in   build_fold mkf mkz xs
+\end{samepage}
 
+\begin{samepage}
 Now we are ready to state our result.
 \begin{theorem}
 suppose |f|, |z|, |g|, |mkf|, and |mkz| are all FlatCurry functions
@@ -1484,6 +1440,7 @@ then the following equations are valid.
 >                                                       in   build_fold mkf mkz xs
 
 \end{theorem}
+\end{samepage}
 
 \begin{proof}
 We show the result for foldr-build, and the rest are similar calculations.
@@ -1496,6 +1453,7 @@ We proceed in a manner similar to \cite{freeTheoremsCurry}.
 First, notice that |build g (:) []| is constructing a list.
 However, since |g| is potentially non-deterministic, and it might fail,
 we may have a non-deterministic alternation of lists when evaluating this expression.
+\begin{samepage}
 Let us make this explicit.
 After evaluating |build g (:) []| we will produce an alternation of several lists.
 
@@ -1504,6 +1462,7 @@ After evaluating |build g (:) []| we will produce an alternation of several list
 >                   ...
 >                 ? g_k1 : g_k2 : g_k3 : ... end_k
 Where, for all |i|, |end_i = [] ? EXEMPT|.
+\end{samepage}
 
 Here we have a alternation of |k| lists,
 and each list ends either with the empty list, or the computation may have failed along the way.
@@ -1511,6 +1470,7 @@ Therefore, |end_i| may be either |[]| or |EXEMPT|.
 In fact, it might be the case that an entire list is |EXEMPT|,
 but this is fine, because that would still fit this form defined above.
 
+\begin{samepage}
 We can generalize this by passing arbitrary arguments to build.
 The expression |build g `f` z| evaluates to the following alternation of values.
 > build g `f` z
@@ -1519,11 +1479,13 @@ The expression |build g `f` z| evaluates to the following alternation of values.
 >       ...
 >      (g_k1 `f` g_k2 `f` g_k3 `f` ... z_endk)
 Where, for all |i|, |z_endi| is |EXEMPT| if |end_i| is |EXEMPT| and |z| otherwise.
+\end{samepage}
 
 Now, let us see what happens when we normalize the entire expression.
 Recall that if |f| is a dominator of |a ? b|, then |f (a ? b) = f a ? f b| \cite{bubbling}.
 Therefore if all arguments are in A-Normal form, then function application distributes over choice.
 Since |foldr| is a dominator of everything in |foldr `f` z (build g (:) []| we have the following
+\begin{samepage}
 derivation.
 
 > foldr `f` z (build g (:) []) 
@@ -1545,6 +1507,7 @@ derivation.
 >      (g_k1 `f` g_k2 `f` g_k3 `f` ... z_endk)
 >   =  g `f` z
 Where, for all |i|, |z_endi| is |EXEMPT| if |end_i| is |EXEMPT| and |z| otherwise.
+\end{samepage}
 
 This proves the result.
 
@@ -1558,11 +1521,13 @@ This form is guaranteed by the type.
 This line of reasoning looks like a promising direction
 for future explorations into parametricity for functional-logic programming.
 
+\begin{samepage}
 Second, it should be noted that branches in |g| that produce |EXEMPT| do not necessarily
 fail when evaluated.
 If |f| is strict, then any failure in the list will cause the entire branch to fail.
 Consider the following expression:
 > foldr (\x y -> 1) 0 (build (\c n -> 0 `c` 1 `c` EXEMPT))
+\end{samepage}
 
 Evaluating the expression rooted by |build| to constructor normal form would produce a failure,
 since the tail of the list is |EXEMPT|.

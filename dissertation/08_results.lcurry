@@ -111,7 +111,7 @@ using a backtracking solution and list comprehension.
 
 \item \textbf{primes} computes a list of primes.
 
-\item \textbf{sieve} computes |sumPrimes| from Chapter 5.
+\item \textbf{sumPrimes} computes |sumPrimes| from Chapter 5.
 \end{itemize}
 
 \end{itemize}
@@ -128,7 +128,7 @@ We also include a comparison all of 3 prominent Curry compilers, Pakcs, Kics2, a
 in figure \ref{fig:time}.
 We optimized these compilers as much as possible to get the best results.
 For example Kics2 executed much quicker when run in the primitive depth first search mode.
-We increased the input size for tak, buildFold, and sieve in order to get a better comparison
+We increased the input size for tak, buildFold, and sumPrimes in order to get a better comparison
 with these compilers.
 However, we were not able to run the buildFold test, or the reverseBuiltin test, for the Pakcs compiler. 
 They were both killed by the Operating System before they could complete.
@@ -176,7 +176,7 @@ allocated, so we were unable to compare our memory results.
 %\hline
 %primes          & 6,480.61 & 31.36 &  7.52 & 0.62 \\
 %\hline
-%sieve           & 2,845.30 &  3.17 &  4.48 & 1.03 \\
+%sumPrimes           & 2,845.30 &  3.17 &  4.48 & 1.03 \\
 %\hhline{||||=||||=||=||=||=||||}
 %\end{tabular}
 %
@@ -224,7 +224,7 @@ allocated, so we were unable to compare our memory results.
 %\hline
 %primes          &    1.96 &  1.45 &  0.97 &     1.18 &     1.48 & 0.62 \\
 %\hline
-%sieve           &    1.87 &  2.08 &  0.90 &     1.86 &     1.26 & 0.32 \\
+%sumPrimes           &    1.87 &  2.08 &  0.90 &     1.86 &     1.26 & 0.32 \\
 %\hhline{||||=||||=||=||=||=||=||=||||}
 %\end{tabular}
 %
@@ -277,7 +277,7 @@ allocated, so we were unable to compare our memory results.
 %\hline
 %primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438K \\
 %\hline
-%sieve           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
+%sumPrimes           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
 %\hhline{||||=||||=||=||=||=||=||=||||}
 %\end{tabular}
 %\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
@@ -328,12 +328,12 @@ buildFold       & $\infty$ &    24 &     9 &    1 \\
 \hline
 primes          &   10,453 &    51 &    12 &    1 \\
 \hline
-sieve           &    2,762 &     3 &     4 &    1 \\
+sumPrimes       &    2,762 &     3 &     4 &    1 \\
 \hhline{||||=||||=||=||=||=||||}
 \end{tabular}
 
 \caption{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
-         Time is measured in seconds.}
+         All times are normalized to \rice.}
 \label{fig:time}
 \end{boxfigure}
 
@@ -376,7 +376,7 @@ buildFold       &    1.00 &  0.81 &  0.56 &     0.76 &     0.44 & 0.08 \\
 \hline
 primes          &    1.00 &  0.74 &  0.49 &     0.60 &     0.76 & 0.32 \\
 \hline
-sieve           &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
+sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
 
@@ -386,7 +386,9 @@ sieve           &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
          \emph{unbox} is the unboxing optimization,
          \emph{shortcut} is the shortcutting optimization,
          \emph{deforest} is the deforestation optimization,
-         and \emph{all} is the compiler with all optimizations turned on.}
+         and \emph{all} is the compiler with all optimizations turned on.\\
+         All values are normalized to \emph{unopt}, so they are the ratio, of the execution
+         time over \emph{unopt}'s execution time.}
 \label{fig:time_rice}
 \end{boxfigure}
 
@@ -429,7 +431,7 @@ buildFold       & 120,000K &  99,999K & 71,999K &   95,999K &   67,999K &       
 \hline
 primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438K \\
 \hline
-sieve           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
+sumPrimes       &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
 \caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
@@ -483,6 +485,8 @@ Shortcutting typically performed well, and compensated for the lack of unboxing 
 We think the most interesting part of these results is the effect of combining these optimizations.
 In particular, unboxing and shortcutting work very well together, 
 often reducing the amount of memory consumed more than either optimization alone.
+this can be seen in Perm, there node of the optimizations seemed to help,
+but combining all of them produced a significant speedup.
 
 Generally \ricesp compares very favorably with all of the current compilers,
 only losing out to Mcc on the cent example.

@@ -94,13 +94,17 @@ but for now we can see how transformations work.
 \label{fig:flatCanonical}
 \end{boxfigure}
 
+\begin{samepage}
 Let us start with an example:
 > 1 + let x = 3 in x
+\end{samepage}
 
+\begin{samepage}
 This is a perfectly fine Curry program, 
 but C does not allow variable declarations in an expression,
 so we need to rewrite this Curry expression to:
 > let x = 3 in 1 + x
+\end{samepage}
 
 We do not reduce |let x = 3 in x| yet, because that would be an optimization.
 However, this will be reduced later.
@@ -470,7 +474,7 @@ and compiles it into a block.
 We factor out |iblock| instead of leaving it a part of |ifunction|
 because we will be able to recursively call it to construct nested blocks.
 This is also why we pass in a root parameter.
-In subsequent calls, the scrutinee of a case expression.
+In subsequent calls, the scrutinee of a case expression will be set as the root.
 While this is not explicit in the algorithm here,
 in our implementation, the root of any block under a case expression
 is always |v_1|.
@@ -597,7 +601,7 @@ We also skip over the generation of the functions for case expressions discussed
 The code for this is largely the same.
 We just begin generating code at each block inside the function, after the declarations and assignments.
 
-The translation is similar to how we translated ICurry programs.
+The translation is similar to how we translated from FlatCurry to ICurry.
 Figure \ref{fig:cprog} is the main entry point.
 We translate the function, blocks, declarations, and assignments.
 $\mathcal{F}$\index{$\mathcal{F}$} translates an  ICurry function to a C function.

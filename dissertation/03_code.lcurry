@@ -10,6 +10,7 @@ Throughout this section we will use \texttt{teletype font} to represent generate
 C code to distinguish it from Curry or FlatCurry code.
 
 
+\begin{samepage}
 We will introduce the generated code by looking at the |not| function defined below.
 We choose this function, because it is small enough to be understandable,
 but it still demonstrates most of the decisions in designing the generated code
@@ -18,6 +19,7 @@ and runtime system.
 > not x = case  x of
 >               False  -> True
 >               True   -> False
+\end{samepage}
 
 Before we discuss generated code, 
 we need to discuss expressions and the runtime system for programs.
@@ -27,6 +29,19 @@ Every function |f| defined in the FlatCurry module is compiled into
 a C function that can reduce an expression, rooted by a node labeled with |f|,
 into head constructor form.
 These functions are called \texttt{f\_hnf}\index{\texttt{f\_hnf}} for historical reasons \cite{pakcs}.
+
+We chose C specificallly for a few reasons.
+C is low level enough that the optimizations we apply to Curry are going to be distinct
+to the optimizations we apply to C.
+However, C is high level enough that we have severl useful tools
+such as functions, and structs.
+We expect a modern optimizing compiler to remove most, if not all,
+of the abstractions that we use in the generated code.
+Finally C is easy to generate compared to a lower level language such as x86.
+An alternative would be to generate IR code for either LLVM, or java bytecode.
+We did not generate java bytecode, because the JVM is optimized for java like languages,
+and our compiled code doesn't fit that model.
+LLVM-IR would be a good candidate for future work.
 
 An expression in our compiled code is a rooted labeled graph.
 nodes\index{\texttt{node}} in the graph are given the definition in figure \ref{fig:node}.
@@ -54,6 +69,10 @@ The \texttt{children}\index{\texttt{children}} field contains an array of childr
 If a node could have more than three children, such as a node representing
 the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer
 to a variable length array that holds the rest of the children.
+We chose to allow three children specifically, because
+in practice there are relatively few function with more than
+three arguments.
+Although, we have not tried to confirm that this is the optimial size for a node.
 This leads to non-uniform indexing into nodes.
 For example \texttt{n->children[1]} returns the second child of the node,
 but the sixth child must be retrieved with \texttt{n->children[3].a[2]}.
@@ -174,6 +193,7 @@ Next we show how we handle partial application and higher order functions.
 
 \subsection{Higher Order Functions} \label{Higher Order Functions C}
 
+\begin{samepage}
 Earlier we gave an interpretation of how to handle |apply| nodes,
 but there are still a few details to work out.
 Recall the semantics we gave for apply nodes:
@@ -182,6 +202,7 @@ Recall the semantics we gave for apply nodes:
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
 >  | k < n   = apply (f x_1 ... x_k) [x_k1, ... x_n]
+\end{samepage}
 
 If |f| is missing any arguments, then we call |f| a partial application.
 Let us look at a concrete example.
@@ -223,11 +244,13 @@ Well, if we are storing the arguments in reverse order, then we get a really han
 Given function |f_k| that is missing |k| arguments, then |apply f_k x| reduces to |f_k1 x| where |x|
 is the |k-1| child.
 The missing value for a function tells us exactly where to put the arguments.
+\begin{samepage}
 This is completely independent of the arity of the function.
 > apply (apply (apply (foldr_3 \* \* \*) (pl_2)) 0) [1,2,3]
 > => apply (apply (foldr_2 \* \* (pl_2)) 0) [1,2,3]
 > => apply (foldr_1 \* 0 (pl_2)) [1,2,3]
 > => foldr_0 [1,2,3] 0 (pl_2))
+\end{samepage}
 
 
 The algorithm is given in figure \ref{fig:apply}.

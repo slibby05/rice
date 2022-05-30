@@ -35,11 +35,16 @@
 \newcommand{\yxnode}[1]{\bullet\ \ \ \llap{#1\,} }
 \newcommand{\tif}[1]{\texttt{if(}#1\texttt{)}}
 
+\newcommand{\from}{\leftarrow}
+
 \newcommand{\cuUnify}{\mathbin{=\!\!:\!\!=}}
 \newcommand{\cuFunPat}{\mathbin{=\!\!:\!\!<\!\!<\!\!=}}
 
 \newcommand{\rice}{\texttt{RICE}}
 \newcommand{\ricesp}{\texttt{RICE }}
+
+
+
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -48,8 +53,15 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
+
+% this allows us to reuse the numbering for 1 specific theorem
+% that I repeated.
+% let us never speak of this again.
+\newtheorem*{refThm}{Theorem~\ref{thm:buildFold}}
+
+
 \newenvironment{boxfigure}
-     { \begin{figure} \begin{mdframed} }
+     { \begin{figure}[h] \begin{mdframed} }
      { \end{mdframed} \end{figure} }
 %\newenvironment{boxfigure}%
 %{%
@@ -91,7 +103,7 @@
 
 %include 02_Language.lcurry
 
-\chapter{The Generated Code} \label{ch:The Generated Code}
+\chapter{Code Generator} \label{ch:The Generated Code}
 
 %include 03_code.lcurry
 

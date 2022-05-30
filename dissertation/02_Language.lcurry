@@ -710,12 +710,12 @@ was not $n$. So by the previous lemma, we can swap the order of the rewrites.
 \end{proof}
 
 Finally we show that if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic redexes,
-then $e[a \to b]$ rewrites to the same values.
+then $e[b \from a]$ rewrites to the same values.
 
 \begin{theorem}[Path Compression Theorem\index{Path Compression Theorem}]
 if $a$ is a subexpression of $e$ and $a \to^* b$ using only deterministic rewrites,
 and $e \to e_1 \to \ldots e_n$ is a derivation where $b$ is a subexpression of $e_n$,
-then there is a derivation $e[a\to b] \to^* e_n$.
+then there is a derivation $e[b \from a] \to^* e_n$.
 \end{theorem}
 
 \begin{proof}
@@ -723,9 +723,9 @@ This follows by induction on the length of the derivation.
 In the base case $a = b$, and there is nothing to prove.
 In the inductive case $a \to_p a' \to^* b$.
 Since $a \to_p a'$ is deterministic by assumption,
-we can apply the path compression theorem and say that $e[a \to a'] \to^* e_n$.
-By the inductive hypotheses we can say that $e[a \to a'][a' \to b] \to^* e_n$.
-Therefore $e[a \to b] \to^* e_n$.
+we can apply the path compression theorem and say that $e[a' \from a] \to^* e_n$.
+By the inductive hypotheses we can say that $e[a' \from a][b \from a'] \to^* e_n$.
+Therefore $e[b \from a] \to^* e_n$.
 This establishes our result.
 \end{proof}
 
@@ -733,7 +733,8 @@ This establishes our result.
 
 \subsection{Collapsing Functions} \label{Collapsing Functions}
 
-While this result is great, and it allows us to avoid creating a large number of stack frames,
+While the result of the previous section is great, 
+and it allows us to avoid creating a large number of stack frames,
 there is a subtle aspect of graph rewriting that gets in the way.
 If a node |n_1| labeled by function |f| is rewritten to |n_2|,
 then the definition of applying a rewrite rule \cite{graphRewriting}[Def. 8, Def. 10, Def. 19]
@@ -756,7 +757,7 @@ Consider the expression following expression.
 >         y = id x
 >     in not y
 
-When |y| is evaluated, then it will evaluate |x|, and |x| will evaluate to |True|.
+When |y| is first evaluated, then it will evaluate |x|, and |x| will evaluate to |True|.
 If we then copy the |True| constructor to |y|, then we have two copies of |True|.
 But, since |y| is deterministic, we do not need to undo |y| when backtracking.
 So, |y| will remain |True| after backtracking, instead of returning to |id x|.

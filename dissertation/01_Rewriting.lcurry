@@ -199,18 +199,18 @@ and $p\cdot q$ for concatenation of paths $p$ and $q$.
 In our previous term $S(0)$ is a subterm in two different places.
 One occurrence is at path $[0,1]$, and the other is at path $[1,0]$.
 
-We write $t[p \to r]$\index{$t[p \to r]$} to denote replacing subterm $t||_p$ with $r$.
+We write $t[r \from p]$\index{$t[r \from p]$} to denote replacing subterm $t||_p$ with $r$.
 We define the algorithm for this in figure \ref{fig:subterm}.
 
 \begin{boxfigure}
-    $t[\epsilon \to r] = r$\\
-    $f(t_1,\ldots t_i,\ldots t_n)[i:p \to r] = f(t_1,\ldots t_i[p\to r],\ldots t_n) $\\
+    $t[r \from \epsilon] = r$\\
+    $f(t_1,\ldots t_i,\ldots t_n)[r \from i:p] = f(t_1,\ldots t_i[r \from p],\ldots t_n) $\\
     \caption{algorithm for finding a subterm of $t$.}
     \label{fig:subterm}
 \end{boxfigure}
 
 In our above example $t =*(+(0, S(0), +(S(0), 0)))$,
-We can compute the rewrite  $t[[0,1] \to *(S(0),S(0))]$, and we get the term
+We can compute the rewrite  $t[*(S(0),S(0)) \from [0,1]]$, and we get the term
 $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
 
 \begin{boxfigure}
@@ -221,7 +221,7 @@ $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
         \Tree[.$*$ [.$+$ $0$ [.$*$ [.$S$ $0$ ] [.$S$ $0$ ] ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] \\
     \end{tabular}
     \end{center}
-    \caption{The result of the computation $t[[0,1] \to S(0)]$}
+    \caption{The result of the computation $t[S(0) \from [0,1]]$}
     \label{fig:subtree}
 \end{boxfigure}
 
@@ -275,7 +275,7 @@ is the pair $(T(\Sigma,V),R)$ where $R$ is a set of rewrite rules.
 \theoremstyle{definition}
 \begin{definition}{Rewriting\index{Rewriting}:}
 Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ rewrites to $s$ if, 
-$l$ matches $t\vert_p$ with matcher $\sigma$, and $t[p \to \sigma(r)] = s$.
+$l$ matches $t\vert_p$ with matcher $\sigma$, and $t[\sigma(r) \from p] = s$.
 The term $\sigma(l)$ is the \emph{redex}\index{redex}, and the term $\sigma(r)$ is the \emph{contractum}\index{contractum}
 of the rewrite.
 \end{definition}
@@ -480,7 +480,7 @@ However, now we record $\sigma$, because it is part of our solution.
 \theoremstyle{definition}
 \begin{definition}{Narrowing\index{Narrowing}:}
 Given terms $t,s$, path $p$, and rule $l \to r$, we say that $t$ narrows to $s$ if, 
-$l$ unifies with $t\vert_p$ with unifier $\sigma$, and $t[p \to \sigma(r)] = s$.
+$l$ unifies with $t\vert_p$ with unifier $\sigma$, and $t[\sigma(r) \from p] = s$.
 We write $t \rightsquigarrow_{p,l\to r,\sigma} s$.
 We may write $t \rightsquigarrow_\sigma s$ if $p$ and $l \to r$ are clear.
 \end{definition}
@@ -1044,7 +1044,7 @@ It may be the case that $G\vert_p$ and $G$ have the same nodes, such as if the r
 \theoremstyle{definition}
 \begin{definition}
 A \emph{replacement}\index{replacement} of node $p$ by graph $u$ in $g$ 
-(written $g[p \to u]$) is given by the following procedure.
+(written $g[u \from p]$) is given by the following procedure.
 For each edge $(n,p) \in E_g$ replace it with an edge $(n, root_u)$.
 Add all other edges from $E_g$ and $E_u$.
 If $p$ is the root of $g$, then $root_u$ is now the root.
@@ -1097,7 +1097,7 @@ term, and $R$ is a term graph.
 A graph $G$ matches the rule if there exists subgraph $K$
 where $K$ matches $L$ with matcher $\sigma$.
 A \emph{rewrite} is a triple $(K, L \to R, \sigma)$,
-and we apply the rewrite with $G[K \to \sigma(R)]$.
+and we apply the rewrite with $G[\sigma(R) \from K]$.
 \end{definition}
 
 

@@ -21,6 +21,8 @@ It introduces sharing where none existed.
 If the common sub-expression is non-deterministic, then we will change the set of results.
 On the other hand, common sub-expression elimination is fairly innocuous in most other languages.
 
+\subsection{Contributions}
+
 \subsection{Future Work}
 
 Most curries are made from curry powder and coconut milk,
@@ -52,12 +54,18 @@ Right now, \ricesp is compiled using Pakcs.
 Currently Kics2 is not a feasible option for compiling \rice,
 because of performance issues with non-deterministic function.
 So, compiling \ricesp in itself would significantly improve the performance of the compiler.
+There are still several hurdles to overcome before this can be achieved.
+First, we would need an implementation of either the FindAll library
+or the SetFunctions library.
+Both of these libraries rely on external functions that aren't a part
+of standard Curry, and would need to be implemented.
 
 We would also like to move from C to LLVM.
 This would allow for more optimizations including Tail Call Optimization.
 We currently are limited by the recursion depth of the machine,
 and TCO could allow us to compile more programs.
 Moving to LLVM would also greatly help in the development of a garbage collector.
+Initially LLVM was rejected because we were more familiar with C.
 
 Finally, developing a better run-time system would also be an important improvement.
 While we did work to make sure our run time system was efficient,

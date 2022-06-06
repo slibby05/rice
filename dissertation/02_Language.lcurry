@@ -25,8 +25,12 @@ Finally we give an example of generated code to demonstrate how we compile Curry
 In order to write a compiler for Curry, we need to understand how Curry works.
 We will start by looking at some examples of Curry programs.
 We will see how Curry programs differ from Haskell and Prolog programs.
-Then we will move on to defining a small interpreter for Curry.
-Finally we will use this interpreter to define equivalent C code.
+We start with a simple first order functional language,
+and show how adding higher order functions, non-determinism, and free variables
+all affect the semantics.
+Then we discuss an improvement to backtracking that can increase performance significantly.
+Finally we discuss the effect of collapsing functions,
+that is functions that may return a single variable.
 
 Curry combines the two most popular paradigms of declarative programming:
 Functional languages and logic languages.
@@ -574,12 +578,12 @@ where |apply f_k e_1 e_2 ... e_n| applies |f_k| to the arguments |e_1 e_2 ... e_
 
 The behavior of |apply| is specified below.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > apply f_k x_1 ... x_n
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
 >  | k < n   = apply (f x_1 ... x_k) x_k1 ... x_n
-\end{samepage}
+\end{minipage}
 
 If the first argument |f| of |apply| is not partially applied,
 then evaluate |f| until it is, and proceed as above.

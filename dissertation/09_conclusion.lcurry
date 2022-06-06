@@ -5,7 +5,7 @@ These results were honestly significantly better than we ever expected with this
 Initially, we hoped to compete with Kics2, since it was leveraging GHC's optimizer
 to produce efficient code.
 However, we found that could we beat Kics2 in all cases,
-and in many cases the results were simply incomparable.
+and in some cases the results were simply incomparable.
 In some cases we were even able to compete with GHC itself.
 Furthermore, we have shown that the memory optimizations really were effective for Curry programs.
 This is not much of a surprise.

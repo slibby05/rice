@@ -33,7 +33,7 @@ For this chapter, we will be describing a system to apply optimizations to FlatC
 While this is not the only area of the compiler where we applied optimizations,
 it is by far the most extensive, so it is worth understanding how our optimization engine works.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is a perfectly fine Curry program, 
 Generally speaking, most optimizations have the same structure.
 Find an area in the AST where the optimization applies, and then replace it with the optimized version.
@@ -42,9 +42,9 @@ As an example, consider the code for the absolute value function defined below.
 > abs x
 >  | x < 0      = -x
 >  | otherwise  = x
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This will be translated into FlatCurry as
 
 > abs x = case  (x < 0) of
@@ -52,7 +52,7 @@ This will be translated into FlatCurry as
 >               False  -> case  otherwise of
 >                               True   -> x
 >                               False  -> EXEMPT
-\end{samepage}
+\end{minipage}
 
 While this transformation is obviously inefficient, 
 it is general and has a straightforward implementation.
@@ -131,11 +131,11 @@ The goal with GAS is to make optimizations simple to implement and easily readab
 While this is a challenging problem, we can actually leverage Curry here.
 Remember that the semantics of Curry are already non-deterministic rewriting.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Each optimization is going to be a function from a FlatCurry expression to another FlatCurry expression.
 
 > type Opt = Expr -> Expr
-\end{samepage}
+\end{minipage}
 
 For readability we use the FlatCurry syntax defined in figure \ref{fig:flatSyntax},
 While this version of FlatCurry is easier to read,
@@ -143,13 +143,13 @@ we will need the actual representation of FlatCurry programs to implement the co
 This representation is given in figure \ref{fig:flatRep}, and the transformation
 from the FlatCurry syntax to the FlatCurry representation is given in figure \ref{fig:flatTranslate}.
 We can describe an optimization by simply describing what it does to each expression.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 As an example consider the definition for floating let-expressions:
 
 > float (Comb ct f (as++[Let vs e]++bs)) = Let vs (Comb ct f (as++[e]++bs))
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This optimization tells us that, if an argument to a function application is a |let| expression,
 then we can move the let-expression outside.
 This works for let-expressions, but what if there is a free variable declaration inside of a function?
@@ -157,25 +157,25 @@ We can just define that case with another rule.
 
 > float (Comb ct f (as++[Let vs e]++bs))   = Let vs (Comb ct f (as++[e]++bs))
 > float (Comb ct f (as++[Free vs e]++bs))  = Free vs (Comb ct f (as++[e]++bs))
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is where the non-determinism comes in.
 Suppose we have an expression:
 
 > f (let x = 1 in x) (let r free in 2)
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This could be matched by either rule.
 The trick is that we do not care which rule matches, as long as they both do eventually.
 This will be transformed into one of the following:
 
 > let r free in let x = 1 in f x 2
 > let x = 1 in let r free in f x 2
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Either of these options is acceptable.
 In fact, we could remove the ambiguity by making our rules a confluent system,
 as shown by the code below.
@@ -184,7 +184,7 @@ However, we will not worry about confluence for most optimizations.
 > float (Comb ct f (as++[Let vs e]++bs))   = Let vs (Comb ct f (as++[e]++bs))
 > float (Comb ct f (as++[Free vs e]++bs))  = Free vs (Comb ct f (as++[e]++bs))
 > float (Let vs (Free ws e))               = Free ws (Let vs e)
-\end{samepage}
+\end{minipage}
 
 Great, now we can make an optimization.
 It was easy to write, but it is not a very complex optimization.
@@ -195,7 +195,7 @@ Now that we can do simple examples, let us look at a more substantial transforma
 Let-expressions are deceptively complicated.
 They allow us to make arbitrarily complex, mutually recursive, definitions.
 However, most of the time a large let expression could be broken down into several small let expressions.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Consider the definition below:
 > let  a = b
 >      b = c
@@ -203,9 +203,9 @@ Consider the definition below:
 >      d = b
 >      e = 1
 > in   a
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is a perfectly valid definition,
 but we could also break it up into the three nested let expressions below.
 
@@ -215,7 +215,7 @@ but we could also break it up into the three nested let expressions below.
 >           d = b
 >      in   let  a = b
 >           in   a
-\end{samepage}
+\end{minipage}
 
 \begin{boxfigure}
 
@@ -314,11 +314,11 @@ We have much more freedom in constructing the right-hand side of our rules.
 Now that we can create optimizations, what if we want both |blocks| and |float| to be able to run?
 This is an important part of the compilation process to get expressions into a canonical form.
 It turns out that combining two optimizations is simple.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 We just make a non-deterministic choice between them.
 
 > floatBlocks = float ? blocks
-\end{samepage}
+\end{minipage}
 
 This is a new optimization that will apply either |float| or |blocks|.
 The optimizations engine that follows will keep applying this optimization
@@ -438,12 +438,12 @@ Fortunately, all we need to change is to define |Opt| to accept more parameters.
 For each optimization, we will pass in an |n :: Int|
 that represents the next variable |v_n| that is guaranteed to be fresh.
 We will also pass in a |top :: Bool| that tells us if we are at root of a function we are optimizing.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 We also return a pair of |(Expr,Int)| to denote the optimized expression,
 and the number of new variables we used.
 
 > type Opt = (Int,Bool) -> Expr -> (Expr,Int)
-\end{samepage}
+\end{minipage}
 
 If we later decide that we want to add more information, then we just update the first parameter.
 The only problem is, how do we make sure we are calling each optimization with the correct |n| and |top|?
@@ -505,13 +505,13 @@ First, we need to decide on a representation for a rewrite derivation.
 Traditionally a rewrite derivation is a sequence of rewrite steps,
 where each step contains the rule and position of the rewrite.
 We describe paths in figure \ref{fig:path}.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 To make reconstruction easier, we also include the expression that is the result of the rewrite.
 This gives us the type:
 > type Path = [Int]
 > type Step = (String, Path, Expr)
 > type Derivation = [Step]
-\end{samepage}
+\end{minipage}
 
 
 \begin{boxfigure}
@@ -535,12 +535,12 @@ This gives us the type:
 
 This leads to the last change we need to make to our |Opt| type.
 We need each optimization to also tell us its name.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is good practice in general, 
 because it forces us to come up with unique names for each optimization.
 
 > type Opt = (Int,Bool) -> Expr -> (Expr, String, Int)
-\end{samepage}
+\end{minipage}
 
 We only need to make a few change to the algorithm.
 Instead of using the |State| monad, we use a combination of the |State| and |Writer| monads,
@@ -593,7 +593,7 @@ The full implementation is in figure \ref{fig:reconstruct}
 \label{fig:reconstruct}
 \end{boxfigure}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Now that we have computed the rewrite steps, it is a simple process to reconstruct them into a string.
 The |pPrint| function comes from the FlatCurry Pretty Printing Library.
 
@@ -603,7 +603,7 @@ The |pPrint| function comes from the FlatCurry Pretty Printing Library.
 >                                         in  "=>_"++rule++" "++(show p)++"\n" ++
 >                                             pPrint e' ++"\n" ++
 >                                             reconstruct e' steps
-\end{samepage}
+\end{minipage}
 
 
 Now that our optimization engine is running and printing out optimization derivations,

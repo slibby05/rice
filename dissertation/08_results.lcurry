@@ -6,16 +6,10 @@ The test suite is based on the test suite from the Kics2 compiler \cite{kics2}.
 We have removed some tests, and added others in order to test specific properties
 of our compiler.
 
-Specifically, we removed all of the tests that evaluated the unification operator
-|=:=| or the functional pattern operator |=:<<=|.
-While the \ricesp compiler does support these operations,
-they are primitive operations with respect to Curry that can potentially
-do a substantial amount of work.
-This means that the operators are typically implemented in the target language
-of the compiler.
-While \ricesp does perform well with code containing these operators,
-we felt that it was an unfair comparison.
-It measured the implementation of the operators, instead of the quality of the generated code.
+Specifically, we removed all of the tests that evaluated the functional pattern operator |=:<<=|.
+since this is an extension of Curry.
+While the \ricesp compiler does support this operation,
+it was not a focus of this work, and we have not tested it enough to be confident in its implementation.
 
 Furthermore, we added a few tests to demonstrate the effectiveness of deforestation.
 The benchmark suite for Kics2 contained very few examples of code with multiple
@@ -82,13 +76,15 @@ containing the numbers 1 to 5 that evaluate to 100.
 \item \textbf{perm} computes all of the permutations of a list
 by computing a single permutation non-deterministically.
 
-\item \textbf{queensPerm} is the program from the introduction.
-It computes solutions to the n-queens problem
+\item \textbf{queensPerm} 
+Computes solutions to the n-queens problem
 by permuting a list, and checking if it is a valid solution.
 
 \item \textbf{primesort} non-deterministically sorts a list of very large prime numbers.
 
 \item \textbf{sort} sorts a list by finding a sorted permutation.
+
+\item \textbf{schedule} The scheduling program from the introduction.
 \end{itemize}
 
 
@@ -313,6 +309,10 @@ queensPerm      &     5171 &    27 &     1 &    1 \\
 primesort       &    9,879 &     3 &     7 &    1 \\
 \hline
 sort            &      923 &    35 &     1 &    1 \\
+\hline
+last            & $\infty$ &  9.44 &  .311 & .225 \\
+\hline
+schedule        &      477 &    25 &     1 &    1 \\
 \hhline{||||=||||=||=||=||=||||}
 queensDet       &     4573 &     5 &     5 &    1 \\
 \hline
@@ -416,6 +416,10 @@ queensPerm      &  19,362K &  11,899K &  4,122K &    7,543K &   11,899K &  2,940
 primesort       &  10,546K &   8,458K &  6,344K &    6,375K &    8,454K &  6,340K \\
 \hline
 sort            &  20,295K &  14,332K & 11,949K &   11,949K &   14,332K & 11,949K \\
+\hline
+last            &          &          &         &           &           & 8000291 \\
+\hline
+schedule        &          &          &         &           &           &         \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 queensDet       &  96,894K &  53,781K & 16,599K &   33,385K &   48,360K &  9,372K \\
 \hline

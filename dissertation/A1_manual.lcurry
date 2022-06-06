@@ -1,0 +1,413 @@
+
+
+This document is a guide to the structure of the Rice compiler,
+and an explanation of the various files.
+The compiler is split up into 4 sections.
+The root folder contains code for I/O
+and a few utility modules.
+The FlatUtil folder contains convenience functions for FlatCurry programs
+as well as the implementation of the GAS system.
+The Optimizations folder contains code for transforming FlatCurry into a canonical form,
+and optimizing FlatCurry
+Finally the Compile folder contains modules used for code generation,
+which include the transformation to ICurry as well as the C code generator.
+
+\section{The Rice Compiler}
+
+The first section is the root of the project.
+Here we have 4 notable files:
+Main.curry, responsible for parsing arguments, and general control flow;
+File.curry, responsible reading files, and getting absolute paths to directories;
+Util.curry, which contains some general utility functions;
+Graph.curry, an implementation of ``Structuring Depth-First Search Algorithms in Haskell''.
+
+\subsection{Main.curry and I/O}
+
+This file dictates the general flow of the compiler.
+The compiler has a few command line arguments, and can be run in two different modes.
+If the g argument is passed, then the compiler will
+assume that the program has already been optimized, and that ICurry has been generated.
+It will only attempt to generate C code.
+This mode is useful for testing changes to the code generator.
+Any other changes really need the full optimization of the code.
+
+The arguments are defined below, The format is flat, longName, description.
+\begin{tabular}{r||r||l}
+\hline
+  -d & datatable  & Print the table of Data Type definitions.     \\ \hline
+  -f & flatcurry  & Print the FlatCurry code before optimization. \\ \hline
+  -o & optimized  & print the Optimized FlatCurry code.           \\ \hline
+  -i & icurry     & print the ICurry Code.                        \\ \hline
+  -c &            & does nothing                                  \\ \hline
+  -g & codegen    & only generate code from ICurry.               \\ \hline
+  -p & noprelude  & Don not include Prelude (used for testing).   \\ \hline
+  -x & gcc        & Use Gcc instead of clang.                     \\ \hline
+\end{tabular}
+
+
+\subsection{File.curry}
+
+File has a number of useful utility functions for manipulating FlatCurry/ICurry/C files.
+The most important of these is |readFlatCurryWithImports|.
+This function performs a topological sort on the files based on their imports,
+and returns a list of |FlatCurry.Prog| objects in topological order.
+It also marks each file with whether or not the file has already been compiled and optimized.
+This prevents of from recompiling files.
+This file also contains functions to determine the absolute paths for the FlatCurry, optimized
+FlatCurry, ICurry, C, and H files for each program.
+
+\subsection{Util.curry}
+This file contains several useful utilities
+including instances of Functor for both I/O, and Maybe,
+as well as |fork|, |mapFst| and |mapSnd| from the Arrow library from Haskell.
+
+It also contains the definitions for the sorted list combinators.
+These function perform set union, set difference, and set intersection.
+> (++-), (\\-), (&&-)
+The implementation is that a set is a sorted list.
+So, we can do union and intersection cheaply by just maintaining the sorting.
+This is not useful is you want to look something up in a set,
+but it gives you $\O(n)$ time construction of the set of variables in an expression.
+
+This is also the implementation of the State and ReWriter Monad.\\
+State follows the usual construction.
+Any efficiency improvement here would be be beneficial for the whole compiler.
+ReWrite is effectively |StateT Writer|.
+Its used in the GAS system, so any efficiency improvements 
+have a pervasive effect on performance.
+
+We also include a wrapper for computing strongly connected components,
+since that operation comes up a lot.
+
+\subsection{Graph.curry}
+This module contains a lot of useful Graph Theory utilities.
+the ideas are lifted directly from 
+``Structuring Depth-First Search Algorithms in Haskell''.
+
+
+\section{The GAS System}
+
+The GAS system is really the heart of this compiler.
+The idea is described in Chapter 4.
+The FlatUtils folder contains two files related to GAS.
+First The FlatUtils.Curry file contains several
+utility functions for working with FlatCurry programs.
+Next Gas.Curry contains the implementation of the GAS system.
+
+\subsection{FlatUtil.curry}
+FlatUtils contains a number of functions to get general information about FlatCurry expressions
+including this like if a let bound variable is recursive, and the list of free variables.
+
+It also include function for constructing and applying substitutions.
+We represent a substitution as a function from |VarIndex| to |Expr|.
+We can construct a substitution with an identity function |\x -> Var x|.
+This is the purpose of |idSub|.
+We can add a new variable to a substitution with the |@>| combinator.
+> (x,e) @> s
+will extend the substitution s with $\{x \mapsto e\}$.
+We can apply a substitution with the |sub| function.
+
+A renaming is a special substitution where we just change the names of variables.
+We can do this with the |rename| function.
+
+Final we define functions for getting the Type and Constructor name for primitive types.
+
+\subsection{Gas.curry}
+The Gas library is build around the idea of an optimization.
+For our compiler an optimization is a function of type |(Int, Bool) -> Expr -> (Expr,String,VarIndex)|.
+We provide the next fresh variable, 
+and if the optimization is being applied to the root of the function as state,
+and we return the transformed expression, the name of the optimization that was applied,
+and the number of new variables that were created.
+
+The two functions that the user can call are |simplify| and |showWork|.
+|simplify| will run the optimization until it no longer applies, 
+and return the resulting expression.
+|showWork| will run the optimization while it can, but it will also build up
+an optimization derivation.
+It returns the transformed expression, the optimization derivation as a String,
+and the number of optimizations that it was able to apply.
+Both of these functions allow the user to pass in a maximum number of optimizations
+to apply.
+The |run| function does the real work of optimizing,
+and it is described in Chapter 4.
+
+We also include a |loop| and |loopIO| function for applying a transformation
+at the function level.
+This is useful for transformations that need to create new functions.
+For example moving a case inside of a let expression into its own function.
+
+Finally we include a few functions for quickly building up common FlatCurry expressions.
+These include function composition, apply nodes, and partial applications.
+We also include FlatCurry definitions for |build| and |foldr| functions discussed in chapter 7.
+
+\section{Optimizations}
+
+The optimizations folder is, unsurprisingly, the largest folder.
+Several modules are small, but they all serve a unique purpose.
+The files are ordered by the use in the optimization pipeline.
+
+DataTable.curry provides functions for constructing and inspecting a table
+of Data Type Definitions.
+FunTable.curry is similar.
+Optimize.curry contains the control flow code for managing the entire optimization process.
+Preprocess.curry manages the code for converting FlatCurry programs into canonical form.
+ANF.curry contains the code for transforming into Administrative Normal Form.
+Ordering.curry contains code for sorting the functions into an optimal ordering for optimization.
+Strictness.curry contains code for performing strictness analysis.
+Primitives.curry contains optimizations for primitive values, such as constant folding.
+Inline.curry contains optimizations for inlining, reduction, and dead code elimination.
+Postprocess.curry contains code to clean up function after optimizations,
+and move let bound cases out into their own functions.
+
+\subsection{Flags.curry}
+This is a simple file to set which optimizations are run.
+This was designed for testing different optimizations,
+and will be moved into the compiler flags at some point.
+
+\subsection{DataTable.curry}
+A DataTable is a bidirectional mapping from Data Types to Data Constructors.
+This is stored as a pair of tables |tmap| and |cmap|.
+The |tmap| table takes a type, and returns the list of all constructors for that type,
+and the |cmap| table takes a constructor name, and returns the type returned by constructor.
+This is primarily used by the \textbf{Case Fill} transformation, but it is also used
+in the code generator.
+
+\subsection{FunTable.curry}
+The FunctionTable contains a number of useful properties about functions,
+and they are described in chapter 06.
+Specifically, we can query the following:
+|nondet| is the function possibly non-deterministic;
+|loopbreaker|, was the function marked as a loopbreaker while ordering the functions;
+|arity|, what is the arity of the function;
+|params|, what are the parameter names;
+|freshVar|, what is the next fresh variable name;
+|bodySize|, how large is the syntax tree for the function;
+|inlinable|, do we consider the function a good candidate for inlining?
+There are also two composite queries we can make:
+|simple|, is the function trivially inlinable;
+|cancels|, is the function likely to cause case canceling if we inline it.
+
+\subsection{Optimize.curry}
+Optimize.curry handles the control flow for optimizations.
+There are two most that a program can be optimized in.
+The |optimize| funtion will transform a FlatCurry program into canonical form,
+and run optizations on it.
+The |optimizeT| function will do the same thing, but it also produces output.
+The |optimize| function has trouble completing with longer functions.
+We suspect that this is a problem with laziness, but it is hard to pin down.
+
+\subsection{Preprocess.curry}
+This module contains several transformations to put a FlatCurry function into
+canonical form.
+Specifically it contains \textbf{Let Float}, \textbf{Case in Case},
+\textbf{Double Apply}, \textbf{Case Apply}, \textbf{Blocks},
+\textbf{Alias}, \textbf{Case Var}, \textbf{Fix Partial}, and \textbf{Unapply}
+from chapter 5. It also contains the \textbf{String Const} transformation
+for turning literal strings into string constants which
+take less memory at run-time.
+
+\subsection{ANF.curry}
+This file contains code to put a canonical FlatCurry expression into A-Normal Form.
+The transformation almost directly mirrors ``The Essence of Compiling with Continuations''.
+
+\subsection{Ordering.curry}
+This file contains code for ordering a list of functions based on their call graph.
+Ideally we would topologically sort the call graph, and 
+process the list in reverse order,
+however the call graph may not be acyclic.
+To deal with this possibility we compute the strongly connected components,
+then, we score each function in a component based on how useful we think
+it would be to inline that function.
+We take the least useful function, and mark it as a \emph{loop breaker}.
+Then we remove it from the graph, and compute the strongly connected components again.
+We repeat this process until we are left with a DAG,
+which we can the process in topological order.
+All loop breakers are processed at the end since they cannot be inlined.
+
+\subsection{Strictness.curry}
+
+This file runs a simple strictness analysis on FlatCurry functions.
+This analysis is simple abstract interpretation, and it builds a |StrictTable|.
+Which is just a mapping from function names to the variables
+that we are sure are strict.
+We also include the |splitWorker| function which will 
+attempt to apply the wrapper/worker split to any function that has a strict parameter
+and is recursive.
+
+\subsection{Primitives.curry}
+
+This file contains the code for the \textbf{Prim Cond} optimization
+for replacing boolean |case| expressions with |pcase|,
+as well as the code for constant folding.
+
+\subsection{Inline.curry}
+
+This file contains the majority of the optimizations.
+Specifically it includes the following.
+\textbf{Inline Literal} which will inline |let v = l in e| where |l| is a literl.
+\textbf{Inline Constructor} which will inline |let v = C (vec vs) in e|.
+\textbf{Inline Case} which will inlin |let v = case x of (vec bs1) in case v fo (vec bs2)|.
+This seems counter productive, but it will then be split by the \textbf{Case in Case}
+transformation.
+\textbf{Inline fold/build} and variants inline the |build| and |build_fold| functionsA
+\textbf{Case Folding} which applies the following transformation.
+> CaseFolding 
+> let t = case e of
+>               C1 x -> e1
+>               C2 y -> e2
+> in case e of
+>         C1 a -> e11
+>         C2 b -> e22
+> ==>
+> case e of
+>      C1 a -> let t1 = e1[x->a] e11[t->t1]
+>      C2 b -> let t2 = e2[y->b] e22[t->t2]
+This seems like it would not be useful,
+but it actually crops up several times because of inlining
+functions defined in typeclasses.
+\textbf{Let Folding} which moves let bound variables closer to their uses.
+\textbf{Case Canceling} which is described in chapter 6.
+We also add two cases for canceling any |pcase| expressions where the primitive operation
+reduced to a literal.
+\textbf{Reduce Base} for if the reducible function is at the root of the expression.
+\textbf{Reduce Useful} for if we think that reducing the expression will lead to more optimizations.
+\textbf{Reduce Simple} the body of the reducible function is small.
+\textbf{Reduce Cancels} reducing this function will lead to more case canceling.
+\textbf{Reduce Let} The reducible function is not a let bound variable, but the result of a let expression.
+\textbf{Reduce branch} The reducible function is in the branch of a case.
+\textbf{Dead Code Elimination} removes unused variables, and trivial expression like |let in e|.
+\textbf{Fold/Build} and variants perform the shortcut deforestation optimization described
+in chapter 7.
+
+\subsection{Postprocess.curry}
+This file is responsible for a few areas of cleanup.
+First we attempt to outline any large partial applications.
+The goal here is that when we create a new function for them,
+we can optimize them.
+If we fail to find any optimizations, then we ignore that outline.
+Otherwise we replace the partial application with a call to the outlined function.
+Next we move any let bound variable defined with a case
+into its own function.
+Then we fix any partial applications that might have changed due to outlining,
+Convert every function to a more strict version ANF,
+look for any aliasing problems,
+and finally mark all case expressions where case shortcutting from chapter 7
+can apply.
+Finally we rename all of the variables in a function so they are consecutive integers.
+
+
+\section{Code Generation}
+
+The final component of the compiler is the code generator.
+This include both the translation from FlatCurry to ICurry,
+and the generation of C code.
+Due to the size of the files generated,
+we don't construct the .c or .h files as a single string.
+Instead we pass in a file writer object,
+and continuously append to the files.
+
+\subsection{IUtil.curry}
+IUtil.curry is a library of utility function for working with ICurry.
+It is similar to the FlatUtil.curry library, but not as full featured.
+
+\subsection{ToICurry.Curry}
+ToICurry.curry contains the code for translating from FlatCurry to ICurry.
+The process is described in chapter 3.
+The algorithm follows that chapter pretty closely,
+but we do add a case for translating the |pcase| construct.
+
+\subsection{C.curry}
+C.curry is a library for constructing C code.
+Instead of constructing an AST of a C program, and writing a pretty printer,
+we opted to write functions that produce formatted C strings.
+This works very well in practice, and is similar to creating an EDSL.
+As an example, we may write code like
+
+\begin{minipage}{\textwidth}
+> cIfElse (x .!= 2)
+> [
+>    scall "function1" [x, 2]
+> ]
+> [
+>    scall "function2" [x, 3]
+> ]
+\end{minipage}
+to generate the code
+\begin{verbatim}
+if(x != 2)
+{
+    function1(x,2);
+}
+else
+{
+    function2(x,3);
+}
+\end{verbatim}
+There are several small functions and operations which
+should not be to difficult to understand,
+but some of the more useful ones include:
+|call| and |scall| which produce an expression, and statement function call respectively;
+|cblock| which contains a block of C code;
+|cIf|, |cElse|, |cIfElse|, |cWhile|, |cSwitch|, and |cCase| which all generate control flow statments;
+|cFunDefn|, |cFunDecl| for declaring and defining function;
+|hFunDefn| for defining functions in a header file;
+and several others.
+We also include several functions that define C code that is specific to our compiler.
+For example the |nondet| function takes a variable |x|, and returns \texttt{x.n->nondet}.
+While this is not a piece of general C syntax,
+it is an expression we need to generate frequently.
+
+
+\subsection{PrimOps.curry}
+This file contain a table of functions for generating code to handle primitive operations.
+There are two functions for each primitive, a set and make function.
+Both of these are described in chapter 05.
+
+\subsection{ToH.curry}
+This file contains the code for generating Header files.
+Each header file is broken up into several sections.
+First we \texttt{\#include} the relevant files.
+Then we generate a unique tag for every constructor in a type that is declared in the module.
+Then we generate the symbols for each constructor and function.
+Then we check for any constructors with no arguments,
+and declare them as constants as described in chapter 5.
+Then we declare the set functions for data constructors and functions.
+Then we declare the make functions for data constructors and functions.
+Finally we declare the set/make functions for free variables of each type.
+
+\subsection{ToC.curry}
+This file handles the majority of the work of code generation.
+Theoretically it is a straightforward syntax directed translation,
+but there are a few more complexities.
+The |funSource| function generates the source code for each ICurry function.
+It's split into 3 parts.
+First the |funSource_base| generates the source code for the function.
+Then the |funSource_case| generates a seperate function for each case statement
+in the ICurry program.
+This is described in chapter 3 as a technique to handle non-determinism
+without having to flatten every function to a single case statement.
+Finally the |funSource_RET| handles the generation of the |RET| functions
+described in the case shortcutting optimization in chapter 7.
+If any case expression is marked for case shortcutting (with a negative variable)
+then we normalize the scrutenee for that case using the global \texttt{RET} node.
+We call the |RET| hnf function which is responsible for normalizing the expression,
+and returning a backup node if the expression in \texttt{RET} was found to be non-deterministic,
+and needed to be pushed on the stack.
+
+In fact, there are a few variables that have a specific meaning in this compiler.
+Any positive variable is just a normal variable,
+0 is the root variable, and -1 represents a primitive case expression,
+all other negative variables represent expressions placed in the RET node.
+
+The \texttt{debug} and \texttt{debug\_expr} macros are there to help with debugging at run-time.
+They have 3 different levels, \texttt{NONE}, \texttt{LOW}, \texttt{MID}, and \texttt{HIGH}.
+
+The |showIfCase|, |showConsCase|, and |showLitCase| do a majority of the work for generating the code.
+In particular |showConsCase| is responsible for generating the loop described in chapter 5.
+Each case block is handled by a separate function.
+If the constructor we're reducing to is a primitive constructor,
+one of |Int, Char, Float|, then binding free variables is a little different.
+Instead of trying to bind the free variable to an |Int| constructor with a free variable inside,
+we instead take the possible branches in the inner case, and bind our variable to one of those.
+

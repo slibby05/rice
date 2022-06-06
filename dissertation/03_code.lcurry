@@ -10,7 +10,7 @@ Throughout this section we will use \texttt{teletype font} to represent generate
 C code to distinguish it from Curry or FlatCurry code.
 
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 We will introduce the generated code by looking at the |not| function defined below.
 We choose this function, because it is small enough to be understandable,
 but it still demonstrates most of the decisions in designing the generated code
@@ -19,7 +19,7 @@ and runtime system.
 > not x = case  x of
 >               False  -> True
 >               True   -> False
-\end{samepage}
+\end{minipage}
 
 Before we discuss generated code, 
 we need to discuss expressions and the runtime system for programs.
@@ -193,7 +193,7 @@ Next we show how we handle partial application and higher order functions.
 
 \subsection{Higher Order Functions} \label{Higher Order Functions C}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Earlier we gave an interpretation of how to handle |apply| nodes,
 but there are still a few details to work out.
 Recall the semantics we gave for apply nodes:
@@ -202,7 +202,7 @@ Recall the semantics we gave for apply nodes:
 >  | k > n   = f_kn x_1 ... x_n
 >  | k == n  = f x_1 ... x_n
 >  | k < n   = apply (f x_1 ... x_k) [x_k1, ... x_n]
-\end{samepage}
+\end{minipage}
 
 If |f| is missing any arguments, then we call |f| a partial application.
 Let us look at a concrete example.
@@ -244,13 +244,13 @@ Well, if we are storing the arguments in reverse order, then we get a really han
 Given function |f_k| that is missing |k| arguments, then |apply f_k x| reduces to |f_k1 x| where |x|
 is the |k-1| child.
 The missing value for a function tells us exactly where to put the arguments.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is completely independent of the arity of the function.
 > apply (apply (apply (foldr_3 \* \* \*) (pl_2)) 0) [1,2,3]
 > => apply (apply (foldr_2 \* \* (pl_2)) 0) [1,2,3]
 > => apply (foldr_1 \* 0 (pl_2)) [1,2,3]
 > => foldr_0 [1,2,3] 0 (pl_2))
-\end{samepage}
+\end{minipage}
 
 
 The algorithm is given in figure \ref{fig:apply}.

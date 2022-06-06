@@ -94,17 +94,17 @@ but for now we can see how transformations work.
 \label{fig:flatCanonical}
 \end{boxfigure}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Let us start with an example:
 > 1 + let x = 3 in x
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 This is a perfectly fine Curry program, 
 but C does not allow variable declarations in an expression,
 so we need to rewrite this Curry expression to:
 > let x = 3 in 1 + x
-\end{samepage}
+\end{minipage}
 
 We do not reduce |let x = 3 in x| yet, because that would be an optimization.
 However, this will be reduced later.
@@ -240,7 +240,6 @@ However, these extensions to the rules are also included in the repository \cite
 \end{boxfigure}
 
 \begin{boxfigure}
-\vspace{-4ex}
 \textbf{Case in Case}\\
 \begin{minipage}{.40\textwidth}
 > case  (case  e of 
@@ -318,6 +317,47 @@ However, these extensions to the rules are also included in the repository \cite
 
 While most of these transformations are simple,
 a few require some explanation.
+First we address a possible concern from the last chapter.
+Since we make no attempt to ensure confluence of our rewrite rules,
+can we be sure that our transformations are even valid?
+In general, no we can't.  GAS does nothing to enforce the validity of rewrites,
+it just applies them as it encounters an opportunity.
+This is a problem, because our rules as they're stated may not be valid.
+For example, consider the following program.
+
+> f (let x = 1 in x) (let x = 2 in x)
+
+\begin{minipage}{\textwidth}
+This could be transformed into on of the following.
+
+> let x = 1 in let x = 2 in f x x
+> let x = 2 in let x = 1 in f x x
+\end{minipage}
+
+Unfortunately, neither of these are correct.
+The solution in this case is very simple.
+We always enforce that variable names are unique.
+This is the purpose being the fresh variable provided to optimizations by GAS.
+If we ever need to create a new variable, then that is one that is guaranteed to be unique.
+However, it is up to the compiler writer to ensure that this constraint is enforced.
+
+We may also have a condition of missing or extraneous case branches.
+This will become more of an issue when we discuss case cancelling in the next chapter,
+but we can sidestep the whole problem by enforcing a simple constraint.
+All cases must be full, that is they must contain a branch for every possible constructor,
+and they must not contain duplicates.
+The second constraint is already enforced by the front end of the Curry compiler.
+Duplicate cases are converted into choice expressions,
+however, we must fill in missing cases manually.
+This is the purpose of the \textbf{Case Fill} transformation,
+which completes the definitional tree.
+If we have a case with branches for constructors |C_1, C_2 ... C_k|,
+then we look up the type |T| that all of these constructor belong to.
+Next we get the list |Ctrs| of all constructors that belonging to |T|.
+This list will contain |C_1, C_2, ... C_n|, but it may contain more.
+For each constructor not represented in the case-expression,
+we create a new branch |C_i -> EXEMPT|.
+
 The \textbf{blocks} transformation takes a let block with multiple variable definitions,
 and rewrites it to a series of let blocks where all variables are split into
 strongly connected components.
@@ -327,19 +367,11 @@ It will often transform a block of mutually defined variables into a cascading
 series of let expressions with a single variable,
 which will allow more optimizations to run throughout the compiler.
 
-The \textbf{alias} transformation will remove any aliased variables.
+Finally the \textbf{alias} transformation will remove any aliased variables.
 If one variables is aliased to another, then it will do the substitution,
 but if a variable is aliased to itself, then it cannot be reduced to a normal form,
 so we can replace it with an infinite loop.
 
-
-Finally the \textbf{Fill cases} transformation completes the definitional tree.
-If we have a case with branches for constructors |C_1, C_2 ... C_k|,
-then we look up the type |T| that all of these constructor belong to.
-Next we get the list |Ctrs| of all constructors that belonging to |T|.
-This list will contain |C_1, C_2, ... C_n|, but it may contain more.
-For each constructor not represented in the case-expression,
-we create a new branch |C_i -> EXEMPT|.
 
 After running all of these transformations, our program is in canonical form,
 and we may choose to optimize it, or we may skip straight to the post-processing phase.

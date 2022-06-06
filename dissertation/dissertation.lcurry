@@ -15,6 +15,7 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 \usepackage{cite}
+\usepackage{float}
 \usepackage{tikz-cd}
 \usepackage{mathtools}
 \usepackage{imakeidx}
@@ -85,6 +86,8 @@
 \begin{document}
 \frontmatter
 \maketitle
+\chapter*{Abstract}
+
 
 \tableofcontents
 
@@ -99,11 +102,11 @@
 
 %include 01_Rewriting.lcurry
 
-\chapter{The Curry Language} \label{ch:The Curry Language}
+\chapter{The Curry Language and Implementation} \label{ch:The Curry Language}
 
 %include 02_Language.lcurry
 
-\chapter{Code Generator} \label{ch:The Generated Code}
+\chapter{The Code Generator} \label{ch:The Generated Code}
 
 %include 03_code.lcurry
 
@@ -132,12 +135,12 @@
 %include 09_conclusion.lcurry
 
 
-% \appendix
-%
-% \chapter{Derivation of fib} \label{ch:Derivation of fib}
-% 
-% %include A1_fib.lcurry
-% 
+\appendix
+
+\chapter{Rice Manual} \label{ch:Derivation of fib}
+
+%include A1_manual.lcurry
+ 
 % \chapter{Benchmarks Programs} \label{ch:Benchmarks Programs}
 % 
 % %include A2_benchmarks.lcurry

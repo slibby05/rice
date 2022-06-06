@@ -54,10 +54,10 @@ it is a promising area of future work.
 
 To see an example of why this an issue, let us consider the following program.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > double x  = x + x
 > main      = double (0 ? 1)
-\end{samepage}
+\end{minipage}
 
 In pure lazy functional languages, it is always safe to replace a function
 with its definition.
@@ -69,11 +69,11 @@ The non-determinism is not the only problem, for example evaluating |id (0 ? 1)|
 at compile time is fine.
 We can even duplicate non-deterministic expressions with the following example.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > double x  = x + x
 > main      =  let y = (0 ? 1)
 >              in double y
-\end{samepage}
+\end{minipage}
 
 Here |y| is a non-deterministic expression, because it produces two answers when evaluated,
 but the expression |let y = (0 ? 1) in y + y| is still equivalent to our example.
@@ -81,7 +81,7 @@ The real problem with our first example is a bit more subtle,
 and we have to step back into the world of graph rewriting.
 If we construct the graph for the first expression we see:
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 \begin{mdframed}
 \centerline{
   \graphxy{
@@ -119,7 +119,7 @@ If we construct the graph for the first expression we see:
 
 }
 \end{mdframed}
-\end{samepage}
+\end{minipage}
 
 Now the real issue comes to light.
 In the second example, while we copied a non-deterministic expression in the code,
@@ -268,11 +268,11 @@ In fact, this is arguably our most important optimization.
 It is a very simple optimization, but it proves to be very powerful.
 Consider the following code:
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > notTrue = case  True of
 >                 True -> False
 >                 False -> True
-\end{samepage}
+\end{minipage}
 
 Expressions like this come up frequently during optimization.
 This is fantastic, because it is clear what we should do here.
@@ -334,24 +334,24 @@ Suppose I have the following FlatCurry definition for |notHead|.
 This function will look at the first element of a list, and return |not True|
 if the head of the list evaluates to True.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > notHead xs = case  xs of
 >                    x:_ -> case  x of
 >                                 True -> not x
-\end{samepage}
+\end{minipage}
 
 We use a key fact from Brassels work \cite{Kics2Theory}[Lemma 4.1.10].
 Lifting a case into it is own function Does not change the set of values
 an expression evaluates to.
 We can use this to lift the inner case into it is own function.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 > notHead xs = case  xs of
 >                    x:_ -> notHead_1 x
 > notHead_1 x = case x of
 >                    True -> not x
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Since uniform programs can be viewed as inductively sequential rewrite systems.
 The function |notHead_1| should be equivalent to the following Curry program.
 > notHead_1 True = not True
@@ -360,14 +360,14 @@ Now this program could be compiled into the following semantically equivalent Fl
 > notHead_1 x = case  x of
 >                     True   -> not True
 >                     False  -> EXEMPT
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Finally, by the path compression theorem we can reduce the call in |notHead| to get the following result.
 > notHead xs = case  xs of
 >                    x:_ -> case  x of
 >                                 True -> not True
-\end{samepage}
+\end{minipage}
 
 This gives us a general procedure for converting FlatCurry programs to the same program
 after performing Case Variable elimination.
@@ -499,19 +499,19 @@ For example |let x = True in not x| could inline to |not True|.
 When we use the term \textit{reduction}, we are referring to replacing a function call
 with the body of the function where the parameters of the function are replaced
 with the arguments of the call.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Again, as an example |let x = True in not x| could reduce to:
 > let  x = True
 > in   case  x of
 >            True   -> False
 >            False  -> True
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 The first problem with inlining and reduction we encounter is recursion.
 Consider the expression:
 > let loop = loop in ...
-\end{samepage}
+\end{minipage}
 
 If we were to inline this variable, we could potentially send the optimizer into an infinite loop.
 So, we need to somehow mark all recursive variables and functions.
@@ -519,10 +519,10 @@ The next problem follows immediately after that.
 So far we have done transformations with local information,
 but reduction is going to require global information.
 In fact, for reduction to be effective, it will require information from different modules.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 Consider the function:
 > sumPrimes = foldr (+) 0 . filter isPrime . enumFromTo 1
-\end{samepage}
+\end{minipage}
 
 Aside from the fact that |sumPrimes| contains mostly recursive functions,
 we would not be able to optimize it anyway, because |.| is defined in the standard Prelude.
@@ -560,19 +560,21 @@ because we may not know if a function is a partial application until we have opt
 Consider the |sumPrimes| function again.
 It does not look like a partial application because the root function, |.|, is fully applied.
 Let us look at the definition for |.|.
-\begin{samepage}
+\begin{minipage}{\textwidth}
 In Curry it is defined using a lambda expression.
 > f . g = \x -> f (g x)
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 However, when translated to FlatCurry, this lambda expression is turned into a combinator.
 > f . g = compLambda_1 f g
 > compLambda f g x = f (g x)
-\end{samepage}
+\end{minipage}
 
-\begin{samepage}
-So, when we try to optimize |sumPrimes| we end up with the following derivation.
+So, when we try to optimize |sumPrimes| we end up with 
+the derivation in figure \ref{fig:sumPrimeDeriv}.
+
+\begin{boxfigure}
 > let v_1 = p_2
 > in let v_2 = foldr_1 v_1 0
 > in let v_3 = isPrime_1
@@ -596,7 +598,9 @@ So, when we try to optimize |sumPrimes| we end up with the following derivation.
 > in let v_5 = enumFromTo_1 1
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6
-\end{samepage}
+    \caption{Initial optimization of |sumPrimes|}
+    \label{fig:sumPrimesDeriv}
+\end{boxfigure}
 
 The |REDUCE_BASE| and |REDUCE_LET| transformations will be described later.
 At this point there is no more optimization that can be done,
@@ -611,7 +615,7 @@ We simply add enough variables to the function definition so the body of the fun
 is fully applied.
 The transformation 
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 \noindent
 \textbf{Add Missing Variables}\\
 \begin{minipage}{.40\textwidth}
@@ -620,7 +624,7 @@ The transformation
 \begin{minipage}{.40\textwidth}
 > f (vec v) (vec x) = apply (g_k (vec e)) (vec x)
 \end{minipage}\\
-\end{samepage}
+\end{minipage}
 
 The |sumPrimes| functions is transformed with the derivation in \ref{fig:addvarDeriv}
 and we can continue to optimize the function.
@@ -743,8 +747,9 @@ Consider the program:
 The graph for this function is a triangle, because |f| calls |g| which calls |h| which calls |f|.
 However, if we mark |h| as a loop breaker, then suddenly this problem is easy.
 When we optimize |h|, we are free to reduce |f| and |g|.
+We can see the derivation in figure \ref{fig:loopOptDeriv}.
 
-\begin{samepage}
+\begin{boxfigure}
 > h x = case x of
 >            0 ->  0
 >            _ ->  let y = (appOpt (f x))
@@ -759,7 +764,10 @@ When we optimize |h|, we are free to reduce |f| and |g|.
 >            0 ->  0
 >            _ ->  let y = (appOpt (h x))
 >                  in 1 + y
-\end{samepage}
+    \caption{Optimization of strongly connected functions.}
+    \label{fig:loopOptDeriv}
+
+\end{boxfigure}
 
 
 \subsection{Inlining}
@@ -789,7 +797,7 @@ If we inline a constructor then we do not affect the computed results.
 This same result holds for literal values, but we will discuss how we handle literals
 in Curry in the next chapter.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 \begin{theorem}
 If |let x = e_1 in e| is a Curry expression in limited A-Normal Form, 
 and |e_1| is rooted by a constructor application, or partial application,
@@ -808,7 +816,7 @@ Therefore it is a deterministic expression by definition \ref{def:deterministic}
 Since $e_1$ is deterministic by the path compression theorem,
 $e$ evaluates to the same values as |extend e x e_1|
 \end{proof}
-\end{samepage}
+\end{minipage}
 
 Now we have enough information to inline variables as long as we restrict inlining to
 literals, constructors, variables, and partial applications,
@@ -945,7 +953,7 @@ or as a variable assignment in a let-expression.
 Furthermore our functions only contain trivial arguments,
 so it is now valid to reduce any function we come across.
 
-\begin{samepage}
+\begin{minipage}{\textwidth}
 \begin{theorem}[reduction]
 Let |e| be an expression in limited A-Normal Form,
 let |path e p = f (vec e)|,
@@ -961,7 +969,7 @@ where the root has symbol |f|, with the body of the definition for |f|.
 Therefore This is a deterministic step, and by the path compression theorem
 |e| and |extend e p ( sigma b )| have the same values.
 \end{proof}
-\end{samepage}
+\end{minipage}
 
 We give the GAS rules for reduction in figure \ref{fig:reduce}.
 These rule make use of the function table

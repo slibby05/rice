@@ -19,7 +19,7 @@ expressing complicated ideas in a simple form.
 Curry implements these ideas with a clean, easy to read syntax,
 which is similar to Haskell, a well known functional programming language.
 It is also lazy, so evaluation of Curry programs is similar to Haskell as well.
-Curry extends Haskell with two new concepts.
+Curry extends Haskell with two concepts from logic programming.
 First, there are non-deterministic functions, such as ``|?|''.  
 Semantically |a ? b| will evaluate
 |a| and |b| and will return both answers to the user.
@@ -27,33 +27,45 @@ Second, there are free, or logic, variables.
 A free variable is a variable that is not in the scope of the current function.
 The value of a free variable is not defined, but it may be constrained.
 
-Consider the following Curry code for solving n-queens:
-> queens | isEmpty (set1 unsafe p) = p
->  where p = permute [1..n]
-> 
-> unsafe (xs++[a]++ys++[b]++zs) = abs (a-b) =:= length ys
+These features are very useful for solving constraint problems.
+Consider the problem of scheduling a test for a large class of students.
+Since the class is so large, the students cannot take the test at the same time.
+To solve this problem we allow each student to choose all times that they are available
+to take the test.
+After they have selected their times we partition the students into groups, where each group
+corresponds to a testing time, and each group is less then a given capacity.
 
+This is a solvable problem in any language,
+but the solution in Curry is both concise and easily understood.
 
-In the |unsafe| function the input list is broken into 5 pieces.
-Two of the pieces, |a| and |b|, are lists with a single element.
-The sublists, |xs|, |ys|, and |zs| are free to be as long as they want.
-However, We have constrained the total list |xs++[a]++ys++[b]++zs|
-to be the same as the argument.
-The effect is that |a| and |b| are arbitrary elements in the list,
-and |ys| is the list of elements between |a| and |b|.
-If the difference between |a| and |b| is equal to the distance between
-the two element, then two queens could capture each other diagonally.
-So, we compute the set of all capturing queens,
-If the set is empty, then we return that permutation.
+\begin{minipage}{\textwidth}
+> type Time = Int
+> type Name = String
+> type Student = (Name, [Time])
+> type Test = [Name]
+>
+> schedule :: [Test] -> [Student] -> [Test]
+> schedule tests = foldr takeTest tests
+>
+> takeTest :: Student -> [Test] -> [Test]
+> takeTest (name, times) tests = anyOf (map (testAt name tests) times)
+>
+> testAt :: Name -> [Test] -> Time -> [Test]
+> testAt name tests k
+>   | length test < capacity 
+>   = ts1++[name : test]++ts2
+>  where (ts1,test:ts2) = splitAt k
+\end{minipage}
 
-Free variables are given concrete values in Curry programs through narrowing.
-The semantics of narrowing and non-determinism in Curry are given by 
-Antoy et al. \cite{Needed}
-Whenever the value of a free variable is needed, then 
-we select a possible value to fill it in.
-For example if |xs| is a list, we might fill it in with either |[]|
-or |(a:as) where a,as free|.
-We give a fuller account of narrowing in chapters \ref{ch:Mathematical Background} 
+The students are scheduled one at a time.
+Each student has a name, and a list of times that they are available to test.
+We non-deterministically place the student in one of the times they marked as available.
+To place a student in the $k^{th}$ test, we split the list into the tests before $k$,
+which we call |ts1|, and the lists after $k$, which we call |ts2|.
+Finally, we check that after putting the student in test $k$, 
+That test will still be below the capacity.
+
+We give a fuller account of the semantics in chapters \ref{ch:Mathematical Background} 
 and \ref{ch:The Curry Language},
 
 \subsection{Current Compilers}

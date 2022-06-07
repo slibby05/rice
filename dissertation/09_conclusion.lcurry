@@ -29,28 +29,30 @@ and showed that we can fix some of the inefficiencies in Pakcs and Kics2
 with case functions and fast backtracking.
 We justified these changes with the path compression theorem.
 
-We then introduced the \gassp system for easily constructing program transformations in Curry.
-We then showed that, after converting programs to A-Normal Form,
+We introduced the \gassp system for easily constructing program transformations in Curry.
+Then we showed that, after converting programs to A-Normal Form,
 many optimizations still remain valid.
 Specifically, we showed that both inlining and reduction
 remain valid for Curry programs, which is not true in general.
 
 We then showed 3 memory optimizations that have not been implemented 
 for functional logic programs.
-First we implemented unboxing via \cite{unboxing}, and justify its correctness.
-Next we showed a new optimization for functional logic programs called case shortcutting.
+For the first optimization, we implemented unboxing via \cite{unboxing}, and justified its correctness.
+For the second optimization, we showed a new optimization 
+for functional logic programs called case shortcutting.
 We showed the problems with trying to elide constructing a node that is evaluated in a case
 expression, then we showed how this problem can be solved with a new node.
-Finally we implement shortcut deforestation \cite{shortcutDeforestation},
+For the final optimization, we implemented shortcut deforestation \cite{shortcutDeforestation},
 and showed that, under suitable conditions, it remains correct for functional logic programs.
-In order to get decent performance out of this, 
+In order to get decent performance out of this optimization, 
 we developed a scheme for outlining partial applications, and optimizing them.
 
-Finally we showed that using an optimizing compiler we can improve the speed of Curry programs significantly.
-With our optimizations programs ran anywhere from 10 to 1000 times faster 
+Finally, we showed that using an optimizing compiler,
+we can improve the speed of Curry programs significantly.
+With our optimizations, programs ran anywhere from 10 to 1000 times faster 
 than Kics2, which is the current state of the art.
 We also saw that programs compiled with optimizations are almost always at least twice as fast
-is those compiled without, and sometimes up to twenty times as fast.
+as those compiled without, and sometimes up to twenty times as fast.
 
 \subsection{Future Work}
 

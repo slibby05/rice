@@ -90,12 +90,12 @@
 \maketitle
 \chapter*{Abstract}
 
-In this dissertation present  the \ricesp optimizing compiler for Curry.
+In this dissertation we present the \ricesp optimizing compiler for Curry.
 This is the first general optimizing compiler for Curry.
 Our work is based on the idea of compiling through program transformations,
 which has been a useful technique used by the functional language compiler community.
 We also present the \gassp system for easily generating new program transformations.
-This allows us easily describe and implement several optimizations,
+This allows us to easily describe and implement several optimizations,
 and show their correctness.
 We demonstrate the effectiveness of these optimizations by outperforming
 current compilers on several standard benchmarks.
@@ -121,7 +121,7 @@ current compilers on several standard benchmarks.
 
 %include 03_code.lcurry
 
-\chapter{Generating and Altering Subexpressions} \label{ch:Generating and Altering Subexpressions}
+\chapter{Generating an Altering Subexpressions} \label{ch:Generating and Altering Subexpressions}
 
 %include 04_gas.lcurry
 

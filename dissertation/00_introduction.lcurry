@@ -136,49 +136,50 @@ consumed by programs, which is a common problem for Curry programs \cite{proposa
 
 \subsection{Contributions}
 
-In this dissertation we build an efficient implementation of the Curry language.
+In this dissertation, we build an efficient implementation of the Curry language.
 We discuss the evaluation and run-time system for our implementation,
 and show that two aspects of implementations in Pakcs and Kics2
 are not efficient.
-First, when evaluating expressions Pakcs will push all rewrites
-onto the backtracking stack, even if they don't need to be backtracked.
+First, when evaluating expressions, Pakcs will push all rewrites
+onto the backtracking stack, even if they do not need to be backtracked.
 Second, both Pakcs and Kics2 will convert every Curry function
-to a flattened form that contains a single case expression.
-We show novel ways to overcome both of these inefficient.
-With fast backtracking we show that any deterministic expression
-doesn't need to be pushed on the backtracking stack,
-and with case functions, we show how we can still 
-have correct semantics for function with multiple case expressions,
-by constructing a new function for each case expression that we can backtrack to.
+to a flattened form that contains a at most one case expression.
+We show novel ways to overcome both of these inefficiencies.
+With fast backtracking, we show that any deterministic expression
+does not need to be pushed on the backtracking stack.
+With case functions, we show how we can still 
+have correct semantics for functions than contain multiple case expressions.
+We do this by constructing a new function for each case expression to which we can backtrack.
 We justify both of these results with the path compression theorem,
-which shows that evaluating a redex early doesn't change the result of the computation.
+which shows that evaluating a redex early does not change the result of the computation.
 
-We then introduce the \gassp system,
+Next we introduce the \gassp system,
 which is a library for constructing program transformations.
-The idea are similar to \cite{haskellComp},
+The idea is similar to \cite{haskellComp},
 but we show how using functional logic ideas can improve the implementation.
 
-We then show that, after converting programs to A-Normal Form,
+We show that, after converting programs to A-Normal Form,
 many optimizations still remain valid.
 Specifically, we show that both inlining and reduction
 remain valid for Curry programs, which is not true in general.
 
 We then show 3 memory optimizations that have not been implemented 
 for functional logic programs.
-First we implement unboxing via \cite{unboxing}, and justify its correctness.
-Next we show a new optimization for functional logic programs called case shortcutting.
+For the first optimization, we implement unboxing via \cite{unboxing}, and justify its correctness.
+For the second optimizations, we show a new optimization for 
+functional logic programs called case shortcutting.
 We show the problems with trying to elide constructing a node that is evaluated in a case
 expression, then we show how this problem can be solved with a new node.
-Finally we implement shortcut deforestation \cite{shortcutDeforestation},
+For the final optimization, we implement shortcut deforestation \cite{shortcutDeforestation},
 and show that, under suitable conditions, it remains correct for functional logic programs.
-In order to get decent performance out of this, we develop a scheme for outlining partial applications,
-and optimizing them.
+In order to get decent performance out of this optimization, 
+we develop a scheme for outlining partial applications, and optimizing them.
 
-Finally we show that using an optimizing compiler we can improve the speed of Curry programs significantly.
-We show that with our optimizations programs run anywhere from 10 to 1000 times faster 
+Finally we show that, using an optimizing compiler, we can improve the speed of Curry programs significantly.
+We show that, with our optimizations, programs run anywhere from 10 to 1000 times faster 
 than Kics2, which is the current state of the art.
 We also see that programs compiled with optimizations are almost always at least twice as fast
-is those compiled without, and sometimes up to twenty times as fast.
+as those compiled without, and sometimes up to twenty times as fast.
 
 \subsection{Overview}
 

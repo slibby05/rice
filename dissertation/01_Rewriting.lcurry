@@ -13,11 +13,14 @@ of these transformations respect the rules of Curry.
 As we will see, if we break these rules, 
 then we may get some unexpected results.
 
-We introduce the concept of Rewriting, 
+We review the theorey of term Rewriting
+following the style of Ohlebusch \cite{AdvancedTRS},
 along with the more specific Term and Graph Rewriting.
 We give a basic intuition about how to apply these topics,
 and show several examples using a small, but not trivial,
 example of a rewrite system for Peano Arithmetic \ref{fig:peano}.
+We will use these concepts to define the semantics of Curry,
+as well as develop optimizations.
 
 \section{Rewriting}
 In programming language terms, the rules of Curry are its semantics.

@@ -44,6 +44,8 @@
 \newcommand{\rice}{\texttt{RICE}}
 \newcommand{\ricesp}{\texttt{RICE }}
 
+\newcommand{\gas}{\texttt{GAS}}
+\newcommand{\gassp}{\texttt{GAS }}
 
 
 
@@ -62,7 +64,7 @@
 
 
 \newenvironment{boxfigure}
-     { \begin{figure}[h] \begin{mdframed} }
+     { \begin{figure}[htbp] \begin{mdframed} }
      { \end{mdframed} \end{figure} }
 %\newenvironment{boxfigure}%
 %{%
@@ -88,6 +90,15 @@
 \maketitle
 \chapter*{Abstract}
 
+In this dissertation present  the \ricesp optimizing compiler for Curry.
+This is the first general optimizing compiler for Curry.
+Our work is based on the idea of compiling through program transformations,
+which has been a useful technique used by the functional language compiler community.
+We also present the \gassp system for easily generating new program transformations.
+This allows us easily describe and implement several optimizations,
+and show their correctness.
+We demonstrate the effectiveness of these optimizations by outperforming
+current compilers on several standard benchmarks.
 
 \tableofcontents
 
@@ -141,9 +152,6 @@
 
 %include A1_manual.lcurry
  
-% \chapter{Benchmarks Programs} \label{ch:Benchmarks Programs}
-% 
-% %include A2_benchmarks.lcurry
 
 
 \printindex

@@ -84,6 +84,8 @@ by permuting a list, and checking if it is a valid solution.
 
 \item \textbf{sort} sorts a list by finding a sorted permutation.
 
+\item \textbf{last} A program to compute the last element in a list using free variables.
+
 \item \textbf{schedule} The scheduling program from the introduction.
 \end{itemize}
 
@@ -304,7 +306,7 @@ ndtest          &      491 &    18 &     2 &    1 \\
 \hline
 perm            &       73 &     6 &     2 &    1 \\
 \hline
-queensPerm      &     5171 &    27 &     1 &    1 \\
+queensPerm      &    5,171 &    27 &     1 &    1 \\
 \hline
 primesort       &    9,879 &     3 &     7 &    1 \\
 \hline

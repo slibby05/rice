@@ -1,5 +1,5 @@
 
-In the last chapter we saw how the GAS tool
+In the last chapter we saw how the \gassp tool
 let us write transformation rules as rewrite rules in Curry.
 The power of this tool came from two aspects.
 The first is that it is easy to write rules syntactically.
@@ -145,7 +145,7 @@ Flanagan et al. showed that these transformations can be reduced into a single
 A-Normal form transformation.
 We give the definition of A-Normal Form for Curry programs in figure
 \ref{fig:anormal}
-and we implement the transformation using GAS in figure
+and we implement the transformation using \gassp in figure
 \ref{fig:anormalTransform} with the Curry implementation in figure \ref{fig:anormalCurry}.
 
 \begin{boxfigure}
@@ -344,6 +344,7 @@ We use a key fact from Brassels work \cite{Kics2Theory}[Lemma 4.1.10].
 Lifting a case into it is own function Does not change the set of values
 an expression evaluates to.
 We can use this to lift the inner case into it is own function.
+
 \begin{minipage}{\textwidth}
 > notHead xs = case  xs of
 >                    x:_ -> notHead_1 x
@@ -351,19 +352,25 @@ We can use this to lift the inner case into it is own function.
 >                    True -> not x
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 Since uniform programs can be viewed as inductively sequential rewrite systems.
 The function |notHead_1| should be equivalent to the following Curry program.
+
+\begin{minipage}{\textwidth}
 > notHead_1 True = not True
 > notHead_1 False = EXEMPT
+\end{minipage}
+
 Now this program could be compiled into the following semantically equivalent FlatCurry program.
+
+\begin{minipage}{\textwidth}
 > notHead_1 x = case  x of
 >                     True   -> not True
 >                     False  -> EXEMPT
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 Finally, by the path compression theorem we can reduce the call in |notHead| to get the following result.
+
+\begin{minipage}{\textwidth}
 > notHead xs = case  xs of
 >                    x:_ -> case  x of
 >                                 True -> not True
@@ -499,19 +506,19 @@ For example |let x = True in not x| could inline to |not True|.
 When we use the term \textit{reduction}, we are referring to replacing a function call
 with the body of the function where the parameters of the function are replaced
 with the arguments of the call.
-\begin{minipage}{\textwidth}
 Again, as an example |let x = True in not x| could reduce to:
+
+\begin{minipage}{\textwidth}
 > let  x = True
 > in   case  x of
 >            True   -> False
 >            False  -> True
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 The first problem with inlining and reduction we encounter is recursion.
 Consider the expression:
+
 > let loop = loop in ...
-\end{minipage}
 
 If we were to inline this variable, we could potentially send the optimizer into an infinite loop.
 So, we need to somehow mark all recursive variables and functions.
@@ -519,10 +526,9 @@ The next problem follows immediately after that.
 So far we have done transformations with local information,
 but reduction is going to require global information.
 In fact, for reduction to be effective, it will require information from different modules.
-\begin{minipage}{\textwidth}
 Consider the function:
+
 > sumPrimes = foldr (+) 0 . filter isPrime . enumFromTo 1
-\end{minipage}
 
 Aside from the fact that |sumPrimes| contains mostly recursive functions,
 we would not be able to optimize it anyway, because |.| is defined in the standard Prelude.
@@ -555,18 +561,18 @@ We will use this map to determine when it is safe and effective to reduce a func
 \subsection{Partial Applications}
 
 Dealing with partial applications is a bit more tricky.
-In fact, we can not use the GAS system to solve this problem
+In fact, we can not use the \gassp system to solve this problem
 because we may not know if a function is a partial application until we have optimized it.
 Consider the |sumPrimes| function again.
 It does not look like a partial application because the root function, |.|, is fully applied.
 Let us look at the definition for |.|.
-\begin{minipage}{\textwidth}
 In Curry it is defined using a lambda expression.
+
 > f . g = \x -> f (g x)
-\end{minipage}
+
+However, when translated to FlatCurry, this lambda expression is turned into a combinator.
 
 \begin{minipage}{\textwidth}
-However, when translated to FlatCurry, this lambda expression is turned into a combinator.
 > f . g = compLambda_1 f g
 > compLambda f g x = f (g x)
 \end{minipage}
@@ -797,7 +803,6 @@ If we inline a constructor then we do not affect the computed results.
 This same result holds for literal values, but we will discuss how we handle literals
 in Curry in the next chapter.
 
-\begin{minipage}{\textwidth}
 \begin{theorem}
 If |let x = e_1 in e| is a Curry expression in limited A-Normal Form, 
 and |e_1| is rooted by a constructor application, or partial application,
@@ -816,7 +821,6 @@ Therefore it is a deterministic expression by definition \ref{def:deterministic}
 Since $e_1$ is deterministic by the path compression theorem,
 $e$ evaluates to the same values as |extend e x e_1|
 \end{proof}
-\end{minipage}
 
 Now we have enough information to inline variables as long as we restrict inlining to
 literals, constructors, variables, and partial applications,
@@ -825,7 +829,7 @@ We add two new rules.  |LET_FOLDING| allows us to move variable definitions
 closer to where they are actually used,
 and |UNAPPLY| allows us to simplify expressions involving |apply|.
 Both of these are useful for inlining and reduction.
-The GAS rules are given in figure \ref{fig:inline}.
+The \gassp rules are given in figure \ref{fig:inline}.
 Note that the |UNAPPLY| rule corresponds exactly to the evaluation step for application nodes
 in our semantics.
 The inlining rules correspond to the cases discussed above.
@@ -834,7 +838,7 @@ if that expression occurs once in a needed position.
 Since we can not determine if the variable occurs in a needed position at compile time,
 we can use check if it occurs in a strict position \cite{strictAbstract}.
 This is usually good enough.
-The implementation of Inlining in the Gas system is given in figure \ref{fig:inlineCode}.
+The implementation of Inlining in the \gassp system is given in figure \ref{fig:inlineCode}.
 The combinator |(x,e) @> sigma| is used to build up substitutions.
 It means that we add we add $x \to e$ to the substitution |sigma|.
 The |idSub| substitution is just the identity.
@@ -934,7 +938,7 @@ we have found that these restrictions generate better code.
 >
 > inline _ (Let [v@(_, Lit _)] e) = sub (v @> idSub) e
 
-\caption{Gas implementation of the inlining rules.}
+\caption{\gassp implementation of the inlining rules.}
 \label{fig:inlineCode}
 \end{boxfigure}
 
@@ -953,7 +957,6 @@ or as a variable assignment in a let-expression.
 Furthermore our functions only contain trivial arguments,
 so it is now valid to reduce any function we come across.
 
-\begin{minipage}{\textwidth}
 \begin{theorem}[reduction]
 Let |e| be an expression in limited A-Normal Form,
 let |path e p = f (vec e)|,
@@ -969,9 +972,8 @@ where the root has symbol |f|, with the body of the definition for |f|.
 Therefore This is a deterministic step, and by the path compression theorem
 |e| and |extend e p ( sigma b )| have the same values.
 \end{proof}
-\end{minipage}
 
-We give the GAS rules for reduction in figure \ref{fig:reduce}.
+We give the \gassp rules for reduction in figure \ref{fig:reduce}.
 These rule make use of the function table
 We make sure that |rbody f| replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.
@@ -1065,7 +1067,7 @@ we do not get the same readable code.
 >   &&  cancels funs f (map isConsExpr es) = Let [(x,b')] e
 >    where b' = makeReduce funs n b
 > 
-\caption{Gas code for the Reduce optimizations.\\
+\caption{\gassp code for the Reduce optimizations.\\
          The |makeReduce| function corresponds to |rbody|,
          and it is a helper function that
          substitutes parameters of the function with expressions,

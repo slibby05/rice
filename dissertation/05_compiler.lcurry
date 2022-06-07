@@ -1,6 +1,6 @@
 
-In the last chapter we developed the GAS system for representing transformation.
-In this chapter we show an extended example of using the GAS system to transform FlatCurry programs
+In the last chapter we developed the \gassp system for representing transformation.
+In this chapter we show an extended example of using the \gassp system to transform FlatCurry programs
 into a canonical form.
 We then show how to translate these canonical progras to the ICurry intermediate representation.
 Finally, we compile the ICurry progrms to C code, as discussed in chapter 3.
@@ -67,7 +67,7 @@ After Post-processing
 
 \section{Canonical FlatCurry}
 
-The pre-process and post-process steps of the compiler make heavy use the of GAS system,
+The pre-process and post-process steps of the compiler make heavy use the of \gassp system,
 and transform the FlatCurry program in to a form that is more amenable to C,
 including removing case and let expression from inside function applications.
 We will discuss the optimization phase in the next section,
@@ -94,17 +94,15 @@ but for now we can see how transformations work.
 \label{fig:flatCanonical}
 \end{boxfigure}
 
-\begin{minipage}{\textwidth}
 Let us start with an example:
-> 1 + let x = 3 in x
-\end{minipage}
 
-\begin{minipage}{\textwidth}
+> 1 + let x = 3 in x
+
 This is a perfectly fine Curry program, 
 but C does not allow variable declarations in an expression,
 so we need to rewrite this Curry expression to:
+
 > let x = 3 in 1 + x
-\end{minipage}
 
 We do not reduce |let x = 3 in x| yet, because that would be an optimization.
 However, this will be reduced later.
@@ -235,7 +233,7 @@ However, these extensions to the rules are also included in the repository \cite
 > let x free
 > in case e of alts
 \end{minipage}
-\caption{GAS rules for putting FlatCurry programs into canonical form}
+\caption{\gassp rules for putting FlatCurry programs into canonical form}
 \label{fig:canonical}
 \end{boxfigure}
 
@@ -310,7 +308,7 @@ However, these extensions to the rules are also included in the repository \cite
 >       False  -> EXEMPT
 \end{minipage}\\
 
-\caption{GAS rules for putting FlatCurry programs into canonical form (continued)\\
+\caption{\gassp rules for putting FlatCurry programs into canonical form (continued)\\
          The notation |{ e }| refers to a vector of expressions, similar to |vec e|.}
 \label{fig:canonical2}
 \end{boxfigure}
@@ -320,16 +318,16 @@ a few require some explanation.
 First we address a possible concern from the last chapter.
 Since we make no attempt to ensure confluence of our rewrite rules,
 can we be sure that our transformations are even valid?
-In general, no we can't.  GAS does nothing to enforce the validity of rewrites,
+In general, no we can't.  \gassp does nothing to enforce the validity of rewrites,
 it just applies them as it encounters an opportunity.
 This is a problem, because our rules as they're stated may not be valid.
 For example, consider the following program.
 
 > f (let x = 1 in x) (let x = 2 in x)
 
-\begin{minipage}{\textwidth}
 This could be transformed into on of the following.
 
+\begin{minipage}{\textwidth}
 > let x = 1 in let x = 2 in f x x
 > let x = 2 in let x = 1 in f x x
 \end{minipage}
@@ -337,7 +335,7 @@ This could be transformed into on of the following.
 Unfortunately, neither of these are correct.
 The solution in this case is very simple.
 We always enforce that variable names are unique.
-This is the purpose being the fresh variable provided to optimizations by GAS.
+This is the purpose being the fresh variable provided to optimizations by \gas.
 If we ever need to create a new variable, then that is one that is guaranteed to be unique.
 However, it is up to the compiler writer to ensure that this constraint is enforced.
 
@@ -361,6 +359,7 @@ we create a new branch |C_i -> EXEMPT|.
 The \textbf{blocks} transformation takes a let block with multiple variable definitions,
 and rewrites it to a series of let blocks where all variables are split into
 strongly connected components.
+These are the smallest components that contain mutual recursion.
 This is not strictly necessary,
 but it removes the need to check for mutual recursion during the optimization phase.
 It will often transform a block of mutually defined variables into a cascading 
@@ -774,6 +773,6 @@ $\mathcal{E_M}(e_1 ? e_2)$ & $\coloneqq$ & \texttt{make\_choice}$(\mathcal{E}_M(
 In this chapter we used this library to transform FlatCurry programs into a canonical form that we could then
 translate to ICurry.  We also showed how to translate ICurry program to C.
 In short we wrote the back end of a compiler in a simple, clear, and short implementation.
-This shows the power of the GAS system for applying simple transformations to Curry programs.
+This shows the power of the \gassp system for applying simple transformations to Curry programs.
 In the next chapter we will see how we can use it to write an Optimizer.
-Now we're cooking with GAS!
+Now we're cooking with \gas!

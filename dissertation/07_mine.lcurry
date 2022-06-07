@@ -143,8 +143,8 @@ we cannot make a single static node for them.
 We might try to create a single static node for every literal value used in the program.
 Unfortunately this does not tend to help us that much.
 Consider the standard factorial program:
-\begin{minipage}{\textwidth}
 
+\begin{minipage}{\textwidth}
 > fac n = case  n of
 >               0 -> 1
 >               n -> n * fac(n-1)
@@ -358,7 +358,7 @@ A parameter that must be evaluated by a function is called \emph{strict}\index{s
 Formally, a function |f| is strict in its parameter if 
 |f EXEMPT = EXEMPT|.
 
-We use |EXEMPT| here to mean that the value of it is parameter does not evaluate to a value,
+We use |EXEMPT| here to mean that the value of its parameter does not evaluate to a value,
 this can come from a call to the |error| function, or
 an infinite computation.
 It does not mean that |f| failed to return a value.
@@ -393,7 +393,7 @@ For example consider the following function:
 
 It is clear that |x| must be strict, but we do not know about |y| or |z|.
 After analyzing the case branches, we see that since |y| appears in both branches,
-and |+| is strict in both of it is arguments, |y| must be strict as well.
+and |+| is strict in both of its arguments, |y| must be strict as well.
 Finally, since there is a branch that |z| does not appear in, |z| may not be evaluated,
 so it is not strict.
 
@@ -402,7 +402,6 @@ but it fails when working with a recursively defined function.
 Consider the factorial function with an accumulator:
 
 \begin{minipage}{\textwidth}
-
 > faca n acc = case  n == 0 of
 >                    True   -> acc
 >                    False  -> n * faca (n-1) (n*acc)
@@ -715,8 +714,10 @@ void main_hnf(Node* root)
 
 \subsection{RET hnf Functions}
 
-This solution is better, because any rewrites we push onto the stack
-contain a copy of \texttt{RET}, but it is still not correct.
+In the last section we copied RET nodes before pushing them
+onto the backtracking stack, 
+this is an improvement on our first approach, because the backtracking stack
+does not include any RET nodes, but it's still not quite correct.
 Three things can still go wrong here.
 These are very subtle errors that are very easy to overlook,
 and even harder to track down the real cause of the errors.
@@ -951,7 +952,7 @@ In particular, we want to eliminate the two intermediate lists created here.
 This is the goal of Deforestation.
 
 \subsection{The Original Scheme}
-Deforestation has actually gone through several forms throughout it is history.
+Deforestation has actually gone through several forms throughout its history.
 The original optimization proposed by Wadler \cite{deforestationWadler}
 was very general, but it required a complicated algorithm, and it could fail to terminate.
 There have been various attempts to improve this algorithm \cite{turchin_supercompiler} and 
@@ -983,11 +984,11 @@ In Curry, the |foldr| function is defined as:
 > foldr `f` z (x:xs)  = x `f` foldr f z xs
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 As an example, we can define the |sum| function as |sum xs = foldr (+) 0|.
 To see what this is really doing we can unroll the recursion.
 Suppose we evaluate |foldr (+) 0 [1,2,3,4,5]|, then we have:
 
+\begin{minipage}{\textwidth}
 > foldr (+) 0 [1,2,3,4,5]
 > => 1 + foldr (+) 0 [2,3,4,5]
 > => 1 + (2 + foldr (+) 0 [3,4,5]))
@@ -997,9 +998,9 @@ Suppose we evaluate |foldr (+) 0 [1,2,3,4,5]|, then we have:
 > => 1 + (2 + (3 + (4 + (5 + 0))))
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 But wait, this looks very similar to our construction of a list.
 
+\begin{minipage}{\textwidth}
 > 1  :  (2  :  (3  :  (4  :  (5  :  ([])))))
 > 1  +  (2  +  (3  +  (4  +  (5  +  (0)))))
 \end{minipage}
@@ -1038,8 +1039,9 @@ a list of integers from |a| to |b|.
 >  | otherwise  = a : enumFromTo (a+1) b
 \end{minipage}
 
-\begin{minipage}{\textwidth}
 We can turn this into a build function.
+
+\begin{minipage}{\textwidth}
 > enumFromTo a b = build (enumFromTo_build a b)
 > enumFromTo_build a b c n
 >  | a > b      = n
@@ -1075,7 +1077,9 @@ original paper \cite{shortcutDeforestation}.
 > sumPrimes m = foldr (\x y -> x + y) 0 
 >                 (build (\c n -> (enumFromTo_build 2 x) (\x y -> if isPrime x then x `c` y else y) n))
 > ==>
-> sumPrimes m = enumFromTo_build 2 m (\x y -> if isPrime x then (\x y -> x + y) x y else y) 0
+> sumPrimes m = enumFromTo_build 2 m (\x y ->  if isPrime x 
+>                                              then (\x y -> x + y) x y 
+>                                              else y) 0
 > ==>
 > sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
 >   where enumToFrom_build k m c z =  if k > m 
@@ -1100,7 +1104,7 @@ original paper \cite{shortcutDeforestation}.
 >                                 else  if isPrime k 
 >                                       then x + (enumToFrom_build (k+1) m c z) 
 >                                       else (enumToFrom_build (k+1) m c z)
-\caption{Optimization derivation for for short-cut Deforestation}
+\caption{Optimization derivation for short-cut Deforestation}
 \label{fig:sumPrimes_deforest}
 \end{boxfigure}
 
@@ -1122,10 +1126,10 @@ Instead we need a new solution.
 
 \subsection{Solution build\_fold}
 
-\begin{minipage}{\textwidth}
 Our solution to this problem is to introduce a new combinator for transforming lists.
 We call this |build_fold| since it is a build applied to a fold.
 
+\begin{minipage}{\textwidth}
 > build_fold :: ((c -> b -> b) -> (a -> b -> b)) -> (b -> b) -> [a] -> b
 > build_fold mkf mkz xs = foldr (mkf (:)) (mkz []) xs
 \end{minipage}
@@ -1179,7 +1183,7 @@ we can look at the implementation.
 \subsection{Implementation}
 
 Deforestation turned out to be one of the easiest optimizations to implement.
-The implementation is entirely in GAS, and it proceeds in two steps.
+The implementation is entirely in \gas, and it proceeds in two steps.
 First we find any case where a |build| or |build_fold|
 occurs exactly once in either a |build_fold| or |fold|.
 If this is the case, we inline the variable that |build| is bound to into it is single use.
@@ -1419,7 +1423,6 @@ First, we need to rewrite our rules so that the reduced expression is in A-Norma
 >                                                       in   build_fold mkf mkz xs
 \end{minipage}\\
 
-\begin{minipage}{\textwidth}
 Now we are ready to state our result.
 \begin{theorem}
 suppose |f|, |z|, |g|, |mkf|, and |mkz| are all FlatCurry functions
@@ -1437,7 +1440,6 @@ then the following equations are valid.
 >                                                       in   build_fold mkf mkz xs
 
 \end{theorem}
-\end{minipage}
 
 \begin{proof}
 We show the result for foldr-build, and the rest are similar calculations.

@@ -31,7 +31,7 @@ It will only attempt to generate C code.
 This mode is useful for testing changes to the code generator.
 Any other changes really need the full optimization of the code.
 
-The arguments are defined below, The format is flat, longName, description.
+The arguments are defined below, The format is flat, longName, description.\\
 \begin{tabular}{r||r||l}
 \hline
   -d & datatable  & Print the table of Data Type definitions.     \\ \hline
@@ -113,7 +113,7 @@ We can do this with the |rename| function.
 Final we define functions for getting the Type and Constructor name for primitive types.
 
 \subsection{Gas.curry}
-The Gas library is build around the idea of an optimization.
+The \gassp library is build around the idea of an optimization.
 For our compiler an optimization is a function of type |(Int, Bool) -> Expr -> (Expr,String,VarIndex)|.
 We provide the next fresh variable, 
 and if the optimization is being applied to the root of the function as state,

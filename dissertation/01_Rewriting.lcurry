@@ -55,7 +55,7 @@ We use $a \to b$ as a shorthand for $(a,b) \in \to$, and we have several modifie
 
 A rewrite system is meant to invoke the feeling of algebra.
 In fact, rewrite system are much more general, but they can still retain the feeling.
-If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in figure \ref{fig:reduce}.
+If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in figure \ref{fig:reduction}.
 
 \begin{boxfigure}
 \begin{tabular}{rll}
@@ -67,7 +67,7 @@ If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the 
     $\to$ & $x^3 + 2x^2 + x + 2$                             & by definition of $x^3$\\
 \end{tabular}\\
     \caption{reducing $(x\cdot x + 1)(2 + x)$ using the standard rules of algebra}
-    \label{fig:reduce}
+    \label{fig:reduction}
 \end{boxfigure}
 
 We can conclude that $(x\cdot x + 1)(x + 2) \to^+ x^3 + 2x^2 + x + 2$.

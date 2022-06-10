@@ -578,7 +578,7 @@ However, when translated to FlatCurry, this lambda expression is turned into a c
 \end{minipage}
 
 So, when we try to optimize |sumPrimes| we end up with 
-the derivation in figure \ref{fig:sumPrimeDeriv}.
+the derivation in figure \ref{fig:sumPrimesDeriv}.
 
 \begin{boxfigure}
 > let v_1 = p_2
@@ -619,8 +619,8 @@ The key is to notice that if the root of the body of a function is a partial app
 then we can rewrite our definition.
 We simply add enough variables to the function definition so the body of the function
 is fully applied.
-The transformation 
-
+The transformation \\
+$\ $\\
 \begin{minipage}{\textwidth}
 \noindent
 \textbf{Add Missing Variables}\\

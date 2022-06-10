@@ -542,7 +542,7 @@ When calling this function with a free variable, we have the derivation below in
    \item |r| is rewritten to |Green|, and |(r,change, Continue)| is pushed on the stack
    \item |r| is a constructor normal form
    \item backtracking to the closest alternative
-   \item backtracking stack is 
+   \item backtracking stack is \\
          |[(r,change,Continue), (x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)]|.
    \item reduce |r|
    \item |x| is labeled by |Green|
@@ -777,7 +777,8 @@ $FORWARD(x)$\index{$FORWARD$}, where |x| is the variable that the function colla
 
 There is one more possibility to address before we move on.
 One performance optimization with forwarding nodes is \emph{path compression}\index{path compression}.
-If we have a chain of forwarding nodes $FORWARD(FORWARD(FORWARD(x)))$, 
+If we have a chain of forwarding nodes \\
+$FORWARD(FORWARD(FORWARD(x)))$, 
 we want to collapse this to simply $FORWARD(x)$.
 This is unequivocally invalid in non-deterministic backtracking systems.
 Consider the following function.

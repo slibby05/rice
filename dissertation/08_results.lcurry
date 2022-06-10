@@ -134,6 +134,10 @@ We timed every program with Kics2 \cite{kics2}, Pakcs \cite{pakcs}, and the Mcc 
 Unfortunately we were not able to get an accurate result on how much memory any of these compilers
 allocated, so we were unable to compare our memory results.
 
+We also show how our compiler compares against GHC in figure \ref{fig:ghc}.
+Since most examples include non-determinism or free variables, we are unable to run those.
+We run our optimized code against unoptimized GHC and optimized GHC.
+
 
 %\begin{boxfigure}
 %\begin{tabular}{||||l||||r||r||r||r||||}
@@ -312,9 +316,9 @@ primesort       &    9,879 &     3 &     7 &    1 \\
 \hline
 sort            &      923 &    35 &     1 &    1 \\
 \hline
-last            & $\infty$ &  9.44 &  .311 & .225 \\
+last            & $\infty$ &    42 &     1 &    1 \\
 \hline
-schedule        &      477 &    25 &     1 &    1 \\
+schedule        &    5,824 &    20 &     2 &    1 \\
 \hhline{||||=||||=||=||=||=||||}
 queensDet       &     4573 &     5 &     5 &    1 \\
 \hline
@@ -363,6 +367,10 @@ queensPerm      &    1.00 &  0.63 &  0.28 &     0.50 &     0.62 & 0.18 \\
 primesort       &    1.00 &  0.72 &  0.55 &     0.58 &     0.77 & 0.37 \\
 \hline
 sort            &    1.00 &  0.66 &  0.56 &     0.66 &     0.70 & 0.38 \\
+\hline
+last            &    1.00 &       &       &          &          &      \\
+\hline
+schedule        &    1.00 &       &       &          &          &      \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 queensDet       &    1.00 &  0.64 &  0.20 &     0.10 &     0.55 & 0.08 \\
 \hline
@@ -419,9 +427,9 @@ primesort       &  10,546K &   8,458K &  6,344K &    6,375K &    8,454K &  6,340
 \hline
 sort            &  20,295K &  14,332K & 11,949K &   11,949K &   14,332K & 11,949K \\
 \hline
-last            &          &          &         &           &           & 8000291 \\
+last            &          &          &         &           &           &  8,000K \\
 \hline
-schedule        &          &          &         &           &           &         \\
+schedule        &          &          &         &           &           & 63,273K \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 queensDet       &  96,894K &  53,781K & 16,599K &   33,385K &   48,360K &  9,372K \\
 \hline
@@ -443,6 +451,30 @@ sumPrimes       &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21
 \caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
 \label{fig:memory}
 \end{boxfigure}
+
+\begin{boxfigure}
+\begin{tabular}{||||l||||r||r||r||r||r||r||||}
+\hhline{||||=||||=||=||=||||}
+                &    rice  & ghc Unoptimized &   GHC Optimized \\
+\hhline{||||=||||=||=||=||||}
+fib             &        0 &               0 &               0 \\
+\hline
+buildFold       &        0 &               0 &               0 \\
+\hline
+primes          &        0 &               0 &               0 \\
+\hline
+queens          &        0 &               0 &               0 \\
+\hline
+reverse         &        0 &               0 &               0 \\
+\hline
+sumPrimes       &        0 &               0 &               0 \\
+\hline
+\hhline{||||=||||=||=||=||||}
+\end{tabular}
+\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
+\label{fig:ghc}
+\end{boxfigure}
+
 
 There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_rice}, and \ref{fig:memory}
 that we feel are worth pointing out.

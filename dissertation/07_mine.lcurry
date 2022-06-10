@@ -1083,27 +1083,21 @@ original paper \cite{shortcutDeforestation}.
 > ==>
 > sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
 >   where enumToFrom_build k m c z =  if k > m 
->                       then z
->                       else c k (enumToFrom_build (k+1) m c z)
-> ==>
-> sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
->   where enumToFrom_build k m c z =  if k > m 
 >                                     then z
->                                     else (\x y -> if isPrime x then x + y else y) 
->                                             k (enumToFrom_build (k+1) m c z)
+>                                     else c k (enumToFrom_build (k+1) m c z)
 > ==>
 > sumPrimes m = enumToFrom_build 2 m
 >   where enumToFrom_build k m =  if k > m 
->                                 then z
+>                                 then 0
 >                                 else (\x y ->  if isPrime x then x + y else y)
->                                        k (enumToFrom_build (k+1) m c z)
+>                                        k (enumToFrom_build (k+1) m)
 > ==>
 > sumPrimes m = enumToFrom_build 2 m
 >   where enumToFrom_build k m =  if k > m 
->                                 then z
+>                                 then 0
 >                                 else  if isPrime k 
 >                                       then x + (enumToFrom_build (k+1) m c z) 
->                                       else (enumToFrom_build (k+1) m c z)
+>                                       else (enumToFrom_build (k+1) m)
 \caption{Optimization derivation for short-cut Deforestation}
 \label{fig:sumPrimes_deforest}
 \end{boxfigure}
@@ -1194,6 +1188,7 @@ which applies either the |foldr/build| theorem,
 or one of the three |build_fold| theorems from above.
 The definitions for the deforest transformation are given in figure \ref{fig:deforest}
 The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
+The unused variables will be removed at a later time by dead code elimination.
 
 \begin{boxfigure}
 \textbf{Inline foldr/build:}\\
@@ -1295,10 +1290,6 @@ The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
 > ==> FOLD_BUILD
 > let appOpt (v_1 = build enumFromTo_build 2 n)
 > in let appOpt (v_2 = build_fold (filter_mkf isPrime) id v_1)
-> in let z = id 0
-> in let f = filter_mkf isPrime (+)
-> in enumFromTo_build 2 n f z
-> ==> DEAD_CODE
 > in let z = id 0
 > in let f = filter_mkf isPrime (+)
 > in enumFromTo_build 2 n f z

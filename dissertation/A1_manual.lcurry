@@ -314,7 +314,7 @@ C.curry is a library for constructing C code.
 Instead of constructing an AST of a C program, and writing a pretty printer,
 we opted to write functions that produce formatted C strings.
 This works very well in practice, and is similar to creating an EDSL.
-As an example, we may write code like the follwing:
+As an example, we may write code like the following:
 
 \begin{minipage}{\textwidth}
 > cIfElse (x .!= 2)
@@ -325,7 +325,7 @@ As an example, we may write code like the follwing:
 >    scall "function2" [x, 3]
 > ]
 \end{minipage}
-to generate the code
+to generate the code\\
 \begin{minipage}{\textwidth}
 \begin{verbatim}
 if(x != 2)

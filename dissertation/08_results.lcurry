@@ -457,24 +457,25 @@ sumPrimes       &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21
 \hhline{||||=||||=||=||=||||}
                 &    rice  & ghc Unoptimized &   GHC Optimized \\
 \hhline{||||=||||=||=||=||||}
-fib             &        0 &               0 &               0 \\
+fib             &     1.00 &         4.60 &        0.32 \\
 \hline
-buildFold       &        0 &               0 &               0 \\
+buildFold       &     1.00 &         2.77 &        0.31 \\
 \hline
-primes          &        0 &               0 &               0 \\
+primes          &     1.00 &         0.36 &        0.20 \\
 \hline
-queens          &        0 &               0 &               0 \\
+queens          &     1.00 &         0.94 &        0.07 \\
 \hline
-reverse         &        0 &               0 &               0 \\
+reverse         &     1.00 &         2.33 &        0.66 \\
 \hline
-sumPrimes       &        0 &               0 &               0 \\
+sumPrimes       &     1.00 &         1.17 &        0.15 \\
+\hline
+tak             &     1.00 &         4.07 &        0.35 \\
 \hline
 \hhline{||||=||||=||=||=||||}
 \end{tabular}
 \caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
 \label{fig:ghc}
 \end{boxfigure}
-
 
 There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_rice}, and \ref{fig:memory}
 that we feel are worth pointing out.
@@ -546,7 +547,7 @@ After we applied Unboxing and Shortcutting, we were able eliminate all
 but a constant number of heap allocations from the program.
 This would be a great result on its own, but it gets even better when we compare it to GHC.
 Compiling the same |fib| algorithm on GHC produced code
-that ran about twice as fast as our optimized \ricesp code,
+that ran about three times as fast as our optimized \ricesp code,
 and when we turned off Optimizations for GHC we ran faster by a factor of 8.
 It is not surprising to us that our code ran slower than GHC.
 The run time system is likely much faster than ours,

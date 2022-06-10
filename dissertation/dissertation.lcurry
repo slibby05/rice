@@ -90,15 +90,19 @@
 \maketitle
 \chapter*{Abstract}
 
-In this dissertation we present the \ricesp optimizing compiler for Curry.
-This is the first general optimizing compiler for Curry.
+In this dissertation we present the \ricesp optimizing compiler for the functional logic language Curry.
+This is the first general optimizing compiler for a functional logic language.
 Our work is based on the idea of compiling through program transformations,
-which has been a useful technique used by the functional language compiler community.
-We also present the \gassp system for easily generating new program transformations.
-This allows us to easily describe and implement several optimizations,
-and show their correctness.
-We demonstrate the effectiveness of these optimizations by outperforming
-current compilers on several standard benchmarks.
+which we have adapted from the functional language compiler community.
+We also present the \gassp system for generating new program transformations,
+which uses the power of functional logic programming to provide a flexible framework 
+for describing transformations.
+This allows us to describe and implement a wide range of optimizations 
+including inlining, shortcut deforestation, unboxing, and case shortcutting, 
+a new optimization we developed specifically for functional logic language.
+We show the correctness of these optimizations and demonstrate their effectiveness.
+In particular, we show that \ricesp outperform
+previous compilers by 2 or 3 orders of magnitude on standard benchmarks.
 
 \tableofcontents
 
@@ -121,7 +125,7 @@ current compilers on several standard benchmarks.
 
 %include 03_code.lcurry
 
-\chapter{Generating an Altering Subexpressions} \label{ch:Generating and Altering Subexpressions}
+\chapter{Generating and Altering Subexpressions} \label{ch:Generating and Altering Subexpressions}
 
 %include 04_gas.lcurry
 

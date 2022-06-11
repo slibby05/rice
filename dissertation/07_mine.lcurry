@@ -64,7 +64,7 @@ is replaced with a constructor of the appropriate type.
 For example |5 + 6| is transformed into the expression |(Int 5) + (Int 6)|.
 
 Second, we need to wrap cases of literal values with cases that remove the box.
-This can best be demonstrated with the example in figure \ref{fig:caseWrap}.
+This can best be demonstrated with the example in Figure \ref{fig:caseWrap}.
 The value |x| is evaluated down to an |Int| node, then we extract
 the unboxed integer |x_p| and proceed with the primitive case statement.
 We also add one dummy branch to the unboxing case for each branch in the primitive case.
@@ -91,7 +91,7 @@ take on.
 
 Finally we need to give new definitions for primitive operations such as |+| and |<=|.
 All of the operators fit the same pattern, so we only give the definitions for |+| and |<=| for integers
-in figure \ref{fig:primOp}.
+in Figure \ref{fig:primOp}.
 In order to evaluate a |+| node, we evaluate the first argument to its box,
 then we unbox it with the case statement.
 We do not have any dummy branches for free variables.
@@ -167,7 +167,7 @@ we can work on removing them, and see what we actually gain from it.
 
 
 In order to get an idea of the effectiveness of unboxing, let us look at an example.
-Consider the function to compute Fibonacci numbers if figure \ref{fig:fib}.
+Consider the function to compute Fibonacci numbers if Figure \ref{fig:fib}.
 We will work with this example extensively in the next couple of optimizations,
 in an attempt to see how much we can optimize it.
 
@@ -220,7 +220,7 @@ must be represented as a node to fit in with our definition of an expression gra
 
 However, after explicitly representing the boxes, and using our
 new definitions for |+| and |<=|,
-we can optimize |fib| to the program given in figure \ref{fig:fibOpt1}.
+we can optimize |fib| to the program given in Figure \ref{fig:fibOpt1}.
 
 \begin{boxfigure}
 > fib n = case  n of
@@ -262,7 +262,7 @@ Perhaps surprisingly, these are the only primitive relational operators in Curry
 All other relations operators are converted to combinations of |eq_p|, |le_p|, and |not|.
 The semantics of |pcase| are exactly what be expected,
 but now we can translate it into a simple \texttt{if} 
-statement in C, as shown in figure \ref{fig:primcond}.
+statement in C, as shown in Figure \ref{fig:primcond}.
 
 \begin{boxfigure}
 > pcase  primCond of
@@ -285,12 +285,12 @@ $\ \ $ \texttt{\}}\\
 \end{boxfigure}
 
 This has several advantages.
-First we do not construct a node for the boolean value.
+First we do not construct a node for the Boolean value.
 Even if we are statically allocating a single node value for |True|
 and |False|, we avoid the cost of switch case loop,
 and the cost of checking if |primcond| is non-deterministic.
 It must be deterministic, because both of its operands are primitive values.
-After implementing this construct, the new version is in figure \ref{fig:fibOpt2}.
+After implementing this construct, the new version is in Figure \ref{fig:fibOpt2}.
 Now we are down to 4 nodes, but we can still do better.
 The next challenge is unboxing the arguments in the call to |fib|.
 
@@ -320,7 +320,7 @@ that point to other node structs.
 If we have a |fib| node, then the argument to this node
 is expected to be another node.
 In C we can get around this by using a union.
-We created a union \texttt{field}, defined in figure \ref{fig:field}
+We created a union \texttt{field}, defined in Figure \ref{fig:field}
 that can either represent an |Int|, |Char|, |Float|, \texttt{Node}, or an array of \texttt{Node*}
 in case a node has more than 3 children.
 
@@ -431,11 +431,11 @@ would all be great candidates for future work.
 Once we know which arguments are strict we can split the function into a wrapper function
 and a worker function \cite{strictBack}.
 We can see this with |fib|.
-We take the current optimized version in figure \ref{fig:fibOpt2},
-and apply the worker/wrapper split in figure \ref{fig:fibOpt3}.
+We take the current optimized version in Figure \ref{fig:fibOpt2},
+and apply the worker/wrapper split in Figure \ref{fig:fibOpt3}.
 This creates two functions, |fib|, which simply evaluates and unboxes the parameter,
 ,and |fib#worker|, which does the rest of the computation.
-Then we optimize the function again resulting in figure \ref{fig:fibOpt4}.
+Then we optimize the function again resulting in Figure \ref{fig:fibOpt4}.
 Notice that since |fib| is no longer recursive we can inline it.
 
 \begin{minipage}{\textwidth}
@@ -527,7 +527,7 @@ many memory allocations.
 We will often find examples of expressions that are constructed,
 and immediately evaluated by a case statement,
 after which, the results are never used again.
-Both $f_1$ and $f_2$ in figure \ref{fig:fibOpt4} are excellent examples of such expressions.
+Both $f_1$ and $f_2$ in Figure \ref{fig:fibOpt4} are excellent examples of such expressions.
 Typically a compiler for a lazy language would recognize this situation,
 and instead of generating a node only to evaluate it, the compiler would produce a function call
 that would return the value of that node.
@@ -541,7 +541,7 @@ Second, even if |f| is deterministic, the expression |f x|
 could still be non-deterministic if |x| is.
 This is going to be very restrictive for any possible optimization.
 
-In the example in figure \ref{fig:fibOpt4} we need a node to hold the value for |fib#worker n_1|,
+In the example in Figure \ref{fig:fibOpt4} we need a node to hold the value for |fib#worker n_1|,
 but this value will only be used in the case expression.
 In fact, it is not possible for this node to be shared with any part of the expression graph.
 If this expression is only ever scrutinized by the case expression,
@@ -592,7 +592,7 @@ we never interact with the \texttt{root} node,
 so even if we reuse \texttt{RET} in the middle of evaluating |f|, it does not actually
 affect the results.
 
-A portion of the generated code for |f| can be seen in figure \ref{fig:gen_f}.
+A portion of the generated code for |f| can be seen in Figure \ref{fig:gen_f}.
 As we can see, the only time that we use the \texttt{root} node 
 is at the very start of the function to store the variables,
 and right before we return.
@@ -631,7 +631,7 @@ It seems like we should be able to
 store these marked variables in the \texttt{RET} node, and then 
 just call the appropriate \texttt{\_hnf} function.
 In fact this was the first idea we tried.
-The generated code for main is given in figure \ref{fig:RET1}.
+The generated code for main is given in Figure \ref{fig:RET1}.
 
 \begin{boxfigure}
 \begin{verbatim}
@@ -681,7 +681,7 @@ Initially, we wanted to avoid allocating a node if a variable is used in a singl
 Instead, we will only allocate a node if \texttt{RET} is non-deterministic.
 This means that for deterministic expression, we do not allocate any memory,
 but for non-deterministic expression, we still have a persistent variable on the stack.
-This lead to the second implementation in figure \ref{fig:RET2}.
+This lead to the second implementation in Figure \ref{fig:RET2}.
 
 \begin{boxfigure}
 \begin{verbatim}
@@ -788,8 +788,8 @@ Finally we return \texttt{backup}.
 Now both the caller and callee agree on \texttt{backup}.
 Furthermore, since \texttt{backup} is a local variable,
 it is not affected if |f| reuses \texttt{RET} over the course of its evaluation.
-We can see the final implementation of shortcutting for |main| in figure \ref{fig:RET3}.
-We also give the definition for \texttt{f\_RET\_hnf} in figure \ref{fig:RET_f}.
+We can see the final implementation of shortcutting for |main| in Figure \ref{fig:RET3}.
+We also give the definition for \texttt{f\_RET\_hnf} in Figure \ref{fig:RET_f}.
 
 \begin{boxfigure}
 \begin{verbatim}
@@ -1064,7 +1064,7 @@ Second, we still need to show it is valid for curry.
 Let us look back at the motivating example,
 and see how it could be optimized in Haskell,
 or any language that can inline lambda expressions.
-The derivation in figure \ref{fig:sumPrimes_deforest} comes from the 
+The derivation in Figure \ref{fig:sumPrimes_deforest} comes from the 
 original paper \cite{shortcutDeforestation}.
 
 \begin{boxfigure}
@@ -1186,8 +1186,8 @@ but we will restore that with the second step,
 which is the actual Deforestation transformation,
 which applies either the |foldr/build| theorem,
 or one of the three |build_fold| theorems from above.
-The definitions for the deforest transformation are given in figure \ref{fig:deforest}
-The optimization derivation for |sumPrimes| is in figure \ref{fig:sumOpt}.
+The definitions for the deforest transformation are given in Figure \ref{fig:deforest}
+The optimization derivation for |sumPrimes| is in Figure \ref{fig:sumOpt}.
 The unused variables will be removed at a later time by dead code elimination.
 
 \begin{boxfigure}

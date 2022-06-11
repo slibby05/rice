@@ -7,7 +7,7 @@ This is a problem, because Curry implementations have historically been consider
 Some have considered it unusably slow,
 which is a shame, because Curry is actually a great language,
 and can solve many problems well.
-In this dissertation we aim to recitify the problem
+In this dissertation we aim to rectify the problem
 of Curry taking too long.
 We present the \ricesp Curry compiler,
 and show how it can deliver a fast, satisfying, Curry.
@@ -142,11 +142,11 @@ The main contributions of this dissertation are as follows.
 \item We build an efficient implementation of the Curry language.
 \item We identify two aspects of Pakcs and Kics2 that lead to inefficiency.
 \item We show that we do not need to convert all programs to Uniform Programs \cite{Kics2Theory},
-      which is more efficient thatn Kics2's compilation scheme.
+      which is more efficient than Kics2's compilation scheme.
 \item We give a new backtracking algorithm where we omit backtracking deterministic expressions,
       which is more efficient than backtracking in Pakcs.
 \item We state and prove the Path Compression Theorem, which justifies several of our transformations,
-      as well as improvements to the runtime system.
+      as well as improvements to the run-time system.
 \item we introduce the \gassp system,
       which is a library for constructing program transformations.
       This is not a new idea\cite{haskellComp},

@@ -20,14 +20,14 @@ we are interested in two measurements.
 First, we want to show that the execution time of the programs is improved.
 Second, we want to show that optimized programs consume less memory.
 The second goal is very easy to achieve.
-We simply augment the runtime system with a counter that we increment
+We simply augment the run-time system with a counter that we increment
 every time we allocate memory.
 When the program is finished running, we simply print out the number of
 memory allocations.
 
 Execution time turns out to be much more difficult to measure.
 There are many factors which can affect the execution time of a program.
-To help aliviate these problems, we took the approach outlined by Mytkowicz et al. \cite{wrongData}.
+To help alleviate these problems, we took the approach outlined by Mytkowicz et al. \cite{wrongData}.
 All programs were run multiple times, and compiled in multiple environments
 for each compiler.  We took the lowest execution time.
 We believe these results are as unbiased as we can hope for;
@@ -115,15 +115,15 @@ using a backtracking solution and list comprehension.
 \end{itemize}
 
 
-The results of running the tests are given in figure \ref{fig:time_rice} for timing,
+The results of running the tests are given in Figure \ref{fig:time_rice} for timing,
 and \ref{fig:memory} for memory.
 All times are normalized.
-In figure \ref{fig:time} the times are normalized to \rice,
-and in figure \ref{fig:time_rice} all results normalized to the unoptimized version
+In Figure \ref{fig:time} the times are normalized to \rice,
+and in Figure \ref{fig:time_rice} all results normalized to the unoptimized version
 in order to see the improvement of optimizations.
 Memory results are measured in the number of allocations of nodes.
 We also include a comparison all of 3 prominent Curry compilers, Pakcs, Kics2, and Mcc, against \ricesp
-in figure \ref{fig:time}.
+in Figure \ref{fig:time}.
 We optimized these compilers as much as possible to get the best results.
 For example Kics2 executed much quicker when run in the primitive depth first search mode.
 We increased the input size for tak, buildFold, and sumPrimes in order to get a better comparison
@@ -134,7 +134,7 @@ We timed every program with Kics2 \cite{kics2}, Pakcs \cite{pakcs}, and the Mcc 
 Unfortunately we were not able to get an accurate result on how much memory any of these compilers
 allocated, so we were unable to compare our memory results.
 
-We also show how our compiler compares against GHC in figure \ref{fig:ghc}.
+We also show how our compiler compares against GHC in Figure \ref{fig:ghc}.
 Since most examples include non-determinism or free variables, we are unable to run those.
 We run our optimized code against unoptimized GHC and optimized GHC.
 

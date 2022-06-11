@@ -13,7 +13,7 @@ of these transformations respect the rules of Curry.
 As we will see, if we break these rules, 
 then we may get some unexpected results.
 
-We review the theorey of term Rewriting
+We review the theory of term Rewriting
 following the style of Ohlebusch \cite{AdvancedTRS},
 along with the more specific Term and Graph Rewriting.
 We give a basic intuition about how to apply these topics,
@@ -55,7 +55,7 @@ We use $a \to b$ as a shorthand for $(a,b) \in \to$, and we have several modifie
 
 A rewrite system is meant to invoke the feeling of algebra.
 In fact, rewrite system are much more general, but they can still retain the feeling.
-If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in figure \ref{fig:reduction}.
+If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the reduction in Figure \ref{fig:reduction}.
 
 \begin{boxfigure}
 \begin{tabular}{rll}
@@ -82,7 +82,7 @@ A \emph{confluent}\index{confluent} system is a system
 where the order of the rewrites does not change the final result.
 For example, consider the distributive rule.
 When evaluating $3\cdot(4 + 5)$ we could either evaluate the addition or multiplication first.
-Both of these reductions arrived at the same answer as can be seen in figure \ref{fig:confluent}.
+Both of these reductions arrived at the same answer as can be seen in Figure \ref{fig:confluent}.
 
 \begin{boxfigure}
   \begin{subfigure}{.5\textwidth}
@@ -116,7 +116,7 @@ Both of these reductions arrived at the same answer as can be seen in figure \re
 In a \emph{terminating}\index{terminating} system every derivation is finite.
 That means that eventually there are no rules that can be applied.
 The distributive rule is terminating, 
-whereas the commutative rule is not terminating.  See figure \ref{fig:terminate}.
+whereas the commutative rule is not terminating.  See Figure \ref{fig:terminate}.
 
 \begin{boxfigure}
   \begin{subfigure}{.5\textwidth}
@@ -177,7 +177,7 @@ We say that a term is \emph{linear}\index{linear} if no variable appears twice i
 This inductive definition gives us a tree structure for terms.
 As an example consider Peano arithmetic $\Sigma = \{+^2, *^2, -^2, <^2, 0^0, S^1, True^0, False^0\}$.
 We can define the term $*(+(0, S(0)), +(S(0), 0))$.
-This gives us the tree in figure \ref{fig:tree}.
+This gives us the tree in Figure \ref{fig:tree}.
 Every term can be converted into a tree like this and vice versa.
 The symbol at the top of the tree is called the root of the term.
 
@@ -203,7 +203,7 @@ In our previous term $S(0)$ is a subterm in two different places.
 One occurrence is at path $[0,1]$, and the other is at path $[1,0]$.
 
 We write $t[r \from p]$\index{$t[r \from p]$} to denote replacing subterm $t||_p$ with $r$.
-We define the algorithm for this in figure \ref{fig:subterm}.
+We define the algorithm for this in Figure \ref{fig:subterm}.
 
 \begin{boxfigure}
     $t[r \from \epsilon] = r$\\
@@ -214,7 +214,7 @@ We define the algorithm for this in figure \ref{fig:subterm}.
 
 In our above example $t =*(+(0, S(0), +(S(0), 0)))$,
 We can compute the rewrite  $t[*(S(0),S(0)) \from [0,1]]$, and we get the term
-$*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in figure \ref{fig:subtree}.
+$*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in Figure \ref{fig:subtree}.
 
 \begin{boxfigure}
     \begin{center}
@@ -234,7 +234,7 @@ $\sigma : V \to T(\Sigma,V)$\index{$\sigma$},
 such that $\sigma(x) \ne x$ \cite{AdvancedTRS}[Def. 3.1.7].
 We write $\sigma = \{v_1 \mapsto t_1, \ldots v_n \mapsto t_n\}$ to denote the substitution
 where $s(v_i) = t_i$ for $i \in \{1\ldots n\}$, and $s(v) = v$ otherwise.
-We can uniquely extend $\sigma$ to a function on terms by figure \ref{fig:substitute}
+We can uniquely extend $\sigma$ to a function on terms by Figure \ref{fig:substitute}
 
 \begin{boxfigure}
     $\sigma'(v) = \sigma(v)$\\
@@ -302,7 +302,7 @@ Orthogonal systems have several nice properties, such as the following theorem \
 Every orthogonal TRS is confluent.
 \end{theorem}
 
-As an example, in figure \ref{fig:overlap} examples (b) and (c) both overlap.
+As an example, in Figure \ref{fig:overlap} examples (b) and (c) both overlap.
 It is clear that these systems are not confluent,
 but non-confluence can arise in more subtle ways.
 The converse to theorem 2.1 is not true. There can be overlapping systems which are confluent.
@@ -370,7 +370,7 @@ As an example, the rewrite system for Peano arithmetic is a constructor system.
         $R_{13}$ & : & $0    = S(y)$   & $\to$ & $False$    \\
         $R_{14}$ & : & $S(x) = S(y)$   & $\to$ & $x = y$   \\
     \end{tabular}
-    \caption{The rewrite rules for Peano Arithmetic with addition, multiplicaton,
+    \caption{The rewrite rules for Peano Arithmetic with addition, multiplication,
              subtraction, and comparison.  All operators use infix notation.}
     \label{fig:peano}
 \end{boxfigure}
@@ -450,7 +450,7 @@ can be transformed into $\sigma(t_2)$ by the equations in $E$.
 As an example let $E = \{*(x +(y, z)) = +(*(x,y), *(x,z))\}$
 Then the equation $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$
 is solved by $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.
-The derivation is in figure \ref{fig:narrow}.
+The derivation is in Figure \ref{fig:narrow}.
 
 \begin{boxfigure}
 \begin{tabular}{ll}
@@ -522,7 +522,7 @@ Similarly our goal for narrowing will be to find a normal form and substitution.
 However, we want to be efficient when rewriting.
 We would like to use only local information when deciding what rule to select.
 We would also like to avoid unnecessary rewrites.
-Consider the following term from the SKI system defined in figure \ref{fig:SKI}
+Consider the following term from the SKI system defined in Figure \ref{fig:SKI}
 $Ap(Ap(K, I), Ap(Ap(S,Ap(I,I)),Ap(S,Ap(I,I))))$.
 It would be pointless to reduce $Ap(Ap(S,Ap(I,I)),Ap(S,Ap(I,I))))$ since $Ap(Ap(K,I,z)$ rewrites to $I$
 no matter what $z$ is.
@@ -567,7 +567,7 @@ In this case $s$ does not change.\\
 Case 3: $s$ is a subterm of $t\vert_p$.
 In this case $s$ may be duplicated, or erased, moved, or left unchanged.
 It depends on whether the rule is duplicating, erasing, or right linear.\\
-These cases can be seen in figure \ref{fig:descendant}
+These cases can be seen in Figure \ref{fig:descendant}
 We can formalize this with the notion of descendants with the following definition from 
 \cite{AdvancedTRS}[Def. 4.3.6].
 
@@ -615,7 +615,7 @@ We can formalize this with the notion of descendants with the following definiti
   \end{subfigure}
     \caption{four cases for the descendants for a term after a single rewrite.
              The boxed term is either left alone, duplicated, or erased, or moved.
-             The rules are defined in figure \ref{fig:peano}}
+             The rules are defined in Figure \ref{fig:peano}}
     \label{fig:descendant}
 \end{boxfigure}
 
@@ -717,7 +717,7 @@ Unfortunately, each of these strategies are too restrictive on the rewrite syste
              If $x$ is instantiated to $0$, then we do not need to evaluate $y + y$ at all.}
   \end{subfigure}
     \caption{examples of where eager and lazy narrowing can fail using the rewrite system
-             if figure \ref{fig:peano}.}
+             if Figure \ref{fig:peano}.}
     \label{NarrowingComp}
 \end{boxfigure}
 
@@ -755,7 +755,7 @@ then we can compute a narrowing step by traversing the tree for the defined symb
 The name ``inductively sequential'' is justified because there 
 is a narrowing strategy that only reduces needed redexes for any of these systems.
 We show an example to clarify the definition.
-In figure \ref{fig:defTree} we show the definitional tree for the $+, \le,$ and $=$ rules.
+In Figure \ref{fig:defTree} we show the definitional tree for the $+, \le,$ and $=$ rules.
 The idea is that, at each branch, we decide which variable to inspect.
 Then we decide what child to follow based on the constructor of that branch.
 This gives us a simple algorithm for outermost rewriting with definitional trees.
@@ -1024,7 +1024,7 @@ If we have seen it, then we just write down the node.
 If a node does not have any successors, then we will omit the parentheses entirely,
 and just write down the label.
 
-A few examples are shown in figure \ref{fig:termGraph}.
+A few examples are shown in Figure \ref{fig:termGraph}.
 Example 1 shows an expression where a single variable is shared several times.
 Example 2 shows how a rewrite can introduce sharing.
 Example 3 shows an example of an expression with a loop.

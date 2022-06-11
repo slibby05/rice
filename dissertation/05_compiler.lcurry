@@ -2,8 +2,8 @@
 In the last chapter we developed the \gassp system for representing transformation.
 In this chapter we show an extended example of using the \gassp system to transform FlatCurry programs
 into a canonical form.
-We then show how to translate these canonical progras to the ICurry intermediate representation.
-Finally, we compile the ICurry progrms to C code, as discussed in chapter 3.
+We then show how to translate these canonical programs to the ICurry intermediate representation.
+Finally, we compile the ICurry programs to C code, as discussed in chapter 3.
 
 This compiler, unsurprisingly, follows a traditional compiler pipeline.
 While we start with an AST, there are still five phases left before we can generate C code.
@@ -16,7 +16,7 @@ These steps are referred to as pre-process, optimize, post-process, toICurry, an
 \cite{git}.
 
 We give an example of a function as it passes through each of the stages of the 
-compiler in figure \ref{fig:stages}.
+compiler in Figure \ref{fig:stages}.
 After pre-processing, the let expression has been floated to the top,
 and the missing branch has been filled in.
 After optimization, code is organized into blocks, and functions have been reduced.
@@ -111,12 +111,12 @@ This is the purpose of the pre-process and post-process steps.
 We rewrite a Curry expression that does not make sense in C to an equivalent Curry expression
 that we can translate directly to C.
 Most of the transformations consist of disallowing certain syntactic constructs.
-Canonical FlatCurry is defined in figure \ref{fig:flatCanonical}.
+Canonical FlatCurry is defined in Figure \ref{fig:flatCanonical}.
 
 Examples of the pre-processing transformations are presented in figures
 \ref{fig:canonical} and \ref{fig:canonical2}.
 We use the symbol |==>| for the optimization relation.
-The implementation is presented in figure \ref{fig:code}.
+The implementation is presented in Figure \ref{fig:code}.
 We only show the initial implementation of an optimization
 that excludes the name and path, but it can be extended to the full optimization
 in a straightforward manner.
@@ -380,7 +380,7 @@ If we ever have an expression of the form |let x = case ...|, then we need to tr
 case-expression into a function call.
 We do not do this transformation in pre-processing
 because we do not want to split functions apart during optimizations.
-The \textbf{Let-Case} transformation has a single rule given in figure \ref{fig:letcase}.
+The \textbf{Let-Case} transformation has a single rule given in Figure \ref{fig:letcase}.
 
 \begin{boxfigure}
 \textbf{Let Case}\\
@@ -493,10 +493,10 @@ or inspect a single variable to choose a case.
 
 After we have finished transforming the FlatCurry,
 the transformation to ICurry is much easier to implement.
-The algorithm from \cite{icurry}, given in figure \ref{fig:flatCurryiCurry}, 
+The algorithm from \cite{icurry}, given in Figure \ref{fig:flatCurryiCurry}, 
 can be applied directly to the translated program.
-We show an example of translating the function |f| from figure \ref{fig:stages}
-into ICurry in figure \ref{fig:icurryStage}.
+We show an example of translating the function |f| from Figure \ref{fig:stages}
+into ICurry in Figure \ref{fig:icurryStage}.
 
 The algorithm itself is broken up into 6 pieces.
 First |ifunction| Compiles a FlatCurry function into an ICurry function.
@@ -623,7 +623,7 @@ and set any children that were passed into the node.
 
 
 The code to generate the C source file is given in 
-figures \ref{fig:cprog}, \ref{fig:cstmt}, and \ref{fig:cexpr}.
+Figures \ref{fig:cprog}, \ref{fig:cstmt}, and \ref{fig:cexpr}.
 This is a standard syntax directed translation.
 We hold of on showing the generated code for literal cases until Chapter \ref{ch:Memory Optimizations}
 where we discuss our implementation of unboxing.
@@ -648,7 +648,7 @@ and $\mathcal{A}$\index{$\mathcal{A}$} translates an assignment.
 Figure \ref{fig:cstmt} generates code for translating statements.
 The $\mathcal{S}$\index{$\mathcal{S}$} function translates an ICurry statement.
 Both |return| and |EXEMPT| just set the root of the expression to the appropriate value,
-but case statements require us to generate the switch case loop from figure \ref{fig:notInit}.
+but case statements require us to generate the switch case loop from Figure \ref{fig:notInit}.
 Most of the loop is largely identical to the example,
 but to simplify the code generation process, we introduce a function \texttt{save},
 which takes the root node, and a copy of the current function at this particular case,
@@ -658,7 +658,7 @@ and is just a unique identifier for this particular case statement.
 We also use a helper function $FV$ to find all of the free variables in the rest of the body,
 since those will be needed to construct $f\vert_p$.
 
-Finally figure \ref{fig:cexpr} translates free variables, case branches, and expressions to C.
+Finally Figure \ref{fig:cexpr} translates free variables, case branches, and expressions to C.
 The $\mathcal{V}$ \index{$\mathcal{V}$} function generates code to translate free variables.
 The final free variable, and the constructors containing free variables 
 are pushed on the stack in reverse order.

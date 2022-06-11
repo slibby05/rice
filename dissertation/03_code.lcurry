@@ -1,8 +1,8 @@
 
 Now that we have examined all of the different choices to make in constructing a compiler,
-we can start to design the generated code and runtime system for the compiler.
+we can start to design the generated code and run-time system for the compiler.
 In this chapter we give examples of generated code to implement Curry functions,
-and discuss the low level details of the Rice runtime.
+and discuss the low level details of the Rice run-time.
 We start with a first order deterministic subset of Curry,
 then we add higher order function,
 finally we add non-determinism and free variables.
@@ -13,7 +13,7 @@ C code to distinguish it from Curry or FlatCurry code.
 We will introduce the generated code by looking at the |not| function defined below.
 We choose this function, because it is small enough to be understandable,
 but it still demonstrates most of the decisions in designing the generated code
-and runtime system.
+and run-time system.
 
 \begin{minipage}{\textwidth}
 > not x = case  x of
@@ -22,7 +22,7 @@ and runtime system.
 \end{minipage}
 
 Before we discuss generated code, 
-we need to discuss expressions and the runtime system for programs.
+we need to discuss expressions and the run-time system for programs.
 
 When a FlatCurry module is compiled, it is translated into a C program.
 Every function |f| defined in the FlatCurry module is compiled into
@@ -30,10 +30,10 @@ a C function that can reduce an expression, rooted by a node labeled with |f|,
 into head constructor form.
 These functions are called \texttt{f\_hnf}\index{\texttt{f\_hnf}} for historical reasons \cite{pakcs}.
 
-We chose C specificallly for a few reasons.
+We chose C specifically for a few reasons.
 C is low level enough that the optimizations we apply to Curry are going to be distinct
 to the optimizations we apply to C.
-However, C is high level enough that we have severl useful tools
+However, C is high level enough that we have several useful tools
 such as functions, and structs.
 We expect a modern optimizing compiler to remove most, if not all,
 of the abstractions that we use in the generated code.
@@ -44,7 +44,7 @@ and our compiled code doesn't fit that model.
 LLVM-IR would be a good candidate for future work.
 
 An expression in our compiled code is a rooted labeled graph.
-nodes\index{\texttt{node}} in the graph are given the definition in figure \ref{fig:node}.
+nodes\index{\texttt{node}} in the graph are given the definition in Figure \ref{fig:node}.
 
 \begin{boxfigure}
 \begin{verbatim}
@@ -72,7 +72,7 @@ to a variable length array that holds the rest of the children.
 We chose to allow three children specifically, because
 in practice there are relatively few function with more than
 three arguments.
-Although, we have not tried to confirm that this is the optimial size for a node.
+Although, we have not tried to confirm that this is the optimal size for a node.
 This leads to non-uniform indexing into nodes.
 For example \texttt{n->children[1]} returns the second child of the node,
 but the sixth child must be retrieved with \texttt{n->children[3].a[2]}.
@@ -116,7 +116,7 @@ which is responsible for evaluating the main expression to constructor normal fo
 The \texttt{nf} function computes this form by first evaluating an expression to
 head constructor form.
 When an expression is in head constructor form, \texttt{nf} evaluates each subexpression
-to constructor normal form, producing the loop in figure \ref{fig:nf}.
+to constructor normal form, producing the loop in Figure \ref{fig:nf}.
 
 \begin{boxfigure}
 \begin{verbatim}
@@ -254,12 +254,12 @@ This is completely independent of the arity of the function.
 \end{minipage}
 
 
-The algorithm is given in figure \ref{fig:apply}.
+The algorithm is given in Figure \ref{fig:apply}.
 There are a few more complications to point out.
 To avoid complications, we assume arguments that a function is being applied to are stored in the
 array at \texttt{children[3]} of the apply node.
 That gives us the structure |apply f \* \* a_n ... a_1|.
-This is not done in the runtime system because it would be inefficient,
+This is not done in the run-time system because it would be inefficient,
 but it simplifies the code for this presentation.
 We also make use of the \texttt{set\_child\_at} macro, which simplifies setting child nodes
 and is similar to \texttt{child\_at}.
@@ -376,7 +376,7 @@ The only other necessary change is to push a rewrite onto the backtracking stack
 when we reach either a fail, or constructor case.
 The \texttt{Prelude\_not\_1} function is a function at a case expression discussed
 in section \ref{Non-determinism}.
-The changes to the |not| function are give in figure \ref{fig:notNondet}.
+The changes to the |not| function are give in Figure \ref{fig:notNondet}.
 Due to space constraints not all sections are show.
 The pieces of code that do not changed are omitted and replaced with \texttt{...}.
 
@@ -426,7 +426,7 @@ a non-deterministic node in a local variable, and if we have, we push
 the root on the backtracking stack.
 If we have not seen a non-deterministic node,
 then we can simply avoid pushing this rewrite.
-The generated code for |not| is given in figure \ref{fig:notFull}.
+The generated code for |not| is given in Figure \ref{fig:notFull}.
 
 \begin{boxfigure}
 \begin{verbatim}

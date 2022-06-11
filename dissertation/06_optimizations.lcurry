@@ -5,7 +5,7 @@ The power of this tool came from two aspects.
 The first is that it is easy to write rules syntactically.
 The second is that the rules are written in Curry,
 so we are not limited by our rewriting system.
-We will put this second part to use in optimizating Curry expressions.
+We will put this second part to use in optimizing Curry expressions.
 
 In this chapter we outline a number of optimizations that were necessary
 to implement in order for unboxing, deforestation, and shortcutting to be effective.
@@ -25,12 +25,12 @@ It is not clear at all that they are even valid for Curry.
 We show an effective method to implement them
 in a way that they remain valid for Curry expressions.
 
-In this chapter we discuss one of the major hurderls to optimizing 
+In this chapter we discuss one of the major hurdles to optimizing 
 FlatCurry programs,
 we then present a solution in A-Normal form,
 We do on to develop some standard optimizations
-for FlatCurry includeing dead code elimination, case cancelling, and inlinig.
-Finally, we show these optimiztions at work optimizing the implementation
+for FlatCurry including dead code elimination, case canceling, and inlining.
+Finally, we show these optimizations at work optimizing the implementation
 the implementation |<=| for the |Bool| type.
 
 \section{A-Normal Form}
@@ -146,7 +146,7 @@ A-Normal form transformation.
 We give the definition of A-Normal Form for Curry programs in figure
 \ref{fig:anormal}
 and we implement the transformation using \gassp in figure
-\ref{fig:anormalTransform} with the Curry implementation in figure \ref{fig:anormalCurry}.
+\ref{fig:anormalTransform} with the Curry implementation in Figure \ref{fig:anormalCurry}.
 
 \begin{boxfigure}
 \textbf{ANF:}
@@ -211,7 +211,7 @@ a normalized form before evaluation begins.
 We choose to flatten these expressions as well because
 it produces more uniform programs,
 and more optimizing transformations become valid.
-Some examples of programs in ANF are given in figure \ref{fig:anormalExample}.
+Some examples of programs in ANF are given in Figure \ref{fig:anormalExample}.
 
 \begin{boxfigure}
 \fbox{
@@ -294,7 +294,7 @@ However, we can simply add let-expressions for every variable that the construct
 We also include two other optimizations.
 These optimizations are really about cleaning up after Case Canceling runs.
 The first is Case Variable elimination.
-Consider the expression from the optimization of |compare| for |Bool| in figure \ref{fig:caseBool}.
+Consider the expression from the optimization of |compare| for |Bool| in Figure \ref{fig:caseBool}.
 \begin{boxfigure}
 >     in case  v_2 of
 >              True   -> LT
@@ -578,7 +578,7 @@ However, when translated to FlatCurry, this lambda expression is turned into a c
 \end{minipage}
 
 So, when we try to optimize |sumPrimes| we end up with 
-the derivation in figure \ref{fig:sumPrimesDeriv}.
+the derivation in Figure \ref{fig:sumPrimesDeriv}.
 
 \begin{boxfigure}
 > let v_1 = p_2
@@ -753,7 +753,7 @@ Consider the program:
 The graph for this function is a triangle, because |f| calls |g| which calls |h| which calls |f|.
 However, if we mark |h| as a loop breaker, then suddenly this problem is easy.
 When we optimize |h|, we are free to reduce |f| and |g|.
-We can see the derivation in figure \ref{fig:loopOptDeriv}.
+We can see the derivation in Figure \ref{fig:loopOptDeriv}.
 
 \begin{boxfigure}
 > h x = case x of
@@ -829,7 +829,7 @@ We add two new rules.  |LET_FOLDING| allows us to move variable definitions
 closer to where they are actually used,
 and |UNAPPLY| allows us to simplify expressions involving |apply|.
 Both of these are useful for inlining and reduction.
-The \gassp rules are given in figure \ref{fig:inline}.
+The \gassp rules are given in Figure \ref{fig:inline}.
 Note that the |UNAPPLY| rule corresponds exactly to the evaluation step for application nodes
 in our semantics.
 The inlining rules correspond to the cases discussed above.
@@ -838,7 +838,7 @@ if that expression occurs once in a needed position.
 Since we can not determine if the variable occurs in a needed position at compile time,
 we can use check if it occurs in a strict position \cite{strictAbstract}.
 This is usually good enough.
-The implementation of Inlining in the \gassp system is given in figure \ref{fig:inlineCode}.
+The implementation of Inlining in the \gassp system is given in Figure \ref{fig:inlineCode}.
 The combinator |(x,e) @> sigma| is used to build up substitutions.
 It means that we add we add $x \to e$ to the substitution |sigma|.
 The |idSub| substitution is just the identity.
@@ -973,7 +973,7 @@ Therefore This is a deterministic step, and by the path compression theorem
 |e| and |extend e p ( sigma b )| have the same values.
 \end{proof}
 
-We give the \gassp rules for reduction in figure \ref{fig:reduce}.
+We give the \gassp rules for reduction in Figure \ref{fig:reduce}.
 These rule make use of the function table
 We make sure that |rbody f| replaces the definition with fresh variables.
 Therefore, we avoid any need to deal with shadowing and name capture.

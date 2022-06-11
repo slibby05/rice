@@ -15,7 +15,7 @@ it was discovered that narrowing was a good abstraction for combining
 the features from both paradigms.
 This spawned the Curry \cite{IntegrationFunLog} and Toy \cite{toy} languages.
 
-In this chapter we explore the Curry language syntax and semintics.
+In this chapter we explore the Curry language syntax and semantics.
 We give example programs to show how programming in Curry differs from Prolog and Haskell.
 Then we discuss the choices we made in our implementation compared to previous implementations.
 Finally we give an example of generated code to demonstrate how we compile Curry programs.
@@ -267,7 +267,7 @@ This issue of run-time choice semantics will appear throughout the compiler.
 \subsection{FlatCurry} \label{FlatCurry}
 
 The first step in the compiler pipeline is to parse a Curry program into FlatCurry\index{FlatCurry}.
-The definition is given in figure \ref{fig:flatSyntax}.
+The definition is given in Figure \ref{fig:flatSyntax}.
 The FlatCurry language is the standard for representing Curry programs
 in compilers \cite{pakcs, kics2, Kics2Theory, sprite}, 
 and has been used to define the semantics of Curry programs \cite{currySemantics}.
@@ -310,7 +310,7 @@ to a \emph{Constructor Normal
 Form}\index{Constructor Normal Form}\footnote{This is constructor normal form, and not simply a normal form,
               because a failing expression, like |head []|, is a normal form,
               since it can not be rewritten, but it contains a function at the root.} 
-as defined in figure \ref{fig:normalForm}.
+as defined in Figure \ref{fig:normalForm}.
 Similar to Kics2, Pakcs, and Sprite, \cite{kics2, pakcs, sprite}
 we compute constructor normal form by first reducing the |main| to 
 \emph{Head Constructor Form}\index{Head Constructor Form}.
@@ -415,7 +415,7 @@ consider the FlatCurry function |weird| \ref{fig:weird}.
 This function defines a local variable |x| which is used in a case expression.
 If this were a rewrite system, then we would be able to translate the
 |case| expression into pattern matching, but a rule can not pattern match on a locally defined variable.
-We show the reduction of |wierd| in figure \ref{fig:weirdEval}.
+We show the reduction of |wierd| in Figure \ref{fig:weirdEval}.
 
 \begin{boxfigure}
 > weird = let x = False ? True
@@ -528,9 +528,9 @@ then we instantiate the arguments with free variables.
 \end{boxfigure}
 
 This is easier to see with an example.
-Consider the traffic light function in figure \ref{fig:light}.
+Consider the traffic light function in Figure \ref{fig:light}.
 The |change| function moves the light from |Red| to |Green| to |Yellow|.
-When calling this function with a free variable, we have the derivation below in figure \ref{fig:lightEval}.
+When calling this function with a free variable, we have the derivation below in Figure \ref{fig:lightEval}.
 
 \begin{boxfigure}
 %{

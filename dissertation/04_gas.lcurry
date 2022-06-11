@@ -27,7 +27,7 @@ and each one needs to be written, shown correct, and tested.
 
 Furthermore, there are several levels where an optimization can be applied.
 Some optimizations apply to a programs AST, some to another intermediate representation,
-some to the generated code, and even some to the runtime system.
+some to the generated code, and even some to the run-time system.
 There are even optimizations that are applied during transformations between representations.
 For this chapter, we will be describing a system to apply optimizations to FlatCurry programs.
 While this is not the only area of the compiler where we applied optimizations,
@@ -134,11 +134,11 @@ Each optimization is going to be a function from a FlatCurry expression to anoth
 
 > type Opt = Expr -> Expr
 
-For readability we use the FlatCurry syntax defined in figure \ref{fig:flatSyntax},
+For readability we use the FlatCurry syntax defined in Figure \ref{fig:flatSyntax},
 While this version of FlatCurry is easier to read,
 we will need the actual representation of FlatCurry programs to implement the compiler.
-This representation is given in figure \ref{fig:flatRep}, and the transformation
-from the FlatCurry syntax to the FlatCurry representation is given in figure \ref{fig:flatTranslate}.
+This representation is given in Figure \ref{fig:flatRep}, and the transformation
+from the FlatCurry syntax to the FlatCurry representation is given in Figure \ref{fig:flatTranslate}.
 We can describe an optimization by simply describing what it does to each expression.
 As an example consider the definition for floating let-expressions:
 
@@ -284,7 +284,7 @@ Unfortunately, splitting the let expression into blocks is not trivial.
 The algorithm involves making a graph out of all references in the let block,
 then finding the strongly connected components of that reference graph,
 and, finally, rebuilding the let expression from the component graph.
-The full algorithm is given below in figure \ref{fig:blocks}
+The full algorithm is given below in Figure \ref{fig:blocks}
 
 \begin{boxfigure}
 > blocks (Let vs e) | numBlocks > 1 = e'
@@ -333,7 +333,7 @@ We can then use a non-deterministic fix point operator to find
 all transformations that can be applied to the current expression.
 We can define the non-deterministic fix point operator using either
 the Findall library, or Set Function \cite{findall, setFunctions}.
-The full code is given in figure \ref{fig:optFirst}.
+The full code is given in Figure \ref{fig:optFirst}.
 
 \begin{boxfigure}
 > fix :: (a -> a) -> a -> a
@@ -380,7 +380,7 @@ Now |reduce| can apply an optimization at every step.
 We have also made |reduce| completely deterministic.
 The second change is that since |reduce| is deterministic, we can change |fix|
 to be a more traditional implementation of a fix point operator.
-The new implementation is given in figure \ref{fig:optReduce}
+The new implementation is given in Figure \ref{fig:optReduce}
 
 \begin{boxfigure}
 
@@ -444,7 +444,7 @@ We just need to update |reduce| and |runOpt|.
 In order to keep track of the next available free variable we use the |State| monad.
 We do need to make minor changes to |fix| and |simplify|,
 but this is just to make them compatible with |State|.
-The full implementation is in figure \ref{fig:optAddInfo}.
+The full implementation is in Figure \ref{fig:optAddInfo}.
 
 
 \begin{boxfigure}
@@ -497,7 +497,7 @@ If we want to add this, then we need to make a few changes.
 First, we need to decide on a representation for a rewrite derivation.
 Traditionally a rewrite derivation is a sequence of rewrite steps,
 where each step contains the rule and position of the rewrite.
-We describe paths in figure \ref{fig:path}.
+We describe paths in Figure \ref{fig:path}.
 To make reconstruction easier, we also include the expression that is the result of the rewrite.
 This gives us the type:
 
@@ -548,7 +548,7 @@ The |RunOpts| function is similar.  We just change |top| to a |Path|,
 and check if it is null.
 Finally |fix| and |simplify| are modified to remember the rewrite steps we have already computed.
 We change the return type of |simplify| so that we have the list of steps.
-The full implementation is in figure \ref{fig:reconstruct}
+The full implementation is in Figure \ref{fig:reconstruct}
 
 \begin{boxfigure}
 > reduce :: Opt -> Path -> Expr -> ReWriter Expr

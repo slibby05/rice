@@ -6,7 +6,7 @@ as well as how the system in implemented.
 
 
 
-\section{Building Optimizations}
+\section{Building Optimizations} \label{sec:gas:background}
 
 Throughout this dissertation we look at the process of developing compiler optimizations.
 For our purposes we are concerned with 
@@ -81,7 +81,7 @@ With the optimization descriptions, the compiler can search the AST of a program
 any places where optimizations apply.
 However, it is difficult or impossible to write many common optimizations in this style \cite{playingByTheRules}.
 
-The aim of our solution is to try to get convenience and readability 
+In our solution we want the convenience and readability 
 of writing standalone optimizations; the efficiency of conglomerate optimizations;
 and the ease of writing optimizations in a DSL.
 We have developed an approach to simplify Generating and Altering Subexpressions (\gas)
@@ -100,7 +100,7 @@ Fourth, this code is much smaller than a traditional optimizer.
 This is not really a fair comparison given the relative immaturity of our compiler,
 but we were able to implement 16 optimizations and code transformations in under 150 lines of code.
 This gives a sense of scale of how much easier it is to implement optimizations in this system.
-Fifth, Since We are optimizing by rewrite rules,
+Fifth, since We are optimizing by rewrite rules,
 the compiler can easily output what rule was used,
 and the position where it was used.
 This is enough information to entirely reconstruct the optimization derivation.
@@ -113,7 +113,7 @@ We should note that there are some potential disadvantages to the \gassp system 
 The first disadvantage is that there are some optimizations and transformations
 that are not easily described by rewriting.
 The second is that, while we have improved the efficiency of the algorithm considerably,
-it still takes longer to optimize programs then we would like.
+it still takes longer to optimize programs than we would like.
 
 The first problem is not really a problem at all.
 If there is an optimization that does not lend itself well to rewriting,
@@ -125,12 +125,13 @@ Current implementations are inefficient, but there are new implementations being
 \cite{synthesizedSetFunctions}.
 We also believe that an optimizing compiler would help with this problem \cite{this}.
 
-\subsection{The Structure of an Optimization}
+\subsection{The Structure of an Optimization} \label{sec:gas:opts}
 
 The goal with \gassp is to make optimizations simple to implement and easily readable.
 While this is a challenging problem, we can actually leverage Curry here.
-Remember that the semantics of Curry are already non-deterministic rewriting.
-Each optimization is going to be a function from a FlatCurry expression to another FlatCurry expression.
+Remember that the semantics of Curry are already non-deterministic rewriting,
+so we can make each optimization a rewrite rule of a FlatCurry expression.
+We represent the rewrite rule as a function from |Expr| to |Expr|.
 
 > type Opt = Expr -> Expr
 
@@ -163,7 +164,7 @@ This could be matched by either rule.
 The trick is that we do not care which rule matches, as long as they both do eventually.
 This could be a problem if both variables have the same name,
 so we enforce the condition that expressions contain no shadowing variables.
-We discuss this further in chapter \ref{ch:The Compiler Pipeline}.
+We discuss this further in Chapter \ref{ch:pipeline}.
 This will be transformed into one of the following:
 
 \begin{minipage}{\textwidth}
@@ -278,8 +279,10 @@ We have removed |CaseType| and |Typed| from |Expr|, and
 
 
 It is debatable which version is better coding style, but the second version
-is inarguably more useful for the compiler.
-There are several optimizations that can be safely performed on a single let bound variable.
+is  more useful for our optimizer.
+With the second version each let binding corresponds to a minimally sized group of variable bindings.
+This tells us by inspection if the bindings are mutually recursive.
+There are several optimizations that can be safely performed on a single, non-recursive, let bound variable.
 Unfortunately, splitting the let expression into blocks is not trivial.
 The algorithm involves making a graph out of all references in the let block,
 then finding the strongly connected components of that reference graph,
@@ -301,7 +304,7 @@ The full algorithm is given below in Figure \ref{fig:blocks}
 \label{fig:blocks}
 \end{boxfigure}
 
-While this optimization is significantly more complicated then the |float| example,
+While this optimization is significantly more complicated than the |float| example,
 We can still implement it in our system.
 Furthermore, we are able to factor out the code for building the graph
 and finding the strongly connected components.
@@ -324,7 +327,7 @@ The ability to compose optimizations with |?| is the heart of the \gassp system.
 Each optimization can be developed and tested in isolation,
 then they can be combined for efficiency.
 
-\subsection{An Initial Attempt}
+\subsection{An Initial Attempt} \label{sec:gas:initial}
 
 Our first attempt is quite simple, really.
 We pick an arbitrary subexpression with |subExpr|
@@ -368,7 +371,7 @@ Every time we traverse the expression, we can only apply a single transformation
 This means that if we need to apply 100 transformations, which is not uncommon,
 then we need to traverse the expression 100 times.
 
-\subsection{A Second Attempt: Multiple Transformations Per Pass}
+\subsection{A Second Attempt: Multiple Transformations Per Pass} \label{sec:gas:second}
 
 Our second attempt runs much faster.
 Instead of picking an arbitrary subexpression,
@@ -421,7 +424,7 @@ While there is still more we can do,
 the new approach makes the \gassp library usable on larger Curry programs,
 like the standard Prelude.
 
-\subsection{Adding More Information}
+\subsection{Adding More Information} \label{sec:gas:params}
 
 Rather surprisingly our current approach is actually sufficient for compiling FlatCurry.
 However, to optimize Curry we are going to need more information when we apply a transformation.
@@ -484,7 +487,7 @@ The full implementation is in Figure \ref{fig:optAddInfo}.
 \end{boxfigure}
 
 
-\subsection{Reconstruction}
+\subsection{Reconstruction} \label{sec:gas:reconstruction}
 
 Right now we have everything we need to write all of our optimizations.
 However, we've found it useful to be able to 
@@ -616,12 +619,12 @@ If we ever reach that number, then we can immediately return.
 This can stop our optimizer from taking too much time.
 
 Now that the \gassp system is in place, we can move onto compiling FlatCurry programs.
-In This chapter we have introduced the \gassp system that allows us to represent transformations 
-In a simple form that is easy to extend and test.
+In this chapter we have introduced the \gassp system that allows us to represent transformations 
+in a simple form that is easy to extend and test.
 We have seen how we can represent an optimization as a function from expressions to expressions.
 Then we showed that we can extend this idea to create more powerful optimizations,
 and automatically generate optimization derivations.
 In the next chapter we put this system to work.
-We use the \gassp system to implement several transformations to turn FlatCurry code
+Specifically, We will use the \gassp system to implement several transformations to turn FlatCurry code
 in to a form that can be more easily compiled.
 Then we show how to generate efficient C code for FlatCurry programs.

@@ -35,7 +35,7 @@ however, it is important to remember that our results may vary across machines a
 For most of our results the \ricesp compiler is a clear winner.
 
 
-\section{Tests}
+\section{Tests} \label{sec:results:tests}
 
 Our test suite is based on the Kics2 test suite \cite{kics2}.
 We split the functions into three groups:
@@ -50,7 +50,7 @@ applies in almost every program.
 \item \textbf{Numeric computations:}
 
 \begin{itemize}
-\item \textbf{fib} is the Fibonacci program from chapter 5.
+\item \textbf{fib} is the Fibonacci program from Chapter \ref{ch:opts}.
 
 \item \textbf{fibNondet} This is the same program, but we call it with a non-deterministic argument.
 
@@ -232,7 +232,7 @@ We run our optimized code against unoptimized GHC and optimized GHC.
 %
 %\caption{Results for execution time between the \rice compiler at several levels of optimization.\\
 %         \emph{unopt} is the compiler without optimizations,
-%         \emph{basic} is the optimizations described in chapter \ref{ch:Basic Optimizations},
+%         \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
 %         \emph{unbox} is the unboxing optimization,
 %         \emph{shortcut} is the shortcutting optimization,
 %         \emph{deforest} is the deforestation optimization,
@@ -392,7 +392,7 @@ sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
 
 \caption{Results for execution time between the \rice compiler at several levels of optimization.\\
          \emph{unopt} is the compiler without optimizations,
-         \emph{basic} is the optimizations described in chapter \ref{ch:Basic Optimizations},
+         \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
          \emph{unbox} is the unboxing optimization,
          \emph{shortcut} is the shortcutting optimization,
          \emph{deforest} is the deforestation optimization,
@@ -509,7 +509,7 @@ This means that instead of evaluating each piece of the Fibonacci function separ
 we need to construct the entire contractum |fib (n-1) + fib (n-2)| and evaluate it.
 Because of this, the optimized code only contains a single case expression.
 The other factor is our solution to the non-determinism problem from section
-\ref{Non-determinism}.
+\ref{sec:language:nondet}.
 Since we are returning several results, and the unboxed |fib| function contains several cases,
 we have to push more case functions onto the backtracking stack.
 While this does allocate a little more memory, we believe that the 2x speed-up

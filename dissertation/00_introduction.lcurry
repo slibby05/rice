@@ -12,7 +12,7 @@ of Curry taking too long.
 We present the \ricesp Curry compiler,
 and show how it can deliver a fast, satisfying, Curry.
 
-\subsection{Why Curry?}
+\subsection{Why Curry?} \label{sec:intro:why}
 
 Functional logic programming is a very powerful technique for
 expressing complicated ideas in a simple form.
@@ -33,7 +33,7 @@ Since the class is so large, the students cannot take the test at the same time.
 To solve this problem we allow each student to choose all times that they are available
 to take the test.
 After they have selected their times we partition the students into groups, where each group
-corresponds to a testing time, and each group is less then a given capacity.
+corresponds to a testing time, and each group is less than a given capacity.
 
 This is a solvable problem in any language,
 but the solution in Curry is both concise and easily understood.
@@ -65,15 +65,15 @@ which we call |ts1|, and the lists after $k$, which we call |ts2|.
 Finally, we check that after putting the student in test $k$, 
 That test will still be below the capacity.
 
-We give a fuller account of the semantics in chapters \ref{ch:Mathematical Background} 
-and \ref{ch:The Curry Language},
+We give a fuller account of the semantics in chapters \ref{ch:math} 
+and \ref{ch:language},
 
-\subsection{Current Compilers}
+\subsection{Current Compilers} \label{sec:intro:current}
 
 There are currently two mature Curry compilers, Pakcs \cite{pakcs} and Kics2 \cite{kics2}.
 Pakcs compiles Curry to Prolog in an effort to leverage Prolog's non-determinism and free variables.
 Kics2 compiles Curry to Haskell in an effort to leverage Haskell's
-higher order functions and optimizing compiler.
+higher-order functions and optimizing compiler.
 Both compilers have their advantages.
 Pakcs tends to perform better on non-deterministic expressions with free variables,
 where Kics2 tends to perform much better on deterministic expressions.
@@ -97,13 +97,13 @@ deterministic code; Sprite attempts to use LLVM to optimize the low level code;
 and Mcc simply did not optimize its code.
 Unfortunately none of these approaches works very well.
 While some implementations of Prolog can optimize non-deterministic expressions,
-they have no concept of higher order functions,
+they have no concept of higher-order functions,
 so there are many optimizations that cannot be applied.
 Kics2 is in a similar situation.  
 In order to incorporate non-deterministic computations in Haskell, 
 a significant amount of code must be threaded through each computation.
 This means that any non-deterministic expression cannot be optimized in Kics2.
-Finally, since LLVM does not know about either higher order functions or non-determinism,
+Finally, since LLVM does not know about either higher-order functions or non-determinism,
 it loses many easy opportunities for optimization.
 
 Curry programs have one last hope for efficient execution.
@@ -113,7 +113,7 @@ While these results are interesting, partial evaluation is not currently automat
 Guidance is required from the programmer to run the optimization.
 Furthermore, the optimization fails to optimize several common programs.
 
-\subsection{The Need for Optimizations}
+\subsection{The Need for Optimizations} \label{sec:intro:need}
 
 So far, none of these approaches have included the large body 
 of work on program optimizations
@@ -134,81 +134,91 @@ Case Shortcutting is a unique optimization for functional logic programs.
 We chose these optimizations specifically because they focus on reducing the amount of memory
 consumed by programs, which is a common problem for Curry programs \cite{proposal}.
 
-\subsection{Contributions}
+\subsection{Contributions} \label{sec:intro:contribute}
 
-This work focuses on building an efficient compiler for the Curry programming language.
+This work focuses on the construction of an efficient compiler for the Curry programming language.
 The main contributions of this dissertation are as follows.
 \begin{itemize}
-\item We build an efficient implementation of the Curry language.
-\item We identify two aspects of Pakcs and Kics2 that lead to inefficiency.
-\item We show that we do not need to convert all programs to Uniform Programs \cite{Kics2Theory},
-      which is more efficient than Kics2's compilation scheme.
-\item We give a new backtracking algorithm where we omit backtracking deterministic expressions,
-      which is more efficient than backtracking in Pakcs.
+\item We build an efficient implementation of the Curry language. (Section~\ref{sec:language:eval})
+\item We identify aspects of existing Curry compilers, Kics2 and Pakcs, that lead to inefficiency.  Specifically:
+    \begin{itemize}
+    \item We show that compilation of Curry does not require converting all programs to Uniform Programs 
+          \cite{Kics2Theory},
+          which is more efficient than Kics2's compilation scheme. (Section~\ref{sec:language:nondet})
+    \item We give a new backtracking algorithm that omits backtracking deterministic expressions,
+          which is more efficient than backtracking in Pakcs. (Section~\ref{sec:language:backtrack})
+    \end{itemize}
 \item We state and prove the Path Compression Theorem, which justifies several of our transformations,
-      as well as improvements to the run-time system.
-\item we introduce the \gassp system,
+      as well as improvements to the run-time system. (Section~\ref{sec:language:backtrack})
+\item We introduce the \gassp system,
       which is a library for constructing program transformations.
       This is not a new idea\cite{haskellComp},
-      but we show how using functional logic ideas can improve the implementation.
+      but we show how using functional logic ideas can improve the implementation. 
+      (Section~\ref{sec:gas:opts})
 
 \item We show that, after converting programs to A-Normal Form,
-      many optimizations that are valid for lazy functional programs
+      important optimizations that are valid for lazy functional programs
       are also valid for lazy functional logic programs.
       Specifically, we show that both inlining and reduction
-      remain valid for Curry programs, which is not true in general.
+      remain valid for Curry programs, which is not true without the conversion to A-normal form. 
+      (Section~\ref{sec:opts:anf})
 
 \item We implement three memory optimizations that have 
-      not been previously implemented for functional logic programs.
-\begin{itemize} 
-\item
-We implement unboxing by making boxes first class values in our language \cite{unboxing}, and justify its correctness.
-\item
-We show a new optimization for 
-functional logic programs called case shortcutting.
-We show the problems with trying to elide constructing a node that is evaluated in a case
-expression, then we show how this problem can be solved with a new node.
-\item
-We implement shortcut deforestation \cite{shortcutDeforestation},
-and show that, under suitable conditions, it remains correct for functional logic programs.
-In order to get decent performance out of this optimization, 
-we develop a scheme for outlining partial applications, and optimizing them.
+      not been previously implemented for functional logic programs. (Chapter~\ref{ch:mine})
+
+\begin{itemize}
+\item We implement unboxing by making boxes first class values in our language \cite{unboxing}, 
+      and justify its correctness. (Section~\ref{sec:mine:unbox})
+
+\item We show a new optimization for functional logic programs called case shortcutting.
+      We show the problems with trying to elide constructing a node that is evaluated in a case
+      expression, then we show how this problem can be solved with a new node. 
+      (Section~\ref{sec:mine:shortcut})
+
+\item We implement shortcut deforestation \cite{shortcutDeforestation},
+      and show that, under suitable conditions, it remains correct for functional logic programs.
+      In order to get decent performance out of this optimization, 
+      we develop a scheme for outlining and optimizing partial applications.
+      (Section~\ref{sec:mine:deforest})
 \end{itemize}
 
 \item We show that programs compiled with \ricesp are anywhere from 10 to 1000 times faster
-than those compiled with the Kics2 compiler, which is the current state of the art.
+      than those compiled with the Kics2 compiler, which is the current state of the art.
+      (Section~\ref{sec:results:tests})
+
 \item We show that programs compiled with optimizations are almost always at least twice as fast
       as those compiled without, and sometimes up to twenty times as fast.
+      (Section~\ref{sec:results:tests})
 \end{itemize}
 
-\subsection{Overview}
+\subsection{Overview} \label{sec:intro:overview}
 
 The rest of this dissertation is organized as follows.
-Chapter \ref{ch:Mathematical Background} presents the mathematical background of Term and Graph Rewriting.
+Chapter \ref{ch:math} presents the mathematical background of Term and Graph Rewriting.
 Notions from rewriting will be used throughout this dissertation,
 both because the operational semantics of Curry were first described using rewriting,
 and because our optimizing engine is based on constructing rewrite rules.
-Chapter \ref{ch:The Curry Language} presents the Curry Language and its semantics.
+Chapter \ref{ch:language} presents the Curry Language and its semantics.
 We introduce the Curry language and describe the IR FlatCurry as well as some conceptual hurdles
 with implementing a functional logic language.
 We also introduce two novel approaches to improving the performance of evaluation, case function
 and fast backtracking.
 Case functions can be applied to any evaluation model for Curry,
 while fast backtracking is specific to backtracking implementations.
-Chapter \ref{ch:The Generated Code} discusses the target code for this compiler.
+Chapter \ref{ch:codegen} discusses the target code for this compiler.
 We describe, by example, the generated code for simple functions,
 then we describe the changed needed to add additional features of Curry.
-Chapter \ref{ch:Generating and Altering Subexpressions} introduces the \gassp system for implementing optimizations.
+Chapter \ref{ch:gas} introduces the \gassp system for implementing optimizations.
 This is arguably the most important contribution to this paper,
 as it showcases how Curry can improve the process of writing large pieces of software like
 optimizing compilers.
 We describe the system, its implementation, and show how to construct optimizations with it.
-Chapter \ref{ch:The Compiler Pipeline} overviews the compiler pipeline, and the translation to C.
+Chapter \ref{ch:pipeline} overviews the compiler pipeline, and the translation to C.
 We show the compiler pipeline, and how \gassp simplifies several of the transformations.
-Chapter \ref{ch:Basic Optimizations} discusses the implementation of several common optimizations.
+Chapter \ref{ch:opts} discusses the implementation of several common optimizations.
 We show several common optimizations including inlining, reduction, and case canceling.
 We also introduce A-Normal form, which is required for the correctness of these optimizations.
-Chapter \ref{ch:Memory Optimizations} discusses the implementation of Unboxing, Shortcutting, and Deforestation.
-Chapter \ref{ch:Results} shows the results of our optimizations.
-Finally, chapter \ref{ch:Conclusion} concludes and discusses future work.
+Chapter \ref{ch:mine} discusses the implementation of Unboxing, Shortcutting, and Deforestation.
+Chapter \ref{ch:results} shows the results of our optimizations.
+Finally, Chapter \ref{ch:conclusion} concludes and discusses future work.
 

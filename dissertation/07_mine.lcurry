@@ -13,7 +13,7 @@ but it has not been shown to be valid in the presence of non-determinism.
 We prove its validity in Curry,
 and give a formulation that can apply to combinator languages.
 
-\section{Unboxing}
+\section{Unboxing} \label{sec:mine:unbox}
 
 So far we have avoided talking about operations in Curry for 
 primitive data types |Int|, |Char|, and |Float|.
@@ -35,7 +35,7 @@ but do not mention the boxes at compile time.
 This has several advantages, but one of the most important
 is that we can apply optimizations to the boxes themselves.
 
-\subsection{Boxed Values}
+\subsection{Boxed Values} \label{sec:mine:box}
 
 Before we get into the process of unboxing values,
 we need to look at how we represent boxed values.
@@ -163,7 +163,7 @@ Unfortunately, this patterns did not show improved performance for floating poin
 Now that we have seen how to represent boxes,
 we can work on removing them, and see what we actually gain from it.
 
-\subsection{Unboxed Values}
+\subsection{Unboxed Values} \label{sec:mine:values}
 
 
 In order to get an idea of the effectiveness of unboxing, let us look at an example.
@@ -248,7 +248,7 @@ We are still allocating 1 node for |cond, f_1, f_2| and 2 nodes for the |Int| co
 So, we are still allocating 5 nodes, which is just as much memory as before.
 This is an improvement in efficiency, but we can certainly do better.
 
-\subsection{Primitive Conditions}
+\subsection{Primitive Conditions} \label{sec:mine:primcond}
 
 The first optimization is that we really do not need to allocate memory for |cond|.
 |x le_p y| should compile down to an expression involving the primitive \texttt{<=} operation in C,
@@ -310,7 +310,7 @@ The next challenge is unboxing the arguments in the call to |fib|.
 \label{fig:fibOpt2}
 \end{boxfigure}
 
-\subsection{Strictness Analysis}
+\subsection{Strictness Analysis} \label{sec:mine:strict}
 
 The problems with eliminating boxes from arguments of function calls
 is strongly related to the run-time system and how we represent nodes
@@ -498,7 +498,7 @@ This means that we have reduced our memory consumption by 60\%.
 That is a huge improvement, but we can still do better.
 With the next optimization we look at how to remove the remaining allocations.
 
-\section{Case Shortcutting}
+\section{Case Shortcutting} \label{sec:mine:shortcut}
 
 In the last section were able to optimize the |fib| function from allocating 
 5 nodes per recursive call to only allocating 2 nodes per recursive call.
@@ -582,7 +582,7 @@ In the evaluation of |main|, |f 3| can be stored in the \texttt{RET} node,
 then we can evaluate |f 3| to head constructor form,
 but while we are evaluating |f 3|, we store |g 3| in the same \texttt{RET} node.
 While this is concerning, it is not actually a problem.
-As shown in chapter \ref{ch:The Generated Code}, 
+As shown in Chapter \ref{ch:codegen}, 
 at the beginning of \texttt{f\_hnf}, 
 we store all of the children of \texttt{root} as local variables, 
 and then when we have computed the value, we overwrite the \texttt{root} node.
@@ -607,12 +607,12 @@ void f_hnf(Node* root)
 {
   field x = root->children[0];
   set_g(RET, make_int(3));
-  field scrutenee = RET;
+  field scrutinee = RET;
   bool nondet = false;
   while(true)
   {
-    nondet |= scrutenee.n->nondet;
-    switch(TAG(scrutenee))
+    nondet |= scrutinee.n->nondet;
+    switch(TAG(scrutinee))
     {
       ...
       case True:
@@ -638,12 +638,12 @@ The generated code for main is given in Figure \ref{fig:RET1}.
 void main_hnf(Node* root)
 {
     set_f(RET, make_int(3));
-    field scrutenee = RET;
+    field scrutinee = RET;
     bool nondet = false;
     while(true)
     {
-        nondet |= scrutenee.n->nondet;
-        switch(TAG(scrutenee))
+        nondet |= scrutinee.n->nondet;
+        switch(TAG(scrutinee))
         {
             ...
             case True:
@@ -663,7 +663,7 @@ In fact, for |fib#worker| we are able to remove the remaining 2 allocations.
 This is fantastic, and we will come back to this point later,
 but we need to deal with a looming problem.
 
-\subsection{Non-deterministic RET Nodes}
+\subsection{Non-deterministic RET Nodes} \label{sec:mine:ret}
 
 The problem with the scheme we have developed so far is that
 if \texttt{RET} is non-deterministic, 
@@ -693,7 +693,7 @@ void main_hnf(Node* root)
     while(true)
     {
         nondet |= scrutinee.n->nondet;
-        switch(scrutenee.n->tag)
+        switch(scrutinee.n->tag)
         {
             ...
             case True:
@@ -712,7 +712,7 @@ void main_hnf(Node* root)
 \label{fig:RET2}
 \end{boxfigure}
 
-\subsection{RET hnf Functions}
+\subsection{RET hnf Functions} \label{sec:mine:REThnf}
 
 In the last section we copied RET nodes before pushing them
 onto the backtracking stack, 
@@ -812,7 +812,7 @@ void main_hnf(Node* root)
     while(true)
     {
         nondet |= scrutinee.n->nondet;
-        switch(scrutenee.n->tag)
+        switch(scrutinee.n->tag)
         {
             ...
             case True:
@@ -836,7 +836,7 @@ Node* f_RET_hnf(Node* backup)
 {
     Node* v1 = RET->children[0];
     set_g(RET, v1);
-    field scrutenee = RET;
+    field scrutinee = RET;
     Node* g_backup = g_RET_hnf(NULL);
     bool nondet = false;
     if(g_backup != NULL) {
@@ -847,7 +847,7 @@ Node* f_RET_hnf(Node* backup)
         g_backup = RET.n->children[0];
     }
     while(true) {
-        nondet |= scrutenee.n->nondet;
+        nondet |= scrutinee.n->nondet;
         switch(RET_forward->tag) {
             ...
             case True:
@@ -899,7 +899,7 @@ set_f(RET, v2);
 return f_RET_hnf(backup);
 \end{verbatim}
 
-\subsection{Shortcutting Results}
+\subsection{Shortcutting Results} \label{sec:mine:results}
 
 Before we move onto our next optimization, we should look back at what we have done so far.
 Initially, we had a |fib| function that allocated 5 nodes for every recursive call.
@@ -923,7 +923,7 @@ with Unboxing and Shortcutting,
 we can work on removing explicitly allocated memory
 with a technique from functional languages.
 
-\section{Deforestation}
+\section{Deforestation} \label{sec:mine:deforest}
 We now turn to our final optimization, Deforestation.
 The goal of this optimization is to remove intermediate data structures.
 Programmers often write in a pipeline style when writing functional programs.
@@ -951,7 +951,7 @@ so it is worth understanding and optimizing it.
 In particular, we want to eliminate the two intermediate lists created here.
 This is the goal of Deforestation.
 
-\subsection{The Original Scheme}
+\subsection{The Original Scheme} \label{sec:mine:origon}
 Deforestation has actually gone through several forms throughout its history.
 The original optimization proposed by Wadler \cite{deforestationWadler}
 was very general, but it required a complicated algorithm, and it could fail to terminate.
@@ -1059,7 +1059,7 @@ and the second is a theoretical problem.
 First, while we can apply foldr/build Deforestation, we can not actually optimize the results.
 Second, we still need to show it is valid for curry.
 
-\subsection{The Combinator Problem}
+\subsection{The Combinator Problem} \label{sec:mine:combinator}
 
 Let us look back at the motivating example,
 and see how it could be optimized in Haskell,
@@ -1118,7 +1118,7 @@ We do not inline lambda expressions, and reductions
 can only be applied to let bound variables, so we simply can not do this reduction.
 Instead we need a new solution.
 
-\subsection{Solution build\_fold}
+\subsection{Solution build\_fold} \label{sec:mine:buildFold}
 
 Our solution to this problem is to introduce a new combinator for transforming lists.
 We call this |build_fold| since it is a build applied to a fold.
@@ -1174,7 +1174,7 @@ The proof of this theorem will be given in the next section.
 Now that we have removed all of the lambdas from our definitions,
 we can look at the implementation.
 
-\subsection{Implementation}
+\subsection{Implementation} \label{sec:mine:impl}
 
 Deforestation turned out to be one of the easiest optimizations to implement.
 The implementation is entirely in \gas, and it proceeds in two steps.
@@ -1329,7 +1329,7 @@ This certainly is not perfect, but it is much closer to what we were hoping for.
 Combining this with Unboxing and Shortcutting gives us some very efficient code.
 While these results are very promising, we still need to know if Deforestation is even valid for Curry.
 
-\subsection{Correctness}
+\subsection{Correctness} \label{sec:mine:correct}
 First we show that the |build_fold| theorems are valid for a deterministic subset of Curry
 using the same reasoning as the original foldr-build rule.
 Without non-determinism and free variables, we can apply the same arguments as the original paper

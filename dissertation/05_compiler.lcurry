@@ -3,7 +3,7 @@ In the last chapter we developed the \gassp system for representing transformati
 In this chapter we show an extended example of using the \gassp system to transform FlatCurry programs
 into a canonical form.
 We then show how to translate these canonical programs to the ICurry intermediate representation.
-Finally, we compile the ICurry programs to C code, as discussed in chapter 3.
+Finally, we compile the ICurry programs to C code, as discussed in Chapter \ref{ch:codegen}.
 
 This compiler, unsurprisingly, follows a traditional compiler pipeline.
 While we start with an AST, there are still five phases left before we can generate C code.
@@ -65,7 +65,7 @@ After Post-processing
 \label{fig:stages}
 \end{boxfigure}
 
-\section{Canonical FlatCurry}
+\section{Canonical FlatCurry} \label{sec:pipeline:cononical}
 
 The pre-process and post-process steps of the compiler make heavy use the of \gassp system,
 and transform the FlatCurry program in to a form that is more amenable to C,
@@ -318,9 +318,9 @@ a few require some explanation.
 First we address a possible concern from the last chapter.
 Since we make no attempt to ensure confluence of our rewrite rules,
 can we be sure that our transformations are even valid?
-In general, no we can't.  \gassp does nothing to enforce the validity of rewrites,
+In general, no we cannot.  \gassp does nothing to enforce the validity of rewrites,
 it just applies them as it encounters an opportunity.
-This is a problem, because our rules as they're stated may not be valid.
+This is a problem, because our rules as they are stated may not be valid.
 For example, consider the following program.
 
 > f (let x = 1 in x) (let x = 2 in x)
@@ -450,7 +450,7 @@ At this point we are ready to transform the canonicalized FlatCurry into ICurry.
     \label{fig:preprocess_example}
 \end{boxfigure}
 
-\section{Compiling to ICurry}
+\section{Compiling to ICurry} \label{sec:pipeline:icurry}
 
 ICurry is meant to be a bridge between Curry code and imperative languages like C, Python, and Assembly.
 The let and case-expressions have been transformed into statements,
@@ -509,7 +509,7 @@ In subsequent calls, the scrutinee of a case expression will be set as the root.
 While this is not explicit in the algorithm here,
 in our implementation, the root of any block under a case expression
 is always |v_1|.
-This will become the variable \texttt{scrutenee} from the C code in chapter 3.
+This will become the variable \texttt{scrutenee} from the C code in Chapter \ref{ch:codegen}.
 Next we declare variables with the |decl| function.
 Each variables bound by a |let| or |free| expression must be declared.
 We also declare a variable for the scrutinee of the case statement, if this block has one.
@@ -598,7 +598,7 @@ ICurry
 \label{fig:icurryStage}
 \end{boxfigure}
 
-\section{Generating C Code}
+\section{Generating C Code} \label{sec:pipeline:c}
 
 Now that we have a program in ICurry, we can translate this to C.
 We already have a good idea of what the C code should look like,
@@ -617,7 +617,7 @@ We do the same thing for every ICurry function |f|,
 and produce a \texttt{make\_f} and \texttt{set\_f} function in C.
 Each node contains a \texttt{symbol}, that denotes the type of node, and holds information
 such as the name, arity, and hnf function of the node.
-Along with setting the \texttt{symbol} from chapter \ref{ch:The Generated Code},
+Along with setting the \texttt{symbol} from Chapter \ref{ch:codegen},
 the make and set functions reset the nondet flag to \texttt{false},
 and set any children that were passed into the node.
 
@@ -625,10 +625,10 @@ and set any children that were passed into the node.
 The code to generate the C source file is given in 
 Figures \ref{fig:cprog}, \ref{fig:cstmt}, and \ref{fig:cexpr}.
 This is a standard syntax directed translation.
-We hold of on showing the generated code for literal cases until Chapter \ref{ch:Memory Optimizations}
+We hold of on showing the generated code for literal cases until Chapter \ref{ch:mine}
 where we discuss our implementation of unboxing.
 We also skip over the generation of the functions for case expressions discussed in section
-\ref{Non-determinism}.
+\ref{sec:language:nondet}.
 The code for this is largely the same.
 We just begin generating code at each block inside the function, after the declarations and assignments.
 

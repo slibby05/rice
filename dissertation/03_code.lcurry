@@ -4,7 +4,7 @@ we can start to design the generated code and run-time system for the compiler.
 In this chapter we give examples of generated code to implement Curry functions,
 and discuss the low level details of the Rice run-time.
 We start with a first order deterministic subset of Curry,
-then we add higher order function,
+then we add higher-order function,
 finally we add non-determinism and free variables.
 Throughout this section we will use \texttt{teletype font} to represent generated
 C code to distinguish it from Curry or FlatCurry code.
@@ -64,7 +64,7 @@ A \texttt{field}\index{\texttt{field}} is a union of a \texttt{Node*} and the re
 of the primitive types \texttt{Int}, \texttt{Float}, and \texttt{Char},
 as well as a \texttt{field*} to be described shortly.
 The use of fields instead of nodes for the children will be justified when we
-discuss primitive values and unboxing in chapter \ref{ch:Memory Optimizations}
+discuss primitive values and unboxing in chapter \ref{ch:mine}
 The \texttt{children}\index{\texttt{children}} field contains an array of children for this node.
 If a node could have more than three children, such as a node representing
 the |(,,,,,,)| constructor, then \texttt{children[3]} holds a pointer
@@ -143,17 +143,17 @@ and we will fill in details as we progress.
 void Prelude_not_hnf(field root) {
   field x = child_at(root, 0);
 
-  field scrutenee = x;
+  field scrutinee = x;
   while(true) {
-    switch(TAG(scrutenee)) {
+    switch(TAG(scrutinee)) {
       case FAIL_TAG:
         fail(root);
         return;
       case FORWARD_TAG:
-        scrutenee = child_at(scrutenee,0);
+        scrutinee = child_at(scrutinee,0);
         break;
       case FUNCTION_TAG:
-        HNF(scrutenee);
+        HNF(scrutinee);
         break;
       case Prelude_True_TAG:
         set_Prelude_False(root, 0);
@@ -181,7 +181,7 @@ If the tag is \texttt{FORWARD}, then we traverse the forwarding chain,
 and continue evaluating the \texttt x.
 
 Finally, while we are evaluating the node stored in the local variable \texttt x,
-we introduce a new variable \texttt{scrutenee}.
+we introduce a new variable \texttt{scrutinee}.
 This is because if \texttt{x} evaluates to a forwarding node,
 we need to evaluate the child of \texttt x.
 If we were to update \texttt x, and then return an expression containing \texttt x
@@ -189,9 +189,9 @@ later, then we would have compressed the forwarding path.
 As mentioned previously, this is not valid.
 
 At this point we have a strategy for how to compile first order deterministic Curry functions.
-Next we show how we handle partial application and higher order functions.
+Next we show how we handle partial application and higher-order functions.
 
-\subsection{Higher Order Functions} \label{Higher Order Functions C}
+\subsection{Higher Order Functions} \label{sec:codegen:hof}
 
 Earlier we gave an interpretation of how to handle |apply| nodes,
 but there are still a few details to work out.
@@ -317,9 +317,9 @@ void apply_hnf(field root) {
 \end{boxfigure}
 
 
-\subsection{Implementing Non-determinism} \label{Implementing Non-determinism}
+\subsection{Implementing Non-determinism} \label{sec:codegen:nondet}
 
-Now, we that we can reduce a higher order functional language,
+Now, we that we can reduce a higher-order functional language,
 we would like to extend our implementation to handle features from logic languages.
 
 The implementation does not change too much.
@@ -375,7 +375,7 @@ using the \texttt{push\_choice} function.
 The only other necessary change is to push a rewrite onto the backtracking stack
 when we reach either a fail, or constructor case.
 The \texttt{Prelude\_not\_1} function is a function at a case expression discussed
-in section \ref{Non-determinism}.
+in section \ref{sec:language:nondet}.
 The changes to the |not| function are give in Figure \ref{fig:notNondet}.
 Due to space constraints not all sections are show.
 The pieces of code that do not changed are omitted and replaced with \texttt{...}.
@@ -384,22 +384,21 @@ The pieces of code that do not changed are omitted and replaced with \texttt{...
 \begin{verbatim}
 void Prelude_not_hnf(field root) {
   field x = child_at(root, 0);
-  field scrutenee = x;
+  field scrutinee = x;
   while(true) {
-    switch(TAG(scrutenee)) {
+    switch(TAG(scrutinee)) {
       case FAIL_TAG:
         push_frame(root, make_Prelude_not_1(x));
         fail(root);
         return;
       ...
       case CHOICE_TAG:
-        choose(scrutenee);
+        choose(scrutinee);
         break;
       case FREE_TAG:
-        push(bt_stack(free_var())choose(scrutenee);
-        push_frame(scrutenee, free_var());
-        push_choice(scrutenee, make_Prelude_False(0));
-        set_Prelude_True(scrutenee, 0);
+        push_frame(scrutinee, free_var());
+        push_choice(scrutinee, make_Prelude_False(0));
+        set_Prelude_True(scrutinee, 0);
         break;
       case Prelude_True_TAG:
         push_frame(root, make_Prelude_not_1(x));
@@ -415,7 +414,7 @@ void Prelude_not_hnf(field root) {
 \end{boxfigure}
 
 
-\subsection{Fast Backtracking} \label{Fast Backtracking}
+\subsection{Fast Backtracking} \label{sec:codegen:backtrack}
 
 Finally we show how we implement the fast backtracking technique described earlier.
 The implementation actually does not change much,
@@ -432,11 +431,11 @@ The generated code for |not| is given in Figure \ref{fig:notFull}.
 \begin{verbatim}
 void Prelude_not_hnf(field root) {
   field x = child_at(root, 0);
-  field scrutenee = x;
+  field scrutinee = x;
   bool nondet = false;
   while(true) {
-    nondet |= scrutenee->nondet;
-    switch(TAG(scrutenee)) {
+    nondet |= scrutinee->nondet;
+    switch(TAG(scrutinee)) {
       case FAIL_TAG:
         if(nondet) push_frame(root, make_Prelude_not_1(x));
         fail(root);
@@ -444,13 +443,13 @@ void Prelude_not_hnf(field root) {
 
       ...
       case CHOICE_TAG:
-        choose(scrutenee);
+        choose(scrutinee);
         nondet = true;
         break;
       case FREE_TAG:
-        push_frame(scrutenee, free_var());
-        push_choice(scrutenee, make_Prelude_False(0));
-        set_Prelude_True(scrutenee, 0);
+        push_frame(scrutinee, free_var());
+        push_choice(scrutinee, make_Prelude_False(0));
+        set_Prelude_True(scrutinee, 0);
         nondet = true;
         break;
       case Prelude_True_TAG:

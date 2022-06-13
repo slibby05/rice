@@ -33,7 +33,7 @@ for FlatCurry including dead code elimination, case canceling, and inlining.
 Finally, we show these optimizations at work optimizing the implementation
 the implementation |<=| for the |Bool| type.
 
-\section{A-Normal Form}
+\section{A-Normal Form} \label{sec:opts:anf}
 
 Before we discuss any substantial optimizations, we need to deal with a significant
 roadblock to optimizing Curry.
@@ -261,7 +261,7 @@ Some examples of programs in ANF are given in Figure \ref{fig:anormalExample}.
 \label{fig:anormalExample}
 \end{boxfigure}
 
-\section{Case Canceling}
+\section{Case Canceling} \label{sec:opts:case}
 
 Finally, we come to our first example of an optimization.
 In fact, this is arguably our most important optimization.
@@ -490,7 +490,7 @@ In the next section we look at how we can inline functions.
 Unlike Case Canceling, It is harder to determine the correctness of Inlining.
 In fact, we have to do a lot of work to inline functions in Curry.
 
-\section{Inlining}
+\section{Inlining} \label{sec:opts:inline}
 
 As mentioned at the start of this chapter, inlining is not generally valid in Curry.
 So, we need to establish cases when inlining is valid,
@@ -558,7 +558,7 @@ This map is updated every time we optimize a new function,
 so we can reduce all functions that we have already optimized.
 We will use this map to determine when it is safe and effective to reduce a function.
 
-\subsection{Partial Applications}
+\subsection{Partial Applications} \label{sec:opts:part}
 
 Dealing with partial applications is a bit more tricky.
 In fact, we can not use the \gassp system to solve this problem
@@ -671,7 +671,7 @@ and we can continue to optimize the function.
     \label{fig:addvarDeriv}
 \end{boxfigure}
 
-\subsection{The Function Table} \label{sec:funTab}
+\subsection{The Function Table} \label{sec:opts:funTab}
 In order to keep track of all of the functions we have optimized we create a function lookup table
 called |rfunction| \index{$F_{\mathcal{F}}$}.
 The function table is just a map from function names to information about the function.
@@ -694,7 +694,7 @@ It is always useful to reduce these functions.
 will likely cause Case Canceling.
 
 
-\subsection{Function Ordering}
+\subsection{Function Ordering} \label{sec:opts:order}
 
 The problem of function ordering seems like it should be pretty inconsequential,
 but it turns out to be very important.
@@ -776,7 +776,7 @@ We can see the derivation in Figure \ref{fig:loopOptDeriv}.
 \end{boxfigure}
 
 
-\subsection{Inlining}
+\subsection{Inlining} \label{sec:opts:inline2}
 
 Now that we have everything in order, we can start developing the inlining transformation.
 As mentioned before, we need to be careful with inlining.
@@ -942,7 +942,7 @@ we have found that these restrictions generate better code.
 \label{fig:inlineCode}
 \end{boxfigure}
 
-\subsection{Reduce}
+\subsection{Reduce} \label{sec:opts:reduce}
 
 Finally we come to reduction.
 While this was a simpler task than inlining in GHC,
@@ -1154,7 +1154,7 @@ Case Shortcutting is a new optimization to Curry.
 >              False  -> True) of
 >       True   -> True
 >       False  -> v_2
-\caption{Derivation of |<=| for |Bool| condinued}
+\caption{Derivation of |<=| for |Bool| continued}
 \label{fig:LtEqReduce2}
 \end{boxfigure}
 

@@ -21,7 +21,7 @@ It introduces sharing where none existed.
 If the common sub-expression is non-deterministic, then we will change the set of results.
 On the other hand, common sub-expression elimination is fairly innocuous in most other languages.
 
-\subsection{Contributions}
+\subsection{Contributions} \label{sec:conclution:contributions}
 
 In this dissertation we built an efficient implementation of the Curry language.
 We discussed the evaluation and run-time system for our implementation,
@@ -54,7 +54,7 @@ than Kics2, which is the current state of the art.
 We also saw that programs compiled with optimizations are almost always at least twice as fast
 as those compiled without, and sometimes up to twenty times as fast.
 
-\subsection{Future Work}
+\subsection{Future Work} \label{sec:conclusion:future}
 
 Most curries are made from curry powder and coconut milk,
 however our Curry was mostly made from low hanging fruit.
@@ -103,7 +103,7 @@ While we did work to make sure our run time system was efficient,
 it could certainly be better.
 Integrating this work with the Sprite \cite{sprite} compiler might solve this issue.
 
-\subsection{Conclusion and Related Work}
+\subsection{Conclusion and Related Work} \label{sec:conclution:related}
 
 We have presented the \ricesp Optimizing Curry compiler.
 The compiler was primarily built to test the effectiveness of various optimizations on Curry programs.

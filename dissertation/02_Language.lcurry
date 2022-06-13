@@ -6,7 +6,7 @@ adding functional features to logic languages,
 and adding logic features to functional languages.
 The former approach was very popular and spawned several new languages
 including Ciao-Prolog \cite{ciao}, Mercury \cite{mercury}, HAL \cite{hal}, and Oz \cite{oz}.
-The extension of functional languages lead to fewer new languages,
+The extension of functional languages led to fewer new languages,
 but it did lead to libraries like the logict monad in Haskell \cite{logict}.
 
 Ultimately the solution came from the work on automated theorem proving \cite{narrowing}.
@@ -20,13 +20,14 @@ We give example programs to show how programming in Curry differs from Prolog an
 Then we discuss the choices we made in our implementation compared to previous implementations.
 Finally we give an example of generated code to demonstrate how we compile Curry programs.
 
-\section{The Curry Language} \label{The Curry Language}
+\section{The Curry Language} \label{sec:language:curry}
 
-In order to write a compiler for Curry, we need to understand how Curry works.
+In order to write a compiler for Curry, we need to understand what sets
+Curry apart from other programming languages.
 We will start by looking at some examples of Curry programs.
 We will see how Curry programs differ from Haskell and Prolog programs.
 We start with a simple first order functional language,
-and show how adding higher order functions, non-determinism, and free variables
+and show how adding higher-order functions, non-determinism, and free variables
 all affect the semantics.
 Then we discuss an improvement to backtracking that can increase performance significantly.
 Finally we discuss the effect of collapsing functions,
@@ -171,7 +172,7 @@ These are some of the useful programming constructs in Curry.
 While they are convenient for programming, we need to understand how they work
 if we are going to implement them in a compiler.
 
-\section{Semantics} \label{Semantics}
+\section{Semantics} \label{sec:language:semantics}
 
 As we have seen, the syntax of Curry is very similar to Haskell.
 Functions are declared by defining equations, and new data types are declared as algebraic data types.
@@ -264,7 +265,7 @@ Since no expressions are ever duplicated, all instances of |coin| will reduce th
 This issue of run-time choice semantics will appear throughout the compiler.
 
 
-\subsection{FlatCurry} \label{FlatCurry}
+\subsection{FlatCurry} \label{sec:language:flat}
 
 The first step in the compiler pipeline is to parse a Curry program into FlatCurry\index{FlatCurry}.
 The definition is given in Figure \ref{fig:flatSyntax}.
@@ -302,7 +303,7 @@ that is not present in the definitional tree.
 While this is meant to simply represent a failing computation,
 we have also occasionally found it useful in optimization.
 
-\subsection{Evaluation} \label{Evaluation}
+\subsection{Evaluation} \label{sec:language:eval}
 
 Each program contains a special function |main| that takes no arguments.
 The program executes by reducing the expression |main| 
@@ -387,7 +388,7 @@ Transformed FlatCurry representation of |==| on lists.
 \label{fig:eqList}
 \end{boxfigure}
 
-\subsection{Non-determinism} \label{Non-determinism}
+\subsection{Non-determinism} \label{sec:language:nondet}
 
 
 Currently there are three approaches to evaluating non-deterministic expression in Curry:
@@ -415,7 +416,7 @@ consider the FlatCurry function |weird| \ref{fig:weird}.
 This function defines a local variable |x| which is used in a case expression.
 If this were a rewrite system, then we would be able to translate the
 |case| expression into pattern matching, but a rule can not pattern match on a locally defined variable.
-We show the reduction of |wierd| in Figure \ref{fig:weirdEval}.
+We show the reduction of |weird| in Figure \ref{fig:weirdEval}.
 
 \begin{boxfigure}
 > weird = let x = False ? True
@@ -503,7 +504,7 @@ The correctness of this method follows
 from the redex contraction theorem, which is proved later.
 
 
-\subsection{Free Variables} \label{Free Variables}
+\subsection{Free Variables} \label{sec:language:free}
 
 Free variables are similar to non-deterministic expressions.
 In fact, in both Kics2 and Sprite \cite{kics2,sprite} they are replaced
@@ -565,12 +566,12 @@ When calling this function with a free variable, we have the derivation below in
 \label{fig:lightEval}
 \end{boxfigure}
 
-\subsection{Higher Order Functions} \label{Higher Order Functions}
+\subsection{Higher Order Functions} \label{sec:language:hof}
 
-Now that we have a plan for the logic features of Curry, we move on to higher order functions.
+Now that we have a plan for the logic features of Curry, we move on to higher-order functions.
 This subject has been extensively studied by the function languages community,
 and we take the approach of \cite{fastCurry}.
-Higher order functions are represented using defunctionalization \cite{defunctionalization}.
+Higher-order functions are represented using defunctionalization \cite{defunctionalization}.
 Recall that in FlatCurry, an expression $f_k$\index{$f_k$} represents a partial application
 that is missing |k| arguments.
 We introduce an |apply| function that has an unspecified arity,
@@ -588,9 +589,9 @@ The behavior of |apply| is specified below.
 If the first argument |f| of |apply| is not partially applied,
 then evaluate |f| until it is, and proceed as above.
 In the case that |f| is a free variable, then we return |EXEMPT|, 
-because we do not support higher order narrowing.
+because we do not support higher-order narrowing.
 
-\subsection{Backtracking Performance} \label{Backtracking Performance}
+\subsection{Backtracking Performance} \label{sec:language:backtrack}
 
 Now that we have established a method for implementing non-determinism,
 we would like to improve the performance.
@@ -735,7 +736,7 @@ This establishes our result.
 
 
 
-\subsection{Collapsing Functions} \label{Collapsing Functions}
+\subsection{Collapsing Functions} \label{sec:language:collapse}
 
 While the result of the previous section is great, 
 and it allows us to avoid creating a large number of stack frames,

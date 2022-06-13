@@ -22,7 +22,7 @@ example of a rewrite system for Peano Arithmetic \ref{fig:peano}.
 We will use these concepts to define the semantics of Curry,
 as well as develop optimizations.
 
-\section{Rewriting}
+\section{Rewriting} \label{sec:math:rewriting}
 In programming language terms, the rules of Curry are its semantics.
 The semantics of Curry are generally given in terms of rewriting.
 \cite{IntegrationFunLog, FunLog, Needed}
@@ -153,7 +153,7 @@ For example, if our optimizer is not terminating, then we will never actually co
 Now that we have a general notation for rewriting, we can introduce two important rewriting frameworks:
 term rewriting and graph rewriting, where we are transforming trees and graphs respectively.
 
-\section{Term Rewriting}
+\section{Term Rewriting} \label{sec:math:term}
 
 As mentioned previously, one application of term rewriting
 is to transform terms representing syntax trees.
@@ -381,7 +381,7 @@ In contrast, the SKI system is not a constructor system.
 While $S,K,I$ can all be constructors, the $Ap$ symbol appears in both root
 and non-root positions of the left hand side of rules.
 This example will become important for us in Curry.
-We will do something similar to implement higher order functions.
+We will do something similar to implement higher-order functions.
 This means that Curry programs will not directly follow the constructor discipline.
 Therefore, we must be careful when specifying the semantics of function application.
 
@@ -439,7 +439,7 @@ For this reason, it is not surprising that most functional languages are based o
 %The solution to this problem comes from the theory of narrowing.
 
 
-\section{Narrowing}
+\section{Narrowing} \label{sec:math:narrow}
 
 Narrowing was originally developed to solve the problem of semantic unification.
 The goal was, given a set of equations $E = \{a_1 = b_2, a_2 = b_2, \ldots a_n = b_n\}$,
@@ -515,7 +515,7 @@ what subterm to apply it to,
 and what substitution to use.
 This is the role of a strategy.
 
-\section{Rewriting Strategies}
+\section{Rewriting Strategies} \label{sec:math:strategy}
 
 Our goal with a rewriting strategy is to be able to find a normal form for any term.
 Similarly our goal for narrowing will be to find a normal form and substitution.
@@ -690,7 +690,7 @@ with certain restrictions we can ensure the our rewrite systems are sequential.
 Actually we can make a stronger guarantee.
 The rewrite system will admit a narrowing strategy that only narrows needed redexes.
 
-\section{Narrowing Strategies}
+\section{Narrowing Strategies} \label{sec:math:needed}
 
 Similar to rewriting strategies, narrowing strategies attempt to compute a normal form
 for a term using narrowing steps.
@@ -893,7 +893,7 @@ for each function defined.
 However, if we were to implement our compiler using terms, it would be needlessly inefficient.
 We solve this problem with graph rewriting.
 
-\section{Graph Rewriting}
+\section{Graph Rewriting} \label{sec:math:graph}
 As mentioned above term rewriting is too inefficient to implement Curry.
 Consider the rule $double(x) = x + x$.
 Term rewriting requires this rule to make a copy of $x$, no matter how large it is,
@@ -1114,7 +1114,7 @@ but the definition of narrowing and properties about inductively sequential GRSs
 can be found in Echaned and Janodet \cite{graphRewriting}.
 They also show that the needed narrowing strategy is still valid for graph rewriting systems.
 
-\section{Previous Work}
+\section{Previous Work} \label{sec:math:previous}
 This was not meant to be an exhaustive examination of rewriting, but rather an introduction to the concepts,
 since they form this theoretical basis of the Curry language.
 Most work on term rewriting up through 1990 has been summarized by Klop \cite{termRewriting},
@@ -1137,5 +1137,5 @@ but there are also alternatives in \cite{termRewriting, termAndAllThat, Advanced
 Here we saw how we can rewrite terms and graphs.
 We will use this idea in the next chapter to rewrite entire programs.
 This will become the semantics for our language.
-Now that we have some tools, It is time to find out how to make Curry!
+Now that we have some tools, it is time to find out how to make Curry!
 

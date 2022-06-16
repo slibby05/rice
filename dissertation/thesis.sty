@@ -310,7 +310,7 @@ psu-thesis documentation.}}{}
         % Supports up to four more committee members
         \ifdefined\@firstreader {\@firstreader \\} \fi
         \ifdefined\@secondreader {\@secondreader \\} \fi
-        \ifdefined\@thirdreader {\@thirdreader \\} \fi
+        %\ifdefined\@thirdreader {\@thirdreader \\} \fi
         \ifdefined\@fourthreader {\@fourthreader \\} \fi
         \ifdefined\@graduaterepresentative
         {\@graduaterepresentative \\} \fi
@@ -387,6 +387,7 @@ psu-thesis documentation.}}{}
 \def\afterpreface{
     \begin{singlespace}
     \pagestyle{fancy}
+    \pagebreak
     \tableofcontents
     \thispagestyle{fancy}
     \newpage

@@ -85,7 +85,7 @@ take on.
 >       0 -> free case
 >       1 -> free case
 \end{minipage}
-\caption{Wrapping a primitive case with a case to remove the box.}
+\caption[Case of Primitive Values]{Wrapping a primitive case with a case to remove the box.}
 \label{fig:caseWrap}
 \end{boxfigure}
 
@@ -113,7 +113,7 @@ The |le_p| operation performs a comparison between two integers, and returns eit
 > x <= y = case  x of
 >                Int x_p -> case  y of
 >                                 Int y_p -> x_p le_p y_p 
-\caption{Definitions for |+| and |<=| taking boxed integers.}
+\caption[Boxed Versions of |+| and |<=|]{Definitions for |+| and |<=| taking boxed integers.}
 \label{fig:primOp}
 \end{boxfigure}
 
@@ -186,8 +186,7 @@ After translating to A-Normal Form:
 >                   False  ->  let n_1 = n-1
 >                              in let f_1 = fib n_1
 >                              in let n_2 = n-2
->                              in let f_2 = fib n_2
->                              in f_1 + f_2
+>                              in let f_2 = fib n_2 in f_1 + f_2
 
 After adding boxes:
 
@@ -198,10 +197,9 @@ After adding boxes:
 >                   False  ->  let n_1 = n - Int 1
 >                              in let f_1 = fib n_1
 >                              in let n_2 = n - Int 2
->                              in let f_2 = fib n_2
->                              in f_1 + f_2
+>                              in let f_2 = fib n_2 in f_1 + f_2
 
-\caption{A program for generating Fibonacci numbers translated to ANF, and adding boxes.}
+\caption[A Fibbonacci Program]{A program for generating Fibonacci numbers translated to ANF, and adding boxes.}
 \label{fig:fib}
 \end{boxfigure}
 
@@ -224,18 +222,18 @@ we can optimize |fib| to the program given in Figure \ref{fig:fibOpt1}.
 
 \begin{boxfigure}
 > fib n = case  n of
->               Int  v_2 ->  let  cond = v_2 le_p 1
->                            in  case  cond
->                                      True   ->  n
->                                      False  ->  let n_1     = v_2 mi_p 1
->                                                 in let f_1  = fib (Int n_1)
->                                                 in case  f_1 of
->                                                          Int p_1 ->  let n_2     = v_2 mi_p 2
->                                                                      in let f_2  = fib (Int n_2)
->                                                                      in case  f_2 of
->                                                                               Int p_2 ->  let r = p_1 pl_p p_2
->                                                                                           in Int r
-\caption{Optimized |fib| after Unboxing}
+>              Int  v_2 ->  let  cond = v_2 le_p 1
+>                           in  case  cond
+>                                    True   ->  n
+>                                    False  ->  let n_1     = v_2 mi_p 1
+>                                               in let f_1  = fib (Int n_1)
+>                                               in case  f_1 of
+>                                                         Int p_1 ->  let n_2     = v_2 mi_p 2
+>                                                                     in let f_2  = fib (Int n_2)
+>                                                                     in case  f_2 of
+>                                                                             Int p_2 ->  let r = p_1 pl_p p_2
+>                                                                                         in Int r
+\caption[|fib| After Unboxing]{Optimized |fib| after Unboxing}
 \label{fig:fibOpt1}
 \end{boxfigure}
 
@@ -280,7 +278,7 @@ $\ \ $ \texttt{\{}\\
 $\ \ \ \ \ \ $ $\mathcal{B}(e_f)$\\
 $\ \ $ \texttt{\}}\\
 \end{tabular}
-\caption{The syntax and translation for |primcond|}
+\caption[The |pcase| Construct]{The syntax and translation for |primcond|}
 \label{fig:primcond}
 \end{boxfigure}
 
@@ -306,7 +304,7 @@ The next challenge is unboxing the arguments in the call to |fib|.
 >                                                                 in case  f_2 of
 >                                                                          Int p_2 ->  let  r = p_1 pl_p p_2
 >                                                                                      in   Int r
-\caption{The |fib| function with primitive cases}
+\caption[|fib| with Primitive Cases]{The |fib| function with primitive cases}
 \label{fig:fibOpt2}
 \end{boxfigure}
 
@@ -336,7 +334,7 @@ typedef union field
     double        f; //primitive float
 } field;
 \end{verbatim}
-\caption{Definition of \texttt{field} type.}
+\caption[Definition of the \texttt{field} Type]{Definition of \texttt{field} type.}
 \label{fig:field}
 \end{boxfigure}
 
@@ -472,7 +470,7 @@ Which can be optimized to:
 >                                                           in case  f_2 of
 >                                                                  Int p_2 ->  let r = p_1 pl_p p_2
 >                                                                              in Int r
-\caption{The |fib| function after strictness analysis.}
+\caption[|fib| After Strictness Analysis]{The |fib| function after strictness analysis.}
 \label{fig:fibOpt3}
 \end{boxfigure}
 
@@ -488,7 +486,7 @@ Which can be optimized to:
 >                                         in case  f_2 of
 >                                                  Int p_2 ->  let r = p_1 pl_p p_2
 >                                                              in Int r
-\caption{The |fib| function after strictness analysis and optimization.}
+\caption[|fib| after Strictness Analysis and Optimization]{The |fib| function after strictness analysis and optimization.}
 \label{fig:fibOpt4}
 \end{boxfigure}
 
@@ -623,7 +621,7 @@ void f_hnf(Node* root)
   }
 }
 \end{verbatim}
-\caption{Part of the generated code for |f|.}
+\caption[Generated Code with \texttt{RET} Nodes]{Part of the generated code for |f|.}
 \label{fig:gen_f}
 \end{boxfigure}
 
@@ -654,7 +652,7 @@ void main_hnf(Node* root)
         }
     }
 \end{verbatim}
-\caption{First attempt at compiling |main| with Shortcutting.}
+\caption[|main| with Shortcutting First Attempt]{First attempt at compiling |main| with Shortcutting.}
 \label{fig:RET1}
 \end{boxfigure}
 
@@ -708,7 +706,7 @@ void main_hnf(Node* root)
         }
     }
 \end{verbatim}
-\caption{Second attempt at compiling |main| with Shortcutting.}
+\caption[|main| with Shortcutting Second Attempt]{Second attempt at compiling |main| with Shortcutting.}
 \label{fig:RET2}
 \end{boxfigure}
 
@@ -793,27 +791,20 @@ We also give the definition for \texttt{f\_RET\_hnf} in Figure \ref{fig:RET_f}.
 
 \begin{boxfigure}
 \begin{verbatim}
-void main_hnf(Node* root)
-{
+void main_hnf(Node* root) {
     set_f(RET, make_int(3));
     field scrutinee = RET;
     Node* f_backup = f_RET_hnf(NULL);
     bool nondet = false;
-    if(f_backup != NULL)
-    {
+    if(f_backup != NULL) {
         nondet = true;
         memcpy(f_backup, RET.n, sizeof(Node));
-    }
-    else if(RET.n->tag == FORWARD_TAG)
-    {
+    } else if(RET.n->tag == FORWARD_TAG) {
         f_backup = RET.n->children[0];
     }
-
-    while(true)
-    {
+    while(true) {
         nondet |= scrutinee.n->nondet;
-        switch(scrutinee.n->tag)
-        {
+        switch(scrutinee.n->tag) {
             ...
             case True:
                 if(nondet)
@@ -822,18 +813,15 @@ void main_hnf(Node* root)
                 }
                 set_int(root, 0);
                 return;
-                ...
-        }
-    }
+                ...  } }
 \end{verbatim}
-\caption{Final version of |main| with Shortcutting.}
+\caption[|main| with Shortcutting]{Final version of |main| with Shortcutting.}
 \label{fig:RET3}
 \end{boxfigure}
 
 \begin{boxfigure}
 \begin{verbatim}
-Node* f_RET_hnf(Node* backup)
-{
+Node* f_RET_hnf(Node* backup) {
     Node* v1 = RET->children[0];
     set_g(RET, v1);
     field scrutinee = RET;
@@ -842,8 +830,7 @@ Node* f_RET_hnf(Node* backup)
     if(g_backup != NULL) {
         nondet = true;
         memcpy(g_backup, RET.n, sizeof(Node));
-    }
-    else if(RET.n->tag == FORWARD_TAG) {
+    } else if(RET.n->tag == FORWARD_TAG) {
         g_backup = RET.n->children[0];
     }
     while(true) {
@@ -860,11 +847,9 @@ Node* f_RET_hnf(Node* backup)
                 }
                 set_False(RET);
                 return backup;
-            ...
-        }
-    }
+            ...  } }
 \end{verbatim}
-\caption{Compiling |f| with Shortcutting.}
+\caption[Compiling |f| with Shortcutting]{Compiling |f| with Shortcutting.}
 \label{fig:RET_f}
 \end{boxfigure}
 
@@ -893,11 +878,13 @@ This is no problem at all, because we are reducing |f 4| with \texttt{f\_RET\_hn
 Ignoring the complications of Unboxing for the moment, we can generate the following code
 for the return of |f|.
 
+\begin{minipage}{\textwidth}
 \begin{verbatim}
 field v2 = make_int(n-1)
 set_f(RET, v2);
 return f_RET_hnf(backup);
 \end{verbatim}
+\end{minipage}
 
 \subsection{Shortcutting Results} \label{sec:mine:results}
 
@@ -1068,37 +1055,33 @@ The derivation in Figure \ref{fig:sumPrimes_deforest} comes from the
 original paper \cite{shortcutDeforestation}.
 
 \begin{boxfigure}
-> sumPrimes m = sum (filter isPrime (enumFromTo 2 m))
+> sumPrimes m = sum (filter isPrime (enum 2 m))
 > ==>
 > sumPrimes m = foldr (\x y -> x + y) 0 
 >                 (build (\c n -> foldr (\x y -> if isPrime x then x `c` y else y) n)
->                  (build enumFromTo_build 2 m))
+>                  (build enum_build 2 m))
 > ==>
 > sumPrimes m = foldr (\x y -> x + y) 0 
->                 (build (\c n -> (enumFromTo_build 2 x) (\x y -> if isPrime x then x `c` y else y) n))
+>     (build (\c n -> enum_build 2 x (\x y -> if isPrime x then x `c` y else y) n))
 > ==>
-> sumPrimes m = enumFromTo_build 2 m (\x y ->  if isPrime x 
->                                              then (\x y -> x + y) x y 
->                                              else y) 0
+> sumPrimes m = enum_build 2 m (\x y ->  if isPrime x 
+>                                        then (\x y -> x + y) x y 
+>                                        else y) 0
 > ==>
-> sumPrimes m = enumToFrom_build 2 m (\x y -> if isPrime x then x + y else y) 0
->   where enumToFrom_build k m c z =  if k > m 
->                                     then z
->                                     else c k (enumToFrom_build (k+1) m c z)
+> sumPrimes m = enum_build 2 m (\x y -> if isPrime x then x + y else y) 0
+>   where enum_build k m c z =  if k > m then z
+>                               else c k (enum_build (k+1) m c z)
 > ==>
-> sumPrimes m = enumToFrom_build 2 m
->   where enumToFrom_build k m =  if k > m 
->                                 then 0
->                                 else (\x y ->  if isPrime x then x + y else y)
->                                        k (enumToFrom_build (k+1) m)
+> sumPrimes m = enum_build 2 m
+>   where enum_build k m =  if k > m then 0
+>                           else (\x y ->  if isPrime x then x + y else y)
+>                                  k (enum_build (k+1) m)
 > ==>
-> sumPrimes m = enumToFrom_build 2 m
->   where enumToFrom_build k m =  if k > m 
->                                 then 0
->                                 else  if isPrime k 
->                                       then x + (enumToFrom_build (k+1) m c z) 
->                                       else (enumToFrom_build (k+1) m)
-\caption{Optimization derivation for short-cut Deforestation}
+> sumPrimes m = enum_build 2 m
+>   where enum_build k m =  if k > m then 0 else  if isPrime k 
+>                                       then x + (enum_build (k+1) m c z) 
+>                                       else (enum_build (k+1) m)
+\caption[|sumPrimes| Optimization Derivation]{Optimization derivation for short-cut Deforestation}
 \label{fig:sumPrimes_deforest}
 \end{boxfigure}
 
@@ -1161,14 +1144,17 @@ it plays nicely with |build| and |foldr|.
 We have the following three theorems about |build_fold|, which we will prove later.
 These are analogous to the |foldr/build| theorem.
 
+\begin{minipage}{\textwidth}
 \begin{theorem}
 \label{thm:buildFold}
 For all functions of the appropriate type that evaluate no $?$ expressions,
 the following qualities hold.
 > build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
 > foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
-> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) 
+>  = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
 \end{theorem}
+\end{minipage}
 
 The proof of this theorem will be given in the next section.
 Now that we have removed all of the lambdas from our definitions,
@@ -1187,25 +1173,25 @@ which is the actual Deforestation transformation,
 which applies either the |foldr/build| theorem,
 or one of the three |build_fold| theorems from above.
 The definitions for the deforest transformation are given in Figure \ref{fig:deforest}
-The optimization derivation for |sumPrimes| is in Figure \ref{fig:sumOpt}.
+The optimization derivation for |sumPrimes| is in Figures \ref{fig:sumOpt} and \ref{fig:sumOpt2}.
 The unused variables will be removed at a later time by dead code elimination.
 
 \begin{boxfigure}
-\textbf{Inline foldr/build:}\\
+\textbf{Inline foldr/build:}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > let x = build g in e 
 >   | path e p = foldr x 
 \end{minipage}  |==>|
 \begin{minipage}{.40\textwidth}
 > extend e [p,2] (build g)
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > let x = build g in e 
 >   | path e p = build_fold _ _ x
 \end{minipage}  |==>|
 \begin{minipage}{.40\textwidth}
 > extend e [p,2] (build g)
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > let x = build_fold mkf mkz in e 
 >   | path e p = foldr f z x 
@@ -1219,21 +1205,21 @@ The unused variables will be removed at a later time by dead code elimination.
 \end{minipage}  |==>|
 \begin{minipage}{.40\textwidth}
 > extend e [p,2] (build_fold mkf mkz)
-\end{minipage}\\
+\end{minipage}\\ \vspace{-.5cm}
 \textbf{Deforest foldr/build:}\\
 \begin{minipage}{.40\textwidth}
 > foldr f z (build g)
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > g f z
-\end{minipage}\\
+\end{minipage}\\ \vspace{-.5cm}
 \textbf{Deforest build\_fold/build:}\\
 \begin{minipage}{.40\textwidth}
 > build_fold mkf mkz (build g)
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > build (\c n -> g (mkf c) (mkz n))
-\end{minipage}\\
+\end{minipage}\\ \vspace{-.5cm}
 \textbf{Deforest foldr/build\_fold:}\\
 \begin{minipage}{.40\textwidth}
 > foldr f z (build_fold mkf mkz xs)
@@ -1242,7 +1228,7 @@ The unused variables will be removed at a later time by dead code elimination.
 > let     f_1 = mkf f
 > in let  z_1 = mkz z
 > in foldr f_1 z_1 xs
-\end{minipage}\\
+\end{minipage}\\ \vspace{-.5cm}
 \textbf{Deforest build\_fold/build\_fold:}\\
 \begin{minipage}{.40\textwidth}
 > build_fold mkf_1 mkz_1 
@@ -1254,7 +1240,7 @@ The unused variables will be removed at a later time by dead code elimination.
 > in build_fold f_1 z_1 xs
 
 \end{minipage}\\
-\caption{The Deforestation optimization. \\
+\caption[The Deforestation optimization]{The Deforestation optimization. \\
          The lambda in the build rule is a call to a known function.\\
          The lets are added to keep the expression in A-Normal Form.\\
          The expression |e || cond ==> e'| should be read as
@@ -1275,6 +1261,11 @@ The unused variables will be removed at a later time by dead code elimination.
 > let v_1 = build enumFromTo_build 2 n
 > in let v_2 = build_fold (filter_mkf isPrime) id v_1
 > in appOpt (foldr (+) 0 (build_fold (filter_mkf isPrime) id v_1))
+\caption[Derivation of |sumPrimes| 1]{Derivation for |sumPrimes|}
+\label{fig:sumOpt}
+\end{boxfigure}
+
+\begin{boxfigure}
 > ==> FOLD_BF
 > let v_1 = build enumFromTo_build 2 n
 > in let v_2 = build_fold (filter_mkf isPrime) id v_1
@@ -1293,8 +1284,8 @@ The unused variables will be removed at a later time by dead code elimination.
 > in let z = id 0
 > in let f = filter_mkf isPrime (+)
 > in enumFromTo_build 2 n f z
-\caption{Derivation for |sumPrimes|}
-\label{fig:sumOpt}
+\caption[Derivation of |sumPrimes| 2]{Derivation for |sumPrimes|}
+\label{fig:sumOpt2}
 \end{boxfigure}
 
 So far we have done a decent job.

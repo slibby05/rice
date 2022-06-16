@@ -27,22 +27,34 @@ At this point the code is ready to be translated into ICurry and then C.
 While there are several small details that are important to constructing a working Curry compiler,
 we will concern ourselves with the big picture here.
 
-\begin{boxfigure}
-Curry function
+%\begin{boxfigure}
+Let's look at a simple Curry function defined below.
+
+\begin{minipage}{\textwidth}
 > f True = False
 > f x = not (let y = not x in not y)
+\end{minipage}
 
-FlatCurry representation
+The FlatCurry representation of the above function is:
+
+\begin{minipage}{\textwidth}
 > f v_1 =  (case v_1 of True -> False) ? 
 >          (not (let v_2 = not v_1 in not v_2))
+\end{minipage}
 
-After Pre-processing
+After applying th Preprocessing transformations we have:
+
+\begin{minipage}{\textwidth}
 > f v_1 =  let v_2 = not v_1 
 >          in  (case  v_1 of 
 >                     True -> False 
 >                     False -> EXEMPT) ? (not v_2)
+\end{minipage}
 
-After Optimization
+After optimizing the function we have:
+
+\begin{minipage}{\textwidth}
+> f v_1 =
 > let  v_4 = case  v_1 of
 >                  True -> False
 >                  False -> EXEMPT
@@ -50,8 +62,11 @@ After Optimization
 >                       True -> False 
 >                       False -> True 
 >      in   v4 ? v5
+\end{minipage}
 
-After Post-processing
+Finally, after applying the Post-processing transformations we have:
+
+\begin{minipage}{\textwidth}
 > f v_2 =  let  v_3 = f_0 v_2
 >          in   let  v_4 = f_1 v_2
 >               in   v_3 ? v_4
@@ -61,9 +76,10 @@ After Post-processing
 > f_1 v_2 = fcase  v_2 of
 >                  True -> False
 >                  False -> True
-\caption{|f| at each stage of the optimizer.}
-\label{fig:stages}
-\end{boxfigure}
+\end{minipage}
+%\caption[Optimization States Expample]{|f| at each stage of the optimizer.}
+%\label{fig:stages}
+%\end{boxfigure}
 
 \section{Canonical FlatCurry} \label{sec:pipeline:cononical}
 
@@ -87,7 +103,7 @@ but for now we can see how transformations work.
 >    |  C_k (vec (e))
 >    |  e_1 ? e_2
 
-\caption{Canonical FlatCurry.\\
+\caption[Canonical FlatCurry]{Canonical FlatCurry.\\
          We split expressions into statement-like expressions |s|, and expressions |e|.
          Statement like expressions roughly correspond to control flow, and are translated
          to variable declaration and control flow statements in C.  }
@@ -116,7 +132,7 @@ Canonical FlatCurry is defined in Figure \ref{fig:flatCanonical}.
 Examples of the pre-processing transformations are presented in figures
 \ref{fig:canonical} and \ref{fig:canonical2}.
 We use the symbol |==>| for the optimization relation.
-The implementation is presented in Figure \ref{fig:code}.
+The implementation is presented in Figures \ref{fig:code} and \ref{fig:code2}.
 We only show the initial implementation of an optimization
 that excludes the name and path, but it can be extended to the full optimization
 in a straightforward manner.
@@ -146,7 +162,10 @@ However, these extensions to the rules are also included in the repository \cite
 >   where bs' = [Branch p (applyf e' xs) | (Branch p e') <- bs]
 > flatten (Case (Case e alt2) alt1)  = Case e bs (map addCase alt2)
 >   where addCase (Branch p e') = Branch p (Case e' b1)
-> emptyspace
+\caption[The Preprocessing Transformation Implementation 1]{The Curry implementation for the pre-processing transformations.}
+\label{fig:code}
+\end{boxfigure}
+\begin{boxfigure}
 > blocks _ (Let vs e) | changed = e'
 >   where (e', changed) = makeBlocks vs e
 > emptyspace
@@ -158,17 +177,19 @@ However, these extensions to the rules are also included in the repository \cite
 > emptyspace
 > fillCases dt _ (Case e bs)
 >   | not (null exempts) = Case e (bs++exempts)
->   where exempts = [Branch (Pattern b []) exempt | b <- missingBranches dt bs]
-\caption{The Curry implementation for the pre-processing transformations.\\
+>   where exempts = [  Branch (Pattern b []) exempt 
+>                      | b <- missingBranches dt bs]
+\caption[The Preprocessing Transformation Implementation 2]{The Curry implementation for the pre-processing transformations.\\
          In |fillCases|, |dt| is a |DataTable|, which holds information about data types.
          The |missingBranches| takes a list of branches and a |DataTable| and returns the names
          of the branches that are not present.
          In |alias| the |sub| function applies a substitution to an expression.}
-\label{fig:code}
+\label{fig:code2}
 \end{boxfigure}
 
 \begin{boxfigure}
 >FLOAT
+ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > let x =  let y = e_1 
 >          in e_2 
@@ -178,7 +199,7 @@ However, these extensions to the rules are also included in the repository \cite
 > let  y = e_1
 >      in  let  x = e_2
 >          in   e_3
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > let x =  let y free 
 >          in e_1
@@ -188,33 +209,33 @@ However, these extensions to the rules are also included in the repository \cite
 > let y free
 > in  let x = e_2
 >     in e_3
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > (let x = e_1 in e_2) ? e_3
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = e_1 in (e_2 ? e_3)
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > (let x free in e_1) ? e_2
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x free in (e_1 ? e_2)
-\end{minipage}\\
+\end{minipage}\\  \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > f (let x = e_1 in e_2)
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x = e_1
 > in f e_2
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > f (let x free in e)
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > let x free
 > in f e
-\end{minipage}\\
+\end{minipage}\\ \vspace{-1cm}
 \begin{minipage}{.40\textwidth}
 > case  let x = e_1 
 >       in e_2  of 
@@ -233,7 +254,7 @@ However, these extensions to the rules are also included in the repository \cite
 > let x free
 > in case e of alts
 \end{minipage}
-\caption{\gassp rules for putting FlatCurry programs into canonical form}
+\caption[The Preprocessing Transformation 1]{\gassp rules for putting FlatCurry programs into canonical form}
 \label{fig:canonical}
 \end{boxfigure}
 
@@ -251,14 +272,14 @@ However, these extensions to the rules are also included in the repository \cite
 >                     (vec (b_1 -> e_1)) }
 >
 \end{minipage}\\
-\textbf{Double Apply}\\
+\vspace{-.5cm}\textbf{Double Apply}\\
 \begin{minipage}{.40\textwidth}
 > apply (apply f [x]) [y]
 \end{minipage} |==>|
 \begin{minipage}{.40\textwidth}
 > apply f [x,y]
 \end{minipage}\\
-\textbf{Case Apply}\\
+\vspace{-.5cm}\textbf{Case Apply}\\
 \begin{minipage}{.40\textwidth}
 > apply (case  e of 
 >              (vec (pat -> f))) x
@@ -267,7 +288,7 @@ However, these extensions to the rules are also included in the repository \cite
 > case  e of 
 >       (vec (pat -> f x))
 \end{minipage}\\
-\textbf{Blocks}\\
+\vspace{-.5cm}\textbf{Blocks}\\
 \begin{minipage}{.40\textwidth}
 > let  a = b
 >      b = c
@@ -284,7 +305,7 @@ However, these extensions to the rules are also included in the repository \cite
 >      in   let  a = b
 >           in   a
 \end{minipage}\\
-\textbf{Alias}\\
+\vspace{-.5cm}\textbf{Alias}\\
 \begin{minipage}{.40\textwidth}
 > let x = y in e
 \end{minipage} |==>|
@@ -297,7 +318,7 @@ However, these extensions to the rules are also included in the repository \cite
 \begin{minipage}{.40\textwidth}
 > let x = loop in e
 \end{minipage}\\
-\textbf{Case Fill}\\
+\vspace{-.5cm}\textbf{Case Fill}\\
 \begin{minipage}{.40\textwidth}
 > case  e of  
 >       True -> e
@@ -308,7 +329,7 @@ However, these extensions to the rules are also included in the repository \cite
 >       False  -> EXEMPT
 \end{minipage}\\
 
-\caption{\gassp rules for putting FlatCurry programs into canonical form (continued)\\
+\caption[The Preprocessing Transformation 2]{\gassp rules for putting FlatCurry programs into canonical form (continued)\\
          The notation |{ e }| refers to a vector of expressions, similar to |vec e|.}
 \label{fig:canonical2}
 \end{boxfigure}
@@ -405,7 +426,7 @@ Where $\overline{x}$ are free variables of $e$ and $\overline{e_i}$.
 \begin{minipage}{.40\textwidth}
 > let x = e in case x of alts
 \end{minipage}\\
-\caption{Rule for moving a let bound case out of a function, 
+\caption[Let Floating Rules]{Rule for moving a let bound case out of a function, 
          and eliminating compound expressions in case-expressions.}
 \label{fig:letcase}
 \end{boxfigure}
@@ -443,7 +464,7 @@ At this point we are ready to transform the canonicalized FlatCurry into ICurry.
 >                                            in   case  (==) (apply mod v_3 2) 1 of
 >                                                       True   -> powaux ((*) v_1 v_2) v_4 v_5
 >                                                       False  -> powaux v_1 v_4 v_5
-    \caption{Reducing the |powaux| function defined in the standard Float library.
+    \caption[|powaux| Reduction Example]{Reducing the |powaux| function defined in the standard Float library.
              The first reduction occurs in the |False| branch |[1]| or the in expression [-1]
              in the scrutinee of the case [-1] in the first argument of the apply node [0],
              so it has a path of [1,-1,-1,0].}
@@ -487,7 +508,7 @@ or inspect a single variable to choose a case.
 >           |   ROOT                          root variable
 > l         =>  C_k                           constructor label
 >           |   f_k                           function label
-\caption{Abstract syntax of function definitions in ICurry}
+\caption[Abstract Syntax of ICurry]{Abstract syntax of function definitions in ICurry}
 \label{fig:iCurrySyntax}
 \end{boxfigure}
 
@@ -557,12 +578,15 @@ If the expression is a let or a free expression, then the principal expression i
 >expr(let (vec (x = e)) in e')             :=  expr(e)
 >expr(let vec x free in e)                 :=  expr(e)
 
-\caption{Algorithm for translating FlatCurry into ICurry}
+\caption[ICurry Transformation]{Algorithm for translating FlatCurry into ICurry}
 \label{fig:flatCurryiCurry}
 \end{boxfigure}
 
-\begin{boxfigure}
-After Post-processing
+Let's consider the function defined at the start of this chapter.
+After the Post-processing transformation,
+we had the following function.
+
+\begin{minipage}{\textwidth}
 > f v_2 =  let  v_3 = f_0 v_2
 >          in   let  v_4 = f_1 v_2
 >               in   v_3 ? v_4
@@ -572,7 +596,12 @@ After Post-processing
 > f_1 v_2 = fcase  v_2 of
 >                  True -> False
 >                  False -> True
-ICurry
+\end{minipage}
+
+After translating to ICurry, we have a new function
+were the scructure is the same, but the code is in a more imparitive style.
+
+\begin{minipage}{\textwidth}
 > f/1 : {
 >   declare x_2
 >   declare x_3
@@ -593,10 +622,7 @@ ICurry
 >       exempt
 >     }
 > }
-\caption{translating |f| and |f_0| into icurry.\\
-         We omit |f_1| for space, and because it is largely the same as |f_0|.}
-\label{fig:icurryStage}
-\end{boxfigure}
+\end{minipage}
 
 \section{Generating C Code} \label{sec:pipeline:c}
 
@@ -686,18 +712,18 @@ $\mathcal{D}(\text{declfree}\ x)$ & $\coloneqq$ & \texttt{field v\_}$x$\texttt{ 
 $\mathcal{A}(x = e)$ & $\coloneqq$ & \texttt{v\_}$x$\texttt{ =} $\mathcal{E}_M(e)$\texttt{;}\\
 $\mathcal{A}(x[i] = e)$ & $\coloneqq$ & \texttt{child\_at(v\_}$x,i$\texttt{) =} $\mathcal{E}_M(e)$\texttt{;}\\
 \end{tabular}
-\caption{Code for generating Programs, declarations, and assignments.}
-\label{fig:cprog}
-\end{boxfigure}
-
-\begin{boxfigure}
+$\ $\\
 \begin{tabular}{lcl}
 $\mathcal{S}(\texttt{return } e, f, p)$ & $\coloneqq$ & $\mathcal{E}_S($\texttt{root},$e)$\\
 & & \texttt{return;}\\
 $\mathcal{S}(\bot, f, p)$ & $\coloneqq$ & \texttt{fail(root);}\\
 & & \texttt{return;}\\
 \end{tabular} \\
-$\ $\\
+\caption[The C Translation 1]{Code for generating Programs, declarations, and assignments.}
+\label{fig:cprog}
+\end{boxfigure}
+
+\begin{boxfigure}
 \begin{tabular}{l}
 $\mathcal{S}($|case x of (vec (C -> b))|$, f, p)$ $\coloneqq$ \\
 $\ \ $ \texttt{bool nondet = false;}\\
@@ -726,7 +752,7 @@ $\ \ \ \ \ \ $ \texttt{}$\overline{\mathcal{C}(C_i \to b_i, f, i:p)}$\\
 $\ \ \ \ $ \texttt{\}}\\
 $\ \ $ \texttt{\}}\\
 \end{tabular}{l}
-\caption{code for generating statements.}
+\caption[The C Translation 2]{code for generating statements.}
 \label{fig:cstmt}
 \end{boxfigure}
 
@@ -765,7 +791,7 @@ $\mathcal{E_M}(NODE(C_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$C$\texttt
 $\mathcal{E_M}(NODE(f_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$f$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
 $\mathcal{E_M}(e_1 ? e_2)$ & $\coloneqq$ & \texttt{make\_choice}$(\mathcal{E}_M(e_1), \mathcal{E}_M(e_2))$\texttt{;}\\
 \end{tabular}
-\caption{Code for generating cases, free variables, and expressions.}
+\caption[The C Translation 3]{Code for generating cases, free variables, and expressions.}
 \label{fig:cexpr}
 \end{boxfigure}
 

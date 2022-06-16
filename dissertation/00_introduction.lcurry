@@ -12,7 +12,7 @@ of Curry taking too long.
 We present the \ricesp Curry compiler,
 and show how it can deliver a fast, satisfying, Curry.
 
-\subsection{Why Curry?} \label{sec:intro:why}
+\section{Why Curry?} \label{sec:intro:why}
 
 Functional logic programming is a very powerful technique for
 expressing complicated ideas in a simple form.
@@ -68,7 +68,7 @@ That test will still be below the capacity.
 We give a fuller account of the semantics in chapters \ref{ch:math} 
 and \ref{ch:language},
 
-\subsection{Current Compilers} \label{sec:intro:current}
+\section{Current Compilers} \label{sec:intro:current}
 
 There are currently two mature Curry compilers, Pakcs \cite{pakcs} and Kics2 \cite{kics2}.
 Pakcs compiles Curry to Prolog in an effort to leverage Prolog's non-determinism and free variables.
@@ -113,7 +113,7 @@ While these results are interesting, partial evaluation is not currently automat
 Guidance is required from the programmer to run the optimization.
 Furthermore, the optimization fails to optimize several common programs.
 
-\subsection{The Need for Optimizations} \label{sec:intro:need}
+\section{The Need for Optimizations} \label{sec:intro:need}
 
 So far, none of these approaches have included the large body 
 of work on program optimizations
@@ -134,7 +134,7 @@ Case Shortcutting is a unique optimization for functional logic programs.
 We chose these optimizations specifically because they focus on reducing the amount of memory
 consumed by programs, which is a common problem for Curry programs \cite{proposal}.
 
-\subsection{Contributions} \label{sec:intro:contribute}
+\section{Contributions} \label{sec:intro:contribute}
 
 This work focuses on the construction of an efficient compiler for the Curry programming language.
 The main contributions of this dissertation are as follows.
@@ -191,7 +191,7 @@ The main contributions of this dissertation are as follows.
       (Section~\ref{sec:results:tests})
 \end{itemize}
 
-\subsection{Overview} \label{sec:intro:overview}
+\section{Overview} \label{sec:intro:overview}
 
 The rest of this dissertation is organized as follows.
 Chapter \ref{ch:math} presents the mathematical background of Term and Graph Rewriting.

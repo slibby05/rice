@@ -56,12 +56,14 @@ There is no syntactic sugar,
 and the only two library functions are |concat| and |map|, both very common functions,
 and the algorithm for permuting a list is similar to the algorithm we will use in Curry.
 
+\begin{minipage}{\textwidth}
 > perms         :: [a] -> [[a]]
 > perms []      = [[]]
 > perms (x:xs)  = concat (map (insert x) (perms xs))
 >   where
 >     insert x []      = [[x]]
 >     insert x (y:ys)  = (x:y:ys) : map (y:) (insert x ys)
+\end{minipage}
 
 The algorithm itself is broken into two parts.
 The |insert| function will return a list of lists,
@@ -90,20 +92,25 @@ We offload generating all of the possibilities onto the language itself.
 
 We can simplify our code with the non-deterministic \textit{choice} operator |?|.
 Choice is defined by the rules:
+
+\begin{minipage}{\textwidth}
 > x ? y = x
 > x ? y = y
+\end{minipage}
 
 Now our permutation example becomes a little easier.
 We only generate a single permutation,
 and when we insert |x| into |ys|, we only insert into a single arbitrary position.
 
 
+\begin{minipage}{\textwidth}
 > perm         :: [a] -> [a]
 > perm []      = []
 > perm (x:xs)  = insert x (perm xs)
 >   where
 >     insert x []      = [x]
 >     insert x (y:ys)  = x:y:ys ? y : insert x ys
+\end{minipage}
 
 In many cases functions that return multiple results can lead to much simpler code.
 Curry has another feature that is just as useful.
@@ -115,11 +122,13 @@ but they are constrained by the guard so that |begin++[x]++end| is equal to |xs|
 Our algorithm then becomes: pick an arbitrary |x| in the list,
 move it to the front, and permute the rest of the list.
 
+\begin{minipage}{\textwidth}
 > perm     :: [a] -> [a]
 > perm []  = []
 > perm xs
 >  | xs == (begin++[x]++end) = x : perm (begin++end)
 >  where begin, x, end free
+\end{minipage}
 
 Look at that.
 We have reduced the number of lines of code by 25\%.
@@ -155,6 +164,7 @@ An expression fails if it cannot be reduced to a constructor form.
 The common example here is |head []|, but a more useful example might be sorting a list.
 We can build a sorting algorithm by permuting a list, and only keeping the permutation that is sorted.
 
+\begin{minipage}{\textwidth}
 > sort :: (Ord a) => [a] -> [a]
 > sort xs | sorted ys = ys
 >  where 
@@ -162,6 +172,7 @@ We can build a sorting algorithm by permuting a list, and only keeping the permu
 >   sorted []        = True
 >   sorted [x]       = True
 >   sorted (x:y:ys)  = x <= y && sorted (y:ys)
+\end{minipage}
 
 In this example every permutation of |xs| that is not sorted will fail in the guard.
 Once an expression has failed, computation on it stops, and other alternatives are tried.
@@ -332,7 +343,7 @@ Then each child of the root is reduced to constructor normal form.
 >             |   case e of (vec (p -> e))                 Case Expression
 > p           =>  C (vec v)                                Constructor Pattern
 >             |   l                                        Literal Pattern
-\caption{Syntax definition for FlatCurry\\
+\caption[Syntax Definition for FlatCurry]{Syntax definition for FlatCurry\\
 This is largely the same as other presentations \cite{currySemantics,icurry}
 but we have elected to add more information that will become relevant for optimizations later.
 The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
@@ -342,7 +353,7 @@ The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
 \begin{boxfigure}
 > n =>  l            literal
 >   |   C_k (vec n)  constructor
-\caption{constructor normal forms in FlatCurry.\\
+\caption[Constructor Normal Forms in FlatCurry]{constructor normal forms in FlatCurry.\\
          A CNF is an expression that contains only constructor and literal symbols.
          All CNFs are normal forms in our system.}
 \label{fig:normalForm}
@@ -383,7 +394,7 @@ Transformed FlatCurry representation of |==| on lists.
 >                                v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
 
-\caption{Transformation of FlatCurry |==| function into a flat representation
+\caption[Flat Representation Example]{Transformation of FlatCurry |==| function into a flat representation
          for Pakcs and Kics2.}
 \label{fig:eqList}
 \end{boxfigure}
@@ -423,7 +434,7 @@ We show the reduction of |weird| in Figure \ref{fig:weirdEval}.
 >         in case  x of
 >                  False -> True
 >                  True -> False
-\caption{The function |weird|\\
+\caption[The function |weird|]{The function |weird|\\
          This can not be expressed as rewrite rules, because the expression
          we are pattern matching on is defined locally.}
 \label{fig:weird}
@@ -443,7 +454,7 @@ We show the reduction of |weird| in Figure \ref{fig:weirdEval}.
    \item Node |n_2| labeled by |?| is created with children |[False, True]|.
    \item $\ldots$
 \end{itemize}
-\caption{Evaluation of the function |weird|.}
+\caption[Evaluation of |weird|]{Evaluation of the function |weird|.}
 \label{fig:weirdEval}
 \end{boxfigure}
 
@@ -492,7 +503,7 @@ since our programs are still similar in size to equivalent programs compiled wit
 > eqList_2 v_6 v_7 v_3 = case  v_3 of
 >                              [] -> False
 >                              v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
-\caption{Functions at case for |weird| and |==| for lists.}
+\caption[Case Functions for |weird|]{Functions at case for |weird| and |==| for lists.}
 \label{fig:caseFuncs}
 \end{boxfigure}
 
@@ -524,33 +535,44 @@ then we instantiate the arguments with free variables.
 >                  Red     -> Green
 >                  Green   -> Yellow 
 >                  Yellow  -> Red
-\caption{A simple traffic light program}
+\caption[Traffic Light Example]{A simple traffic light program}
 \label{fig:light}
 \end{boxfigure}
 
 This is easier to see with an example.
 Consider the traffic light function in Figure \ref{fig:light}.
 The |change| function moves the light from |Red| to |Green| to |Yellow|.
-When calling this function with a free variable, we have the derivation below in Figure \ref{fig:lightEval}.
+When calling this function with a free variable, we have the derivation below in 
+Figures \ref{fig:lightEval} and \ref{fig:lightEval2}.
 
 \begin{boxfigure}
 %{
 %format free = "\Varid{free}"
 \begin{itemize}
    \item We start with root |r| labeled by |change|, with a child |x| labeled by |free|.
-   \item |x| is rewritten to |Red| and |(x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)| 
+   \item |x| is rewritten to |Red| and \\
+         |(x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)| \\
          are all pushed on the stack
    \item |r| is rewritten to |Green|, and |(r,change, Continue)| is pushed on the stack
    \item |r| is a constructor normal form
    \item backtracking to the closest alternative
    \item backtracking stack is \\
-         |[(r,change,Continue), (x,Green,Stop), (x,Yellow,Stop), (x,free,Continue)]|.
+         |[(r,change,Continue), (x,Green,Stop),|\\
+         |(x,Yellow,Stop), (x,free,Continue)]|.
    \item reduce |r|
    \item |x| is labeled by |Green|
    \item |r| is rewritten to |Yellow|, and |(r,change, Continue)| is pushed on the stack
    \item |r| is a constructor normal form
    \item backtracking to the closest alternative
-   \item backtracking stack is 
+\caption[Free Variable Derivation 1]{Evaluation of |change x where x free|}
+\label{fig:lightEval}
+\end{itemize}
+\end{boxfigure}
+\begin{boxfigure}
+%{
+%format free = "\Varid{free}"
+\begin{itemize}
+   \item backtracking stack is \\
          |[(r,change,Continue), (x,Yellow,Stop), (x,free,Continue)]|
    \item reduce |r|
    \item |x| is labeled by |Yellow|
@@ -562,8 +584,8 @@ When calling this function with a free variable, we have the derivation below in
    \item Both rewrites are popped, and the stack is empty with no alternatives.
 \end{itemize}
 %}
-\caption{Evaluation of |change x where x free|}
-\label{fig:lightEval}
+\caption[Free Variable Derivation 2]{Evaluation of |change x where x free| continued}
+\label{fig:lightEval2}
 \end{boxfigure}
 
 \subsection{Higher Order Functions} \label{sec:language:hof}

@@ -66,7 +66,7 @@ If we have an expression $(x\cdot x + 1)(2 + x)$, we might reduce this with the 
     $\to$ & $x^2\cdot x + 2x^2 + x + 2$                      & by identity of multiplication\\ 
     $\to$ & $x^3 + 2x^2 + x + 2$                             & by definition of $x^3$\\
 \end{tabular}\\
-    \caption{reducing $(x\cdot x + 1)(2 + x)$ using the standard rules of algebra}
+    \caption[Reduction with Algebra]{reducing $(x\cdot x + 1)(2 + x)$ using the standard rules of algebra}
     \label{fig:reduction}
 \end{boxfigure}
 
@@ -108,7 +108,7 @@ Both of these reductions arrived at the same answer as can be seen in Figure \re
     }
       \caption{reducing $4 + 5$ first}
   \end{subfigure}
-    \caption{Two possible reductions of $3\cdot(4 + 5)$.  
+    \caption[Non-Confluent Reduction]{Two possible reductions of $3\cdot(4 + 5)$.  
              Since this is a confluent system, they both can rewrite to 27.}
     \label{fig:confluent}
 \end{boxfigure}
@@ -139,7 +139,7 @@ whereas the commutative rule is not terminating.  See Figure \ref{fig:terminate}
       \end{tabular}
     }
   \end{subfigure}
-    \caption{A system with a single rule for distribution is terminating,
+    \caption[Non-terminating Reduction]{A system with a single rule for distribution is terminating,
              but any system with a commutative rule is not.
              Note that $x + y \to^2 x + y$}
     \label{fig:terminate}
@@ -184,7 +184,7 @@ The symbol at the top of the tree is called the root of the term.
 
 \begin{boxfigure}
     \Tree[.$*$ [.$+$ $0$ [.$S$ $0$ ] ] [.$+$ [.$S$ $0$ ] $0$ ] ]\\
-    \caption{Tree representation of the term $*(+(0, S(0)), +(S(0), 0))$.}
+    \caption[Term Tree Representation]{Tree representation of the term $*(+(0, S(0)), +(S(0), 0))$.}
     \label{fig:tree}
 \end{boxfigure}
 
@@ -208,7 +208,7 @@ We define the algorithm for this in Figure \ref{fig:subterm}.
 \begin{boxfigure}
     $t[r \from \epsilon] = r$\\
     $f(t_1,\ldots t_i,\ldots t_n)[r \from i:p] = f(t_1,\ldots t_i[r \from p],\ldots t_n) $\\
-    \caption{algorithm for finding a subterm of $t$.}
+    \caption[Subterm Algorithm]{algorithm for finding a subterm of $t$.}
     \label{fig:subterm}
 \end{boxfigure}
 
@@ -224,7 +224,7 @@ $*(+(0,*(S(0),S(0))), +(S(0), 0))$, with the tree in Figure \ref{fig:subtree}.
         \Tree[.$*$ [.$+$ $0$ [.$*$ [.$S$ $0$ ] [.$S$ $0$ ] ] ] [.$+$ [.$S$ $0$ ] $0$ ] ] \\
     \end{tabular}
     \end{center}
-    \caption{The result of the computation $t[S(0) \from [0,1]]$}
+    \caption[Replacement Example]{The result of the computation $t[S(0) \from [0,1]]$}
     \label{fig:subtree}
 \end{boxfigure}
 
@@ -239,7 +239,7 @@ We can uniquely extend $\sigma$ to a function on terms by Figure \ref{fig:substi
 \begin{boxfigure}
     $\sigma'(v) = \sigma(v)$\\
     $\sigma'(f(t_1,\ldots t_n) = f(\sigma'(t_1) \ldots \sigma'(t_n))$\\
-    \caption{Algorithm for applying a substitution.}
+    \caption[Substitution Algorithm]{Algorithm for applying a substitution.}
     \label{fig:substitute}
 \end{boxfigure}
 
@@ -337,7 +337,7 @@ The converse to theorem 2.1 is not true. There can be overlapping systems which 
     }
     \caption{A system that overlaps at a subterm}
     \end{subfigure}
-    \caption{Three TRSs demonstrating how rules can overlap.
+    \caption[Overlapping Rules]{Three TRSs demonstrating how rules can overlap.
             In (a) they do not overlap at all,
             In (b) both rules overlap at the root,
             and in (c) rule 2 overlaps with a subterm of rule 1.}
@@ -370,7 +370,7 @@ As an example, the rewrite system for Peano arithmetic is a constructor system.
         $R_{13}$ & : & $0    = S(y)$   & $\to$ & $False$    \\
         $R_{14}$ & : & $S(x) = S(y)$   & $\to$ & $x = y$   \\
     \end{tabular}
-    \caption{The rewrite rules for Peano Arithmetic with addition, multiplication,
+    \caption[Peano Arithmetic]{The rewrite rules for Peano Arithmetic with addition, multiplication,
              subtraction, and comparison.  All operators use infix notation.}
     \label{fig:peano}
 \end{boxfigure}
@@ -391,7 +391,7 @@ Therefore, we must be careful when specifying the semantics of function applicat
         $Ap(Ap(K,x),y)$       & $\to$ & $x$\\
         $Ap(Ap(Ap(S,x),y),z)$ & $\to$ & $Ap(Ap(x,z),Ap(y,z))x$\\
     \end{tabular}
-    \caption{The SKI system from combinatorial logic.}
+    \caption[SKI Combinator Logic]{The SKI system from combinatorial logic.}
     \label{fig:SKI}
 \end{boxfigure}
 
@@ -424,7 +424,7 @@ For this reason, it is not surprising that most functional languages are based o
 %        $gcd(x,y)$ & $\vert$ & $y \le x$ & $\to$ & $gcd(x-y,y)$ \\
 %        $gcd(x,y)$ & $\vert$ & $x \le y$ & $\to$ & $gcd(x,y-x)$ \\
 %    \end{tabular}
-%    \caption{Conditional rewrite system for computing greatest common divisor.}
+%    \caption[Conditional Rewrite Rules]{Conditional rewrite system for computing greatest common divisor.}
 %    \label{fig:gcd}
 %\end{boxfigure}
 %
@@ -460,7 +460,7 @@ The derivation is in Figure \ref{fig:narrow}.
     $+(+(*(1,4),*(1,5)),*(1,3))$         & = \\
     $\sigma(+(+(*(1,4),*(y,5)),*(z,3)))$ &
 \end{tabular}
-    \caption{Derivation of $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$ with
+    \caption[Narrowing Derivation]{Derivation of $*(1,+(x,3)) = +(+(*(1,4), *(y,5)), *(z,3))$ with
              $\sigma = \{x \mapsto +(4,5), y \mapsto 1, z \mapsto 1\}$.}
     \label{fig:narrow}
 \end{boxfigure}
@@ -567,7 +567,7 @@ In this case $s$ does not change.\\
 Case 3: $s$ is a subterm of $t\vert_p$.
 In this case $s$ may be duplicated, or erased, moved, or left unchanged.
 It depends on whether the rule is duplicating, erasing, or right linear.\\
-These cases can be seen in Figure \ref{fig:descendant}
+These cases can be seen in Figures \ref{fig:descendant} and\ref{fig:descendant2}.
 We can formalize this with the notion of descendants with the following definition from 
 \cite{AdvancedTRS}[Def. 4.3.6].
 
@@ -589,6 +589,12 @@ We can formalize this with the notion of descendants with the following definiti
     \end{tabular}
     \caption{rewrite $R_4$ at position $[1]$ does not affect $t\vert_{[0]}$.}
   \end{subfigure}
+    \caption[Descendants of a Term 1]{four cases for the descendants for a term after a single rewrite.
+             The boxed term is either left alone, duplicated, or erased, or moved.
+             The rules are defined in Figure \ref{fig:peano}}
+    \label{fig:descendant}
+\end{boxfigure}
+\begin{boxfigure}
   \begin{subfigure}{.6\textwidth}
     \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1cm}>{\centering\arraybackslash}m{2cm}} 
         \Tree[.$S$ [.$*$ [.$S$ $0$ ] [.\fbox{$+$} $0$ $0$ ] ] ] &
@@ -613,10 +619,10 @@ We can formalize this with the notion of descendants with the following definiti
     \end{tabular}
     \caption{rewrite $R_2$ at position $[0]$ moves $t\vert_{[0,1]}$ to position $[0,0,1]$.}
   \end{subfigure}
-    \caption{four cases for the descendants for a term after a single rewrite.
+    \caption[Descendants of a Term 2]{four cases for the descendants for a term after a single rewrite.
              The boxed term is either left alone, duplicated, or erased, or moved.
              The rules are defined in Figure \ref{fig:peano}}
-    \label{fig:descendant}
+    \label{fig:descendant2}
 \end{boxfigure}
 
 
@@ -716,7 +722,7 @@ Unfortunately, each of these strategies are too restrictive on the rewrite syste
     \caption{With a lazy narrowing strategy we may end up computing more than is necessary.
              If $x$ is instantiated to $0$, then we do not need to evaluate $y + y$ at all.}
   \end{subfigure}
-    \caption{examples of where eager and lazy narrowing can fail using the rewrite system
+    \caption[Eager and Lazy Narrowing]{examples of where eager and lazy narrowing can fail using the rewrite system
              if Figure \ref{fig:peano}.}
     \label{NarrowingComp}
 \end{boxfigure}
@@ -799,7 +805,7 @@ However, we need to extend this to narrowing.
                [.$S(x)=y$ [.$S(x)=0$ $False$ ]
                           [.$S(x)=S(y)$ $x=y$ ] ] ]
   \end{subfigure} 
-  \caption{Definitional trees for $ + $, $ \le $, and $ = $.}
+  \caption[Definitional Tree Example]{Definitional trees for $ + $, $ \le $, and $ = $.}
   \label{fig:defTree}
 \end{boxfigure}
 
@@ -949,15 +955,17 @@ Finally, no two nodes can be labeled by the same variable.
 % EXAMPLES (\label{termGraphs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{boxfigure}
-\begin{enumerate}
-    \item $
+\begin{minipage}{.5\textwidth}
+    1. $
           \begin{tikzcd}
               & +_1 \ar[ld] \ar[rd] & \\
               /_2 \ar[rd, bend right=50] \ar[rd] & & /_4 \ar[ld] \ar[ld, bend left=50]\\
               & x_3 & \\
           \end{tikzcd}
           $
-    \item $
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+    2. $
           \begin{tikzcd}
               double_1 \ar[d] \\
               x_2
@@ -967,13 +975,17 @@ Finally, no two nodes can be labeled by the same variable.
               x_2        
           \end{tikzcd}
           $
-    \item $
+\end{minipage} \\
+\begin{minipage}{.35\textwidth}
+    3. $
           \begin{tikzcd}
               & +_1 \ar[ld] \ar[loop, out = -50, in = 50, distance = 5em] \\
             4_2 & \\
           \end{tikzcd}
           $
-    \item $
+\end{minipage} 
+\begin{minipage}{.65\textwidth}
+    4. $
           \begin{tikzcd}
               +_1 \ar[rd] \ar[dd] &             \\
                                   & S_4 \ar[ld] \\
@@ -989,8 +1001,8 @@ Finally, no two nodes can be labeled by the same variable.
               0_3                                 &
           \end{tikzcd}
           $
-\end{enumerate}
-\caption{1. $1:+(2:/(3:x,3), 4:/(3,3))$,\\
+\end{minipage}
+\caption[Term Graph Example]{1. $1:+(2:/(3:x,3), 4:/(3,3))$,\\
          2. $1:double(2:x) \Rightarrow 3:+(2:x, 2)$\\
          3. $1:+(2:4, 1)$\\
          4. $1:+(2:S(3:0), 4:S(2)) \Rightarrow 5:S(6:+(3:0), 4:S(2:S(3)))$}

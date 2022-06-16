@@ -56,7 +56,7 @@ typedef struct Node
     field children[4];
 } Node;
 \end{verbatim}
-\caption{Definition of a node.}
+\caption[C Definition of a Node]{Definition of a node.}
 \label{fig:node}
 \end{boxfigure}
 
@@ -130,7 +130,7 @@ void nf(field expr)
     }
 }
 \end{verbatim}
-\caption{algorithm for reducing a node to constructor normal form.}
+\caption[CNF Reduction Algorithm]{algorithm for reducing a node to constructor normal form.}
 \label{fig:nf}
 \end{boxfigure}
 
@@ -165,7 +165,7 @@ void Prelude_not_hnf(field root) {
   }
 }
 \end{verbatim}
-\caption{Initial implementation of |not|}
+\caption[Initial implementation of |not|]{Initial implementation of |not|}
 \label{fig:notInit}
 \end{boxfigure}
 
@@ -191,7 +191,7 @@ As mentioned previously, this is not valid.
 At this point we have a strategy for how to compile first order deterministic Curry functions.
 Next we show how we handle partial application and higher-order functions.
 
-\subsection{Higher Order Functions} \label{sec:codegen:hof}
+\section{Higher Order Functions} \label{sec:codegen:hof}
 
 Earlier we gave an interpretation of how to handle |apply| nodes,
 but there are still a few details to work out.
@@ -283,9 +283,7 @@ Finally we reduce the fully applied copy of \texttt f and apply the rest of the 
 void apply_hnf(field root) {
     field f = child_at(root,0);
     field* children = root.n->children[3].a;
-    while(f.n->missing <= 0) {
-        // Normal HNF loop
-    }
+    while(f.n->missing <= 0) { // Normal HNF loop }
     int nargs = -root.n->missing;
     int missing = f.n->missing;
     if(missing <= nargs) {
@@ -294,16 +292,13 @@ void apply_hnf(field root) {
             set_child_at(root, missing-1, children[i-1]);
         }
         root.n->missing = missing;
-        if(missing == 0) {
-            HNF(root);
-        }
+        if(missing == 0) { HNF(root); }
     } else {
         field newf = copy(f);
         while(missing > 0) {
             set_child_at(newf, missing-1, children[nargs-1]);
             nargs--;
-            missing--;
-        }
+            missing--; }
         newf.n->missing = 0;
         HNF(newf);
         set_child_at(root,0,newf);
@@ -312,12 +307,12 @@ void apply_hnf(field root) {
     }
 }
 \end{verbatim}
-\caption{The \texttt{apply\_hnf}  function}
+\caption[The \texttt{apply\_hnf}  function]{The \texttt{apply\_hnf}  function}
 \label{fig:apply}
 \end{boxfigure}
 
 
-\subsection{Implementing Non-determinism} \label{sec:codegen:nondet}
+\section{Implementing Non-determinism} \label{sec:codegen:nondet}
 
 Now, we that we can reduce a higher-order functional language,
 we would like to extend our implementation to handle features from logic languages.
@@ -356,7 +351,7 @@ void choose(field root)
 
 }
 \end{verbatim}
-\caption{Implementation of the \texttt{choose} function.}
+\caption[Implementation of \texttt{choose}]{Implementation of the \texttt{choose} function.}
 \label{fig:choose}
 \end{boxfigure}
 
@@ -404,17 +399,14 @@ void Prelude_not_hnf(field root) {
         push_frame(root, make_Prelude_not_1(x));
         set_Prelude_False(root, 0);
         return;
-      ...
-    }
-  }
-}
+      ...  } } }
 \end{verbatim}
-\caption{Implementation of |not| with possible non-deterministic values.}
+\caption[Non-deterministic Implementation of |not|]{Implementation of |not| with possible non-deterministic values.}
 \label{fig:notNondet}
 \end{boxfigure}
 
 
-\subsection{Fast Backtracking} \label{sec:codegen:backtrack}
+\section{Fast Backtracking} \label{sec:codegen:backtrack}
 
 Finally we show how we implement the fast backtracking technique described earlier.
 The implementation actually does not change much,
@@ -430,8 +422,7 @@ The generated code for |not| is given in Figure \ref{fig:notFull}.
 \begin{boxfigure}
 \begin{verbatim}
 void Prelude_not_hnf(field root) {
-  field x = child_at(root, 0);
-  field scrutinee = x;
+  ...
   bool nondet = false;
   while(true) {
     nondet |= scrutinee->nondet;
@@ -440,7 +431,6 @@ void Prelude_not_hnf(field root) {
         if(nondet) push_frame(root, make_Prelude_not_1(x));
         fail(root);
         return;
-
       ...
       case CHOICE_TAG:
         choose(scrutinee);
@@ -456,13 +446,9 @@ void Prelude_not_hnf(field root) {
         if(nondet) push_frame(root, make_Prelude_not_1(x));
         set_Prelude_False(root, 0);
         return;
-
-      ...
-    }
-  }
-}
+      ...} } }
 \end{verbatim}
-\caption{The full implementation of |not|.}
+\caption[full Implementation of |not|]{The full implementation of |not|.}
 \label{fig:notFull}
 \end{boxfigure}
 

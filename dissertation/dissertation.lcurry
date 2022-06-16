@@ -1,5 +1,6 @@
-\documentclass{book}
+\documentclass[12pt]{report}
 \usepackage{thesis}
+\usepackage{tocloft}
 \usepackage{amsfonts}
 \usepackage[fleqn]{amsmath}
 \usepackage{xspace}
@@ -21,7 +22,20 @@
 \usepackage{imakeidx}
 \makeindex
 
+
 \usepackage{verbatim}
+\newcommand{\chap}[2]{
+    \setcounter{chapter}{#1}
+    \setcounter{section}{0}
+    \chapter*{#2}
+    \addcontentsline{toc}{chapter}{Chapter #1 #2}
+}
+\newcommand{\append}[1]{
+    \setcounter{chapter}{1}
+    \setcounter{section}{0}
+    \chapter*{#1}
+    \addcontentsline{toc}{chapter}{Appendix A #1}
+}
 
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
 \def\N{\mathbb{N}}
@@ -80,15 +94,22 @@
 %include polycode.fmt
 %include curry.fmt
 
+\begin{document}
 \title{Making Curry with Rice \\
        \large{An Optimizing Curry Compiler}}
 \author{Steven Libby}
+\principaladviser{Sergio Antoy}{\ }
+\firstreader{Mark Jones}
+\secondreader{Bart Massey}
+%\thirdreader{John Caughman}
+\graduaterepresentative{John Caughman}
+\departmenthead{Mark Jones}
+\grantdate{June}{22}{2022}
 
+\titlep
+\prefatory
+\prefacesection{Abstract}
 
-\begin{document}
-\frontmatter
-\maketitle
-\chapter*{Abstract}
 
 In this dissertation we present the \ricesp optimizing compiler for the functional logic language Curry.
 This is the first general optimizing compiler for a functional logic language.
@@ -104,62 +125,62 @@ We show the correctness of these optimizations and demonstrate their effectivene
 In particular, we show that \ricesp outperform
 previous compilers by 2 or 3 orders of magnitude on standard benchmarks.
 
-\tableofcontents
+\afterpreface
+\body
 
-\setcounter{chapter}{0}
-\chapter{Introduction} \label{ch:intro}
+\chap{1}{Introduction} \label{ch:intro}
 
 %include 00_introduction.lcurry
 
-\mainmatter
-
-\chapter{Mathematical Background} \label{ch:math}
+\chap{2}{Mathematical Background} \label{ch:math}
 
 %include 01_Rewriting.lcurry
 
-\chapter{The Curry Language and Implementation} \label{ch:language}
+\chap{3}{The Curry Language and Implementation}
+\label{ch:language}
 
 %include 02_Language.lcurry
 
-\chapter{The Code Generator} \label{ch:codegen}
+\chap{4}{The Code Generator} \label{ch:codegen}
 
 %include 03_code.lcurry
 
-\chapter{Generating and Altering Subexpressions} \label{ch:gas}
+\chap{5}{Generating and Altering Subexpressions}
+\label{ch:gas}
 
 %include 04_gas.lcurry
 
-\chapter{The Compiler Pipeline} \label{ch:pipeline}
+\chap{6}{The Compiler Pipeline}\label{ch:pipeline}
 
 %include 05_compiler.lcurry
 
-\chapter{Basic Optimizations} \label{ch:opts}
+\chap{7}{Basic Optimizations}\label{ch:opts}
 
 %include 06_optimizations.lcurry
 
-\chapter{Memory Optimizations} \label{ch:mine}
+\chap{8}{Memory Optimizations}\label{ch:mine}
 
 %include 07_mine.lcurry
 
-\chapter{Results} \label{ch:results}
+\chap{9}{Results}\label{ch:results}
 
 %include 08_results.lcurry
 
-\chapter{Conclusion} \label{ch:conclusion}
+\chap{10}{Conclusion} \label{ch:conclusion}
 
 %include 09_conclusion.lcurry
 
 
-\appendix
-
-\chapter{Rice Manual} \label{ch:Derivation of fib}
-
-%include A1_manual.lcurry
- 
 
 
 \printindex
 \bibliographystyle{plain}
 \bibliography{bibliography}
-%\printindex
+
+\appendix
+
+\append{Rice Manual} \label{ch:Derivation of fib}
+
+%include A1_manual.lcurry
+ 
 \end{document}

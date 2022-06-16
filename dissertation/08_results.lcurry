@@ -139,162 +139,15 @@ Since most examples include non-determinism or free variables, we are unable to 
 We run our optimized code against unoptimized GHC and optimized GHC.
 
 
-%\begin{boxfigure}
-%\begin{tabular}{||||l||||r||r||r||r||||}
-%\hhline{||||=||||=||=||=||=||||}
-%                &  pakcs   & kics2 & mcc   & rice \\
-%\hhline{||||=||||=||=||=||=||||}
-%fib             &    30.24 &  0.06 &  0.03 & 0.00 \\
-%\hline
-%fibNondet       &    30.90 &  3.37 &  0.03 & 0.00 \\
-%\hline
-%tak             & 6,867.54 & 13.32 & 17.66 & 0.94 \\
-%\hhline{||||=||||=||=||=||=||||}
-%cent            &    65.63 & 26.74 &  0.28 & 0.43 \\
-%\hline
-%half            &   983.57 & 25.27 &  1.58 & 0.52 \\
-%\hline
-%ndtest          &   383.05 & 13.78 &  1.21 & 0.78 \\
-%\hline
-%perm            &    45.10 &  4.00 &  1.10 & 0.62 \\
-%\hline
-%queensPerm      &   568.81 &  2.98 &  0.11 & 0.11 \\
-%\hline
-%primesort       & 1,481.83 &  0.31 &  1.11 & 0.15 \\
-%\hline
-%sort            &   212.33 &  8.07 &  0.24 & 0.23 \\
-%\hhline{||||=||||=||=||=||=||||}
-%queensDet       &  1051.78 &  1.07 &  1.18 & 0.23 \\
-%\hline
-%reverseBuiltin  &      OoM &  0.79 &  0.44 & 0.28 \\
-%\hline
-%reverseFoldr    &   262.14 &  0.17 &  0.07 & 0.02 \\
-%\hline
-%reversePrim     &    27.96 &  0.18 &  0.05 & 0.02 \\
-%\hline
-%sumSquare       &    33.48 &  0.08 &  0.05 & 0.00 \\
-%\hline
-%buildFold       &      OoM & 13.98 &  5.16 & 0.58 \\
-%\hline
-%primes          & 6,480.61 & 31.36 &  7.52 & 0.62 \\
-%\hline
-%sumPrimes           & 2,845.30 &  3.17 &  4.48 & 1.03 \\
-%\hhline{||||=||||=||=||=||=||||}
-%\end{tabular}
-%
-%\caption{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
-%         Time is measured in seconds.}
-%\label{fig:time}
-%\end{boxfigure}
-%
-%\begin{boxfigure}
-%\begin{tabular}{||||l||||r||r||r||r||r||r||||}
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%                &   unopt & basic & unbox & shortcut & deforest &  all \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%fib             &    0.05 &  0.05 &  0.02 &     0.03 &     0.05 & 0.00 \\
-%\hline
-%fibNondet       &    0.05 &  0.04 &  0.02 &     0.04 &     0.06 & 0.00 \\
-%\hline
-%tak             &    2.15 &  2.02 &  0.52 &     0.70 &     2.07 & 0.16 \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%cent            &    1.00 &  0.90 &  0.74 &     0.91 &     0.94 & 0.43 \\
-%\hline
-%half            &    0.88 &  0.84 &  0.83 &     0.95 &     0.79 & 0.52 \\
-%\hline
-%ndtest          &    1.53 &  1.31 &  1.31 &     1.12 &     1.28 & 0.78 \\
-%\hline
-%perm            &    0.82 &  0.83 &  0.81 &     0.85 &     0.82 & 0.62 \\
-%\hline
-%queensPerm      &    0.60 &  0.38 &  0.17 &     0.30 &     0.37 & 0.11 \\
-%\hline
-%primesort       &    0.40 &  0.29 &  0.22 &     0.23 &     0.31 & 0.15 \\
-%\hline
-%sort            &    0.61 &  0.40 &  0.34 &     0.40 &     0.43 & 0.23 \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%queensDet       &    2.68 &  1.71 &  0.53 &     0.26 &     1.48 & 0.23 \\
-%\hline
-%reverseBuiltin  &    0.50 &  0.53 &  0.48 &     0.46 &     0.50 & 0.28 \\
-%\hline
-%reverseFoldr    &    0.06 &  0.08 &  0.03 &     0.07 &     0.07 & 0.02 \\
-%\hline
-%reversePrim     &    0.06 &  0.08 &  0.02 &     0.05 &     0.08 & 0.02 \\
-%\hline
-%sumSquare       &    0.08 &  0.09 &  0.02 &     0.04 &     0.06 & 0.00 \\
-%\hline
-%buildFold       &    2.84 &  2.31 &  1.59 &     2.15 &     1.24 & 0.23 \\
-%\hline
-%primes          &    1.96 &  1.45 &  0.97 &     1.18 &     1.48 & 0.62 \\
-%\hline
-%sumPrimes           &    1.87 &  2.08 &  0.90 &     1.86 &     1.26 & 0.32 \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%\end{tabular}
-%
-%\caption{Results for execution time between the \rice compiler at several levels of optimization.\\
-%         \emph{unopt} is the compiler without optimizations,
-%         \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
-%         \emph{unbox} is the unboxing optimization,
-%         \emph{shortcut} is the shortcutting optimization,
-%         \emph{deforest} is the deforestation optimization,
-%         and \emph{all} is the compiler with all optimizations turned on.}
-%\label{fig:time_rice}
-%\end{boxfigure}
-%
-%\begin{boxfigure}
-%\begin{tabular}{||||l||||r||r||r||r||r||r||||}
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%                &    unopt &    basic &   unbox &  shortcut &  deforest &     all \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%fib             &   1,907K &   1,906K &    635K &    12,71K &    1,906K &       0 \\
-%\hline
-%fibNondet       &   1,907K &   1,906K &    635K &    12,71K &    1,906K &       5 \\
-%\hline
-%tak             &  94,785K &  94,784K & 28,435K &       267 &   94,784K &       0 \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%cent            &  22,644K &  21,358K & 18,304K &   21,358K &   21,358K & 18,304K \\
-%\hline
-%half            &  25,165K &  25,179K & 25,120K &   25,164K &   25,179K & 25,120K \\
-%\hline
-%ndtest          &  14,282K &  14,282K & 17,005K &   14,282K &   14,282K & 17,005K \\
-%\hline
-%perm            &   2,041K &   2,041K &  2,041K &    2,041K &    2,041K &  2,041K \\
-%\hline
-%queensPerm      &  19,362K &  11,899K &  4,122K &    7,543K &   11,899K &  2,940K \\
-%\hline
-%primesort       &  10,546K &   8,458K &  6,344K &    6,375K &    8,454K &  6,340K \\
-%\hline
-%sort            &  20,295K &  14,332K & 11,949K &   11,949K &   14,332K & 11,949K \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%queensDet       &  96,894K &  53,781K & 16,599K &   33,385K &   48,360K &  9,372K \\
-%\hline
-%reverseBuiltin  &  16,819K &  16,819K & 16,819K &   16,819K &   16,819K & 16,819K \\
-%\hline
-%reverseFoldr    &   2,883K &   3,407K &  1,572K &    3,145K &    3,145K &  1,310K \\
-%\hline
-%reversePrim     &   2,621K &   3,145K &  1,310K &    2,883K &    3,145K &  1,310K \\
-%\hline
-%sumSquare       &   2,500K &   2,899K &  1,199K &    2,499K &    2,499K &    599K \\
-%\hline
-%buildFold       & 120,000K &  99,999K & 71,999K &   95,999K &   67,999K &       3 \\
-%\hline
-%primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438K \\
-%\hline
-%sumPrimes           &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
-%\hhline{||||=||||=||=||=||=||=||=||||}
-%\end{tabular}
-%\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
-%\label{fig:memory}
-%\end{boxfigure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Normalized Figures
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\begin{boxfigure}
+\begin{table}
 \begin{tabular}{||||l||||r||r||r||r||||}
 \hhline{||||=||||=||=||=||=||||}
-                &  pakcs   & kics2 & mcc   & rice \\
+                &  Pakcs   & Kics2 & Mcc   & \rice \\
 \hhline{||||=||||=||=||=||=||||}
 fib             &    2,945 &    16 &     7 &    1 \\
 \hline
@@ -337,13 +190,12 @@ primes          &   10,453 &    51 &    12 &    1 \\
 sumPrimes       &    2,762 &     3 &     4 &    1 \\
 \hhline{||||=||||=||=||=||=||||}
 \end{tabular}
-
-\caption{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
+\caption[Curry Compiler Comparison]{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
          All times are normalized to \rice.}
 \label{fig:time}
-\end{boxfigure}
+\end{table}
 
-\begin{boxfigure}
+\begin{table}
 \begin{tabular}{||||l||||r||r||r||r||r||r||||}
 \hhline{||||=||||=||=||=||=||=||=||||}
                 &   unopt & basic & unbox & shortcut & deforest &  all \\
@@ -368,9 +220,9 @@ primesort       &    1.00 &  0.72 &  0.55 &     0.58 &     0.77 & 0.37 \\
 \hline
 sort            &    1.00 &  0.66 &  0.56 &     0.66 &     0.70 & 0.38 \\
 \hline
-last            &    1.00 &       &       &          &          &      \\
+last            &    1.00 &  0.99 &  0.66 &     0.90 &     1.02 & 0.63 \\
 \hline
-schedule        &    1.00 &       &       &          &          &      \\
+schedule        &    1.00 &  0.93 &  0.80 &     0.85 &     0.93 & 0.80 \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 queensDet       &    1.00 &  0.64 &  0.20 &     0.10 &     0.55 & 0.08 \\
 \hline
@@ -389,8 +241,7 @@ primes          &    1.00 &  0.74 &  0.49 &     0.60 &     0.76 & 0.32 \\
 sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
-
-\caption{Results for execution time between the \rice compiler at several levels of optimization.\\
+\caption[Optimization Results]{Results for execution time between the \rice compiler at several levels of optimization.\\
          \emph{unopt} is the compiler without optimizations,
          \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
          \emph{unbox} is the unboxing optimization,
@@ -400,9 +251,9 @@ sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
          All values are normalized to \emph{unopt}, so they are the ratio, of the execution
          time over \emph{unopt}'s execution time.}
 \label{fig:time_rice}
-\end{boxfigure}
+\end{table}
 
-\begin{boxfigure}
+\begin{table}
 \begin{tabular}{||||l||||r||r||r||r||r||r||||}
 \hhline{||||=||||=||=||=||=||=||=||||}
                 &    unopt &    basic &   unbox &  shortcut &  deforest &     all \\
@@ -427,9 +278,9 @@ primesort       &  10,546K &   8,458K &  6,344K &    6,375K &    8,454K &  6,340
 \hline
 sort            &  20,295K &  14,332K & 11,949K &   11,949K &   14,332K & 11,949K \\
 \hline
-last            &          &          &         &           &           &  8,000K \\
+last            &  13,000K &  14,000K &  8,000K &   13,000K &   14,000K &  8,000K \\
 \hline
-schedule        &          &          &         &           &           & 63,273K \\
+schedule        &  54,386K &  53,650K & 42,083K &   43,776K &   53,650K & 40,390K \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 queensDet       &  96,894K &  53,781K & 16,599K &   33,385K &   48,360K &  9,372K \\
 \hline
@@ -448,34 +299,34 @@ primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438
 sumPrimes       &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
-\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
+\caption[Memory Results]{Results for amount of memory consumed while running programs compiled at each optimization level.}
 \label{fig:memory}
-\end{boxfigure}
+\end{table}
 
-\begin{boxfigure}
-\begin{tabular}{||||l||||r||r||r||r||r||r||||}
+\begin{table}
+\begin{tabular}{||||l||||r||r||r||||}
 \hhline{||||=||||=||=||=||||}
-                &    rice  & ghc Unoptimized &   GHC Optimized \\
+                &    \rice  & GHC Unoptimized &   GHC Optimized \\
 \hhline{||||=||||=||=||=||||}
 fib             &     1.00 &         4.60 &        0.32 \\
+\hline
+tak             &     1.00 &         4.07 &        0.35 \\
+\hline
+queensDet       &     1.00 &         0.94 &        0.07 \\
+\hline
+reverseFoldr    &     1.00 &         2.33 &        0.66 \\
 \hline
 buildFold       &     1.00 &         2.77 &        0.31 \\
 \hline
 primes          &     1.00 &         0.36 &        0.20 \\
 \hline
-queens          &     1.00 &         0.94 &        0.07 \\
-\hline
-reverse         &     1.00 &         2.33 &        0.66 \\
-\hline
 sumPrimes       &     1.00 &         1.17 &        0.15 \\
-\hline
-tak             &     1.00 &         4.07 &        0.35 \\
 \hline
 \hhline{||||=||||=||=||=||||}
 \end{tabular}
-\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
+\caption[GHC Comparison]{Comparison of \ricesp and GHC on deterministic programs.}
 \label{fig:ghc}
-\end{boxfigure}
+\end{table}
 
 There are a lot of interesting results in tables \ref{fig:time}, \ref{fig:time_rice}, and \ref{fig:memory}
 that we feel are worth pointing out.

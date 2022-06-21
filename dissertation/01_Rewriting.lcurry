@@ -639,7 +639,7 @@ We can formalize this with the notion of descendants with the following definiti
                   & \text{if}\ p = u\cdot v \cdot q\ \text{and}\ t\vert_v = x\ \text{and}\ x\in V
     \end{cases}
     $$\\
-    This definition extends to derivation $t \to_{A_1} t_1 \to_{A_2} t_2 \to_{A_2} \ldots \to_{A_n}, t_{n+1}$.
+    This definition extends to derivation $t \to_{A_1} t_1 \to_{A_2} t_2 \to_{A_2} \ldots \to_{A_n}, t_{n+1}$.\\
     $Des(s,A_1,A_2\ldots A_n) = \bigcup_{s' \in Des(s,A_1)} Des(s', A_2,\ldots A_n)$.
 \end{definition}
 
@@ -1083,7 +1083,7 @@ $$
 \end{tikzcd}
 $$
 
-Here the graph should match the rule $and(True,True) \rightarrow True$.
+Here the graph should match the rule $and(True,True) \rightarrow True$.\\
 But $and(True,True)$ is a term, so they no longer have the same structure.
 Therefore we must be more careful about what we mean by matching.
 We define matching inductively on the structure of the term.

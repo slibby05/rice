@@ -7,6 +7,7 @@
 %
 % Revised: Bill Howe, 11/20/2006
 % Revised: Chuan-kai Lin, May 15, 2010
+% Revised: Steven Libby, 6/21/2022
 %
 
 \usepackage{fancyhdr}     % Declares the package fancyhdr
@@ -275,8 +276,8 @@ psu-thesis documentation.}}{}
     \null
     \begin{center}
     % Fully double-spaced title
-    \vskip\parskip
-    \vskip\baselineskip
+    %\vskip\parskip
+    %\vskip\baselineskip
     \def\baselinestretch{2.0}
     \ifx\@currsize\normalsize\@normalsize\else\@currsize\fi
     \vskip-\parskip
@@ -379,7 +380,8 @@ psu-thesis documentation.}}{}
 
 \def\prefacesection#1{%
     \clearpage
-    \ifdefined\phantomsection {\phantomsection} \fi
+    %\ifdefined\phantomsection {\phantomsection} \fi
+    \phantomsection
     \addcontentsline{toc}{chapter}{#1}
     \chapter*{#1}
 }
@@ -394,9 +396,9 @@ psu-thesis documentation.}}{}
     \end{singlespace}
     \pagestyle{fancy}
     \iftablespage
-        \clearpage
-        \ifdefined\phantomsection {\phantomsection} \fi
-        \addcontentsline{toc}{chapter}{List of Tables}
+        \newpage
+        \phantomsection
+        \addcontentsline{toc}{chapter}{\listtablename}
         \begin{singlespace}
         \pagestyle{fancy}
         \listoftables
@@ -405,9 +407,9 @@ psu-thesis documentation.}}{}
         \end{singlespace}
     \fi
     \iffigurespage
-        \clearpage
-        \ifdefined\phantomsection {\phantomsection} \fi
-        \addcontentsline{toc}{chapter}{List of Figures}
+        \newpage
+        \phantomsection
+        \addcontentsline{toc}{chapter}{\listfigurename}
         \begin{singlespace}
         \pagestyle{fancy}
         \listoffigures
@@ -462,7 +464,8 @@ psu-thesis documentation.}}{}
 \let\@ldthebibliography\thebibliography
 \renewcommand{\thebibliography}[1]{
     \newpage
-    \ifdefined\phantomsection {\phantomsection} \fi
+    %\ifdefined\phantomsection {\phantomsection} \fi
+    \phantomsection
     \addcontentsline{toc}{chapter}{References}
     \@ldthebibliography{#1}
 }

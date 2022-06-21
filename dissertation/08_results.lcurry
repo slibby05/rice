@@ -241,13 +241,13 @@ primes          &    1.00 &  0.74 &  0.49 &     0.60 &     0.76 & 0.32 \\
 sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
-\caption[Optimization Results]{Results for execution time between the \rice compiler at several levels of optimization.\\
+\caption[Optimization Results]{Results for execution time between the \ricesp compiler at several levels of optimization.
          \emph{unopt} is the compiler without optimizations,
          \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
          \emph{unbox} is the unboxing optimization,
          \emph{shortcut} is the shortcutting optimization,
          \emph{deforest} is the deforestation optimization,
-         and \emph{all} is the compiler with all optimizations turned on.\\
+         and \emph{all} is the compiler with all optimizations turned on.
          All values are normalized to \emph{unopt}, so they are the ratio, of the execution
          time over \emph{unopt}'s execution time.}
 \label{fig:time_rice}

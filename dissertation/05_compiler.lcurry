@@ -464,10 +464,8 @@ At this point we are ready to transform the canonicalized FlatCurry into ICurry.
 >                                            in   case  (==) (apply mod v_3 2) 1 of
 >                                                       True   -> powaux ((*) v_1 v_2) v_4 v_5
 >                                                       False  -> powaux v_1 v_4 v_5
-    \caption[|powaux| Reduction Example]{Reducing the |powaux| function defined in the standard Float library.
-             The first reduction occurs in the |False| branch |[1]| or the in expression [-1]
-             in the scrutinee of the case [-1] in the first argument of the apply node [0],
-             so it has a path of [1,-1,-1,0].}
+    \caption[|powaux| Reduction Example]{Reducing the |powaux| function 
+                                         defined in the standard Float library.}
     \label{fig:preprocess_example}
 \end{boxfigure}
 

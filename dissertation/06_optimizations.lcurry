@@ -81,7 +81,7 @@ The real problem with our first example is a bit more subtle,
 and we have to step back into the world of graph rewriting.
 If we construct the graph for the first expression we see:
 
-\begin{minipage}{\textwidth}
+\begin{minipage}{.9\textwidth}
 \begin{mdframed}
 \centerline{
   \graphxy{
@@ -636,35 +636,34 @@ The |sumPrimes| functions is transformed with the derivation in \ref{fig:addvarD
 and we can continue to optimize the function.
 
 \begin{boxfigure}
-> in let v_2 = foldr (pl_1) 0
-> in let v_3 = isPrime
-> in let v_4 = filter v_3
-> in let v_5 = enumFromTo 1
+> in let v_2 = foldr_1 (pl_1) 0
+> in let v_3 = isPrime_1
+> in let v_4 = filter_1 v_3
+> in let v_5 = enumFromTo_1 1
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6
 > ==> MISSING_VAR 
-> appOpt apply (  in let v_2 = foldr (pl_1) 0
->                 in let v_3 = isPrime
->                 in let v_4 = filter v_3
->                 in let v_5 = enumFromTo 1
+> appOpt apply (  in let v_2 = foldr_1 (pl_1) 0
+>                 in let v_3 = isPrime_1
+>                 in let v_4 = filter_1 v_3
+>                 in let v_5 = enumFromTo_1 1
 >                 in let v_6 = compLambda_1 v_4 v_5
 >                 in compLambda_1 v_2 v_6) x_1
 > ==> FLOAT 
-> in let v_2 = foldr (pl_1) 0
-> in let v_3 = isPrime
-> in let v_4 = filter v_3
-> in let v_5 = enumFromTo 1
+> in let v_2 = foldr_1 (pl_1) 0
+> ...
 > in let v_6 = compLambda_1 v_4 v_5
 > in (appOpt (apply (compLambda_1 v_2 v_6) x_1))
 > ==> UNAPPLY
-> in let v_2 = foldr (pl_1) 0
-> in let v_3 = isPrime
-> in let v_4 = filter v_3
-> in let v_5 = enumFromTo 1
+> in let v_2 = foldr_1 (pl_1) 0
+> ...
 > in let v_6 = compLambda_1 v_4 v_5
-> in compLambda v_2 v_6 x_1
+> in compLambda_1 v_2 v_6 x_1
     \caption[Filling in Partial Applications]{Adding a missing variable to |sumPrimes|}
     \label{fig:addvarDeriv}
+%> in let v_3 = isPrime_1
+%> in let v_4 = filter_1 v_3
+%> in let v_5 = enumFromTo_1 1
 \end{boxfigure}
 
 \subsection{The Function Table} \label{sec:opts:funTab}
@@ -1035,8 +1034,7 @@ we do not get the same readable code.
 >              ? reduce_simple funs  ? reduce_cancels funs
 > 
 > reduce_base funs (n,True) b@(Comb FuncCall f _)
->   | inlinable funs f = b'
->    where b' = makeReduce funs n b
+>   | inlinable funs f = makeReduce funs n b
 > 
 > reduce_branch funs (n,_)  (Case ct e 
 >                           (as++[Branch p b@(Comb FuncCall f _)]++bs))
@@ -1044,8 +1042,7 @@ we do not get the same readable code.
 >    where b' = makeReduce funs n b
 >
 > reduce_let funs (n,_) (Let vs b@(Comb FuncCall f _))
->   | inlinable funs f = Let vs b'
->    where b' = makeReduce funs n b
+>   | inlinable funs f = Let vs (makeReduce funs n b)
 > 
 > reduce_useful funs (n,_) (Let [(x,b@(Comb FuncCall f _))] e)
 >   |   inlinable funs f &&  useful funs False x e = Let [(x,b')] e

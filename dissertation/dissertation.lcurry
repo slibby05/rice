@@ -19,22 +19,26 @@
 \usepackage{float}
 \usepackage{tikz-cd}
 \usepackage{mathtools}
+\usepackage{hyperref}
 \usepackage{imakeidx}
 \makeindex
 
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand\cftloftitlefont{\normalsize}
+\renewcommand\cftlottitlefont{\normalsize}
 
 \usepackage{verbatim}
 \newcommand{\chap}[2]{
     \setcounter{chapter}{#1}
     \setcounter{section}{0}
-    \chapter*{#2}
+    \chapter*{Chapter #1\\ #2}
     \addcontentsline{toc}{chapter}{Chapter #1 #2}
 }
 \newcommand{\append}[1]{
     \setcounter{chapter}{1}
     \setcounter{section}{0}
-    \chapter*{#1}
-    \addcontentsline{toc}{chapter}{Appendix A #1}
+    \chapter*{Appendix\\#1}
+    \addcontentsline{toc}{chapter}{Appendix #1}
 }
 
 \usetikzlibrary{calc,shapes.multipart,chains,arrows}
@@ -96,7 +100,7 @@
 
 \begin{document}
 \title{Making Curry with Rice \\
-       \large{An Optimizing Curry Compiler}}
+       An Optimizing Curry Compiler}
 \author{Steven Libby}
 \principaladviser{Sergio Antoy}{\ }
 \firstreader{Mark Jones}

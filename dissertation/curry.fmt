@@ -51,6 +51,9 @@
 %format as_1
 %format as_2
 
+%format enumFromTo_1
+%format filter_1
+%format isPrime_1
 
 %format e_a
 %format e_v

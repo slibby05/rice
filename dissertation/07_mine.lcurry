@@ -294,16 +294,16 @@ The next challenge is unboxing the arguments in the call to |fib|.
 
 \begin{boxfigure}
 > fib n = case  n of
->               Int v_2 -> pcase  v_2 le_p 1
->                                 True   ->  n
->                                 False  ->  let     n_1 = v_2 mi_p 1
->                                            in let  f_1 = fib (Int n_1)
->                                            in case  f_1 of
->                                                     Int p_1 ->  let     n_2 = v_2 mi_p 2
->                                                                 in let  f_2 = fib (Int n_2)
->                                                                 in case  f_2 of
->                                                                          Int p_2 ->  let  r = p_1 pl_p p_2
->                                                                                      in   Int r
+>              Int v_2 -> pcase  v_2 le_p 1
+>                               True   ->  n
+>                               False  ->  let     n_1 = v_2 mi_p 1
+>                                          in let  f_1 = fib (Int n_1)
+>                                          in case  f_1 of
+>                                                  Int p_1 ->  let     n_2 = v_2 mi_p 2
+>                                                              in let  f_2 = fib (Int n_2)
+>                                                              in case  f_2 of
+>                                                                     Int p_2 ->  let  r = p_1 pl_p p_2
+>                                                                                 in   Int r
 \caption[|fib| with Primitive Cases]{The |fib| function with primitive cases}
 \label{fig:fibOpt2}
 \end{boxfigure}
@@ -830,18 +830,16 @@ Node* f_RET_hnf(Node* backup) {
     if(g_backup != NULL) {
         nondet = true;
         memcpy(g_backup, RET.n, sizeof(Node));
-    } else if(RET.n->tag == FORWARD_TAG) {
+    } else if(RET.n->tag == FORWARD_TAG)
         g_backup = RET.n->children[0];
-    }
     while(true) {
         nondet |= scrutinee.n->nondet;
         switch(RET_forward->tag) {
             ...
             case True:
                 if(nondet) {
-                    if(!backup) {
+                    if(!backup)
                         backup = (Node*)malloc(sizeof(Node));
-                    }
                     set_False(backup);
                     stack_push(bt_stack, backup, g_backup);
                 }
@@ -1057,16 +1055,14 @@ original paper \cite{shortcutDeforestation}.
 \begin{boxfigure}
 > sumPrimes m = sum (filter isPrime (enum 2 m))
 > ==>
-> sumPrimes m = foldr (\x y -> x + y) 0 
+> sumPrimes m = foldr (+) 0 
 >                 (build (\c n -> foldr (\x y -> if isPrime x then x `c` y else y) n)
 >                  (build enum_build 2 m))
 > ==>
-> sumPrimes m = foldr (\x y -> x + y) 0 
+> sumPrimes m = foldr (+) 0 
 >     (build (\c n -> enum_build 2 x (\x y -> if isPrime x then x `c` y else y) n))
 > ==>
-> sumPrimes m = enum_build 2 m (\x y ->  if isPrime x 
->                                        then (\x y -> x + y) x y 
->                                        else y) 0
+> sumPrimes m = enum_build 2 m (\x y ->  if isPrime x then x + y else y) 0
 > ==>
 > sumPrimes m = enum_build 2 m (\x y -> if isPrime x then x + y else y) 0
 >   where enum_build k m c z =  if k > m then z
@@ -1326,13 +1322,16 @@ using the same reasoning as the original foldr-build rule.
 Without non-determinism and free variables, we can apply the same arguments as the original paper
 on shortcut deforestation \cite{shortcutDeforestation}.
 
+\begin{minipage}{\textwidth}
 \begin{refThm}
 For any deterministic |f|, |z|, |g|, |mkf|, and |mkz|,
 the following equations hold.
 > build_fold mkf mkz (build g) = build (\c n -> g (mkf c) (mkz n))
 > foldr f z (build_fold mkf mkz xs) = foldr (mkf f) (mkz z) xs
-> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
+> build_fold mkf_1 mkz_1 (build_fold mkf_2 mkz_2 xs) 
+> = build_fold (mkf_2 . mkf_1) (mkz_2 . mkz_1) xs
 \end{refThm}
+\end{minipage}
 
 \begin{proof}
 Recall that the free theorem\cite{theoremsForFree} for |build|

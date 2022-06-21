@@ -19,7 +19,6 @@
 \usepackage{float}
 \usepackage{tikz-cd}
 \usepackage{mathtools}
-\usepackage{hyperref}
 \usepackage{imakeidx}
 \makeindex
 

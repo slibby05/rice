@@ -399,6 +399,8 @@ psu-thesis documentation.}}{}
         \newpage
         \phantomsection
         \addcontentsline{toc}{chapter}{\listtablename}
+        %\addtocontents{toc}{\string\contentsline{chapter}{List of Tables}{7}}
+        %\addtocontents{toc}{\contentsline{chapter}{List of Tables}{vi}{section*.3}}
         \begin{singlespace}
         \pagestyle{fancy}
         \listoftables
@@ -408,8 +410,9 @@ psu-thesis documentation.}}{}
     \fi
     \iffigurespage
         \newpage
-        \phantomsection
+        phantomsection
         \addcontentsline{toc}{chapter}{\listfigurename}
+        %\addtocontents{toc}{\contentsline{chapter}{List of Figures}{vii}{section*.4}}
         \begin{singlespace}
         \pagestyle{fancy}
         \listoffigures

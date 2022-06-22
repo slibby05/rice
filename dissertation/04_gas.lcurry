@@ -240,7 +240,11 @@ but we could also break it up into the three nested let expressions below.
 > data Pattern  = Pattern QName [VarIndex]
 >               | LPattern Literal
 > data Literal  = Intc Int | Floatc Float | Charc  Char
-\caption[Curry Representation of FlatCurry Programs]{Curry representation of FlatCurry programs\\
+%\caption[Curry Representation of FlatCurry Programs]{Curry Representation of FlatCurry programs\\
+%This is the standard representation of FlatCurry programs as defined in \cite{currySemantics},
+%We have removed |CaseType| and |Typed| from |Expr|, and 
+%|TypeExpr| and |Visibility| from |FuncDecl|, because they are not used in our translation.}
+\caption{Curry Representation of FlatCurry programs\\
 This is the standard representation of FlatCurry programs as defined in \cite{currySemantics},
 We have removed |CaseType| and |Typed| from |Expr|, and 
 |TypeExpr| and |Visibility| from |FuncDecl|, because they are not used in our translation.}
@@ -269,7 +273,9 @@ We have removed |CaseType| and |Typed| from |Expr|, and
 > code l   | isInt l    = Intc l
 >          | isFloat l  = Floatc l
 >          | isChar l   = Charc l
-\caption[Syntax to Representation Translation]{Translation from FlatCurry syntax to the Curry representation of FlatCurry.}
+%\caption[Syntax to Representation Translation]{Syntax to Representation Translation\\
+%          Translation from FlatCurry syntax to the Curry representation of FlatCurry.}
+\caption{Translation from FlatCurry syntax to the Curry representation of FlatCurry.}
 \label{fig:flatTranslate}
 \end{boxfigure}
 
@@ -297,7 +303,9 @@ The full algorithm is given below in Figure \ref{fig:blocks}
 > 
 >         comps = scc (vs >>= makeEdges)
 >         makeEdges (v, exp) = [(v,f) | f <- freeVars exp `intersect` map fst vs]
-\caption[Splitting |let| Expressions]{Transformation for splitting let expressions into mutually recursive blocks.}
+%\caption[Splitting |let| Expressions]{Splitting |let| Expressions\\
+%         Transformation for splitting let expressions into mutually recursive blocks.}
+\caption{Transformation for splitting let expressions into mutually recursive blocks.}
 \label{fig:blocks}
 \end{boxfigure}
 
@@ -355,7 +363,10 @@ The full code is given in Figure \ref{fig:optFirst}.
 
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt) e
-\caption[First Attempt at an Optimization Engine]{A first attempt at an optimization engine.
+%\caption[First Attempt at an Optimization Engine]{First Attempt at an Optimization Engine\\
+%         A first attempt at an optimization engine.
+%         Pick an arbitrary subexpression and try to optimize it.}
+\caption{A first attempt at an optimization engine.
          Pick an arbitrary subexpression and try to optimize it.}
 \label{fig:optFirst}
 \end{boxfigure}
@@ -406,7 +417,10 @@ The new implementation is given in Figure \ref{fig:optReduce}
 >                        Just e'  -> e'
 > simplify :: Opt -> Expr -> Expr
 > simplify opt e = fix (reduce opt) e
-\caption[Second Attempt at an Optimization Engine]{A second attempt.
+%\caption[Second Attempt at an Optimization Engine]{Second Attempt at an Optimization Engine\\
+%         A second attempt.
+%         Traverse the expression and, at each node, check if an optimization applies.}
+\caption{A second attempt.
          Traverse the expression and, at each node, check if an optimization applies.}
 \label{fig:optReduce}
 \end{boxfigure}
@@ -465,8 +479,11 @@ The full implementation is in Figures \ref{fig:optAddInfo} and \ref{fig:optAddIn
 >                                       runOpts opt (Case e' bs')
 >  where runBranch (Branch pat e)  = do  e' <- reduce opt False e
 >                                        return (Branch pat e')
-\caption[Third Attempt at an Optimization Engine 1]{A third attempt.
-         keep track of the next fresh variable, and if we're at the root.}
+%\caption[Third Attempt at an Optimization Engine 1]{Third Attempt at an Optimization Engine 1\\
+%         A third attempt.
+%         keep track of the next fresh variable, and if we're at the root.}
+\caption{A third attempt.
+         Keep track of the next fresh variable, and if we're at the root.}
 \label{fig:optAddInfo}
 \end{boxfigure}
 \begin{boxfigure}
@@ -479,8 +496,11 @@ The full implementation is in Figures \ref{fig:optAddInfo} and \ref{fig:optAddIn
 > fix :: (a -> State b a) -> a -> b -> a
 > fix f x s =  let  (x',s') = runState (f x) s
 >              in   if x == x' then x else fix f x' s'
-\caption[Third Attempt at an Optimization Engine 2]{A third attempt.
-         keep track of the next fresh variable, and if we're at the root. Continued.}
+%\caption[Third Attempt at an Optimization Engine 2]{Third Attempt at an Optimization Engine 2\\
+%         A third attempt.
+%         Keep track of the next fresh variable, and if we're at the root. Continued.}
+\caption{A third attempt.
+         Keep track of the next fresh variable, and if we're at the root. Continued.}
 \label{fig:optAddInfo2}
 \end{boxfigure}
 
@@ -522,7 +542,10 @@ This gives us the type:
 >  where altPath (i,Branch _ e) = i : ndpath e
 > emptyspace
 > anymap f = anyof . map f . zip [1..]
-\caption[Path in Curry Expressions]{The definition of a path for Curry expressions.\\
+%\caption[Path in Curry Expressions]{Path in Curry Expressions\\
+%         The definition of a path for Curry expressions.\\
+%         This function non-deterministically returns a path to a subexpression.}
+\caption{The definition of a path for Curry expressions.\\
          This function non-deterministically returns a path to a subexpression.}
 \label{fig:path}
 \end{boxfigure}
@@ -571,7 +594,7 @@ The full implementation is in Figures \ref{fig:reconstruct} and \ref{fig:reconst
 >                                    bs'   <- mapM runBranch (zip [0..] bs)
 >                                    runOpts opt (Case e' bs')
 >  where runBranch (n, (Branch pat e))  = fmap (Branch pat) (reduce opt (n:p) e)
-\caption[Final Version of the Optimization Engine 1]{The final version of \gassp with reconstruction.}
+\caption{The final version of \gassp with reconstruction.}
 \label{fig:reconstruct}
 \end{boxfigure}
 \begin{boxfigure}
@@ -584,7 +607,7 @@ The full implementation is in Figures \ref{fig:reconstruct} and \ref{fig:reconst
 > fix :: (a -> ReWriter a) -> a -> Int -> [Step] -> (a,[Step])
 > fix f x n steps =  let  (x',n',steps') = runRewriter (f x) n
 >                    in   if x == x' then x else fix f x' n' (steps++steps')
-\caption[Final Version of the Optimization Engine 2]{The final version of \gassp with reconstruction. Continued.}
+\caption{The final version of \gassp with reconstruction. Continued.}
 \label{fig:reconstruct2}
 \end{boxfigure}
 

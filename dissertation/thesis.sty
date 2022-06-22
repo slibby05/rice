@@ -380,8 +380,7 @@ psu-thesis documentation.}}{}
 
 \def\prefacesection#1{%
     \clearpage
-    %\ifdefined\phantomsection {\phantomsection} \fi
-    \phantomsection
+    \ifdefined\phantomsection {\phantomsection} \fi
     \addcontentsline{toc}{chapter}{#1}
     \chapter*{#1}
 }
@@ -397,7 +396,7 @@ psu-thesis documentation.}}{}
     \pagestyle{fancy}
     \iftablespage
         \newpage
-        \phantomsection
+        \ifdefined\phantomsection {\phantomsection} \fi
         \addcontentsline{toc}{chapter}{\listtablename}
         %\addtocontents{toc}{\string\contentsline{chapter}{List of Tables}{7}}
         %\addtocontents{toc}{\contentsline{chapter}{List of Tables}{vi}{section*.3}}
@@ -410,7 +409,7 @@ psu-thesis documentation.}}{}
     \fi
     \iffigurespage
         \newpage
-        phantomsection
+        \ifdefined\phantomsection {\phantomsection} \fi
         \addcontentsline{toc}{chapter}{\listfigurename}
         %\addtocontents{toc}{\contentsline{chapter}{List of Figures}{vii}{section*.4}}
         \begin{singlespace}
@@ -467,8 +466,7 @@ psu-thesis documentation.}}{}
 \let\@ldthebibliography\thebibliography
 \renewcommand{\thebibliography}[1]{
     \newpage
-    %\ifdefined\phantomsection {\phantomsection} \fi
-    \phantomsection
+    \ifdefined\phantomsection {\phantomsection} \fi
     \addcontentsline{toc}{chapter}{References}
     \@ldthebibliography{#1}
 }

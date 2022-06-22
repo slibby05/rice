@@ -56,7 +56,7 @@ typedef struct Node
     field children[4];
 } Node;
 \end{verbatim}
-\caption[C Definition of a Node]{Definition of a node.}
+\caption{C Definition of a Node}
 \label{fig:node}
 \end{boxfigure}
 
@@ -130,7 +130,9 @@ void nf(field expr)
     }
 }
 \end{verbatim}
-\caption[CNF Reduction Algorithm]{algorithm for reducing a node to constructor normal form.}
+%\caption[CNF Reduction Algorithm]{CNF Reduction Algorithm\\
+%         An algorithm for reducing a node to constructor normal form.}
+\caption{An algorithm for reducing a node to constructor normal form.}
 \label{fig:nf}
 \end{boxfigure}
 
@@ -165,7 +167,7 @@ void Prelude_not_hnf(field root) {
   }
 }
 \end{verbatim}
-\caption[Initial implementation of |not|]{Initial implementation of |not|}
+\caption{Initial implementation of |not|}
 \label{fig:notInit}
 \end{boxfigure}
 
@@ -307,7 +309,7 @@ void apply_hnf(field root) {
     }
 }
 \end{verbatim}
-\caption[The \texttt{apply\_hnf}  function]{The \texttt{apply\_hnf}  function}
+\caption{The \texttt{apply\_hnf} function}
 \label{fig:apply}
 \end{boxfigure}
 
@@ -351,7 +353,7 @@ void choose(field root)
 
 }
 \end{verbatim}
-\caption[Implementation of \texttt{choose}]{Implementation of the \texttt{choose} function.}
+\caption{Implementation of \texttt{choose}}
 \label{fig:choose}
 \end{boxfigure}
 
@@ -401,7 +403,7 @@ void Prelude_not_hnf(field root) {
         return;
       ...  } } }
 \end{verbatim}
-\caption[Non-deterministic Implementation of |not|]{Implementation of |not| with possible non-deterministic values.}
+\caption{Non-deterministic Implementation of |not|}
 \label{fig:notNondet}
 \end{boxfigure}
 
@@ -448,7 +450,7 @@ void Prelude_not_hnf(field root) {
         return;
       ...} } }
 \end{verbatim}
-\caption[full Implementation of |not|]{The full implementation of |not|.}
+\caption{Full Implementation of |not|}
 \label{fig:notFull}
 \end{boxfigure}
 

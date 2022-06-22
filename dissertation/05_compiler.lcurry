@@ -16,7 +16,7 @@ These steps are referred to as pre-process, optimize, post-process, toICurry, an
 \cite{git}.
 
 We give an example of a function as it passes through each of the stages of the 
-compiler in Figure \ref{fig:stages}.
+compiler below.
 After pre-processing, the let expression has been floated to the top,
 and the missing branch has been filled in.
 After optimization, code is organized into blocks, and functions have been reduced.
@@ -27,7 +27,6 @@ At this point the code is ready to be translated into ICurry and then C.
 While there are several small details that are important to constructing a working Curry compiler,
 we will concern ourselves with the big picture here.
 
-%\begin{boxfigure}
 Let's look at a simple Curry function defined below.
 
 \begin{minipage}{\textwidth}
@@ -77,9 +76,6 @@ Finally, after applying the Post-processing transformations we have:
 >                  True -> False
 >                  False -> True
 \end{minipage}
-%\caption[Optimization States Expample]{|f| at each stage of the optimizer.}
-%\label{fig:stages}
-%\end{boxfigure}
 
 \section{Canonical FlatCurry} \label{sec:pipeline:cononical}
 
@@ -103,7 +99,11 @@ but for now we can see how transformations work.
 >    |  C_k (vec (e))
 >    |  e_1 ? e_2
 
-\caption[Canonical FlatCurry]{Canonical FlatCurry.\\
+%\caption[Canonical FlatCurry]{Canonical FlatCurry.\\
+%         We split expressions into statement-like expressions |s|, and expressions |e|.
+%         Statement like expressions roughly correspond to control flow, and are translated
+%         to variable declaration and control flow statements in C.  }
+\caption{Canonical FlatCurry.\\
          We split expressions into statement-like expressions |s|, and expressions |e|.
          Statement like expressions roughly correspond to control flow, and are translated
          to variable declaration and control flow statements in C.  }
@@ -162,7 +162,7 @@ However, these extensions to the rules are also included in the repository \cite
 >   where bs' = [Branch p (applyf e' xs) | (Branch p e') <- bs]
 > flatten (Case (Case e alt2) alt1)  = Case e bs (map addCase alt2)
 >   where addCase (Branch p e') = Branch p (Case e' b1)
-\caption[The Preprocessing Transformation Implementation 1]{The Curry implementation for the pre-processing transformations.}
+\caption{The Curry implementation for the pre-processing transformations.}
 \label{fig:code}
 \end{boxfigure}
 \begin{boxfigure}
@@ -179,7 +179,13 @@ However, these extensions to the rules are also included in the repository \cite
 >   | not (null exempts) = Case e (bs++exempts)
 >   where exempts = [  Branch (Pattern b []) exempt 
 >                      | b <- missingBranches dt bs]
-\caption[The Preprocessing Transformation Implementation 2]{The Curry implementation for the pre-processing transformations.\\
+%\caption[The Curry implementation for the pre-processing transformations continued]\\
+%          The Curry implementation for the pre-processing transformations continued.\\
+%         In |fillCases|, |dt| is a |DataTable|, which holds information about data types.
+%         The |missingBranches| takes a list of branches and a |DataTable| and returns the names
+%         of the branches that are not present.
+%         In |alias| the |sub| function applies a substitution to an expression.}
+\caption{The Curry implementation for the pre-processing transformations continued.\\
          In |fillCases|, |dt| is a |DataTable|, which holds information about data types.
          The |missingBranches| takes a list of branches and a |DataTable| and returns the names
          of the branches that are not present.
@@ -254,7 +260,7 @@ However, these extensions to the rules are also included in the repository \cite
 > let x free
 > in case e of alts
 \end{minipage}
-\caption[The Preprocessing Transformation 1]{\gassp rules for putting FlatCurry programs into canonical form}
+\caption{\gassp rules for putting FlatCurry programs into canonical form}
 \label{fig:canonical}
 \end{boxfigure}
 
@@ -329,7 +335,10 @@ However, these extensions to the rules are also included in the repository \cite
 >       False  -> EXEMPT
 \end{minipage}\\
 
-\caption[The Preprocessing Transformation 2]{\gassp rules for putting FlatCurry programs into canonical form (continued)\\
+%\caption[\gassp rules for putting FlatCurry programs into canonical form (continued)]{
+%         \gassp rules for putting FlatCurry programs into canonical form (continued)\\
+%         The notation |{ e }| refers to a vector of expressions, similar to |vec e|.}
+\caption{\gassp rules for putting FlatCurry programs into canonical form (continued)\\
          The notation |{ e }| refers to a vector of expressions, similar to |vec e|.}
 \label{fig:canonical2}
 \end{boxfigure}
@@ -426,7 +435,10 @@ Where $\overline{x}$ are free variables of $e$ and $\overline{e_i}$.
 \begin{minipage}{.40\textwidth}
 > let x = e in case x of alts
 \end{minipage}\\
-\caption[Let Floating Rules]{Rule for moving a let bound case out of a function, 
+%\caption[Let Floating Rules]{Let Floating Rules\\
+%         Rule for moving a let bound case out of a function, 
+%         and eliminating compound expressions in case-expressions.}
+\caption{Rule for moving a let bound case out of a function, 
          and eliminating compound expressions in case-expressions.}
 \label{fig:letcase}
 \end{boxfigure}
@@ -464,9 +476,12 @@ At this point we are ready to transform the canonicalized FlatCurry into ICurry.
 >                                            in   case  (==) (apply mod v_3 2) 1 of
 >                                                       True   -> powaux ((*) v_1 v_2) v_4 v_5
 >                                                       False  -> powaux v_1 v_4 v_5
-    \caption[|powaux| Reduction Example]{Reducing the |powaux| function 
-                                         defined in the standard Float library.}
-    \label{fig:preprocess_example}
+%\caption[|powaux| Reduction Example]{|powaux| Reduction Example\\
+%         Reducing the |powaux| function 
+%         defined in the standard Float library.}
+\caption{Reducing the |powaux| function 
+         defined in the standard Float library.}
+\label{fig:preprocess_example}
 \end{boxfigure}
 
 \section{Compiling to ICurry} \label{sec:pipeline:icurry}
@@ -506,7 +521,7 @@ or inspect a single variable to choose a case.
 >           |   ROOT                          root variable
 > l         =>  C_k                           constructor label
 >           |   f_k                           function label
-\caption[Abstract Syntax of ICurry]{Abstract syntax of function definitions in ICurry}
+\caption{Abstract Syntax of ICurry}
 \label{fig:iCurrySyntax}
 \end{boxfigure}
 
@@ -514,8 +529,8 @@ After we have finished transforming the FlatCurry,
 the transformation to ICurry is much easier to implement.
 The algorithm from \cite{icurry}, given in Figure \ref{fig:flatCurryiCurry}, 
 can be applied directly to the translated program.
-We show an example of translating the function |f| from Figure \ref{fig:stages}
-into ICurry in Figure \ref{fig:icurryStage}.
+We show an example of translating the function |f| from the start of the chapter
+into ICurry below.
 
 The algorithm itself is broken up into 6 pieces.
 First |ifunction| Compiles a FlatCurry function into an ICurry function.
@@ -576,7 +591,7 @@ If the expression is a let or a free expression, then the principal expression i
 >expr(let (vec (x = e)) in e')             :=  expr(e)
 >expr(let vec x free in e)                 :=  expr(e)
 
-\caption[ICurry Transformation]{Algorithm for translating FlatCurry into ICurry}
+\caption{Algorithm for translating FlatCurry into ICurry}
 \label{fig:flatCurryiCurry}
 \end{boxfigure}
 
@@ -717,7 +732,9 @@ $\mathcal{S}(\texttt{return } e, f, p)$ & $\coloneqq$ & $\mathcal{E}_S($\texttt{
 $\mathcal{S}(\bot, f, p)$ & $\coloneqq$ & \texttt{fail(root);}\\
 & & \texttt{return;}\\
 \end{tabular} \\
-\caption[The C Translation 1]{Code for generating Programs, declarations, and assignments.}
+%\caption[The C Translation 1]{The C Translation 1\\
+%         Code for generating Programs, declarations, and assignments.}
+\caption{Code for generating Programs, declarations, and assignments.}
 \label{fig:cprog}
 \end{boxfigure}
 
@@ -750,7 +767,9 @@ $\ \ \ \ \ \ $ \texttt{}$\overline{\mathcal{C}(C_i \to b_i, f, i:p)}$\\
 $\ \ \ \ $ \texttt{\}}\\
 $\ \ $ \texttt{\}}\\
 \end{tabular}{l}
-\caption[The C Translation 2]{code for generating statements.}
+%\caption[The C Translation 2]{The C Translation 2\\
+%         Code for generating statements.}
+\caption{Code for generating statements.}
 \label{fig:cstmt}
 \end{boxfigure}
 
@@ -789,7 +808,9 @@ $\mathcal{E_M}(NODE(C_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$C$\texttt
 $\mathcal{E_M}(NODE(f_k,\overline e))$ & $\coloneqq$ & \texttt{make\_}$f$\texttt{(root,}$\overline{\mathcal{E}_M(e)}, k)$\texttt{;}\\
 $\mathcal{E_M}(e_1 ? e_2)$ & $\coloneqq$ & \texttt{make\_choice}$(\mathcal{E}_M(e_1), \mathcal{E}_M(e_2))$\texttt{;}\\
 \end{tabular}
-\caption[The C Translation 3]{Code for generating cases, free variables, and expressions.}
+%\caption[The C Translation 3]{The C Translation 3\\
+%         Code for generating cases, free variables, and expressions.}
+\caption{Code for generating cases, free variables, and expressions.}
 \label{fig:cexpr}
 \end{boxfigure}
 

@@ -159,7 +159,10 @@ and we implement the transformation using \gassp in figure
 >    |   let (vec v = e) in e    Variable Declaration
 >    |   let (vec v) free in e   Free Variable Declaration
 >    |   case a of (vec alt)     Case Expression
-\caption[Administrative Normal Form]{
+%\caption[Administrative Normal Form]{Administrative Normal Form\\
+%An atom is either a variable, a literal, or a failure.
+%Compound expressions are only allowed to contain atoms.}
+\caption{
 Restricting Curry expressions to A-Normal Form.\\
 An atom is either a variable, a literal, or a failure.
 Compound expressions are only allowed to contain atoms.}
@@ -172,7 +175,12 @@ Compound expressions are only allowed to contain atoms.}
 > C a_1 a_2 ... e_k ... e_n   ==> let x = e_k  in C a_1 a_2 ... x ... e_n
 > e_1 ? e_2                   ==> let x = e_1  in x ? e_2
 > a_1 ? e_2                   ==> let x = e_2  in a_1 ? x
-\caption[The ANF Transformation]{
+%\caption[The ANF Transformation]{The ANF Transformation\\
+%    Rules for transforming Curry expression to A-Normal Form.
+%    |a| is used for atoms, |e| is used for arbitrary expressions,
+%    and |x| is a fresh variable name.  
+%    }
+\caption{
     Rules for transforming Curry expression to A-Normal Form.\\
     |a| is used for atoms, |e| is used for arbitrary expressions,
     and |x| is a fresh variable name.  
@@ -190,9 +198,11 @@ Compound expressions are only allowed to contain atoms.}
 > toANF (n,_) (Or e_1 e_2)
 >  | not (trivial e_1) = Let [(n,e_1)] (Or (Var n) e_2)
 >  | not (trivial e_2) = Let [(n,e_2)] (Or e_1 (Var n))
-\caption[The ANF Transformation Implementation]{
-    Curry implementation of A-Normal Form transformation.
-    }
+%\caption[The ANF Transformation Implementation]{
+%    The ANF Transformation Implementation\\
+%    Curry implementation of A-Normal Form transformation.
+%    }
+\caption{ Curry implementation of A-Normal Form transformation.  }
 \label{fig:anormalCurry}
 \end{boxfigure}
 
@@ -257,7 +267,8 @@ Some examples of programs in ANF are given in Figure \ref{fig:anormalExample}.
 >                in v_2 . v_6
 \end{minipage}
 }
-\caption[ANF Examples]{Examples of Curry programs translated to A-Normal Form}
+%\caption[ANF Examples]{ANF Examples\\Examples of Curry programs translated to A-Normal Form.}
+\caption{Examples of Curry programs translated to A-Normal Form.}
 \label{fig:anormalExample}
 \end{boxfigure}
 
@@ -318,8 +329,9 @@ Consider the expression from the optimization of |compare| for |Bool| in Figure 
 >                              True   -> GT
 >                              False  -> EQ
 > ...
-\caption[Optimization Deriviation Example]{a piece of the optimization derivation for the implementation of |compare|
-for |Bool|.}
+%\caption[Optimization Deriviation Example]{Optimization Deriviation Example\\
+%         a piece of the optimization derivation for the implementation of |compare| for |Bool|.}
+\caption{a piece of the optimization derivation for the implementation of |compare| for |Bool|.}
 \label{fig:caseBool}
 \end{boxfigure}
 The use of Case Variable elimination allows us to set up
@@ -413,7 +425,9 @@ as long as we are careful to make sure that our variable definitions are not rec
 >  | not (hasVar v e)   = e
 > deadCode (Let [(x,e)] (Var x))
 >  | not (hasVar x e)   = e
-\caption[Case Canceling Implementation]{The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
+%\caption[Case Canceling Implementation]{Case Canceling Implementation\\
+%         The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
+\caption{The code for Case Canceling, Case Variable Elimination, and Dead Code Elimination.}
 \label{fig:caseCode}
 \end{boxfigure}
 
@@ -480,8 +494,10 @@ as long as we are careful to make sure that our variable definitions are not rec
 \begin{minipage}{.40\textwidth}
 > e
 \end{minipage}\\
-    \caption[Case Canceling Optimization]{Case Canceling, Case Variable, and Dead Code Elimination optimizations.}
-    \label{fig:CaseCancel}
+%\caption[Case Canceling Optimization]{Case Canceling Optimization\\
+%         Case Canceling, Case Variable, and Dead Code Elimination optimizations.}
+\caption{Case Canceling, Case Variable, and Dead Code Elimination optimizations.}
+\label{fig:CaseCancel}
 \end{boxfigure}
 
 Now that we have finally created an optimization,
@@ -604,7 +620,7 @@ the derivation in Figure \ref{fig:sumPrimesDeriv}.
 > in let v_5 = enumFromTo_1 1
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6
-    \caption[|sumPrimes| example]{Initial optimization of |sumPrimes|}
+    \caption{Initial optimization of |sumPrimes|}
     \label{fig:sumPrimesDeriv}
 \end{boxfigure}
 
@@ -659,7 +675,7 @@ and we can continue to optimize the function.
 > ...
 > in let v_6 = compLambda_1 v_4 v_5
 > in compLambda_1 v_2 v_6 x_1
-    \caption[Filling in Partial Applications]{Adding a missing variable to |sumPrimes|}
+    \caption{Adding a missing variable to |sumPrimes|}
     \label{fig:addvarDeriv}
 %> in let v_3 = isPrime_1
 %> in let v_4 = filter_1 v_3
@@ -765,7 +781,7 @@ We can see the derivation in Figure \ref{fig:loopOptDeriv}.
 >            0 ->  0
 >            _ ->  let y = (appOpt (h x))
 >                  in 1 + y
-    \caption[Optimization of Strongly Connected Functions]{Optimization of strongly connected functions.}
+    \caption{Optimization of Strongly Connected Functions.}
     \label{fig:loopOptDeriv}
 
 \end{boxfigure}
@@ -899,7 +915,12 @@ we have found that these restrictions generate better code.
 \begin{minipage}{.40\textwidth}
 >  extend e x l
 \end{minipage}\\
-\caption[Rule for Variable Inlining]{rules for variable inlining.\\
+%\caption[Rule for Variable Inlining]{Rules For Variable Inlining.\\
+%         We need to ensure that |x| is not used recursively before we inline it.
+%         Guards indicate that the rule fire only if the guard is satisfied.
+%         The notation $\in_1$ indicates that the variable $x$ occurs exactly once in 
+%         a strict position in $e'$, so the case will be evaluated.}
+\caption{Rules for variable inlining.\\
          We need to ensure that |x| is not used recursively before we inline it.
          Guards indicate that the rule fire only if the guard is satisfied.
          The notation $\in_1$ indicates that the variable $x$ occurs exactly once in 
@@ -933,7 +954,7 @@ we have found that these restrictions generate better code.
 >
 > inline _ (Let [v@(_, Lit _)] e) = sub (v @> idSub) e
 
-\caption[Implementation of Inlining Rules]{\gassp implementation of the inlining rules.}
+\caption{\gassp implementation of the inlining rules.}
 \label{fig:inlineCode}
 \end{boxfigure}
 
@@ -1019,7 +1040,12 @@ we do not get the same readable code.
 \begin{minipage}{.30\textwidth}
 > let x = extend (rbody f) (vec v) (vec e) in e'
 \end{minipage}\\
-\caption[Rules for Reduction]{Rules for reduction.\\
+%\caption[Rules for Reduction]{Rules for Reduction\\
+%         All expressions are kept in A-Normal Form.
+%         |REDUCE_BASE| is only run at the root of the body.
+%         While the last three rules are very similar,
+%         It is useful to keep them separated for debugging reduction derivations.}
+\caption{The rules for reduction.\\
          All expressions are kept in A-Normal Form.
          |REDUCE_BASE| is only run at the root of the body.
          While the last three rules are very similar,
@@ -1056,7 +1082,11 @@ we do not get the same readable code.
 >   |   inlinable funs f &&  cancels funs f (map isConsExpr es) = Let [(x,b')] e
 >    where b' = makeReduce funs n b
 > 
-\caption[Implementation of Reduction Rules]{\gassp code for the Reduce optimizations.\\
+%\caption[\gassp Code for the Reduce Optimizations]{\gassp code for the Reduce Optimizations.\\
+%         The |makeReduce| function corresponds to |rbody|.
+%         The function |inlinable|, |useful|, |simple|, and |cancels|
+%         correspond to |rinlinable, ruseful, rsimple| and |rcancels| respectively.}
+\caption{\gassp code for the Reduce optimizations.\\
          The |makeReduce| function corresponds to |rbody|.
          The function |inlinable|, |useful|, |simple|, and |cancels|
          correspond to |rinlinable, ruseful, rsimple| and |rcancels| respectively.}
@@ -1091,7 +1121,7 @@ Case Shortcutting is a new optimization to Curry.
 > ==> REDUCE_LET
 > let v_1 = 0 ? 1
 > in v_1 + v_1
-\caption[Derivation of |double (0 ? 1)|]{Derivation of |double (0 ? 1)| showing that we still arrive at an equivalent expression.}
+\caption{Derivation of |double (0 ? 1)|}
 \label{fig:doubleReduce}
 \end{boxfigure}
 
@@ -1106,7 +1136,7 @@ Case Shortcutting is a new optimization to Curry.
 >                    True   -> True
 >                    False  -> v_2
 > v_1 <= v_2 = not v_1 || v_2
-\caption{[Definition of |<=| for |Bool|]Definition of |<=| for |Bool|.}
+\caption{Definition of |<=| for |Bool|.}
 \label{fig:boolLeq}
 \end{boxfigure}
 
@@ -1134,7 +1164,7 @@ Case Shortcutting is a new optimization to Curry.
 > in   case  v_3 of
 >            True   -> True
 >            False  -> v_2
-\caption[Derivation of |<=| 1]{Derivation of |<=| for |Bool|}
+\caption{Derivation of |<=| for |Bool| 1}
 \label{fig:LtEqReduce}
 \end{boxfigure}
 
@@ -1161,7 +1191,7 @@ Case Shortcutting is a new optimization to Curry.
 >       False  ->  let v8 = True  in case  v8 of 
 >                                          True   -> True 
 >                                          False  -> v_2
-\caption[Derivation of |<=| 2]{Derivation of |<=| for |Bool|}
+\caption{Derivation of |<=| for |Bool| 2}
 \label{fig:LtEqReduce2}
 \end{boxfigure}
 
@@ -1182,7 +1212,7 @@ Case Shortcutting is a new optimization to Curry.
 > case  v_1 of
 >       True   -> v_2
 >       False  -> True
-\caption[Derivation of |<=| 3]{Derivation of |<=| for |Bool| continued}
+\caption{Derivation of |<=| for |Bool| 3}
 \label{fig:LtEqReduce3}
 
 \end{boxfigure}

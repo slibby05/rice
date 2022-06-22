@@ -125,7 +125,7 @@ This allows us to describe and implement a wide range of optimizations
 including inlining, shortcut deforestation, unboxing, and case shortcutting, 
 a new optimization we developed specifically for functional logic language.
 We show the correctness of these optimizations and demonstrate their effectiveness.
-In particular, we show that \ricesp outperform
+In particular, we show that \ricesp outperforms
 previous compilers by 2 or 3 orders of magnitude on standard benchmarks.
 
 \afterpreface

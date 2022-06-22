@@ -343,7 +343,11 @@ Then each child of the root is reduced to constructor normal form.
 >             |   case e of (vec (p -> e))                 Case Expression
 > p           =>  C (vec v)                                Constructor Pattern
 >             |   l                                        Literal Pattern
-\caption[Syntax Definition for FlatCurry]{Syntax definition for FlatCurry\\
+%\caption[Syntax Definition for FlatCurry]{Syntax Definition for FlatCurry\\
+%This is largely the same as other presentations \cite{currySemantics,icurry}
+%but we have elected to add more information that will become relevant for optimizations later.
+%The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
+\caption{Syntax definition for FlatCurry\\
 This is largely the same as other presentations \cite{currySemantics,icurry}
 but we have elected to add more information that will become relevant for optimizations later.
 The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
@@ -353,7 +357,10 @@ The notation |vec e| refers to a variable length list |e_1 e_2 ... e_n|.}
 \begin{boxfigure}
 > n =>  l            literal
 >   |   C_k (vec n)  constructor
-\caption[Constructor Normal Forms in FlatCurry]{constructor normal forms in FlatCurry.\\
+%\caption[Constructor Normal Forms in FlatCurry]{Constructor Normal Forms in FlatCurry.\\
+%         A CNF is an expression that contains only constructor and literal symbols.
+%         All CNFs are normal forms in our system.}
+\caption{constructor normal forms in FlatCurry.\\
          A CNF is an expression that contains only constructor and literal symbols.
          All CNFs are normal forms in our system.}
 \label{fig:normalForm}
@@ -394,8 +401,10 @@ Transformed FlatCurry representation of |==| on lists.
 >                                v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
 
 
-\caption[Flat Representation Example]{Transformation of FlatCurry |==| function into a flat representation
-         for Pakcs and Kics2.}
+%\caption[Flat Representation Example]{Flat Representation Example\\
+%         Transformation of FlatCurry |==| function into a flat representation
+%         for Pakcs and Kics2.}
+\caption{Transformation of FlatCurry |==| function into a flat representation for Pakcs and Kics2.}
 \label{fig:eqList}
 \end{boxfigure}
 
@@ -434,7 +443,10 @@ We show the reduction of |weird| in Figure \ref{fig:weirdEval}.
 >         in case  x of
 >                  False -> True
 >                  True -> False
-\caption[The function |weird|]{The function |weird|\\
+%\caption[The function |weird|]{The function |weird|\\
+%         This can not be expressed as rewrite rules, because the expression
+%         we are pattern matching on is defined locally.}
+\caption{The function |weird|\\
          This can not be expressed as rewrite rules, because the expression
          we are pattern matching on is defined locally.}
 \label{fig:weird}
@@ -454,7 +466,7 @@ We show the reduction of |weird| in Figure \ref{fig:weirdEval}.
    \item Node |n_2| labeled by |?| is created with children |[False, True]|.
    \item $\ldots$
 \end{itemize}
-\caption[Evaluation of |weird|]{Evaluation of the function |weird|.}
+\caption{Evaluation of |weird|}
 \label{fig:weirdEval}
 \end{boxfigure}
 
@@ -503,6 +515,8 @@ since our programs are still similar in size to equivalent programs compiled wit
 > eqList_2 v_6 v_7 v_3 = case  v_3 of
 >                              [] -> False
 >                              v_8 : v_9 -> v_6 == v_8 && v_7 == v_9
+%\caption[Case Functions for |weird|]{Case Functions for |weird|\\
+%         Functions at case for |weird| and |==| for lists.}
 \caption[Case Functions for |weird|]{Functions at case for |weird| and |==| for lists.}
 \label{fig:caseFuncs}
 \end{boxfigure}
@@ -535,7 +549,7 @@ then we instantiate the arguments with free variables.
 >                  Red     -> Green
 >                  Green   -> Yellow 
 >                  Yellow  -> Red
-\caption[Traffic Light Example]{A simple traffic light program}
+\caption{A simple traffic light program}
 \label{fig:light}
 \end{boxfigure}
 
@@ -564,7 +578,7 @@ Figures \ref{fig:lightEval} and \ref{fig:lightEval2}.
    \item |r| is rewritten to |Yellow|, and |(r,change, Continue)| is pushed on the stack
    \item |r| is a constructor normal form
    \item backtracking to the closest alternative
-\caption[Free Variable Derivation 1]{Evaluation of |change x where x free|}
+\caption{Evaluation of |change x where x free|}
 \label{fig:lightEval}
 \end{itemize}
 \end{boxfigure}
@@ -584,7 +598,7 @@ Figures \ref{fig:lightEval} and \ref{fig:lightEval2}.
    \item Both rewrites are popped, and the stack is empty with no alternatives.
 \end{itemize}
 %}
-\caption[Free Variable Derivation 2]{Evaluation of |change x where x free| continued}
+\caption{Evaluation of |change x where x free| continued}
 \label{fig:lightEval2}
 \end{boxfigure}
 

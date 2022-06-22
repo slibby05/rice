@@ -190,7 +190,10 @@ primes          &   10,453 &    51 &    12 &    1 \\
 sumPrimes       &    2,762 &     3 &     4 &    1 \\
 \hhline{||||=||||=||=||=||=||||}
 \end{tabular}
-\caption[Curry Compiler Comparison]{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
+%\caption[Curry Compiler Comparison]{Curry Compiler Comparison\\
+%         Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
+%         All times are normalized to \rice.}
+\caption{Comparison of execution time for Pakcs, Kics2, Mcc, and \rice.\\
          All times are normalized to \rice.}
 \label{fig:time}
 \end{table}
@@ -241,7 +244,17 @@ primes          &    1.00 &  0.74 &  0.49 &     0.60 &     0.76 & 0.32 \\
 sumPrimes       &    1.00 &  1.11 &  0.48 &     0.99 &     0.67 & 0.17 \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
-\caption[Optimization Results]{Results for execution time between the \ricesp compiler at several levels of optimization.
+%\caption[Optimization Results]{Optimization Results\\
+%         Results for execution time between the \ricesp compiler at several levels of optimization.
+%         \emph{unopt} is the compiler without optimizations,
+%         \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
+%         \emph{unbox} is the unboxing optimization,
+%         \emph{shortcut} is the shortcutting optimization,
+%         \emph{deforest} is the deforestation optimization,
+%         and \emph{all} is the compiler with all optimizations turned on.
+%         All values are normalized to \emph{unopt}, so they are the ratio, of the execution
+%         time over \emph{unopt}'s execution time.}
+\caption{Results for execution time between the \ricesp compiler at several levels of optimization.
          \emph{unopt} is the compiler without optimizations,
          \emph{basic} is the optimizations described in Chapter \ref{ch:opts},
          \emph{unbox} is the unboxing optimization,
@@ -299,7 +312,9 @@ primes          &  40,705K &  32,589K & 24,442K &   24,477K &   32,585K & 24,438
 sumPrimes       &  96,622K & 109,936K & 48,235K &  102,998K &   82,231K &     21K \\
 \hhline{||||=||||=||=||=||=||=||=||||}
 \end{tabular}
-\caption[Memory Results]{Results for amount of memory consumed while running programs compiled at each optimization level.}
+%\caption[Memory Results]{Memory Results\\
+%         Results for amount of memory consumed while running programs compiled at each optimization level.}
+\caption{Results for amount of memory consumed while running programs compiled at each optimization level.}
 \label{fig:memory}
 \end{table}
 
@@ -324,7 +339,9 @@ sumPrimes       &     1.00 &         1.17 &        0.15 \\
 \hline
 \hhline{||||=||||=||=||=||||}
 \end{tabular}
-\caption[GHC Comparison]{Comparison of \ricesp and GHC on deterministic programs.}
+%\caption[GHC Comparison]{GHC Comparison\\
+%         Comparison of \ricesp and GHC on deterministic programs.}
+\caption{Comparison of \ricesp and GHC on deterministic programs.}
 \label{fig:ghc}
 \end{table}
 
